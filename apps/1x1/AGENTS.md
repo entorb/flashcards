@@ -17,8 +17,9 @@ Vue.js PWA for primary school students to practice multiplication tables (3x3 to
 
 **Storage:**
 
-- localStorage: Cards (level, time), history, stats, extended features state
+- localStorage: Cards (level, time), history, stats, range configuration
 - sessionStorage: Game config, game results
+- **Lazy-loading**: Cards created on first correct answer, not pre-generated
 
 ## Architecture
 
@@ -35,19 +36,25 @@ src/
 
 ### Key Files
 
-**`services/storage.ts`** - Data persistence with extended features support
+**`services/storage.ts`** - Data persistence with lazy-loaded range-based system
 
 - Base cards: `loadCards()`, `saveCards()`, `initializeCards()` (28 cards 3x3-9x9, y≤x)
-- Extended features: `loadExtendedFeatures()`, `addExtendedCards(feature)`, `deleteExtendedCards(feature)`
+- Range management: `loadRange()`, `saveRange()`, `toggleFeature()` (array of unlocked numbers [2,3,4,5,6,7,8,9,11-20])
+- Lazy-loading: `updateCard()` creates cards on first correct answer (not pre-generated)
 - History/Stats: `loadHistory()`, `loadGameStats()`, `updateStatistics()`
 - Session: `setGameConfig()`, `getGameConfig()`, `setGameResult()`
-- Storage keys: `'1x1-cards'`, `'1x1-history'`, `'1x1-stats'`, `'1x1-extended-features'`
+- Storage keys: `'1x1-cards'`, `'1x1-history'`, `'1x1-stats'`, `'1x1-range'`, `'1x1-game-config'`, `'1x1-game-result'`
 
-**`services/cardSelector.ts`** - Weighted random selection
+**`services/cardSelector.ts`** - Card filtering and weighted random selection
 
-- Filters cards by selected tables (OR logic: select=[6] → all cards where x=6 OR y=6)
-- Applies focus-based weights (weak: low-level, strong: high-level, slow: high-time)
-- Returns up to 10 cards using weighted probability
+- **Filtering functions**:
+  - `filterCardsBySelection()`: Filters by number selection (OR logic: select=[6] → all cards where x=6 OR y=6)
+  - `filterCardsSquares()`: Filters for x² cards (x === y)
+  - `filterCardsAll()`: Returns all cards within range
+  - All filters respect range boundaries (both x AND y must be in range)
+- **Selection function**:
+  - `selectCards()`: Applies focus-based weights (weak: low-level, strong: high-level, slow: high-time)
+  - Returns up to 10 cards using weighted probability
 
 **`components/FlashCard.vue`** - Game card component
 
@@ -57,79 +64,97 @@ src/
 
 **`pages/HomePage.vue`** - Game configuration
 
-- Dynamic `selectOptions` computed property based on `extendedFeatures`
-- Selection buttons: 2, 3-9, 11-12, 13-20 (based on active features)
+- Dynamic `selectOptions` computed from current range (array of unlocked numbers)
+- Selection buttons: all numbers in current range (based on active features)
+- Default selection: all numbers in range
+- Double-click to select all in range (or select only that number if all selected)
 - Focus selector: weak/strong/slow
 
-**`pages/CardsPage.vue`** - Progress visualization + feature toggles
+**`pages/CardsPage.vue`** - Progress visualization + range toggles
 
-- Dynamic grid (expands based on active features)
-- "Weitere Karten" section with 3 toggles (1x2, 1x12, 1x20)
-- Confirmation dialogs for deactivation
+- Dynamic grid displays all cards in current range (y and x axes)
+- Shows cards with default styling (level 1, time 60s) even if not yet played
+- "Weitere Karten" section with 3 toggles (1x2, 1x12, 1x20) - only updates range
+- No confirmation dialogs (no data loss from toggling)
 - Cell styling: background=level, text color=time
 
-## Extended Cards Features
+## Extended Cards Features (Range-Based System)
 
 ### Overview
 
-Three optional features extend multiplication ranges beyond 3x3-9x9:
+Three optional features unlock multiplication ranges beyond 3x3-9x9. Instead of pre-generating cards, the system uses **lazy-loading**: cards are created only when answered correctly for the first time.
 
-1. **1x2**: Adds 2×2 through 2×9 (8+ cards)
-2. **1x12**: Adds 11×11, 12×12, and cross-products (auto-includes 2×11-12 if 1x2 active)
-3. **1x20**: Adds 13×13 through 20×20 and cross-products (auto-enables 1x12)
+1. **1x2**: Unlocks number 2 (2×2 through 2×9)
+2. **1x12**: Unlocks 11, 12 (cross-products with 3-9)
+3. **1x20**: Unlocks 13-20 (all cross-products, auto-enables 1x12)
 
-**Important:** 10× multiplication table is intentionally skipped (no cards with X or Y == 10)
+**Important:** 10 is intentionally skipped (no cards with X or Y == 10)
 
-### Card Generation Logic
+### Range Configuration
 
-**feature1x2:**
+Range is stored as an array of unlocked numbers (not min/max):
 
-- Y values: [2, 3-9] + [11-12 if 1x12 active] + [13-20 if 1x20 active]
-- Generates: 2×Y for all Y values
+**Default range:** `[3, 4, 5, 6, 7, 8, 9]` (28 base cards)
 
-**feature1x12:**
+**With 1x2 enabled:** `[2, 3, 4, 5, 6, 7, 8, 9]` (adds 2)
 
-- X values: [11, 12]
-- Y values: [2 if 1x2 active] + [3-9] + [11-12] (skip 10)
-- Generates: Y×X for all combinations where Y ≤ X
+**With 1x12 enabled:** `[2, 3, 4, 5, 6, 7, 8, 9, 11, 12]` (adds 11, 12)
 
-**feature1x20:**
-
-- X values: [13-20]
-- Y values: [2 if 1x2 active] + [3-9] + [11-12] + [13-20] (skip 10)
-- Generates: Y×X for all combinations where Y ≤ X
-- Auto-enables 1x12 if not active
+**With 1x20 enabled:** `[2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]` (adds 13-20, implies 1x12)
 
 ### Feature Interactions
 
 **Activation:**
 
-- 1x20 → auto-enables 1x12
-- 1x2 after others → adds missing 2× cross-products
-- New cards: level=1, time=60s
+- 1x20 → auto-enables 1x12 (adds 11, 12 if not present)
+- No data loss: toggling only affects visible/playable range
+- Cards appear in grid with default styling (level 1, time 60s)
 
 **Deactivation:**
 
-- 1x12 → auto-deactivates 1x20 (with warning)
-- Confirmation dialog required
-- All cards deleted (including progress)
+- 1x12 deactivation → also removes 1x20 (warning shown)
+- Cards remain in storage with their progress
+- Re-enabling feature restores the cards with preserved progress
 
-### Implementation
+### Lazy-Loading Mechanism
+
+**`updateCard(question, updates)`:**
+
+- If card exists: updates level/time
+- If card doesn't exist: creates card with given updates + default values
+- Called on every answer submission
+
+**GamePage flow:**
+
+1. Filter available cards: `(x or y in select) AND (x in range AND y in range)`
+2. Present card to user (may not exist in storage yet)
+3. User answers → `updateCard()` creates card if needed + updates level/time
+4. Card now persists in storage for future games
+
+### Implementation Details
 
 **CardsPage.vue:**
 
-- `toggleExtendedFeature()`: Handles activation/deactivation with dialogs
-- Dynamic `xValues` and `yValues` computed properties
-- Grid style: `:style="{ gridTemplateColumns: \`40px repeat(${xValues.length}, 1fr)\` }"`
+- `toggleFeature()`: Updates range array (adds/removes numbers)
+- No confirmation dialogs (safe to toggle)
+- Grid displays: `yValues = range` and `xValues = range`
+- Shows all cards in range with current progress or defaults
 
 **HomePage.vue:**
 
-- `selectOptions` computed property adds 2, 11-12, 13-20 based on active features
-- Numeric sort: `.sort((a, b) => a - b)`
+- `selectOptions = range.value` (array of available numbers)
+- Default select: all numbers in range (copy of range array)
+- Double-click behavior: select only that number OR select all in range
+
+**GamePage (useGameStore):**
+
+- Creates `rangeSet = new Set(range)` for fast lookup
+- Filter: `(selectSet.has(x) || selectSet.has(y)) && rangeSet.has(x) && rangeSet.has(y)`
+- Both x and y must be in range (prevents 9x16 when range is [2-9])
 
 **FlashCard.vue:**
 
-- `shouldDisableAutoSubmit` computed property checks `loadExtendedFeatures()`
+- `shouldDisableAutoSubmit = range.some(n => n >= 11)` (disable for 3-digit answers)
 
 ## Game Logic
 
@@ -161,7 +186,11 @@ points = min(x, y) + (6 - level) + time_bonus
 
 ## Testing
 
-**Unit Tests** (`src/services/gameLogic.test.ts`): 13 tests covering card initialization, filtering (OR logic), weighted selection
+**Unit Tests:** 24 tests across multiple files
+
+- `src/services/storage.spec.ts` (3 tests): Card initialization with default values
+- `src/services/cardSelector.spec.ts` (15 tests): Card filtering (selection, squares, all), weighted selection, integration
+- `src/components/FlashCard.vue.spec.ts` (6 tests): Component rendering, answer validation, timer
 
 **E2E Tests** (Cypress): 4 tests (3 navigation + 1 full game flow)
 
@@ -170,48 +199,64 @@ pnpm test                    # Run unit tests
 pnpm run cy:run:1x1         # Run E2E tests
 ```
 
+**Test Infrastructure:**
+
+- Test files use `.spec.ts` suffix (Vitest convention)
+- localStorage mock: In-memory Storage implementation in `src/__tests__/setup.ts`
+- Test isolation: Each test clears localStorage in `beforeEach`
+
 ## Commands
 
 ```bash
-pnpm dev:1x1                # Dev server
-pnpm build:1x1              # Build
+pnpm dev:1x1                # Dev server (single app)
+pnpm build:1x1              # Build (with type check pre-flight)
 pnpm test                   # Unit tests
 pnpm run cy:run:1x1         # E2E tests
-pnpm run types              # Type check
+pnpm run check              # Comprehensive check (format, lint, types, spell, tests in parallel)
 ```
+
+**Note:** `pnpm run check` includes type checking, so `pnpm run types` does not need to be run manually.
 
 ## Recent Changes
 
-### Extended Cards Features (1x2, 1x12, 1x20)
+### Lazy-Loaded Range-Based Extended Cards System (Nov 2024)
 
-**Implementation:**
+**Major Refactoring:**
 
-- Added `loadExtendedFeatures()`, `saveExtendedFeatures()`, `addExtendedCards()`, `deleteExtendedCards()` to storage.ts
-- UI toggles in CardsPage.vue with confirmation dialogs
-- Dynamic selection buttons in HomePage.vue
-- Auto-submit disabled in FlashCard.vue for 3-digit answers
-- Dynamic grid expansion in CardsPage.vue
+Replaced card pre-generation system with lazy-loading + range-based unlocking:
 
-**Key Decisions:**
+- **Removed**: `addExtendedCards()`, `deleteExtendedCards()`, `loadExtendedFeatures()`
+- **Added**: `loadRange()`, `saveRange()`, `toggleFeature()` for range management
+- **Modified**: `updateCard()` now creates cards on first correct answer (lazy-loading)
+- **Updated**: All pages (CardsPage, HomePage, GamePage, HistoryPage, FlashCard) to use range arrays
 
-- Skip 10× table (rarely practiced)
-- Auto-enable 1x12 when activating 1x20
-- Auto-deactivate 1x20 when deactivating 1x12
-- Generate missing 2× cards when activating 1x2 after other features
-- Increased cell size: 100px (desktop), 70px (mobile)
+**Key Benefits:**
+
+- ✅ No data loss when toggling features (cards persist with progress)
+- ✅ No pre-generated card storage overhead
+- ✅ Cards exist with practice progress before enabling features
+- ✅ Simpler logic: range = array of unlocked numbers, like select
 
 **Bug Fixes:**
 
-- Fixed card generation to explicitly skip X or Y == 10
-- Added cleanup for stray 10× cards
+- Fixed card filtering in GamePage: require both x AND y in range (prevents 9x16 when range is [2-9])
+- Range logic: `(selectSet.has(x) || selectSet.has(y)) && rangeSet.has(x) && rangeSet.has(y)`
+
+**Testing:**
+
+- ✅ 19 unit tests pass
+- ✅ 4 E2E tests pass
+- ✅ All quality checks pass (format, lint, types, spell)
 
 ## Quick Reference
 
 **Types:** `Card { question, answer, level: 1-5, time: 0.1-60 }`, `GameConfig { select[], focus }`, `GameResult { points, correctAnswers, totalCards }`
 
-**Core Functions:** `selectCards()` (weighted selection), `updateCard()` (level/time updates), `submitAnswer()` (validation)
+**Core Functions:** `selectCards()` (weighted selection), `updateCard()` (lazy-loads + updates), `toggleFeature()` (range updates)
 
-**Storage Keys:** `1x1-cards`, `1x1-history`, `1x1-stats`, `1x1-extended-features`, `1x1-game-config`, `1x1-game-result`
+**Storage Keys:** `1x1-cards`, `1x1-history`, `1x1-stats`, `1x1-range`, `1x1-game-config`, `1x1-game-result`, `1x1-daily-stats`
+
+**Range Arrays:** `[3,4,5,6,7,8,9]` (default), `[2,3,4,5,6,7,8,9]` (1x2), `[2,3,4,5,6,7,8,9,11,12]` (1x12), `[2,3,4,5,6,7,8,9,11,12,13-20]` (1x20)
 
 **Routes:** `/` (Home), `/game` (Game), `/game-over` (Results), `/history` (History), `/cards` (Progress)
 
