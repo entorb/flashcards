@@ -338,7 +338,9 @@ function findKeyUsage(key, files) {
 
   for (const file of files) {
     try {
-      const content = fs.readFileSync(file, 'utf-8')
+      let content = fs.readFileSync(file, 'utf-8')
+      // Strip comments to avoid false positives
+      content = stripComments(content)
       for (const pattern of patterns) {
         if (pattern.test(content)) {
           return true
@@ -366,7 +368,9 @@ function findConstantUsage(constantName, files, excludeFile = null) {
     }
 
     try {
-      const content = fs.readFileSync(file, 'utf-8')
+      let content = fs.readFileSync(file, 'utf-8')
+      // Strip comments to avoid false positives
+      content = stripComments(content)
       if (pattern.test(content)) {
         return true
       }
@@ -437,6 +441,9 @@ function findCSSClassUsage(className, files, styleFile) {
         // Remove the <style> block to avoid matching the class definition itself
         content = content.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
       }
+
+      // Strip comments to avoid false positives
+      content = stripComments(content)
 
       for (const pattern of patterns) {
         if (pattern.test(content)) {
@@ -538,7 +545,9 @@ function findKeyUsageFiles(key, files, searchType = 'translation') {
   const matchingFiles = []
   for (const file of files) {
     try {
-      const content = fs.readFileSync(file, 'utf-8')
+      let content = fs.readFileSync(file, 'utf-8')
+      // Strip comments to avoid false positives
+      content = stripComments(content)
       for (const pattern of patterns) {
         if (pattern.test(content)) {
           matchingFiles.push(file)
