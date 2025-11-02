@@ -191,7 +191,8 @@ pnpm --filter 1x1 vitest src/services/storage.spec.ts
 pnpm run cy:run:1x1
 pnpm run cy:run:voc
 
-# Quality checks (all below in parallel)
+# Quality checks
+# this runs all below in parallel: types, lint, format, spell
 pnpm run check
 
 # Type checking

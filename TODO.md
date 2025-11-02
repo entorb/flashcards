@@ -4,8 +4,8 @@
 
 ## Both
 
-- check which constants can be moved to the shared package
 - Update @apps/1x1/README.md and @apps/1x1/AGENTS.md
+- In CardsPage, a click on LevelDistribution.vue shall result in displaying a list of cards in that level. (cards from local storage that are in this level) For 1x1 apply the range filter, so do not list cards that are not in the currently set range.
 
 ## 1x1
 
