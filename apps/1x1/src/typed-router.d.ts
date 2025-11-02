@@ -16,7 +16,7 @@ declare module 'vue-router/auto-routes' {
     ParamValue,
     ParamValueOneOrMore,
     ParamValueZeroOrMore,
-    ParamValueZeroOrOne,
+    ParamValueZeroOrOne
   } from 'vue-router'
 
   /**
@@ -28,36 +28,36 @@ declare module 'vue-router/auto-routes' {
       '/CardsPage',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
+      never
+    >
     '/GameOverPage': RouteRecordInfo<
       '/GameOverPage',
       '/GameOverPage',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
+      never
+    >
     '/GamePage': RouteRecordInfo<
       '/GamePage',
       '/GamePage',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
+      never
+    >
     '/HistoryPage': RouteRecordInfo<
       '/HistoryPage',
       '/HistoryPage',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
+      never
+    >
     '/HomePage': RouteRecordInfo<
       '/HomePage',
       '/HomePage',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
+      never
+    >
   }
 
   /**
@@ -72,34 +72,24 @@ declare module 'vue-router/auto-routes' {
    */
   export interface _RouteFileInfoMap {
     'src/pages/CardsPage.vue': {
-      routes:
-        | '/CardsPage'
-      views:
-        | never
+      routes: '/CardsPage'
+      views: never
     }
     'src/pages/GameOverPage.vue': {
-      routes:
-        | '/GameOverPage'
-      views:
-        | never
+      routes: '/GameOverPage'
+      views: never
     }
     'src/pages/GamePage.vue': {
-      routes:
-        | '/GamePage'
-      views:
-        | never
+      routes: '/GamePage'
+      views: never
     }
     'src/pages/HistoryPage.vue': {
-      routes:
-        | '/HistoryPage'
-      views:
-        | never
+      routes: '/HistoryPage'
+      views: never
     }
     'src/pages/HomePage.vue': {
-      routes:
-        | '/HomePage'
-      views:
-        | never
+      routes: '/HomePage'
+      views: never
     }
   }
 
@@ -110,7 +100,5 @@ declare module 'vue-router/auto-routes' {
    * @internal
    */
   export type _RouteNamesForFilePath<FilePath extends string> =
-    _RouteFileInfoMap extends Record<FilePath, infer Info>
-      ? Info['routes']
-      : keyof RouteNamedMap
+    _RouteFileInfoMap extends Record<FilePath, infer Info> ? Info['routes'] : keyof RouteNamedMap
 }

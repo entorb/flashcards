@@ -4,9 +4,10 @@ import { useRouter } from 'vue-router'
 import {
   loadCards,
   resetCards,
-  loadExtendedFeatures,
-  addExtendedCards,
-  deleteExtendedCards
+  loadRange,
+  saveRange,
+  toggleFeature,
+  createDefaultCard
 } from '@/services/storage'
 import type { Card } from '@/types'
 import {
@@ -19,56 +20,49 @@ import {
 } from '@/constants'
 import { TEXT_DE, useResetCards } from '@flashcards/shared'
 import { LevelDistribution } from '@flashcards/shared/components'
-import { useQuasar } from 'quasar'
 
 const router = useRouter()
-const $q = useQuasar()
 const { showResetDialog } = useResetCards()
 const cards = ref<Card[]>([])
-const extendedFeatures = ref({ feature1x2: false, feature1x12: false, feature1x20: false })
+const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])
+
+// Get virtual cards for current range (includes non-existent cards with defaults)
+const cardsInRange = computed(() => {
+  const cardMap = new Map(cards.value.map(c => [c.question, c]))
+  const virtualCards: Card[] = []
+
+  for (const x of range.value) {
+    for (const y of range.value) {
+      if (y <= x) {
+        const question = `${y}x${x}`
+        const existingCard = cardMap.get(question)
+
+        if (existingCard) {
+          virtualCards.push(existingCard)
+        } else {
+          virtualCards.push(createDefaultCard(y, x))
+        }
+      }
+    }
+  }
+
+  return virtualCards
+})
 
 const minTime = computed(() => {
-  if (cards.value.length === 0) return MIN_CARD_TIME
-  return Math.max(MIN_CARD_TIME, Math.min(...cards.value.map(c => c.time)))
+  if (cardsInRange.value.length === 0) return MIN_CARD_TIME
+  return Math.max(MIN_CARD_TIME, Math.min(...cardsInRange.value.map(c => c.time)))
 })
 const maxTime = computed(() => {
-  if (cards.value.length === 0) return MAX_CARD_TIME
-  return Math.min(MAX_CARD_TIME, Math.max(...cards.value.map(c => c.time)))
+  if (cardsInRange.value.length === 0) return MAX_CARD_TIME
+  return Math.min(MAX_CARD_TIME, Math.max(...cardsInRange.value.map(c => c.time)))
 })
 
-// Get Y values to display based on extended features
-const yValues = computed(() => {
-  const values = [3, 4, 5, 6, 7, 8, 9]
-  if (extendedFeatures.value.feature1x2) {
-    values.unshift(2)
-  }
-  if (extendedFeatures.value.feature1x12) {
-    values.push(11, 12)
-  }
-  if (extendedFeatures.value.feature1x20) {
-    for (let i = 13; i <= 20; i++) {
-      values.push(i)
-    }
-  }
-  return values
-})
+// Get Y values to display based on current range
+const yValues = computed(() => range.value)
 
-// Get X values to display based on extended features
-const xValues = computed(() => {
-  const values = [3, 4, 5, 6, 7, 8, 9]
-  if (extendedFeatures.value.feature1x2) {
-    values.unshift(2)
-  }
-  if (extendedFeatures.value.feature1x12) {
-    values.push(11, 12)
-  }
-  if (extendedFeatures.value.feature1x20) {
-    for (let i = 13; i <= 20; i++) {
-      values.push(i)
-    }
-  }
-  return values
-})
+// Get X values to display based on current range
+const xValues = computed(() => range.value)
 
 function handleKeyDown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -78,7 +72,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 onMounted(() => {
   cards.value = loadCards()
-  extendedFeatures.value = loadExtendedFeatures()
+  range.value = loadRange()
   globalThis.addEventListener('keydown', handleKeyDown)
 })
 
@@ -86,12 +80,16 @@ onUnmounted(() => {
   globalThis.removeEventListener('keydown', handleKeyDown)
 })
 
-function getCard(y: number, x: number): Card | undefined {
-  return cards.value.find(card => card.question === `${y}x${x}`)
+function getCard(y: number, x: number): Card {
+  const card = cardsInRange.value.find(card => card.question === `${y}x${x}`)
+  if (card) return card
+
+  // Fallback to default card (should not be needed as cardsInRange includes all)
+  return createDefaultCard(y, x)
 }
 
 function getTimeTextColor(time: number): string {
-  if (cards.value.length === 0) return '#666666'
+  if (cardsInRange.value.length === 0) return '#666666'
 
   const min = minTime.value
   const max = maxTime.value
@@ -113,13 +111,6 @@ function getCellStyle(y: number, x: number): Record<string, string> {
   // For y > x, use the card from x, y (symmetric)
   const card = y > x ? getCard(x, y) : getCard(y, x)
 
-  if (!card) {
-    return {
-      backgroundColor: BG_COLORS.disabled,
-      color: '#666666'
-    }
-  }
-
   return {
     backgroundColor: LEVEL_COLORS[card.level as keyof typeof LEVEL_COLORS] || BG_COLORS.disabled,
     color: getTimeTextColor(card.time)
@@ -134,43 +125,10 @@ function resetCardsHandler() {
 }
 
 function toggleExtendedFeature(feature: 'feature1x2' | 'feature1x12' | 'feature1x20') {
-  const isActive = extendedFeatures.value[feature]
-
-  if (isActive) {
-    // Deactivate feature
-    $q.dialog({
-      title: TEXT_DE.multiply.extendedCards.confirmDeleteTitle,
-      message: TEXT_DE.multiply.extendedCards.confirmDeleteMessage,
-      cancel: true,
-      persistent: true
-    }).onOk(() => {
-      deleteExtendedCards(feature)
-      extendedFeatures.value = loadExtendedFeatures()
-      cards.value = loadCards()
-      // Show warning if feature1x12 was deactivated
-      if (feature === 'feature1x12') {
-        $q.notify({
-          type: 'warning',
-          message: TEXT_DE.multiply.extendedCards.feature1x12Warning,
-          position: 'top'
-        })
-      }
-    })
-  } else {
-    // Activate feature
-    // If activating 1x20, also activate 1x12 if not already active
-    if (feature === 'feature1x20' && !extendedFeatures.value.feature1x12) {
-      addExtendedCards('feature1x12')
-    }
-    addExtendedCards(feature)
-    extendedFeatures.value = loadExtendedFeatures()
-    cards.value = loadCards()
-    $q.notify({
-      type: 'positive',
-      message: TEXT_DE.multiply.extendedCards.addSuccess,
-      position: 'top'
-    })
-  }
+  // Toggle feature by updating range
+  const newRange = toggleFeature(range.value, feature)
+  range.value = newRange
+  saveRange(newRange)
 }
 
 function goHome() {
@@ -199,7 +157,7 @@ function goHome() {
     <div>
       <!-- Level Distribution -->
       <LevelDistribution
-        :cards="cards"
+        :cards="cardsInRange"
         @reset="resetCardsHandler"
         class="q-mb-md"
       />
@@ -248,13 +206,13 @@ function goHome() {
                   <div class="cell-content q-pa-xs">
                     <div class="text-caption text-weight-medium">
                       <!-- Level -->
-                      L{{ (y > x ? getCard(x, y) : getCard(y, x))?.level || 1 }}
+                      L{{ (y > x ? getCard(x, y) : getCard(y, x)).level }}
                     </div>
                     <!-- Question and Answer -->
                     <div class="cell-answer q-my-xs">{{ y }}x{{ x }}<br />= {{ x * y }}</div>
                     <!-- Time -->
                     <div class="text-caption text-weight-medium">
-                      {{ (y > x ? getCard(x, y) : getCard(y, x))?.time.toFixed(1) || 60 }}s
+                      {{ (y > x ? getCard(x, y) : getCard(y, x)).time.toFixed(1) }}s
                     </div>
                   </div>
                 </div>
@@ -319,32 +277,32 @@ function goHome() {
             <div class="row items-center q-gutter-md">
               <!-- 1x2 Toggle Button -->
               <q-btn
-                :pressed="extendedFeatures.feature1x2"
+                :pressed="range.includes(2)"
                 unelevated
                 @click="toggleExtendedFeature('feature1x2')"
                 :label="TEXT_DE.multiply.extendedCards.feature1x2"
                 data-cy="feature-1x2-toggle"
-                :color="extendedFeatures.feature1x2 ? 'primary' : 'grey-5'"
+                :color="range.includes(2) ? 'primary' : 'grey-5'"
               />
 
               <!-- 1x12 Toggle Button -->
               <q-btn
-                :pressed="extendedFeatures.feature1x12"
+                :pressed="range.includes(11)"
                 unelevated
                 @click="toggleExtendedFeature('feature1x12')"
                 :label="TEXT_DE.multiply.extendedCards.feature1x12"
                 data-cy="feature-1x12-toggle"
-                :color="extendedFeatures.feature1x12 ? 'primary' : 'grey-5'"
+                :color="range.includes(11) ? 'primary' : 'grey-5'"
               />
 
               <!-- 1x20 Toggle Button -->
               <q-btn
-                :pressed="extendedFeatures.feature1x20"
+                :pressed="range.includes(13)"
                 unelevated
                 @click="toggleExtendedFeature('feature1x20')"
                 :label="TEXT_DE.multiply.extendedCards.feature1x20"
                 data-cy="feature-1x20-toggle"
-                :color="extendedFeatures.feature1x20 ? 'primary' : 'grey-5'"
+                :color="range.includes(13) ? 'primary' : 'grey-5'"
               />
             </div>
           </div>
