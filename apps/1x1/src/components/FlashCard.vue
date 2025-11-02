@@ -2,7 +2,7 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import type { Card, SelectionType } from '@/types'
 import { TEXT_DE } from '@flashcards/shared'
-import { loadExtendedFeatures } from '@/services/storage'
+import { loadRange } from '@/services/storage'
 import { formatDisplayQuestion } from '@/utils/questionFormatter'
 import {
   AUTO_SUBMIT_DIGITS,
@@ -53,10 +53,11 @@ const displayQuestion = computed(() => {
   return formatDisplayQuestion(props.card.question, props.selection)
 })
 
-// Check if auto-submit should be disabled for extended features
+// Check if auto-submit should be disabled when extended features are active
+// (range includes values >= 11, which means 3-digit answers are possible)
 const shouldDisableAutoSubmit = computed(() => {
-  const features = loadExtendedFeatures()
-  return features.feature1x12 || features.feature1x20
+  const range = loadRange()
+  return range.some(n => n >= 11)
 })
 
 // Auto-submit after configured digit count (unless extended features are active)

@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { HistoryPage } from '@flashcards/shared/pages'
-import { loadHistory } from '@/services/storage'
+import { loadHistory, loadRange } from '@/services/storage'
 import type { GameHistory } from '@/types'
 import { TEXT_DE, getFocusText } from '@flashcards/shared'
 
 const history = ref<GameHistory[]>([])
+const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])
 
 onMounted(() => {
   history.value = loadHistory()
+  range.value = loadRange()
 })
 
 function formatSelection(select: number[] | string): string {
   if (typeof select === 'string') {
     if (select === 'all') {
-      return TEXT_DE.multiply.selectionAll
+      // Display 'all' as range representation (min-max of current range)
+      const min = Math.min(...range.value)
+      const max = Math.max(...range.value)
+      return `${min}-${max}`
     }
     return select
   }

@@ -3,6 +3,9 @@ import type { Card, GameHistory, GameSettings } from '@/types'
 import { createBaseGameStore } from '@flashcards/shared'
 import {
   loadCards as storageLoadCards,
+  loadRange as storageLoadRange,
+  getVirtualCardsForRange,
+  initializeCards,
   updateCard as storageUpdateCard,
   setGameResult as storageSetGameResult,
   getGameConfig as storageGetGameConfig,
@@ -15,8 +18,13 @@ import {
   loadGameState as storageLoadGameState,
   clearGameState as storageClearGameState
 } from '@/services/storage'
-import { selectCards } from '@/services/cardSelector'
-import { MIN_CARD_LEVEL, MAX_CARD_LEVEL, MAX_CARDS_PER_GAME, SELECT_OPTIONS } from '@/constants'
+import {
+  selectCards,
+  filterCardsBySelection,
+  filterCardsSquares,
+  filterCardsAll
+} from '@/services/cardSelector'
+import { MIN_CARD_LEVEL, MAX_CARD_LEVEL, MAX_CARDS_PER_GAME } from '@/constants'
 
 export interface AnswerData {
   isCorrect: boolean
@@ -86,29 +94,35 @@ export function useGameStore() {
       return
     }
 
+    // Initialize base cards on first game start (if no cards exist)
+    const existingCards = storageLoadCards()
+    if (existingCards.length === 0) {
+      // First time user clicks Start - initialize base cards
+      initializeCards()
+    }
+
     storageSetGameConfig(settings)
     baseStore.gameSettings.value = settings
     baseStore.resetGameState()
 
-    const allAvailableCards = storageLoadCards()
-    let selectedCards: Card[]
+    // Get virtual cards for current range (includes non-existent cards with defaults)
+    const range = storageLoadRange()
+    const allAvailableCards = getVirtualCardsForRange(range)
+    const rangeSet = new Set(range)
+
+    // Filter cards based on selection type
+    let filteredCards: Card[]
 
     if (settings.select === 'x²') {
-      selectedCards = allAvailableCards.filter(card => {
-        const [x, y] = card.question.split('x').map(Number)
-        return x === y
-      })
+      filteredCards = filterCardsSquares(allAvailableCards, rangeSet)
     } else if (settings.select === 'all') {
-      selectedCards = allAvailableCards
+      filteredCards = filterCardsAll(allAvailableCards, rangeSet)
     } else {
       const selectArray = Array.isArray(settings.select) ? settings.select : []
-      selectedCards = allAvailableCards.filter(card => {
-        const [x, y] = card.question.split('x').map(Number)
-        return selectArray.includes(x) || selectArray.includes(y)
-      })
+      filteredCards = filterCardsBySelection(allAvailableCards, selectArray, rangeSet)
     }
 
-    baseStore.gameCards.value = selectCards(selectedCards, settings.focus, MAX_CARDS_PER_GAME)
+    baseStore.gameCards.value = selectCards(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
   }
 
   function handleAnswer(data: AnswerData) {
@@ -136,12 +150,14 @@ export function useGameStore() {
     if (!baseStore.gameSettings.value) return
 
     const settingsForHistory = { ...baseStore.gameSettings.value }
+    const range = storageLoadRange()
+    const rangeSet = new Set(range)
+
+    // If all values in current range are selected, show as 'all'
     if (
       Array.isArray(baseStore.gameSettings.value.select) &&
-      baseStore.gameSettings.value.select.length === SELECT_OPTIONS.length &&
-      baseStore.gameSettings.value.select.every(
-        (num: number, idx: number) => num === SELECT_OPTIONS[idx]
-      )
+      baseStore.gameSettings.value.select.length === range.length &&
+      baseStore.gameSettings.value.select.every(num => rangeSet.has(num))
     ) {
       settingsForHistory.select = 'all'
     }

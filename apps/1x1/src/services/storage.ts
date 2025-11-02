@@ -21,7 +21,8 @@ const STORAGE_KEYS = {
   GAME_CONFIG: '1x1-game-config',
   GAME_RESULT: '1x1-game-result',
   DAILY_STATS: '1x1-daily-stats',
-  GAME_STATE: '1x1-game-state'
+  GAME_STATE: '1x1-game-state',
+  RANGE: '1x1-range'
 }
 
 // Game persistence factory for session storage
@@ -37,23 +38,51 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
   STORAGE_KEYS.GAME_STATE
 )
 
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Parse a card question string into x and y numbers
+ * @param question - Card question in format "YxX" (e.g., "3x6")
+ * @returns Object with x and y numbers
+ */
+export function parseCardQuestion(question: string): { x: number; y: number } {
+  const [y, x] = question.split('x').map(Number)
+  return { x, y }
+}
+
+/**
+ * Create a default card with initial level and time
+ * @param y - First number (smaller or equal to x)
+ * @param x - Second number (larger or equal to y)
+ * @returns Card with default values
+ */
+export function createDefaultCard(y: number, x: number): Card {
+  return {
+    question: `${y}x${x}`,
+    answer: x * y,
+    level: MIN_CARD_LEVEL,
+    time: MAX_CARD_TIME
+  }
+}
+
+// ============================================================================
+// CARD OPERATIONS
+// ============================================================================
+
 /**
  * Initialize all multiplication cards for the app
  * Generates cards from 3x3 to 9x9 where y <= x (avoiding duplicates)
  */
-function initializeCards(): Card[] {
+export function initializeCards(): Card[] {
   const cards: Card[] = []
   const minTable = Math.min(...SELECT_OPTIONS)
   const maxTable = Math.max(...SELECT_OPTIONS)
 
   for (let x = minTable; x <= maxTable; x++) {
     for (let y = minTable; y <= x; y++) {
-      cards.push({
-        question: `${y}x${x}`,
-        answer: x * y,
-        level: MIN_CARD_LEVEL,
-        time: MAX_CARD_TIME
-      })
+      cards.push(createDefaultCard(y, x))
     }
   }
 
@@ -62,18 +91,47 @@ function initializeCards(): Card[] {
 }
 /**
  * Load all multiplication cards from storage
+ * Returns empty array if no cards exist (no auto-initialization)
  */
 export function loadCards(): Card[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
   if (!stored) {
-    return initializeCards()
+    return []
   }
   try {
     return JSON.parse(stored) as Card[]
   } catch {
-    console.error('Error parsing 1x1 cards from localStorage. Reinitializing.')
-    return initializeCards()
+    console.error('Error parsing 1x1 cards from localStorage.')
+    return []
   }
+}
+
+/**
+ * Generate virtual cards for all possible combinations in range
+ * Returns stored card if exists, otherwise creates virtual card with defaults
+ */
+export function getVirtualCardsForRange(range: number[]): Card[] {
+  const storedCards = loadCards()
+  const cardMap = new Map(storedCards.map(c => [c.question, c]))
+  const virtualCards: Card[] = []
+
+  for (const x of range) {
+    for (const y of range) {
+      if (y <= x) {
+        const question = `${y}x${x}`
+        const existingCard = cardMap.get(question)
+
+        if (existingCard) {
+          virtualCards.push(existingCard)
+        } else {
+          // Create virtual card with default values
+          virtualCards.push(createDefaultCard(y, x))
+        }
+      }
+    }
+  }
+
+  return virtualCards
 }
 
 /**
@@ -85,6 +143,7 @@ export function saveCards(cards: Card[]): void {
 
 /**
  * Update a specific card by question
+ * Creates the card if it doesn't exist yet (lazy loading on first answer)
  * @param question - Card question (e.g., "3x4")
  * @param updates - Partial card updates
  */
@@ -92,14 +151,26 @@ export function updateCard(question: string, updates: Partial<Card>): void {
   const cards = loadCards()
   const index = cards.findIndex(c => c.question === question)
 
-  if (index !== -1) {
-    // Clamp time within allowed range
-    if (updates.time !== undefined) {
-      updates.time = Math.max(MIN_CARD_TIME, Math.min(MAX_CARD_TIME, updates.time))
-    }
-    cards[index] = { ...cards[index], ...updates }
-    saveCards(cards)
+  // Clamp time within allowed range
+  if (updates.time !== undefined) {
+    updates.time = Math.max(MIN_CARD_TIME, Math.min(MAX_CARD_TIME, updates.time))
   }
+
+  if (index !== -1) {
+    // Card exists, update it
+    cards[index] = { ...cards[index], ...updates }
+  } else {
+    // Card doesn't exist yet, create it (lazy loading)
+    const { x, y } = parseCardQuestion(question)
+    const newCard = createDefaultCard(y, x)
+    cards.push({
+      ...newCard,
+      level: updates.level ?? MIN_CARD_LEVEL,
+      time: updates.time ?? MAX_CARD_TIME
+    })
+  }
+
+  saveCards(cards)
 }
 
 /**
@@ -241,188 +312,90 @@ export function clearGameState(): void {
   gamePersistence.clearState()
 }
 
-// Extended Features (1x2, 1x12, 1x20)
+// Range Configuration (for extended cards 1x2, 1x12, 1x20)
+// Range is an array of unlocked numbers: [3, 4, 5, 6, 7, 8, 9] by default
+// Extended features add to this: 1x2 adds 2, 1x12 adds 11-12, 1x20 adds 13-20
+// Note: 10 is intentionally skipped
 
-interface ExtendedFeaturesState {
-  feature1x2: boolean
-  feature1x12: boolean
-  feature1x20: boolean
+/**
+ * Load range configuration (array of unlocked numbers)
+ * Default range: [3, 4, 5, 6, 7, 8, 9] (base cards)
+ */
+export function loadRange(): number[] {
+  const stored = localStorage.getItem(STORAGE_KEYS.RANGE)
+  if (!stored) {
+    return [3, 4, 5, 6, 7, 8, 9]
+  }
+  try {
+    return JSON.parse(stored) as number[]
+  } catch {
+    console.error('Error parsing range from localStorage. Using defaults.')
+    return [3, 4, 5, 6, 7, 8, 9]
+  }
 }
 
 /**
- * Load extended features state by checking for indicator cards
- * - If card 2x3 exists → feature1x2 is active
- * - If card 11x12 exists → feature1x12 is active
- * - If card 18x19 exists → feature1x20 is active
+ * Save range configuration
  */
-export function loadExtendedFeatures(): ExtendedFeaturesState {
-  const cards = loadCards()
-  return {
-    feature1x2: cards.some(c => c.question === '2x3'),
-    feature1x12: cards.some(c => c.question === '11x12'),
-    feature1x20: cards.some(c => c.question === '18x19')
-  }
+export function saveRange(range: number[]): void {
+  saveJSON(STORAGE_KEYS.RANGE, range)
 }
 
 /**
- * Generate cards for 1x2 feature (2×3 to 2×20)
+ * Toggle a feature by updating the range array
+ * Returns the new range
  */
-function generateFeature1x2Cards(existingCards: Card[], features: ExtendedFeaturesState): Card[] {
-  const newCards: Card[] = []
-  const x = 2
-  const yValues = [2, 3, 4, 5, 6, 7, 8, 9]
-
-  if (features.feature1x12) {
-    yValues.push(11, 12)
-  }
-
-  if (features.feature1x20) {
-    for (let i = 13; i <= 20; i++) {
-      yValues.push(i)
-    }
-  }
-
-  for (const y of yValues) {
-    const question = `${Math.min(x, y)}x${Math.max(x, y)}`
-    if (!existingCards.some(c => c.question === question)) {
-      newCards.push({
-        question,
-        answer: x * y,
-        level: MIN_CARD_LEVEL,
-        time: MAX_CARD_TIME
-      })
-    }
-  }
-
-  return newCards
-}
-
-/**
- * Generate cards for 1x12 feature (11×11 to 12×12 with cross-products)
- */
-function generateFeature1x12Cards(existingCards: Card[], features: ExtendedFeaturesState): Card[] {
-  const newCards: Card[] = []
-  const xValues = [11, 12]
-  const yValues: number[] = []
-
-  if (features.feature1x2) {
-    yValues.push(2)
-  }
-  yValues.push(3, 4, 5, 6, 7, 8, 9, 11, 12)
-
-  for (const x of xValues) {
-    for (const y of yValues) {
-      const question = `${Math.min(x, y)}x${Math.max(x, y)}`
-      if (!existingCards.some(c => c.question === question)) {
-        newCards.push({
-          question,
-          answer: x * y,
-          level: MIN_CARD_LEVEL,
-          time: MAX_CARD_TIME
-        })
-      }
-    }
-  }
-
-  return newCards
-}
-
-/**
- * Generate cards for 1x20 feature (13×13 to 20×20 with cross-products)
- */
-function generateFeature1x20Cards(existingCards: Card[], features: ExtendedFeaturesState): Card[] {
-  const newCards: Card[] = []
-  const xValues = Array.from({ length: 8 }, (_, i) => 13 + i)
-  const yValues: number[] = []
-
-  if (features.feature1x2) {
-    yValues.push(2)
-  }
-  yValues.push(3, 4, 5, 6, 7, 8, 9, 11, 12)
-  for (let i = 13; i <= 20; i++) {
-    yValues.push(i)
-  }
-
-  for (const x of xValues) {
-    for (const y of yValues) {
-      if (y <= x) {
-        const question = `${Math.min(x, y)}x${Math.max(x, y)}`
-        if (!existingCards.some(c => c.question === question)) {
-          newCards.push({
-            question,
-            answer: x * y,
-            level: MIN_CARD_LEVEL,
-            time: MAX_CARD_TIME
-          })
-        }
-      }
-    }
-  }
-
-  return newCards
-}
-
-/**
- * Add cards for a specific extended feature
- * Generates new cards with level 1 and time 60s
- */
-export function addExtendedCards(feature: 'feature1x2' | 'feature1x12' | 'feature1x20'): void {
-  const cards = loadCards()
-  const features = loadExtendedFeatures()
-  let newCards: Card[] = []
+export function toggleFeature(
+  current: number[],
+  feature: 'feature1x2' | 'feature1x12' | 'feature1x20'
+): number[] {
+  const currentSet = new Set(current)
 
   if (feature === 'feature1x2') {
-    newCards = generateFeature1x2Cards(cards, features)
+    // Toggle 2 in range
+    if (currentSet.has(2)) {
+      // Deactivate: remove 2
+      return current.filter(n => n !== 2)
+    } else {
+      // Activate: add 2 at beginning
+      return [2, ...current]
+    }
   } else if (feature === 'feature1x12') {
-    newCards = generateFeature1x12Cards(cards, features)
+    // Toggle 11, 12 in range
+    if (currentSet.has(11) || currentSet.has(12)) {
+      // Deactivate: remove 11, 12, and also remove 13-20 if present (1x20 depends on 1x12)
+      return current.filter(n => n < 11)
+    } else {
+      // Activate: add 11, 12
+      const base = current.filter(n => n < 11)
+      return [...base, 11, 12]
+    }
   } else if (feature === 'feature1x20') {
-    newCards = generateFeature1x20Cards(cards, features)
+    // Toggle 13-20 in range (and auto-enable 1x12)
+    if (currentSet.has(13)) {
+      // Deactivate: remove 13-20
+      return current.filter(n => n < 13)
+    } else {
+      // Activate: add 11-20 (auto-enables 1x12)
+      const base = current.filter(n => n < 11)
+      return [...base, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    }
   }
 
-  cards.push(...newCards)
-  saveCards(cards)
-}
-
-/**
- * Delete cards for a specific extended feature
- */
-export function deleteExtendedCards(feature: 'feature1x2' | 'feature1x12' | 'feature1x20'): void {
-  let cards = loadCards()
-
-  if (feature === 'feature1x2') {
-    // Delete all cards with X or Y == 2
-    cards = cards.filter(c => {
-      const [y, x] = c.question.split('x').map(Number)
-      return x !== 2 && y !== 2
-    })
-  } else if (feature === 'feature1x12') {
-    // Delete all cards with X or Y >= 11 or X or Y == 10 (cleanup for bug)
-    // This also deactivates feature1x20 by removing those cards
-    cards = cards.filter(c => {
-      const [y, x] = c.question.split('x').map(Number)
-      return x < 11 && y < 11 && x !== 10 && y !== 10
-    })
-  } else if (feature === 'feature1x20') {
-    // Delete all cards with X or Y >= 13 or X or Y == 10 (cleanup for bug)
-    cards = cards.filter(c => {
-      const [y, x] = c.question.split('x').map(Number)
-      return x < 13 && y < 13 && x !== 10 && y !== 10
-    })
-  }
-
-  saveCards(cards)
+  return current
 }
 
 // Reset All
 
 /**
- * Reset all stored data (cards, history, stats, session storage)
+ * Reset all stored data (cards, history, stats, session storage, range)
  */
 export function resetAll(): void {
   localStorage.removeItem(STORAGE_KEYS.CARDS)
   localStorage.removeItem(STORAGE_KEYS.HISTORY)
   localStorage.removeItem(STORAGE_KEYS.STATS)
   localStorage.removeItem(STORAGE_KEYS.DAILY_STATS)
+  localStorage.removeItem(STORAGE_KEYS.RANGE)
   sessionStorage.removeItem(STORAGE_KEYS.GAME_RESULT)
   gamePersistence.clearAll()
 }

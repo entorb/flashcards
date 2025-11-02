@@ -5,7 +5,7 @@ import { useGameStore } from '@/composables/useGameStore'
 import type { SelectionType } from '@/types'
 import type { FocusType } from '@flashcards/shared'
 import GroundhogMascot from '@/components/GroundhogMascot.vue'
-import { SELECT_OPTIONS, DEFAULT_SELECT, BASE_PATH } from '@/constants'
+import { DEFAULT_SELECT, BASE_PATH } from '@/constants'
 import { TEXT_DE } from '@flashcards/shared'
 import {
   AppFooter,
@@ -13,7 +13,7 @@ import {
   PwaInstallInfo,
   FocusSelector
 } from '@flashcards/shared/components'
-import { loadGameStats, loadExtendedFeatures } from '@/services/storage'
+import { loadGameStats, loadRange } from '@/services/storage'
 
 const router = useRouter()
 
@@ -21,22 +21,10 @@ const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
 const select = ref<SelectionType>(DEFAULT_SELECT)
 const focus = ref<FocusType>('weak')
-const extendedFeatures = ref({ feature1x2: false, feature1x12: false, feature1x20: false })
+const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])
 
-// Compute available selection options based on extended features
-const selectOptions = computed(() => {
-  const options = [...SELECT_OPTIONS]
-  if (extendedFeatures.value.feature1x2) {
-    options.unshift(2)
-  }
-  if (extendedFeatures.value.feature1x12) {
-    options.push(11, 12)
-  }
-  if (extendedFeatures.value.feature1x20) {
-    options.push(13, 14, 15, 16, 17, 18, 19, 20)
-  }
-  return options
-})
+// Compute available selection options based on current range
+const selectOptions = computed<number[]>(() => range.value)
 
 // Check if a number is selected
 const isNumberSelected = computed(() => (num: number) => {
@@ -48,8 +36,11 @@ const isNumberSelected = computed(() => (num: number) => {
 const isSquaresSelected = computed(() => select.value === 'x²')
 
 onMounted(() => {
-  // Load extended features
-  extendedFeatures.value = loadExtendedFeatures()
+  // Load range configuration
+  range.value = loadRange()
+
+  // Set default select to all values in current range
+  select.value = [...range.value]
 
   // Restore select and focus from gameSettings in store
   if (gameSettings.value) {
@@ -99,25 +90,26 @@ function toggleSelect(option: number) {
     return
   }
 
-  const allSelected = selectOptions.value.every(
-    opt => Array.isArray(select.value) && select.value.includes(opt)
-  )
+  // Check if all options in current range are selected
+  const allSelected =
+    Array.isArray(select.value) &&
+    selectOptions.value.every(opt => (select.value as number[]).includes(opt))
 
   if (allSelected && Array.isArray(select.value) && select.value.length > 1) {
     // If all are selected and clicking one number, select only that number
     select.value = [option]
   } else if (Array.isArray(select.value) && select.value.includes(option)) {
-    // If already selected, select all
+    // If already selected, select all in current range
     select.value = [...selectOptions.value]
   } else if (Array.isArray(select.value)) {
-    // Not selected, add it
+    // Not selected, add it and sort
     select.value = [...select.value, option].sort((a, b) => a - b)
   }
 }
 
 function toggleSquares() {
   if (select.value === 'x²') {
-    // If x² is already selected, deselect and go to all
+    // If x² is already selected, deselect and go to all in range
     select.value = [...selectOptions.value]
   } else {
     // Select x² mode
