@@ -182,8 +182,9 @@ export function useGameStore() {
       totalCards: baseStore.gameCards.value.length
     })
 
-    // Clear game state after finishing
+    // Clear game state after finishing (sessionStorage and in-memory state)
     storageClearGameState()
+    baseStore.discardGame()
   }
 
   function discardGame() {
