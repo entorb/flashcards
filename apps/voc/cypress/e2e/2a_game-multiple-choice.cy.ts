@@ -69,7 +69,7 @@ describe('Multiple Choice Game - EN to DE', () => {
               const card = cards.find((c: any) => c.en === questionText.trim())
 
               if (card) {
-                // Match against full card.de value (includes alternatives like "Welche/r/s")
+                // Match against full card.de value (includes alternatives like "Welche/Welcher/Welches")
                 const correctAnswer = card.de
 
                 // Find the index of the correct answer button
