@@ -5,12 +5,14 @@ import { LEVEL_COLORS } from '../constants'
 
 interface Props {
   cards: BaseCard[]
+  selectedLevel?: number | null
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
   reset: []
+  'level-click': [level: number]
 }>()
 
 function getCardCountByLevel(level: number): number {
@@ -53,8 +55,17 @@ function handleReset() {
         >
           <q-card
             flat
-            class="level-badge"
-            :style="{ backgroundColor: getLevelBackgroundColor(level) }"
+            class="level-badge cursor-pointer"
+            :style="{
+              backgroundColor: getLevelBackgroundColor(level),
+              border:
+                props.selectedLevel === level
+                  ? '3px solid var(--q-primary)'
+                  : '3px solid transparent',
+              transform: props.selectedLevel === level ? 'scale(1.05)' : 'scale(1)',
+              transition: 'all 0.2s ease'
+            }"
+            @click="emit('level-click', level)"
           >
             <q-card-section class="text-center q-pa-sm">
               <div class="text-caption text-grey-8">{{ TEXT_DE.words.level }} {{ level }}</div>
