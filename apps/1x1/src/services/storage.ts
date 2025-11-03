@@ -90,8 +90,42 @@ export function initializeCards(): Card[] {
   return cards
 }
 /**
+ * TODO: delete after a week (10.11.2025)
+ * Migrate old format cards (y <= x) to new format (x <= y)
+ * Old: "3x5" where y=3, x=5, y <= x
+ * New: "5x3" where y=5, x=3, x <= y
+ */
+function migrateCardsToNewFormat(cards: Card[]): Card[] {
+  let migrated = false
+  const migratedCards = cards.map(card => {
+    const [first, second] = card.question.split('x').map(Number)
+
+    // If first <= second, it's old format (y <= x), needs migration
+    if (first < second) {
+      migrated = true
+      return {
+        ...card,
+        question: `${second}x${first}` // Swap to new format (x <= y)
+      }
+    }
+
+    // Already in new format or square (first === second)
+    return card
+  })
+
+  // Save migrated cards if any changes were made
+  if (migrated) {
+    console.warn('Migrated cards from old format (y <= x) to new format (x <= y)')
+    saveCards(migratedCards)
+  }
+
+  return migratedCards
+}
+
+/**
  * Load all multiplication cards from storage
  * Returns empty array if no cards exist (no auto-initialization)
+ * Automatically migrates old format cards to new format
  */
 export function loadCards(): Card[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
@@ -99,7 +133,8 @@ export function loadCards(): Card[] {
     return []
   }
   try {
-    return JSON.parse(stored) as Card[]
+    const cards = JSON.parse(stored) as Card[]
+    return migrateCardsToNewFormat(cards)
   } catch {
     console.error('Error parsing 1x1 cards from localStorage.')
     return []
