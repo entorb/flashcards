@@ -1,8 +1,9 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends BaseGameHistory">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import {
+  type BaseGameHistory,
   calculateDailyBonuses,
   type DailyBonusConfig,
   type GameResult,
@@ -10,23 +11,23 @@ import {
 } from '../index'
 import { TEXT_DE } from '../text-de'
 
-interface StorageFunctions {
+export interface StorageFunctions<T extends BaseGameHistory> {
   getGameResult: () => GameResult | null
   clearGameResult: () => void
   incrementDailyGames: () => { isFirstGame: boolean; gamesPlayedToday: number }
   loadGameStats: () => { gamesPlayed: number; points: number; correctAnswers: number }
   saveGameStats: (stats: { gamesPlayed: number; points: number; correctAnswers: number }) => void
-  saveHistory: (history: any[]) => void
+  saveHistory: (history: T[]) => void
 }
 
-interface Props {
-  storageFunctions: StorageFunctions
+export interface Props<T extends BaseGameHistory> {
+  storageFunctions: StorageFunctions<T>
   bonusConfig: DailyBonusConfig
   basePath: string
-  gameStoreHistory: any[]
+  gameStoreHistory: T[]
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props<T>>()
 
 const router = useRouter()
 
@@ -202,8 +203,8 @@ function goHome() {
         icon="home"
         :label="TEXT_DE.nav.backToHome"
         unelevated
-        @click="goHome"
         data-cy="back-to-home-button"
+        @click="goHome"
       />
     </div>
   </q-page>
