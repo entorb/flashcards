@@ -1,7 +1,10 @@
+import { TEXT_DE } from '@flashcards/shared'
+import { Dialog, Notify, Quasar } from 'quasar'
+import { registerSW } from 'virtual:pwa-register'
 import { createApp } from 'vue'
-import { Quasar, Dialog, Notify } from 'quasar'
-import { router } from './router'
+
 import App from './App.vue'
+import { router } from './router'
 
 // Import Quasar css
 import 'quasar/src/css/index.sass'
@@ -23,8 +26,6 @@ app.use(router)
 app.mount('#app')
 
 // Register PWA service worker after app is mounted
-import { registerSW } from 'virtual:pwa-register'
-import { TEXT_DE } from '@flashcards/shared'
 
 const updateSW = registerSW({
   immediate: true,

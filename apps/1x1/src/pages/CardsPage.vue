@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
+import { LevelDistribution } from '@flashcards/shared/components'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import {
+  BG_COLORS,
+  LEVEL_COLORS,
+  MAX_CARD_TIME,
+  MIN_CARD_TIME,
+  TIME_COLOR_THRESHOLDS,
+  TIME_COLORS
+} from '@/constants'
+import {
+  createDefaultCard,
   loadCards,
-  resetCards,
   loadRange,
+  resetCards,
   saveRange,
-  toggleFeature,
-  createDefaultCard
+  toggleFeature
 } from '@/services/storage'
 import type { Card } from '@/types'
-import {
-  MIN_CARD_TIME,
-  MAX_CARD_TIME,
-  LEVEL_COLORS,
-  TIME_COLORS,
-  TIME_COLOR_THRESHOLDS,
-  BG_COLORS
-} from '@/constants'
-import { TEXT_DE, useResetCards, useCardFiltering } from '@flashcards/shared'
-import { LevelDistribution } from '@flashcards/shared/components'
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()

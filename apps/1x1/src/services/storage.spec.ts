@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import { initializeCards } from '@/services/storage'
 
 describe('Card Initialization', () => {

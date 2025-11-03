@@ -91,6 +91,7 @@ describe('Full Game Flow', () => {
       .then(text => {
         gameOverPoints = parseInt(text.trim())
         cy.log('GameOver Points:', gameOverPoints)
+        expect(gameOverPoints).to.greaterThan(1)
       })
 
     cy.get('[data-cy="correct-answers-count"]')

@@ -1,12 +1,14 @@
 // cspell:disable
-import { describe, it, expect } from 'vitest'
-import {
-  validateTypingAnswer,
-  normalizeString,
-  levenshteinDistance,
-  parseCardsFromText
-} from './helpers'
+import { describe, expect, it } from 'vitest'
+
 import { DEFAULT_TIME } from '../constants'
+
+import {
+  levenshteinDistance,
+  normalizeString,
+  parseCardsFromText,
+  validateTypingAnswer
+} from './helpers'
 
 /**
  * Unit tests for helpers utility functions
