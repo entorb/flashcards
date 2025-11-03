@@ -164,9 +164,9 @@ function goHome() {
         flat
         round
         icon="arrow_back"
-        @click="goHome"
         size="md"
         data-cy="back-button"
+        @click="goHome"
       />
     </div>
 
@@ -176,9 +176,9 @@ function goHome() {
       <LevelDistribution
         :cards="cardsInRange"
         :selected-level="selectedLevel"
+        class="q-mb-md"
         @reset="resetCardsHandler"
         @level-click="handleLevelClick"
-        class="q-mb-md"
       />
 
       <!-- Filtered Cards List -->
@@ -336,30 +336,30 @@ function goHome() {
               <q-btn
                 :pressed="range.includes(2)"
                 unelevated
-                @click="toggleExtendedFeature('feature1x2')"
                 :label="TEXT_DE.multiply.extendedCards.feature1x2"
                 data-cy="feature-1x2-toggle"
                 :color="range.includes(2) ? 'primary' : 'grey-5'"
+                @click="toggleExtendedFeature('feature1x2')"
               />
 
               <!-- 1x12 Toggle Button -->
               <q-btn
                 :pressed="range.includes(11)"
                 unelevated
-                @click="toggleExtendedFeature('feature1x12')"
                 :label="TEXT_DE.multiply.extendedCards.feature1x12"
                 data-cy="feature-1x12-toggle"
                 :color="range.includes(11) ? 'primary' : 'grey-5'"
+                @click="toggleExtendedFeature('feature1x12')"
               />
 
               <!-- 1x20 Toggle Button -->
               <q-btn
                 :pressed="range.includes(13)"
                 unelevated
-                @click="toggleExtendedFeature('feature1x20')"
                 :label="TEXT_DE.multiply.extendedCards.feature1x20"
                 data-cy="feature-1x20-toggle"
                 :color="range.includes(13) ? 'primary' : 'grey-5'"
+                @click="toggleExtendedFeature('feature1x20')"
               />
             </div>
           </div>

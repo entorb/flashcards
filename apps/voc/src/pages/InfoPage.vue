@@ -35,8 +35,8 @@ onUnmounted(() => {
         round
         dense
         icon="arrow_back"
-        @click="handleGoBack"
         data-cy="back-button"
+        @click="handleGoBack"
       >
         <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
       </q-btn>

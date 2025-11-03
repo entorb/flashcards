@@ -1,22 +1,18 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends BaseGameHistory">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { TEXT_DE } from '../text-de'
+import type { BaseGameHistory } from '../types'
 
-interface HistoryItem {
-  date: string
-  [key: string]: any
+export interface Props<T extends BaseGameHistory> {
+  history: T[]
+  formatDetails: (item: T) => string
+  getPoints: (item: T) => number
+  getCorrectAnswers: (item: T) => string
 }
 
-interface Props {
-  history: HistoryItem[]
-  formatDetails: (item: HistoryItem) => string
-  getPoints: (item: HistoryItem) => number
-  getCorrectAnswers: (item: HistoryItem) => string
-}
-
-const props = defineProps<Props>()
+const props = defineProps<Props<T>>()
 
 const router = useRouter()
 
@@ -68,9 +64,9 @@ function goHome() {
         flat
         round
         icon="arrow_back"
-        @click="goHome"
         size="md"
         data-cy="back-button"
+        @click="goHome"
       />
       <div
         class="text-h5 q-ml-sm text-weight-bold text-grey-8"
@@ -89,9 +85,9 @@ function goHome() {
       <q-item
         v-for="(game, index) in sortedHistory"
         :key="index"
+        v-ripple
         class="q-pa-md"
         clickable
-        v-ripple
         :data-cy="`history-game-${index}`"
       >
         <q-item-section avatar>

@@ -398,6 +398,7 @@ function handleTypingSubmit() {
         v-else-if="settings.mode === 'typing' && !answerStatus"
         @submit.prevent="handleTypingSubmit"
       >
+        <!-- eslint-disable vuejs-accessibility/no-autofocus -->
         <q-input
           v-model="userAnswer"
           autofocus
@@ -409,6 +410,7 @@ function handleTypingSubmit() {
           class="q-mb-sm"
           data-cy="typing-input"
         />
+        <!-- eslint-enable vuejs-accessibility/no-autofocus -->
         <q-btn
           color="primary"
           size="lg"

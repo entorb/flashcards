@@ -12,7 +12,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   reset: []
-  'level-click': [level: number]
+  levelClick: [level: number]
 }>()
 
 function getCardCountByLevel(level: number): number {
@@ -42,8 +42,8 @@ function handleReset() {
           icon="refresh"
           :label="TEXT_DE.common.reset"
           size="sm"
-          @click="handleReset"
           data-cy="reset-levels-button"
+          @click="handleReset"
         />
       </div>
 
@@ -65,7 +65,7 @@ function handleReset() {
               transform: props.selectedLevel === level ? 'scale(1.05)' : 'scale(1)',
               transition: 'all 0.2s ease'
             }"
-            @click="emit('level-click', level)"
+            @click="emit('levelClick', level)"
           >
             <q-card-section class="text-center q-pa-sm">
               <div class="text-caption text-grey-8">{{ TEXT_DE.words.level }} {{ level }}</div>

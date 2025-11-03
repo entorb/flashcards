@@ -162,8 +162,8 @@ function toggleSquares() {
               :color="isNumberSelected(option) ? 'primary' : 'grey-5'"
               size="md"
               class="col"
-              @click="toggleSelect(option)"
               :data-cy="`table-selection-button-${option}`"
+              @click="toggleSelect(option)"
             >
               <div class="text-body1">{{ option }}</div>
             </q-btn>
@@ -173,8 +173,8 @@ function toggleSquares() {
               :color="isSquaresSelected ? 'secondary' : 'grey-5'"
               size="md"
               class="col squares-btn"
-              @click="toggleSquares"
               data-cy="table-selection-button-squares"
+              @click="toggleSquares"
             >
               <div class="text-body1">{{ TEXT_DE.multiply.selectionSquares }}</div>
             </q-btn>
@@ -191,9 +191,9 @@ function toggleSquares() {
       color="positive"
       size="lg"
       class="full-width q-mb-sm"
-      @click="startGame"
       icon="play_arrow"
       data-cy="start-button"
+      @click="startGame"
     >
       <span class="text-body1">{{ TEXT_DE.common.start }}</span>
     </q-btn>
@@ -205,20 +205,20 @@ function toggleSquares() {
         color="primary"
         size="md"
         class="col"
-        @click="goToCards"
         icon="layers"
         :label="TEXT_DE.nav.cards"
         data-cy="cards-button"
+        @click="goToCards"
       />
       <q-btn
         unelevated
         color="primary"
         size="md"
         class="col"
-        @click="goToHistory"
         icon="history"
         :label="TEXT_DE.nav.history"
         data-cy="history-button"
+        @click="goToHistory"
       />
     </div>
 
