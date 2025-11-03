@@ -3,6 +3,8 @@
  * Handles localStorage operations for cards, history, stats, and game configuration
  */
 
+/* eslint-disable sonarjs/todo-tag */
+
 import type { GameResult, GameStats } from '@flashcards/shared'
 import {
   createGamePersistence,
@@ -90,6 +92,7 @@ export function initializeCards(): Card[] {
   saveJSON(STORAGE_KEYS.CARDS, cards)
   return cards
 }
+
 /**
  * TODO: delete after a week (10.11.2025)
  * Migrate old format cards (y <= x) to new format (x <= y)

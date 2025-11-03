@@ -32,21 +32,25 @@ onMounted(async () => {
       <a
         :href="`https://entorb.net/contact.php?origin=${basePath}`"
         target="_blank"
+        rel="noopener noreferrer"
         >by Torben</a
       >
       <a
         href="https://entorb.net"
         target="_blank"
+        rel="noopener noreferrer"
         >Home</a
       >
       <a
         href="https://entorb.net/impressum.php"
         target="_blank"
+        rel="noopener noreferrer"
         >Disclaimer</a
       >
       <a
         href="https://github.com/entorb/flashcards"
         target="_blank"
+        rel="noopener noreferrer"
         >GitHub</a
       >
     </div>

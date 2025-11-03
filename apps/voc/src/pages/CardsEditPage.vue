@@ -199,8 +199,8 @@ function onCardChange() {
         round
         dense
         icon="arrow_back"
-        @click="handleGoBack"
         data-cy="back-button"
+        @click="handleGoBack"
       >
         <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
       </q-btn>
@@ -217,8 +217,8 @@ function onCardChange() {
           icon="arrow_upward"
           :label="exportButtonText"
           no-caps
-          @click="handleExport"
           data-cy="export-button"
+          @click="handleExport"
         />
         <q-btn
           outline
@@ -226,8 +226,8 @@ function onCardChange() {
           icon="arrow_downward"
           :label="TEXT_DE.voc.cards.import"
           no-caps
-          @click="handleImport"
           data-cy="import-button"
+          @click="handleImport"
         />
         <q-btn
           outline
@@ -235,8 +235,8 @@ function onCardChange() {
           icon="add"
           :label="TEXT_DE.voc.cards.addNewCard"
           no-caps
-          @click="addNewCard"
           data-cy="add-card-button"
+          @click="addNewCard"
         />
       </div>
 
@@ -276,8 +276,8 @@ function onCardChange() {
                 outlined
                 dense
                 :placeholder="TEXT_DE.voc.cards.enPlaceholder"
-                @update:model-value="onCardChange"
                 data-cy="`card-en-${index}`"
+                @update:model-value="onCardChange"
               />
             </q-item-section>
             <q-item-section style="flex: 0 0 40%">
@@ -286,8 +286,8 @@ function onCardChange() {
                 outlined
                 dense
                 :placeholder="TEXT_DE.voc.cards.dePlaceholder"
-                @update:model-value="onCardChange"
                 data-cy="`card-de-${index}`"
+                @update:model-value="onCardChange"
               />
             </q-item-section>
             <q-item-section style="flex: 0 0 15%">
@@ -299,8 +299,8 @@ function onCardChange() {
                 :min="MIN_LEVEL"
                 :max="MAX_LEVEL"
                 style="width: 60px"
-                @update:model-value="onCardChange"
                 data-cy="`card-level-${index}`"
+                @update:model-value="onCardChange"
               />
             </q-item-section>
             <q-item-section side>
@@ -311,8 +311,8 @@ function onCardChange() {
                 icon="delete"
                 color="negative"
                 size="sm"
-                @click="removeCard(index)"
                 data-cy="`delete-card-${index}`"
+                @click="removeCard(index)"
               >
                 <q-tooltip>{{ TEXT_DE.words.delete }}</q-tooltip>
               </q-btn>
@@ -328,8 +328,8 @@ function onCardChange() {
           color="grey-8"
           :label="TEXT_DE.common.cancel"
           no-caps
-          @click="handleGoBack"
           data-cy="cancel-button"
+          @click="handleGoBack"
         />
         <q-btn
           :outline="!hasChanges"
@@ -338,9 +338,9 @@ function onCardChange() {
           icon="save"
           :label="TEXT_DE.voc.cards.save"
           no-caps
-          @click="handleSave"
           data-cy="save-button"
           :class="{ 'save-btn-changed': hasChanges }"
+          @click="handleSave"
         />
       </div>
     </div>

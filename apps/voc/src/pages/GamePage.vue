@@ -88,9 +88,9 @@ onUnmounted(() => {
         flat
         round
         icon="arrow_back"
-        @click="handleGoHome"
         size="md"
         data-cy="back-button"
+        @click="handleGoHome"
       />
       <div class="text-h6 text-weight-bold">
         <q-icon

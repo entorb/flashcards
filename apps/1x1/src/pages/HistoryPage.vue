@@ -27,17 +27,17 @@ function formatSelection(select: number[] | string): string {
   return select.join(', ')
 }
 
-function formatDetails(game: any): string {
+function formatDetails(game: GameHistory): string {
   const selection = `${TEXT_DE.multiply.selection}: ${formatSelection(game.settings.select)}`
   const focus = `${TEXT_DE.words.focus}: ${getFocusText(game.settings.focus)}`
   return `${selection} | ${focus}`
 }
 
-function getPoints(game: any): number {
+function getPoints(game: GameHistory): number {
   return game.points
 }
 
-function getCorrectAnswers(game: any): string {
+function getCorrectAnswers(game: GameHistory): string {
   return `${game.correctAnswers}`
 }
 </script>

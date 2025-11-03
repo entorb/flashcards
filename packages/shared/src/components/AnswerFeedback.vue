@@ -122,8 +122,8 @@ function getColor(status: FeedbackStatus): string {
         unelevated
         class="full-width text-weight-medium"
         :disable="isButtonDisabled"
-        @click="handleContinue"
         data-cy="continue-button"
+        @click="handleContinue"
       />
     </q-card-actions>
   </q-card>

@@ -49,6 +49,7 @@ describe('Full Game Flow', () => {
         cy.get('[data-cy="wrong-answer-feedback"]', { timeout: 5000 }).should('be.visible')
 
         // Wait for button to be enabled (3 second disable timer)
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(3100)
 
         // Click continue to next question
