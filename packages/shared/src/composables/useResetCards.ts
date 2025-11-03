@@ -1,4 +1,5 @@
 import { useQuasar } from 'quasar'
+
 import { TEXT_DE } from '../text-de'
 
 /**

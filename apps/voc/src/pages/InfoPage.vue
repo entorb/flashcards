@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { TEXT_DE } from '@flashcards/shared'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { TEXT_DE } from '@flashcards/shared'
 
 const router = useRouter()
 

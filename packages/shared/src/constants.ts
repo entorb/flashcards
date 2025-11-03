@@ -35,6 +35,15 @@ export const MAX_TIME = 60
  */
 export const DEFAULT_TIME = 60
 
+/**
+ * Base numerator for level-based point calculations
+ * Used in both apps:
+ * - 1x1: levelBonus = LEVEL_BONUS_NUMERATOR - level
+ * - voc: basePoints = LEVEL_BONUS_NUMERATOR - level (before multipliers)
+ * Level 1 = 5 points, Level 5 = 1 point
+ */
+export const LEVEL_BONUS_NUMERATOR = 6
+
 // ============================================================================
 // FEEDBACK TIMING
 // ============================================================================

@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useGameStore } from '../composables/useGameStore'
-import { loadLastSettings } from '../services/storage'
-import type { GameSettings } from '../types'
-import { TEXT_DE, helperStatsDataRead } from '@flashcards/shared'
+import { helperStatsDataRead, TEXT_DE } from '@flashcards/shared'
 import {
   AppFooter,
-  StatisticsCard,
+  FocusSelector,
   PwaInstallInfo,
-  FocusSelector
+  StatisticsCard
 } from '@flashcards/shared/components'
-import { BASE_PATH } from '../constants'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import FoxIcon from '../components/FoxIcon.vue'
+import { useGameStore } from '../composables/useGameStore'
+import { BASE_PATH } from '../constants'
+import { loadLastSettings } from '../services/storage'
+import type { GameSettings } from '../types'
 
 const router = useRouter()
 const { gameStats, startGame: startGameStore } = useGameStore()

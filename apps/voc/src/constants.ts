@@ -14,7 +14,8 @@ export {
   FIRST_GAME_BONUS,
   STREAK_GAME_BONUS,
   STREAK_GAME_INTERVAL,
-  SPEED_BONUS_POINTS
+  SPEED_BONUS_POINTS,
+  LEVEL_BONUS_NUMERATOR
 } from '@flashcards/shared'
 
 /**
@@ -23,6 +24,30 @@ export {
 export const BASE_PATH = 'voc'
 
 export const ROUND_SIZE = 10
+
+// ============================================================================
+// GAME SCORING
+// ============================================================================
+
+/**
+ * Point multiplier for blind mode (medium difficulty)
+ */
+export const MODE_MULTIPLIER_BLIND = 2
+
+/**
+ * Point multiplier for typing mode (high difficulty)
+ */
+export const MODE_MULTIPLIER_TYPING = 4
+
+/**
+ * Points earned for closing answer with typos in typing mode (75% of base)
+ */
+export const CLOSE_ANSWER_PENALTY = 0.75
+
+/**
+ * Bonus points for answering in DE→EN direction (increased difficulty)
+ */
+export const LANGUAGE_BONUS_DE_EN = 1
 
 export const INITIAL_CARDS: Card[] = [
   { en: 'Where', de: 'Wo', level: 1, time_blind: 60, time_typing: 60 },

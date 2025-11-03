@@ -1,6 +1,7 @@
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
+
 import type { BaseCard } from '../types'
-import type { Ref, ComputedRef } from 'vue'
 
 interface UseCardFilteringReturn<T extends BaseCard> {
   selectedLevel: Ref<number | null>

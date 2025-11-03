@@ -1,10 +1,12 @@
 <script setup lang="ts">
 interface Props {
   isHappy: boolean
+  isGrinning?: boolean
   size?: number
 }
 
 withDefaults(defineProps<Props>(), {
+  isGrinning: false,
   size: 60
 })
 </script>
@@ -59,7 +61,7 @@ withDefaults(defineProps<Props>(), {
 
       <!-- Eyes -->
       <g
-        v-if="isHappy"
+        v-if="isHappy || isGrinning"
         stroke="#27272a"
         stroke-width="2"
         stroke-linecap="round"
@@ -86,7 +88,24 @@ withDefaults(defineProps<Props>(), {
 
       <!-- Mouth -->
       <path
-        :d="isHappy ? 'M25 38 Q 30 45, 35 38' : 'M28 40 L 32 40'"
+        v-if="isGrinning"
+        d="M22 38 Q 30 48, 38 38"
+        stroke="#27272a"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"
+      />
+      <path
+        v-else-if="isHappy"
+        d="M25 38 Q 30 45, 35 38"
+        stroke="#27272a"
+        stroke-width="2"
+        stroke-linecap="round"
+        fill="none"
+      />
+      <path
+        v-else
+        d="M28 40 L 32 40"
         stroke="#27272a"
         stroke-width="2"
         stroke-linecap="round"

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 interface Props {
   smile?: boolean
+  grin?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
-  smile: false
+  smile: false,
+  grin: false
 })
 </script>
 
@@ -61,9 +63,18 @@ withDefaults(defineProps<Props>(), {
         points="50,48 52,52 48,52"
         fill="#000000"
       />
-      <!-- Smile (shown when smiling) -->
+      <!-- Grin (shown when grinning - 100% success) -->
       <path
-        v-if="smile"
+        v-if="grin"
+        d="M 38,54 Q 50,64 62,54"
+        stroke="#000000"
+        stroke-width="2.5"
+        fill="none"
+        stroke-linecap="round"
+      />
+      <!-- Smile (shown when smiling - 70%+ success) -->
+      <path
+        v-else-if="smile"
         d="M 42,54 Q 50,60 58,54"
         stroke="#000000"
         stroke-width="2"

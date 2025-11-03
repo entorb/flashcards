@@ -64,6 +64,7 @@ export const TEXT_DE = {
     focus: 'Fokus',
     mode: 'Modus',
     direction: 'Richtung',
+    points: 'Punkte',
     bonusPoints: 'Bonus',
     firstGameBonus: 'Erstes Spiel heute',
     streakGameBonus: 'Spiel des Tages',

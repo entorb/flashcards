@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from './pages/HomePage.vue'
-import GamePage from './pages/GamePage.vue'
-import GameOverPage from './pages/GameOverPage.vue'
-import HistoryPage from './pages/HistoryPage.vue'
+
 import CardsPage from './pages/CardsPage.vue'
+import GameOverPage from './pages/GameOverPage.vue'
+import GamePage from './pages/GamePage.vue'
+import HistoryPage from './pages/HistoryPage.vue'
+import HomePage from './pages/HomePage.vue'
 
 export const router = createRouter({
   history: createWebHistory('/1x1/'),

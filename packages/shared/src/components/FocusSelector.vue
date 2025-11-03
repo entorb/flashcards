@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { FocusType } from '../types'
 import { TEXT_DE } from '../text-de'
+import type { FocusType } from '../types'
 
 interface Props {
   modelValue: FocusType

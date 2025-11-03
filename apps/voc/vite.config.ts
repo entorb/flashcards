@@ -1,12 +1,14 @@
 // Plugins
+import { fileURLToPath } from 'node:url'
+
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
+import { defineConfig, mergeConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 // Utilities
-import { defineConfig, mergeConfig } from 'vite'
-import { fileURLToPath } from 'node:url'
+
 import { baseViteConfig } from '../../vite.config.base'
 
 // Hardcoded constants to avoid Node.js ESM resolution issues in vite.config

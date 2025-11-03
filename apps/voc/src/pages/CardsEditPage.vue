@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import { useGameStore } from '../composables/useGameStore'
 import { TEXT_DE } from '@flashcards/shared'
-import { MIN_LEVEL, MAX_LEVEL } from '../constants'
-import { parseCardsFromText } from '../utils/helpers'
+import { useQuasar } from 'quasar'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { useGameStore } from '../composables/useGameStore'
+import { MAX_LEVEL, MIN_LEVEL } from '../constants'
 import type { Card } from '../types'
+import { parseCardsFromText } from '../utils/helpers'
 
 const router = useRouter()
 const $q = useQuasar()

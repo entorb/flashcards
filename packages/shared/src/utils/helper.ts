@@ -71,14 +71,14 @@ export const calculateDailyBonuses = (
 
   if (dailyInfo.isFirstGame) {
     bonuses.push({
-      label: 'First game of the day',
+      label: TEXT_DE.words.firstGameBonus,
       points: bonusConfig.firstGameBonus
     })
   }
 
   if (dailyInfo.gamesPlayedToday % bonusConfig.streakGameInterval === 0) {
     bonuses.push({
-      label: `${dailyInfo.gamesPlayedToday}. game bonus`,
+      label: TEXT_DE.words.streakGameBonus,
       points: bonusConfig.streakGameBonus
     })
   }

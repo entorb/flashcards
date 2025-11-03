@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { BaseCard } from '../types'
-import { TEXT_DE } from '../text-de'
 import { LEVEL_COLORS } from '../constants'
+import { TEXT_DE } from '../text-de'
+import type { BaseCard } from '../types'
 
 interface Props {
   cards: BaseCard[]

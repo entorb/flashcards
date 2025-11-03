@@ -1,5 +1,6 @@
-import { LEVENSHTEIN_THRESHOLD, DEFAULT_TIME } from '@/constants'
 import type { Card } from '../types'
+
+import { DEFAULT_TIME, LEVENSHTEIN_THRESHOLD } from '@/constants'
 
 /**
  * Normalize a string for comparison (lowercase, trim)
