@@ -14,7 +14,8 @@ export {
   FIRST_GAME_BONUS,
   STREAK_GAME_BONUS,
   STREAK_GAME_INTERVAL,
-  SPEED_BONUS_POINTS
+  SPEED_BONUS_POINTS,
+  LEVEL_BONUS_NUMERATOR
 } from '@flashcards/shared'
 
 export const BASE_PATH = '1x1'

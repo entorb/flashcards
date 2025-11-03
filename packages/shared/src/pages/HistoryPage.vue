@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { TEXT_DE } from '../text-de'
 
 interface HistoryItem {

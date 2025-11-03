@@ -1,6 +1,7 @@
-import { configDefaults } from 'vitest/config'
 import { fileURLToPath } from 'node:url'
+
 import vue from '@vitejs/plugin-vue'
+import { configDefaults } from 'vitest/config'
 
 export const getVitestConfig = (rootDir: string): any => ({
   plugins: [vue()],
