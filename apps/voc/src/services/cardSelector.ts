@@ -1,6 +1,6 @@
 import type { Card, GameMode } from '../types'
 import { shuffleArray, weightedRandomSelection } from '@flashcards/shared/utils'
-import { ROUND_SIZE } from '../constants'
+import { ROUND_SIZE, LEVEL_BONUS_NUMERATOR } from '../constants'
 import type { FocusType } from '@flashcards/shared'
 
 /**
@@ -42,7 +42,7 @@ export function selectCardsForRound(allCards: Card[], focus: FocusType, mode: Ga
     if (focus === 'weak') {
       // Prioritize lower level cards (weaker)
       // Level 1 = 5x weight, Level 5 = 1x weight
-      weight = 6 - card.level
+      weight = LEVEL_BONUS_NUMERATOR - card.level
     } else if (focus === 'strong') {
       // Prioritize higher level cards (stronger)
       // Level 1 = 1x weight, Level 5 = 5x weight

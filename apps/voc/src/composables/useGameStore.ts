@@ -13,10 +13,23 @@ import {
   loadGameState as storageLoadGameState,
   clearGameState as storageClearGameState,
   saveGameSettings as storageSaveGameSettings,
-  loadGameSettings as storageLoadGameSettings
+  loadGameSettings as storageLoadGameSettings,
+  setGameResult as storageSetGameResult
 } from '../services/storage'
 import { selectCardsForRound } from '../services/cardSelector'
-import { MAX_LEVEL, MIN_LEVEL, MIN_TIME, MAX_TIME, INITIAL_CARDS } from '../constants'
+import {
+  MAX_LEVEL,
+  MIN_LEVEL,
+  MIN_TIME,
+  MAX_TIME,
+  INITIAL_CARDS,
+  MODE_MULTIPLIER_BLIND,
+  MODE_MULTIPLIER_TYPING,
+  CLOSE_ANSWER_PENALTY,
+  LANGUAGE_BONUS_DE_EN,
+  LEVEL_BONUS_NUMERATOR,
+  SPEED_BONUS_POINTS
+} from '../constants'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -74,36 +87,36 @@ export function useGameStore() {
   ): number {
     if (result !== 'correct' && result !== 'close') return 0
 
-    const basePoints = 6 - card.level
+    const basePoints = LEVEL_BONUS_NUMERATOR - card.level
     const settings = baseStore.gameSettings.value
     if (!settings) return 0
 
     // Mode multiplier
     let multiplier = 1
     if (settings.mode === 'blind') {
-      multiplier = 2
+      multiplier = MODE_MULTIPLIER_BLIND
     } else if (settings.mode === 'typing') {
-      multiplier = 4
+      multiplier = MODE_MULTIPLIER_TYPING
     }
     let pointsEarned = basePoints * multiplier
 
     // Close answer penalty
     if (result === 'close') {
-      pointsEarned = Math.round(pointsEarned * 0.75)
+      pointsEarned = Math.round(pointsEarned * CLOSE_ANSWER_PENALTY)
     }
 
     // Language bonus
     if (settings.language === 'de-en') {
-      pointsEarned += 1
+      pointsEarned += LANGUAGE_BONUS_DE_EN
     }
 
     // Time bonus for blind/typing modes
-    if (result === 'correct' && answerTime !== undefined && answerTime < 60) {
+    if (result === 'correct' && answerTime !== undefined && answerTime < MAX_TIME) {
       const isBeatTime =
         (settings.mode === 'blind' && answerTime < card.time_blind) ||
         (settings.mode === 'typing' && answerTime < card.time_typing)
       if (isBeatTime) {
-        pointsEarned += 5
+        pointsEarned += SPEED_BONUS_POINTS
       }
     }
 
@@ -186,6 +199,13 @@ export function useGameStore() {
     baseStore.gameStats.value.gamesPlayed++
     baseStore.gameStats.value.points += baseStore.points.value
     baseStore.gameStats.value.correctAnswers += baseStore.correctAnswersCount.value
+
+    // Save game result to session storage for GameOverPage
+    storageSetGameResult({
+      points: baseStore.points.value,
+      correctAnswers: baseStore.correctAnswersCount.value,
+      totalCards: baseStore.gameCards.value.length
+    })
 
     // Clear game state after finishing (sessionStorage and in-memory state)
     storageClearGameState()

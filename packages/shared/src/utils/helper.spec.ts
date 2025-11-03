@@ -14,7 +14,7 @@ describe('calculateDailyBonuses', () => {
 
     expect(bonuses).toHaveLength(1)
     expect(bonuses[0]).toEqual({
-      label: 'First game of the day',
+      label: 'Erstes Spiel heute',
       points: 5
     })
   })
@@ -25,7 +25,7 @@ describe('calculateDailyBonuses', () => {
 
     expect(bonuses).toHaveLength(1)
     expect(bonuses[0]).toEqual({
-      label: '5. game bonus',
+      label: 'Spiel des Tages',
       points: 5
     })
   })
@@ -36,11 +36,11 @@ describe('calculateDailyBonuses', () => {
 
     expect(bonuses).toHaveLength(2)
     expect(bonuses[0]).toEqual({
-      label: 'First game of the day',
+      label: 'Erstes Spiel heute',
       points: 5
     })
     expect(bonuses[1]).toEqual({
-      label: '5. game bonus',
+      label: 'Spiel des Tages',
       points: 5
     })
   })

@@ -5,13 +5,14 @@
 ## Both
 
 - Update @apps/1x1/README.md and @apps/1x1/AGENTS.md
-- In CardsPage, a click on LevelDistribution.vue shall result in displaying a list of cards in that level. (cards from local storage that are in this level) For 1x1 apply the range filter, so do not list cards that are not in the currently set range.
+
+- For each page and component in 1x1, voc, shared, create a single very simple unit test, that ensures that the component is loaded successfully. And where needed, add some core logic tests.
 
 ## 1x1
 
-## Wordplay
+- Flashcard: auto-submit answer after N chars with N being the number of digits the true result has
 
-- Extract all logic configuration parameters / constants to apps/voc/src/config/constants.ts
+## Wordplay
 
 ---
 

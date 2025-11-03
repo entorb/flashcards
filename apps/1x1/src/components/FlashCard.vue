@@ -345,7 +345,7 @@ onUnmounted(() => {
       >
         <q-card-section class="text-center q-pa-md">
           <div class="text-h5 text-weight-bold text-positive">
-            +{{ answerData.totalPoints }} Punkte
+            +{{ answerData.totalPoints }} {{ TEXT_DE.words.points }}
           </div>
           <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
             <span v-if="answerData.speedBonus > 0">
