@@ -9,6 +9,7 @@ export * from './composables/useGameTimer.js'
 export * from './composables/useAnswerFeedback.js'
 export * from './composables/useCountdownTimer.js'
 export * from './composables/useResetCards.js'
+export * from './composables/useCardFiltering.js'
 
 // Note: AppFooter is exported via package.json exports field at "./components"
 // Use: import { AppFooter } from '@flashcards/shared/components'
