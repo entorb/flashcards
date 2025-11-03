@@ -3,7 +3,8 @@
  * Provides common state management patterns used across both apps
  */
 
-import { ref, watch, type Ref } from 'vue'
+import { type Ref, ref, watch } from 'vue'
+
 import type { BaseCard, BaseGameHistory, GameStats } from '../types'
 
 /**

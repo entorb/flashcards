@@ -1,20 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
-import type { Card, GameSettings } from '../types'
-import { validateTypingAnswer } from '../utils/helpers'
+import { type AnswerResult, TEXT_DE } from '@flashcards/shared'
 import { shuffleArray } from '@flashcards/shared/utils'
-import { TEXT_DE, type AnswerResult } from '@flashcards/shared'
-import { MAX_TIME } from '../constants'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
-interface PointsBreakdown {
-  basePoints: number
-  modeMultiplier: number
-  pointsBeforeBonus: number
-  closeAdjustment: number
-  languageBonus: number
-  timeBonus: number
-  totalPoints: number
-}
+import { MAX_TIME } from '../constants'
+import type { Card, GameSettings, PointsBreakdown } from '../types'
+import { validateTypingAnswer } from '../utils/helpers'
 
 interface Props {
   card: Card
@@ -294,26 +285,16 @@ function handleTypingSubmit() {
             +{{ pointsBreakdown.totalPoints }} {{ TEXT_DE.words.points }}
           </div>
           <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
-            <span v-if="answerStatus === 'close'">
+            <span>
               {{ pointsBreakdown.basePoints }} × {{ pointsBreakdown.modeMultiplier }}
-              {{ pointsBreakdown.closeAdjustment }}
+              <span v-if="answerStatus === 'close'">
+                {{ pointsBreakdown.closeAdjustment }}
+              </span>
               <span v-if="pointsBreakdown.languageBonus > 0">
-                + {{ pointsBreakdown.languageBonus }}</span
-              >
-              <span v-if="pointsBreakdown.timeBonus > 0">+ {{ pointsBreakdown.timeBonus }}</span>
+                + {{ pointsBreakdown.languageBonus }}
+              </span>
+              <span v-if="pointsBreakdown.timeBonus > 0"> + {{ pointsBreakdown.timeBonus }} </span>
               = {{ pointsBreakdown.totalPoints }}
-            </span>
-            <span v-else-if="pointsBreakdown.languageBonus > 0 || pointsBreakdown.timeBonus > 0">
-              {{ pointsBreakdown.basePoints }} × {{ pointsBreakdown.modeMultiplier }}
-              <span v-if="pointsBreakdown.languageBonus > 0">
-                + {{ pointsBreakdown.languageBonus }}</span
-              >
-              <span v-if="pointsBreakdown.timeBonus > 0">+ {{ pointsBreakdown.timeBonus }}</span>
-              = {{ pointsBreakdown.totalPoints }}
-            </span>
-            <span v-else>
-              {{ pointsBreakdown.basePoints }} × {{ pointsBreakdown.modeMultiplier }} =
-              {{ pointsBreakdown.totalPoints }}
             </span>
           </div>
         </q-card-section>

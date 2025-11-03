@@ -1,7 +1,8 @@
-import type { Card, GameMode } from '../types'
-import { shuffleArray, weightedRandomSelection } from '@flashcards/shared/utils'
-import { ROUND_SIZE, LEVEL_BONUS_NUMERATOR } from '../constants'
 import type { FocusType } from '@flashcards/shared'
+import { shuffleArray, weightedRandomSelection } from '@flashcards/shared/utils'
+
+import { LEVEL_BONUS_NUMERATOR, ROUND_SIZE } from '../constants'
+import type { Card, GameMode } from '../types'
 
 /**
  * Select cards for a game round based on focus/priority strategy

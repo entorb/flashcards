@@ -1,35 +1,25 @@
+import { type AnswerResult, createBaseGameStore } from '@flashcards/shared'
 import { computed, watch } from 'vue'
-import type { Card, GameSettings, GameHistory } from '../types'
-import { createBaseGameStore, type AnswerResult } from '@flashcards/shared'
+
+import { INITIAL_CARDS, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
+import { selectCardsForRound } from '../services/cardSelector'
+import { calculatePoints } from '../services/pointsCalculation'
 import {
   loadCards,
-  saveCards,
+  loadGameStats,
   loadHistory,
+  saveCards,
+  saveGameStats,
   saveHistory,
   saveLastSettings,
-  loadGameStats,
-  saveGameStats,
-  saveGameState as storageSaveGameState,
-  loadGameState as storageLoadGameState,
   clearGameState as storageClearGameState,
-  saveGameSettings as storageSaveGameSettings,
   loadGameSettings as storageLoadGameSettings,
+  loadGameState as storageLoadGameState,
+  saveGameSettings as storageSaveGameSettings,
+  saveGameState as storageSaveGameState,
   setGameResult as storageSetGameResult
 } from '../services/storage'
-import { selectCardsForRound } from '../services/cardSelector'
-import {
-  MAX_LEVEL,
-  MIN_LEVEL,
-  MIN_TIME,
-  MAX_TIME,
-  INITIAL_CARDS,
-  MODE_MULTIPLIER_BLIND,
-  MODE_MULTIPLIER_TYPING,
-  CLOSE_ANSWER_PENALTY,
-  LANGUAGE_BONUS_DE_EN,
-  LEVEL_BONUS_NUMERATOR,
-  SPEED_BONUS_POINTS
-} from '../constants'
+import type { Card, GameHistory, GameSettings } from '../types'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -79,50 +69,6 @@ export function useGameStore() {
     saveGameStateDebounced
   )
 
-  // Calculate points earned for an answer
-  function calculatePoints(
-    result: AnswerResult,
-    card: Card,
-    answerTime: number | undefined
-  ): number {
-    if (result !== 'correct' && result !== 'close') return 0
-
-    const basePoints = LEVEL_BONUS_NUMERATOR - card.level
-    const settings = baseStore.gameSettings.value
-    if (!settings) return 0
-
-    // Mode multiplier
-    let multiplier = 1
-    if (settings.mode === 'blind') {
-      multiplier = MODE_MULTIPLIER_BLIND
-    } else if (settings.mode === 'typing') {
-      multiplier = MODE_MULTIPLIER_TYPING
-    }
-    let pointsEarned = basePoints * multiplier
-
-    // Close answer penalty
-    if (result === 'close') {
-      pointsEarned = Math.round(pointsEarned * CLOSE_ANSWER_PENALTY)
-    }
-
-    // Language bonus
-    if (settings.language === 'de-en') {
-      pointsEarned += LANGUAGE_BONUS_DE_EN
-    }
-
-    // Time bonus for blind/typing modes
-    if (result === 'correct' && answerTime !== undefined && answerTime < MAX_TIME) {
-      const isBeatTime =
-        (settings.mode === 'blind' && answerTime < card.time_blind) ||
-        (settings.mode === 'typing' && answerTime < card.time_typing)
-      if (isBeatTime) {
-        pointsEarned += SPEED_BONUS_POINTS
-      }
-    }
-
-    return pointsEarned
-  }
-
   // App-specific actions
   function startGame(settings: GameSettings) {
     // Only start a new game if there are no cards in session storage (new game)
@@ -151,7 +97,12 @@ export function useGameStore() {
     }
 
     // Calculate and apply points
-    const pointsEarned = calculatePoints(result, currentCard, answerTime)
+    const pointsEarned = calculatePoints(
+      result,
+      currentCard,
+      baseStore.gameSettings.value,
+      answerTime
+    )
     baseStore.points.value += pointsEarned
 
     // Update card level and time

@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { useGameStore } from '../composables/useGameStore'
 import { GameOverPage } from '@flashcards/shared/pages'
-import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '../constants'
+
 import FoxIcon from '../components/FoxIcon.vue'
+import { useGameStore } from '../composables/useGameStore'
+import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '../constants'
 import {
+  clearGameResult,
+  getGameResult,
   incrementDailyGames,
   loadGameStats,
   saveGameStats,
-  saveHistory,
-  getGameResult,
-  clearGameResult
+  saveHistory
 } from '../services/storage'
 
 const { history: gameStoreHistory } = useGameStore()

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { getFocusText, TEXT_DE } from '@flashcards/shared'
 import { HistoryPage } from '@flashcards/shared/pages'
+import { onMounted, ref } from 'vue'
+
 import { loadHistory, loadRange } from '@/services/storage'
 import type { GameHistory } from '@/types'
-import { TEXT_DE, getFocusText } from '@flashcards/shared'
 
 const history = ref<GameHistory[]>([])
 const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])

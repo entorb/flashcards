@@ -1,30 +1,31 @@
-import { computed, watch } from 'vue'
-import type { Card, GameHistory, GameSettings } from '@/types'
 import { createBaseGameStore } from '@flashcards/shared'
+import { computed, watch } from 'vue'
+
+import { MAX_CARD_LEVEL, MAX_CARDS_PER_GAME, MIN_CARD_LEVEL } from '@/constants'
 import {
-  loadCards as storageLoadCards,
-  loadRange as storageLoadRange,
-  getVirtualCardsForRange,
-  initializeCards,
-  updateCard as storageUpdateCard,
-  setGameResult as storageSetGameResult,
-  getGameConfig as storageGetGameConfig,
-  setGameConfig as storageSetGameConfig,
-  loadGameStats as storageLoadGameStats,
-  loadHistory as storageLoadHistory,
-  saveHistory as storageSaveHistory,
-  saveGameStats as storageSaveGameStats,
-  saveGameState as storageSaveGameState,
-  loadGameState as storageLoadGameState,
-  clearGameState as storageClearGameState
-} from '@/services/storage'
-import {
-  selectCards,
+  filterCardsAll,
   filterCardsBySelection,
   filterCardsSquares,
-  filterCardsAll
+  selectCards
 } from '@/services/cardSelector'
-import { MIN_CARD_LEVEL, MAX_CARD_LEVEL, MAX_CARDS_PER_GAME } from '@/constants'
+import {
+  getVirtualCardsForRange,
+  initializeCards,
+  clearGameState as storageClearGameState,
+  getGameConfig as storageGetGameConfig,
+  loadCards as storageLoadCards,
+  loadGameState as storageLoadGameState,
+  loadGameStats as storageLoadGameStats,
+  loadHistory as storageLoadHistory,
+  loadRange as storageLoadRange,
+  saveGameState as storageSaveGameState,
+  saveGameStats as storageSaveGameStats,
+  saveHistory as storageSaveHistory,
+  setGameConfig as storageSetGameConfig,
+  setGameResult as storageSetGameResult,
+  updateCard as storageUpdateCard
+} from '@/services/storage'
+import type { Card, GameHistory, GameSettings } from '@/types'
 
 export interface AnswerData {
   isCorrect: boolean

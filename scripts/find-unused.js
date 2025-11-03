@@ -671,8 +671,12 @@ async function main() {
 
   // Parse .gitignore and use its patterns
   const gitignorePatterns = parseGitignore(path.join(projectRoot, '.gitignore'))
-  const files = findFiles(sourceDir, ['ts', 'vue', 'js', 'md'], gitignorePatterns)
-  console.log(`📂 Scanning ${files.length} files...\n`)
+  const allFiles = findFiles(sourceDir, ['ts', 'vue', 'js', 'md'], gitignorePatterns)
+  // Exclude test files from scanning
+  const files = allFiles.filter(file => !file.endsWith('.spec.ts'))
+  console.log(
+    `📂 Scanning ${files.length} files (excluded ${allFiles.length - files.length} test files)...\n`
+  )
 
   // ============================================
   // TRANSLATIONS

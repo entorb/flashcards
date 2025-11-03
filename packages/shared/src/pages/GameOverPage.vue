@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import {
   calculateDailyBonuses,
-  helperStatsDataWrite,
+  type DailyBonusConfig,
   type GameResult,
-  type DailyBonusConfig
+  helperStatsDataWrite
 } from '../index'
 import { TEXT_DE } from '../text-de'
 
@@ -79,9 +80,14 @@ onMounted(async () => {
 
   // Use history from game store (which includes the new entry added by finishGame)
   if (props.gameStoreHistory.length > 0) {
-    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
-    lastEntry.points += totalBonusPoints
-    props.storageFunctions.saveHistory(props.gameStoreHistory)
+    // Create a copy to avoid mutating the prop
+    const historyWithBonus = props.gameStoreHistory.map((entry, index) => {
+      if (index === props.gameStoreHistory.length - 1) {
+        return { ...entry, points: entry.points + totalBonusPoints }
+      }
+      return entry
+    })
+    props.storageFunctions.saveHistory(historyWithBonus)
   }
 
   // Load and update stats

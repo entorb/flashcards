@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import { GameOverPage } from '@flashcards/shared/pages'
+
+import GroundhogMascot from '@/components/GroundhogMascot.vue'
 import { useGameStore } from '@/composables/useGameStore'
+import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@/constants'
 import {
+  clearGameResult,
   getGameResult,
   incrementDailyGames,
-  clearGameResult,
-  saveHistory,
   loadGameStats,
-  saveGameStats
+  saveGameStats,
+  saveHistory
 } from '@/services/storage'
-import GroundhogMascot from '@/components/GroundhogMascot.vue'
-import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL, BASE_PATH } from '@/constants'
-import { GameOverPage } from '@flashcards/shared/pages'
 
 const { history: gameStoreHistory } = useGameStore()
 </script>

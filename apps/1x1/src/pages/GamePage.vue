@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { useGameTimer } from '@flashcards/shared'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useGameStore, type AnswerData } from '@/composables/useGameStore'
-import { useGameTimer } from '@flashcards/shared'
+
 import FlashCard from '@/components/FlashCard.vue'
+import { type AnswerData, useGameStore } from '@/composables/useGameStore'
 
 const router = useRouter()
 const {

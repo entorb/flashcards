@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import type { Card, SelectionType } from '@/types'
 import { TEXT_DE } from '@flashcards/shared'
-import { loadRange } from '@/services/storage'
-import { formatDisplayQuestion } from '@/utils/questionFormatter'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+
 import {
-  AUTO_SUBMIT_DIGITS,
   AUTO_CLOSE_DURATION,
+  AUTO_SUBMIT_DIGITS,
   BUTTON_DISABLE_DURATION,
-  MAX_CARD_TIME,
-  COUNTDOWN_INTERVAL
+  COUNTDOWN_INTERVAL,
+  MAX_CARD_TIME
 } from '@/constants'
+import { loadRange } from '@/services/storage'
+import type { Card, SelectionType } from '@/types'
+import { formatDisplayQuestion } from '@/utils/questionFormatter'
 
 interface Props {
   card: Card

@@ -30,10 +30,6 @@ export const ROUND_SIZE = 10
 // ============================================================================
 
 /**
- * Point multiplier for multiple-choice mode (base difficulty)
- */
-
-/**
  * Point multiplier for blind mode (medium difficulty)
  */
 export const MODE_MULTIPLIER_BLIND = 2
