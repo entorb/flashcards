@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 describe('Typing Mode Game - DE to EN', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
@@ -82,6 +80,7 @@ describe('Typing Mode Game - DE to EN', () => {
             // Check if wrong or close answer (wait for button to enable)
             cy.get('body').then($body => {
               if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
+                // eslint-disable-next-line cypress/no-unnecessary-waiting
                 cy.wait(3100)
               }
             })

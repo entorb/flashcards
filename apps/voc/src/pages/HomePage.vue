@@ -80,8 +80,8 @@ function goToInfo() {
         dense
         icon="info_outline"
         color="grey-6"
-        @click="goToInfo"
         data-cy="info-button"
+        @click="goToInfo"
       >
         <q-tooltip>{{ TEXT_DE.nav.infoTooltip }}</q-tooltip>
       </q-btn>
@@ -143,9 +143,9 @@ function goToInfo() {
       color="positive"
       size="lg"
       class="full-width q-mb-sm"
-      @click="startGame"
       icon="play_arrow"
       data-cy="start-button"
+      @click="startGame"
     >
       <span class="text-body1">{{ TEXT_DE.common.start }}</span>
     </q-btn>
@@ -157,20 +157,20 @@ function goToInfo() {
         color="primary"
         size="md"
         class="col"
-        @click="goToCards"
         icon="layers"
         :label="TEXT_DE.nav.cards"
         data-cy="cards-button"
+        @click="goToCards"
       />
       <q-btn
         unelevated
         color="primary"
         size="md"
         class="col"
-        @click="goToHistory"
         icon="history"
         :label="TEXT_DE.nav.history"
         data-cy="history-button"
+        @click="goToHistory"
       />
     </div>
 

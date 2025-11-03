@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 describe('Multiple Choice Game - EN to DE', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
@@ -102,6 +100,7 @@ describe('Multiple Choice Game - EN to DE', () => {
             // Check if wrong answer (wait for button to enable)
             cy.get('body').then($body => {
               if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
+                // eslint-disable-next-line cypress/no-unnecessary-waiting
                 cy.wait(3100)
               }
             })

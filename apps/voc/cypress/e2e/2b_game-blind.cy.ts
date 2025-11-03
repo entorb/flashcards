@@ -26,6 +26,7 @@ describe('Blind Mode Game - DE to EN', () => {
 
     // Check if it's a wrong answer (button will be disabled for 3s)
     if (!isCorrect) {
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(3100) // Wait for button to be enabled
     }
 

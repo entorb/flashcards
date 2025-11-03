@@ -27,9 +27,9 @@ function handleFocusChange(value: FocusType) {
     <div class="text-subtitle2 q-mb-xs">{{ TEXT_DE.words.focus }}</div>
     <div class="row q-col-gutter-sm">
       <div
-        class="col-4"
         v-for="option in focusOptions"
         :key="option.value"
+        class="col-4"
       >
         <q-btn
           :outline="modelValue !== option.value"
