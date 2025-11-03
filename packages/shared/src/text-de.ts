@@ -118,9 +118,9 @@ export const TEXT_DE = {
       moveAllTitle: 'Alle Karten verschieben',
       dangerZoneTitle: 'Gefahrenzone',
       importDialogTitle: 'Karten importieren',
-      importDialogMessage: 'Füge deine Karten aus Excel (oder so) ein (En | De | Level)',
+      importDialogMessage: 'Füge deine Karten aus Excel (oder so) ein (Format: En | De | Level)',
       importHintExcel:
-        'Tipp: verwende Excel order Google Tabellen um mehrere Vokabellisten zu verwalten.',
+        'Tipps: Unterstützt Wortalternativen mit "/": "Welche/Welcher". Verwende Excel order Google Tabellen um mehrere Vokabellisten zu verwalten und zu speichern.',
       confirmMoveTitle: 'Verschieben bestätigen',
       confirmMoveMessage: 'Alle {count} Karten auf Level {level} setzen?',
       confirmResetTitle: 'Zurücksetzen bestätigen',
