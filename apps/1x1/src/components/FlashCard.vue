@@ -38,7 +38,7 @@ const emit = defineEmits<{
 const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
 const answerData = ref<AnswerData | null>(null)
-const answerInput = ref()
+const answerInput = ref<HTMLInputElement | null>(null)
 const autoCloseCountdown = ref(0)
 const isButtonDisabled = ref(false)
 const buttonDisableCountdown = ref(0)
@@ -165,8 +165,8 @@ function startAutoCloseTimer(seconds: number) {
   // Update countdown
   countdownInterval = setInterval(() => {
     autoCloseCountdown.value--
-    if (autoCloseCountdown.value <= 0) {
-      clearInterval(countdownInterval!)
+    if (autoCloseCountdown.value <= 0 && countdownInterval) {
+      clearInterval(countdownInterval)
     }
   }, COUNTDOWN_INTERVAL)
 
@@ -194,8 +194,8 @@ function startButtonDisableTimer() {
 
   buttonDisableCountdownInterval = setInterval(() => {
     buttonDisableCountdown.value--
-    if (buttonDisableCountdown.value <= 0) {
-      clearInterval(buttonDisableCountdownInterval!)
+    if (buttonDisableCountdown.value <= 0 && buttonDisableCountdownInterval) {
+      clearInterval(buttonDisableCountdownInterval)
     }
   }, COUNTDOWN_INTERVAL)
 
@@ -286,30 +286,32 @@ onUnmounted(() => {
 
     <!-- Answer Input Section -->
     <div v-if="!showFeedback">
+      <!-- eslint-disable vuejs-accessibility/no-autofocus -->
       <q-input
+        ref="answerInput"
         v-model.number="userAnswer"
         type="text"
         inputmode="numeric"
         pattern="[0-9]*"
         outlined
         class="q-mb-md"
-        @keyup.enter="submitAnswer"
         autofocus
         input-class="text-h3 text-center"
-        ref="answerInput"
         :rules="[val => val === null || Number.isInteger(val)]"
         data-cy="answer-input"
+        @keyup.enter="submitAnswer"
       />
+      <!-- eslint-enable vuejs-accessibility/no-autofocus -->
 
       <q-btn
         color="primary"
         size="lg"
         class="full-width q-mb-md"
-        @click="submitAnswer"
         :disable="userAnswer === null || userAnswer === undefined || isButtonDisabled"
         icon="check"
         :label="TEXT_DE.common.check"
         data-cy="submit-answer-button"
+        @click="submitAnswer"
       />
     </div>
 
@@ -370,9 +372,9 @@ onUnmounted(() => {
         :label="
           isButtonDisabled || isEnterDisabled ? `${TEXT_DE.common.wait}` : TEXT_DE.common.continue
         "
-        @click="handleContinue"
         data-cy="continue-button"
         :icon="answerData.isCorrect ? 'check_circle' : 'cancel'"
+        @click="handleContinue"
       />
     </div>
   </div>
