@@ -24,13 +24,13 @@ describe('Card Filtering by Selection', () => {
 
     expect(filtered).toHaveLength(7)
     expect(filtered.map(c => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
-      '3x6',
-      '4x6',
-      '5x6',
+      '6x3',
+      '6x4',
+      '6x5',
       '6x6',
-      '6x7',
-      '6x8',
-      '6x9'
+      '7x6',
+      '8x6',
+      '9x6'
     ])
   })
 
@@ -40,12 +40,12 @@ describe('Card Filtering by Selection', () => {
     expect(filtered).toHaveLength(7)
     expect(filtered.map(c => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
       '3x3',
-      '3x4',
-      '3x5',
-      '3x6',
-      '3x7',
-      '3x8',
-      '3x9'
+      '4x3',
+      '5x3',
+      '6x3',
+      '7x3',
+      '8x3',
+      '9x3'
     ])
   })
 
@@ -54,12 +54,12 @@ describe('Card Filtering by Selection', () => {
 
     expect(filtered).toHaveLength(7)
     expect(filtered.map(c => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
-      '3x9',
-      '4x9',
-      '5x9',
-      '6x9',
-      '7x9',
-      '8x9',
+      '9x3',
+      '9x4',
+      '9x5',
+      '9x6',
+      '9x7',
+      '9x8',
       '9x9'
     ])
   })
@@ -135,11 +135,11 @@ describe('Card Filtering - All Cards', () => {
     const smallRange = new Set([3, 4])
     const filtered = filterCardsAll(allCards, smallRange)
 
-    // Only 3x3, 3x4, 4x4 should be returned
+    // Only 3x3, 4x3, 4x4 should be returned
     expect(filtered).toHaveLength(3)
     expect(filtered.map(c => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
       '3x3',
-      '3x4',
+      '4x3',
       '4x4'
     ])
   })
@@ -148,9 +148,9 @@ describe('Card Filtering - All Cards', () => {
 describe('Card Selection', () => {
   it('should return all cards when count >= cards.length', () => {
     const cards: Card[] = [
-      { question: '3x6', answer: 18, level: 1, time: 60 },
-      { question: '4x6', answer: 24, level: 1, time: 60 },
-      { question: '5x6', answer: 30, level: 1, time: 60 }
+      { question: '6x3', answer: 18, level: 1, time: 60 },
+      { question: '6x4', answer: 24, level: 1, time: 60 },
+      { question: '6x5', answer: 30, level: 1, time: 60 }
     ]
 
     const selected = selectCards(cards, 'weak', 10)
@@ -159,13 +159,13 @@ describe('Card Selection', () => {
 
   it('should return exactly count cards when count < cards.length', () => {
     const cards: Card[] = [
-      { question: '3x6', answer: 18, level: 1, time: 60 },
-      { question: '4x6', answer: 24, level: 1, time: 60 },
-      { question: '5x6', answer: 30, level: 1, time: 60 },
+      { question: '6x3', answer: 18, level: 1, time: 60 },
+      { question: '6x4', answer: 24, level: 1, time: 60 },
+      { question: '6x5', answer: 30, level: 1, time: 60 },
       { question: '6x6', answer: 36, level: 1, time: 60 },
-      { question: '6x7', answer: 42, level: 1, time: 60 },
-      { question: '6x8', answer: 48, level: 1, time: 60 },
-      { question: '6x9', answer: 54, level: 1, time: 60 }
+      { question: '7x6', answer: 42, level: 1, time: 60 },
+      { question: '8x6', answer: 48, level: 1, time: 60 },
+      { question: '9x6', answer: 54, level: 1, time: 60 }
     ]
 
     const selected = selectCards(cards, 'weak', 5)
@@ -174,9 +174,9 @@ describe('Card Selection', () => {
 
   it('should not mutate the input cards array', () => {
     const cards: Card[] = [
-      { question: '3x6', answer: 18, level: 1, time: 60 },
-      { question: '4x6', answer: 24, level: 1, time: 60 },
-      { question: '5x6', answer: 30, level: 1, time: 60 }
+      { question: '6x3', answer: 18, level: 1, time: 60 },
+      { question: '6x4', answer: 24, level: 1, time: 60 },
+      { question: '6x5', answer: 30, level: 1, time: 60 }
     ]
 
     const originalLength = cards.length
@@ -187,13 +187,13 @@ describe('Card Selection', () => {
 
   it('should select all 7 cards for [6] selection', () => {
     const cards: Card[] = [
-      { question: '3x6', answer: 18, level: 1, time: 60 },
-      { question: '4x6', answer: 24, level: 1, time: 60 },
-      { question: '5x6', answer: 30, level: 1, time: 60 },
+      { question: '6x3', answer: 18, level: 1, time: 60 },
+      { question: '6x4', answer: 24, level: 1, time: 60 },
+      { question: '6x5', answer: 30, level: 1, time: 60 },
       { question: '6x6', answer: 36, level: 1, time: 60 },
-      { question: '6x7', answer: 42, level: 1, time: 60 },
-      { question: '6x8', answer: 48, level: 1, time: 60 },
-      { question: '6x9', answer: 54, level: 1, time: 60 }
+      { question: '7x6', answer: 42, level: 1, time: 60 },
+      { question: '8x6', answer: 48, level: 1, time: 60 },
+      { question: '9x6', answer: 54, level: 1, time: 60 }
     ]
 
     const selected = selectCards(cards, 'weak', 10)
@@ -202,15 +202,15 @@ describe('Card Selection', () => {
 
   it('should handle weak focus weighting correctly', () => {
     const cards: Card[] = [
-      { question: '3x6', answer: 18, level: 1, time: 60 },
-      { question: '4x6', answer: 24, level: 5, time: 60 }
+      { question: '6x3', answer: 18, level: 1, time: 60 },
+      { question: '6x4', answer: 24, level: 5, time: 60 }
     ]
 
     // Run multiple times to verify randomness works
     for (let i = 0; i < 10; i++) {
       const selected = selectCards(cards, 'weak', 1)
       expect(selected).toHaveLength(1)
-      expect(['3x6', '4x6']).toContain(selected[0].question)
+      expect(['6x3', '6x4']).toContain(selected[0].question)
     }
   })
 })
@@ -235,13 +235,13 @@ describe('Integration: Filter + Select Pipeline', () => {
     const selected = selectCards(filtered, 'weak', 10)
     expect(selected).toHaveLength(7)
     expect(selected.map(c => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
-      '3x6',
-      '4x6',
-      '5x6',
+      '6x3',
+      '6x4',
+      '6x5',
       '6x6',
-      '6x7',
-      '6x8',
-      '6x9'
+      '7x6',
+      '8x6',
+      '9x6'
     ])
   })
 
