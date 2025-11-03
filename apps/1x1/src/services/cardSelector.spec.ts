@@ -1,11 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { initializeCards, loadCards, parseCardQuestion } from '@/services/storage'
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import {
-  selectCards,
+  filterCardsAll,
   filterCardsBySelection,
   filterCardsSquares,
-  filterCardsAll
+  selectCards
 } from '@/services/cardSelector'
+import { initializeCards, loadCards, parseCardQuestion } from '@/services/storage'
 import type { Card } from '@/types'
 
 describe('Card Filtering by Selection', () => {

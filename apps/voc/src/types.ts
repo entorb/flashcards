@@ -4,8 +4,8 @@
  */
 
 import type {
-  BaseGameHistory,
   BaseCard,
+  BaseGameHistory,
   FocusType,
   GameState as SharedGameState
 } from '@flashcards/shared'
@@ -17,10 +17,7 @@ import type {
 export type GameMode = 'multiple-choice' | 'blind' | 'typing'
 export type Language = 'en-de' | 'de-en'
 
-// ============================================================================
 // Card Definition (extends BaseCard)
-// ============================================================================
-
 export interface Card extends BaseCard {
   en: string // Used as unique key/identifier
   de: string
@@ -28,9 +25,7 @@ export interface Card extends BaseCard {
   time_typing: number // Seconds for last correct answer in typing mode (0.1-60s, default 60)
 }
 
-// ============================================================================
 // Game Configuration
-// ============================================================================
 
 export interface GameSettings {
   mode: GameMode
@@ -38,18 +33,26 @@ export interface GameSettings {
   language: Language
 }
 
-// ============================================================================
 // Game History (extends BaseGameHistory)
-// ============================================================================
 
 export interface GameHistory extends BaseGameHistory {
   settings: GameSettings
 }
 
-// ============================================================================
 // Game State (extends shared GameState)
-// ============================================================================
 
 export interface GameState extends SharedGameState {
   cards: Card[] // Strongly typed with app-specific Card
+}
+
+// PointsBreakdown
+
+export interface PointsBreakdown {
+  basePoints: number
+  modeMultiplier: number
+  pointsBeforeBonus: number
+  closeAdjustment: number
+  languageBonus: number
+  timeBonus: number
+  totalPoints: number
 }

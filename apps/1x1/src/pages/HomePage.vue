@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useGameStore } from '@/composables/useGameStore'
-import type { SelectionType } from '@/types'
 import type { FocusType } from '@flashcards/shared'
-import GroundhogMascot from '@/components/GroundhogMascot.vue'
-import { DEFAULT_SELECT, BASE_PATH } from '@/constants'
 import { TEXT_DE } from '@flashcards/shared'
 import {
   AppFooter,
-  StatisticsCard,
+  FocusSelector,
   PwaInstallInfo,
-  FocusSelector
+  StatisticsCard
 } from '@flashcards/shared/components'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
+import GroundhogMascot from '@/components/GroundhogMascot.vue'
+import { useGameStore } from '@/composables/useGameStore'
+import { BASE_PATH, DEFAULT_SELECT } from '@/constants'
 import { loadGameStats, loadRange } from '@/services/storage'
+import type { SelectionType } from '@/types'
 
 const router = useRouter()
 

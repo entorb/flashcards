@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { getFocusText, TEXT_DE } from '@flashcards/shared'
 import { HistoryPage } from '@flashcards/shared/pages'
+
 import { useGameStore } from '../composables/useGameStore'
-import { TEXT_DE, getFocusText } from '@flashcards/shared'
 
 const { history } = useGameStore()
 
