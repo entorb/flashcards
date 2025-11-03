@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useGameStore } from '../composables/useGameStore'
-import { TEXT_DE, useResetCards, LEVEL_COLORS } from '@flashcards/shared'
+import { TEXT_DE, useResetCards, LEVEL_COLORS, useCardFiltering } from '@flashcards/shared'
 import { LevelDistribution } from '@flashcards/shared/components'
 import { MIN_LEVEL, MAX_LEVEL } from '../constants'
 
@@ -12,8 +12,16 @@ const $q = useQuasar()
 const { showResetDialog } = useResetCards()
 const { allCards, moveAllCards } = useGameStore()
 const store = useGameStore()
+const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(allCards)
 
 const targetLevel = ref(1)
+
+const cardsToShow = computed(() => {
+  if (selectedLevel.value === null) {
+    return allCards.value
+  }
+  return filteredCards.value
+})
 
 function handleGoBack() {
   router.push('/')
@@ -101,21 +109,30 @@ function getLevelColor(level: number): string {
       <!-- Level Distribution -->
       <LevelDistribution
         :cards="allCards"
+        :selected-level="selectedLevel"
         @reset="handleResetCards"
+        @level-click="handleLevelClick"
       />
 
       <!-- Current Deck -->
       <div class="q-pt-lg">
-        <h3 class="text-h6 text-weight-bold q-mb-md">
-          {{ TEXT_DE.words.cards }} ({{ allCards.length }})
-        </h3>
-        <div style="max-height: 300px; overflow-y: auto">
+        <div class="row items-center justify-between q-mb-md">
+          <h3 class="text-h6 text-weight-bold">
+            <span v-if="selectedLevel === null">
+              {{ TEXT_DE.words.cards }} ({{ allCards.length }})
+            </span>
+            <span v-else>
+              {{ TEXT_DE.words.level }} {{ selectedLevel }} ({{ cardsToShow.length }})
+            </span>
+          </h3>
+        </div>
+        <div style="overflow-y: auto">
           <q-list
             bordered
             separator
           >
             <q-item
-              v-for="card in allCards"
+              v-for="card in cardsToShow"
               :key="card.en"
             >
               <q-item-section>

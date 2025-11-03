@@ -54,8 +54,8 @@ export function parseCardQuestion(question: string): { x: number; y: number } {
 
 /**
  * Create a default card with initial level and time
- * @param y - First number (smaller or equal to x)
- * @param x - Second number (larger or equal to y)
+ * @param y - First number (larger or equal to x)
+ * @param x - Second number (smaller or equal to y)
  * @returns Card with default values
  */
 export function createDefaultCard(y: number, x: number): Card {
@@ -73,15 +73,15 @@ export function createDefaultCard(y: number, x: number): Card {
 
 /**
  * Initialize all multiplication cards for the app
- * Generates cards from 3x3 to 9x9 where y <= x (avoiding duplicates)
+ * Generates cards from 3x3 to 9x9 where x <= y (avoiding duplicates)
  */
 export function initializeCards(): Card[] {
   const cards: Card[] = []
   const minTable = Math.min(...SELECT_OPTIONS)
   const maxTable = Math.max(...SELECT_OPTIONS)
 
-  for (let x = minTable; x <= maxTable; x++) {
-    for (let y = minTable; y <= x; y++) {
+  for (let y = minTable; y <= maxTable; y++) {
+    for (let x = minTable; x <= y; x++) {
       cards.push(createDefaultCard(y, x))
     }
   }
@@ -115,9 +115,9 @@ export function getVirtualCardsForRange(range: number[]): Card[] {
   const cardMap = new Map(storedCards.map(c => [c.question, c]))
   const virtualCards: Card[] = []
 
-  for (const x of range) {
-    for (const y of range) {
-      if (y <= x) {
+  for (const y of range) {
+    for (const x of range) {
+      if (x <= y) {
         const question = `${y}x${x}`
         const existingCard = cardMap.get(question)
 
