@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
-import type { Card, GameSettings } from '../types'
-import { validateTypingAnswer } from '../utils/helpers'
+import { type AnswerResult, TEXT_DE } from '@flashcards/shared'
 import { shuffleArray } from '@flashcards/shared/utils'
-import { TEXT_DE, type AnswerResult } from '@flashcards/shared'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+
 import { MAX_TIME } from '../constants'
+import type { Card, GameSettings, PointsBreakdown } from '../types'
+import { validateTypingAnswer } from '../utils/helpers'
 
 interface Props {
   card: Card
   allCards: Card[]
   settings: GameSettings
   elapsedTime?: number
+  earnedPoints?: number
+  pointsBreakdown?: PointsBreakdown
 }
 
 const props = defineProps<Props>()
@@ -263,6 +266,40 @@ function handleTypingSubmit() {
         </q-card-section>
       </q-card>
 
+      <!-- Points display on correct and close answers -->
+      <q-card
+        v-if="
+          (answerStatus === 'correct' || answerStatus === 'close') &&
+          earnedPoints &&
+          earnedPoints > 0 &&
+          pointsBreakdown
+        "
+        class="q-mb-md"
+        :class="[answerStatus === 'correct' ? 'bg-positive-1' : 'bg-warning-1']"
+      >
+        <q-card-section class="text-center q-pa-md">
+          <div
+            class="text-h5 text-weight-bold"
+            :class="[answerStatus === 'correct' ? 'text-positive' : 'text-warning']"
+          >
+            +{{ pointsBreakdown.totalPoints }} {{ TEXT_DE.words.points }}
+          </div>
+          <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
+            <span>
+              {{ pointsBreakdown.basePoints }} × {{ pointsBreakdown.modeMultiplier }}
+              <span v-if="answerStatus === 'close'">
+                {{ pointsBreakdown.closeAdjustment }}
+              </span>
+              <span v-if="pointsBreakdown.languageBonus > 0">
+                + {{ pointsBreakdown.languageBonus }}
+              </span>
+              <span v-if="pointsBreakdown.timeBonus > 0"> + {{ pointsBreakdown.timeBonus }} </span>
+              = {{ pointsBreakdown.totalPoints }}
+            </span>
+          </div>
+        </q-card-section>
+      </q-card>
+
       <!-- Continue Button with icon when feedback is shown -->
       <q-btn
         v-if="answerStatus && showProceedButton"
@@ -277,7 +314,6 @@ function handleTypingSubmit() {
         "
         :disable="isProceedDisabled"
         :label="isProceedDisabled ? `${TEXT_DE.common.wait}` : TEXT_DE.common.continue"
-        @click="emit('next')"
         data-cy="continue-button"
         :icon="
           answerStatus === 'correct'
@@ -286,6 +322,7 @@ function handleTypingSubmit() {
               ? 'warning'
               : 'cancel'
         "
+        @click="emit('next')"
       />
 
       <!-- Multiple Choice -->
@@ -305,8 +342,8 @@ function handleTypingSubmit() {
             :label="option"
             no-caps
             class="full-width"
-            @click="handleMultipleChoiceSubmit(option)"
             data-cy="multiple-choice-option"
+            @click="handleMultipleChoiceSubmit(option)"
           />
         </div>
       </div>
@@ -319,8 +356,8 @@ function handleTypingSubmit() {
           :label="TEXT_DE.voc.game.revealAnswer"
           no-caps
           class="full-width"
-          @click="showAnswer = true"
           data-cy="reveal-answer-button"
+          @click="showAnswer = true"
         />
         <div
           v-else
@@ -337,8 +374,8 @@ function handleTypingSubmit() {
                 :label="TEXT_DE.common.no"
                 no-caps
                 class="full-width"
-                @click="handleBlindSubmit(false)"
                 data-cy="blind-no-button"
+                @click="handleBlindSubmit(false)"
               />
             </div>
             <div class="col-6">
@@ -348,8 +385,8 @@ function handleTypingSubmit() {
                 :label="TEXT_DE.common.yes"
                 no-caps
                 class="full-width"
-                @click="handleBlindSubmit(true)"
                 data-cy="blind-yes-button"
+                @click="handleBlindSubmit(true)"
               />
             </div>
           </div>

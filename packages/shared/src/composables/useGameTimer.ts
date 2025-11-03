@@ -3,7 +3,7 @@
  * Provides timer logic used in GamePage components across both apps
  */
 
-import { ref, watch, onUnmounted, type Ref } from 'vue'
+import { onUnmounted, type Ref, ref, watch } from 'vue'
 
 /**
  * Creates a game timer that tracks elapsed time and resets on trigger

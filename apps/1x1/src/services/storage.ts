@@ -3,16 +3,17 @@
  * Handles localStorage operations for cards, history, stats, and game configuration
  */
 
-import type { Card, GameHistory, GameSettings } from '@/types'
-import type { GameStats, GameResult } from '@flashcards/shared'
+import type { GameResult, GameStats } from '@flashcards/shared'
 import {
-  saveJSON,
-  incrementDailyGames as sharedIncrementDailyGames,
+  createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
-  createGamePersistence
+  saveJSON,
+  incrementDailyGames as sharedIncrementDailyGames
 } from '@flashcards/shared'
-import { MIN_CARD_LEVEL, MAX_CARD_TIME, MIN_CARD_TIME, SELECT_OPTIONS } from '@/constants'
+
+import { MAX_CARD_TIME, MIN_CARD_LEVEL, MIN_CARD_TIME, SELECT_OPTIONS } from '@/constants'
+import type { Card, GameHistory, GameSettings } from '@/types'
 
 const STORAGE_KEYS = {
   CARDS: '1x1-cards',

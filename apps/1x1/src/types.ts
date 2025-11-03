@@ -4,8 +4,8 @@
  */
 
 import type {
-  BaseGameHistory,
   BaseCard,
+  BaseGameHistory,
   FocusType,
   GameState as SharedGameState
 } from '@flashcards/shared'

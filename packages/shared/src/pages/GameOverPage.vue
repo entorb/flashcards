@@ -1,55 +1,129 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+import {
+  calculateDailyBonuses,
+  type DailyBonusConfig,
+  type GameResult,
+  helperStatsDataWrite
+} from '../index'
 import { TEXT_DE } from '../text-de'
 
-interface BonusReason {
-  label: string
-  points: number
+interface StorageFunctions {
+  getGameResult: () => GameResult | null
+  clearGameResult: () => void
+  incrementDailyGames: () => { isFirstGame: boolean; gamesPlayedToday: number }
+  loadGameStats: () => { gamesPlayed: number; points: number; correctAnswers: number }
+  saveGameStats: (stats: { gamesPlayed: number; points: number; correctAnswers: number }) => void
+  saveHistory: (history: any[]) => void
 }
 
 interface Props {
-  points: number
-  correctAnswers: number
-  totalCards: number
-  bonusReasons?: BonusReason[]
-  showMascot: boolean
+  storageFunctions: StorageFunctions
+  bonusConfig: DailyBonusConfig
+  basePath: string
+  gameStoreHistory: any[]
 }
 
-type Emits = (e: 'goHome') => void
-
 const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+
+const router = useRouter()
+
+const result = ref<GameResult | null>(null)
+const bonusReasons = ref<Array<{ label: string; points: number }>>([])
 
 const bonusPoints = computed(() => {
-  return props.bonusReasons?.reduce((sum, r) => sum + r.points, 0) || 0
+  return bonusReasons.value.reduce((sum, r) => sum + r.points, 0)
 })
 
 const totalPoints = computed(() => {
-  return props.points + bonusPoints.value
+  if (!result.value) return 0
+  return result.value.points + bonusPoints.value
 })
 
-function handleGoHome() {
-  emit('goHome')
+const successRate = computed(() => {
+  if (!result.value) return 0
+  return result.value.correctAnswers / result.value.totalCards
+})
+
+const isMascotHappy = computed(() => {
+  return successRate.value >= 0.7
+})
+
+const isMascotGrinning = computed(() => {
+  return successRate.value === 1
+})
+
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    goHome()
+  }
+}
+
+onMounted(async () => {
+  result.value = props.storageFunctions.getGameResult()
+
+  // No result found, redirect to home
+  if (!result.value) {
+    router.push({ name: '/' })
+    return
+  }
+
+  // Calculate daily bonuses using shared helper
+  const dailyInfo = props.storageFunctions.incrementDailyGames()
+  const calculatedBonuses = calculateDailyBonuses(dailyInfo, props.bonusConfig)
+  bonusReasons.value = calculatedBonuses
+
+  // Persist history and stats with bonus points
+  const totalBonusPoints = bonusReasons.value.reduce((sum, r) => sum + r.points, 0)
+
+  // Use history from game store (which includes the new entry added by finishGame)
+  if (props.gameStoreHistory.length > 0) {
+    // Directly mutate the last entry of the history array. While mutating props is
+    // generally discouraged, `gameStoreHistory` is a ref from the store. Modifying
+    // the object within the ref's array ensures the store's state remains consistent
+    // for other components like the HistoryPage. This approach also mirrors the
+    // pre-refactor logic and fixes a data inconsistency bug.
+    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
+    lastEntry.points += totalBonusPoints
+    props.storageFunctions.saveHistory(props.gameStoreHistory)
+  }
+
+  // Load and update stats
+  const stats = props.storageFunctions.loadGameStats()
+  stats.points += totalBonusPoints
+  props.storageFunctions.saveGameStats(stats)
+
+  globalThis.addEventListener('keydown', handleKeyDown)
+  // Update usage stats in DB
+  await helperStatsDataWrite(props.basePath)
+})
+
+onUnmounted(() => {
+  globalThis.removeEventListener('keydown', handleKeyDown)
+})
+
+function goHome() {
+  // Clear game result from session storage
+  props.storageFunctions.clearGameResult()
+  router.push({ name: '/' })
 }
 </script>
 
 <template>
   <q-page
+    v-if="result"
     class="flex flex-center q-pa-md"
     style="max-width: 600px; margin: 0 auto"
   >
     <div class="full-width text-center">
-      <!-- Mascot or Trophy Icon -->
+      <!-- Mascot -->
       <div class="flex flex-center q-mb-md">
         <slot
-          v-if="showMascot"
           name="mascot"
-        />
-        <q-icon
-          v-else
-          name="emoji_events"
-          color="amber"
-          size="100px"
+          :is-happy="isMascotHappy"
+          :is-grinning="isMascotGrinning"
         />
       </div>
 
@@ -72,21 +146,21 @@ function handleGoHome() {
                 class="text-h4 text-positive text-weight-bold"
                 data-cy="correct-answers-count"
               >
-                {{ correctAnswers }}
+                {{ result.correctAnswers }}
               </span>
 
               <span
                 class="text-h4 text-weight-bold"
                 data-cy="total-questions-count"
               >
-                / {{ totalCards }}
+                / {{ result.totalCards }}
               </span>
             </div>
           </div>
 
           <!-- Bonus Points Section -->
           <div
-            v-if="bonusReasons && bonusReasons.length > 0"
+            v-if="bonusReasons.length > 0"
             class="q-mt-md q-pa-sm bg-amber-1 rounded-borders"
           >
             <q-separator class="q-mb-md" />
@@ -105,15 +179,14 @@ function handleGoHome() {
               <q-chip
                 color="amber-2"
                 text-color="amber-9"
-                icon="add"
                 dense
               >
-                +{{ reason.points }} {{ reason.label }}
+                + {{ reason.points }}: {{ reason.label }}
               </q-chip>
             </div>
             <div class="row justify-center q-mt-sm">
               <div class="text-h6 text-weight-bold">
-                {{ points }} + {{ bonusPoints }} =
+                {{ result.points }} + {{ bonusPoints }} =
                 <span data-cy="total-points-with-bonus">{{ totalPoints }}</span>
               </div>
             </div>
@@ -129,7 +202,7 @@ function handleGoHome() {
         icon="home"
         :label="TEXT_DE.nav.backToHome"
         unelevated
-        @click="handleGoHome"
+        @click="goHome"
         data-cy="back-to-home-button"
       />
     </div>
