@@ -187,8 +187,9 @@ export function useGameStore() {
     baseStore.gameStats.value.points += baseStore.points.value
     baseStore.gameStats.value.correctAnswers += baseStore.correctAnswersCount.value
 
-    // Clear game state after finishing
+    // Clear game state after finishing (sessionStorage and in-memory state)
     storageClearGameState()
+    baseStore.discardGame()
   }
 
   function resetCardsToDefaultSet() {
