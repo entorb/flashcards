@@ -80,14 +80,14 @@ onMounted(async () => {
 
   // Use history from game store (which includes the new entry added by finishGame)
   if (props.gameStoreHistory.length > 0) {
-    // Create a copy to avoid mutating the prop
-    const historyWithBonus = props.gameStoreHistory.map((entry, index) => {
-      if (index === props.gameStoreHistory.length - 1) {
-        return { ...entry, points: entry.points + totalBonusPoints }
-      }
-      return entry
-    })
-    props.storageFunctions.saveHistory(historyWithBonus)
+    // Directly mutate the last entry of the history array. While mutating props is
+    // generally discouraged, `gameStoreHistory` is a ref from the store. Modifying
+    // the object within the ref's array ensures the store's state remains consistent
+    // for other components like the HistoryPage. This approach also mirrors the
+    // pre-refactor logic and fixes a data inconsistency bug.
+    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
+    lastEntry.points += totalBonusPoints
+    props.storageFunctions.saveHistory(props.gameStoreHistory)
   }
 
   // Load and update stats
