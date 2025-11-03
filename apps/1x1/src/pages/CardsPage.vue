@@ -18,7 +18,7 @@ import {
   TIME_COLOR_THRESHOLDS,
   BG_COLORS
 } from '@/constants'
-import { TEXT_DE, useResetCards } from '@flashcards/shared'
+import { TEXT_DE, useResetCards, useCardFiltering } from '@flashcards/shared'
 import { LevelDistribution } from '@flashcards/shared/components'
 
 const router = useRouter()
@@ -31,9 +31,9 @@ const cardsInRange = computed(() => {
   const cardMap = new Map(cards.value.map(c => [c.question, c]))
   const virtualCards: Card[] = []
 
-  for (const x of range.value) {
-    for (const y of range.value) {
-      if (y <= x) {
+  for (const y of range.value) {
+    for (const x of range.value) {
+      if (x <= y) {
         const question = `${y}x${x}`
         const existingCard = cardMap.get(question)
 
@@ -47,6 +47,22 @@ const cardsInRange = computed(() => {
   }
 
   return virtualCards
+})
+
+const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(cardsInRange)
+
+const sortedFilteredCards = computed(() => {
+  const cards = [...filteredCards.value]
+  cards.sort((a, b) => {
+    // Parse question format "5x3" to get y=5, x=3
+    const [aY, aX] = a.question.split('x').map(Number)
+    const [bY, bX] = b.question.split('x').map(Number)
+
+    // Sort by X first (column), then by Y (row)
+    if (aX !== bX) return aX - bX
+    return aY - bY
+  })
+  return cards
 })
 
 const minTime = computed(() => {
@@ -108,8 +124,8 @@ function getTimeTextColor(time: number): string {
 }
 
 function getCellStyle(y: number, x: number): Record<string, string> {
-  // For y > x, use the card from x, y (symmetric)
-  const card = y > x ? getCard(x, y) : getCard(y, x)
+  // For y < x, use the card from x, y (symmetric)
+  const card = y < x ? getCard(x, y) : getCard(y, x)
 
   return {
     backgroundColor: LEVEL_COLORS[card.level as keyof typeof LEVEL_COLORS] || BG_COLORS.disabled,
@@ -158,9 +174,49 @@ function goHome() {
       <!-- Level Distribution -->
       <LevelDistribution
         :cards="cardsInRange"
+        :selected-level="selectedLevel"
         @reset="resetCardsHandler"
+        @level-click="handleLevelClick"
         class="q-mb-md"
       />
+
+      <!-- Filtered Cards List -->
+      <q-card
+        v-if="selectedLevel !== null"
+        class="q-mb-md"
+      >
+        <q-card-section>
+          <div class="row items-center justify-between q-mb-md">
+            <div class="text-h6">
+              {{ TEXT_DE.words.level }} {{ selectedLevel }} ({{ sortedFilteredCards.length }})
+            </div>
+          </div>
+          <div style="overflow-y: auto">
+            <q-list
+              bordered
+              separator
+            >
+              <q-item
+                v-for="card in sortedFilteredCards"
+                :key="card.question"
+              >
+                <q-item-section>
+                  <q-item-label>{{ card.question }} = {{ card.answer }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-badge
+                    :label="`Level ${card.level}`"
+                    :style="{
+                      backgroundColor:
+                        LEVEL_COLORS[card.level as keyof typeof LEVEL_COLORS] || '#f5f5f5'
+                    }"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+        </q-card-section>
+      </q-card>
 
       <!-- Cards Grid/Matrix -->
       <q-card class="grid-card">
@@ -206,13 +262,13 @@ function goHome() {
                   <div class="cell-content q-pa-xs">
                     <div class="text-caption text-weight-medium">
                       <!-- Level -->
-                      L{{ (y > x ? getCard(x, y) : getCard(y, x)).level }}
+                      L{{ (y < x ? getCard(x, y) : getCard(y, x)).level }}
                     </div>
                     <!-- Question and Answer -->
                     <div class="cell-answer q-my-xs">{{ y }}x{{ x }}<br />= {{ x * y }}</div>
                     <!-- Time -->
                     <div class="text-caption text-weight-medium">
-                      {{ (y > x ? getCard(x, y) : getCard(y, x)).time.toFixed(1) }}s
+                      {{ (y < x ? getCard(x, y) : getCard(y, x)).time.toFixed(1) }}s
                     </div>
                   </div>
                 </div>
