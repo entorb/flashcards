@@ -58,7 +58,7 @@ export const INITIAL_CARDS: Card[] = [
   { en: 'How', de: 'Wie', level: 3, time_blind: 60, time_typing: 60 },
   { en: 'Which', de: 'Welche/Welcher/Welches', level: 4, time_blind: 60, time_typing: 60 },
   { en: 'From where', de: 'Woher', level: 4, time_blind: 60, time_typing: 60 },
-  { en: 'To where', de: 'Wohin', level: 5, time_blind: 60, time_typing: 60 },
+  { en: 'Where to', de: 'Wohin', level: 5, time_blind: 60, time_typing: 60 },
   { en: 'How much', de: 'Wie viel', level: 5, time_blind: 60, time_typing: 60 }
 ]
 
