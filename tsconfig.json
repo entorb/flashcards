@@ -1,4 +1,8 @@
 {
   "files": [],
-  "references": [{ "path": "./apps/1x1" }, { "path": "./apps/voc" }, { "path": "./packages/shared" }]
+  "references": [
+    { "path": "./apps/1x1" },
+    { "path": "./apps/voc" },
+    { "path": "./packages/shared" }
+  ]
 }
