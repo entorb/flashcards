@@ -4,12 +4,10 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import {
   AUTO_CLOSE_DURATION,
-  AUTO_SUBMIT_DIGITS,
   BUTTON_DISABLE_DURATION,
   COUNTDOWN_INTERVAL,
   MAX_CARD_TIME
 } from '@/constants'
-import { loadRange } from '@/services/storage'
 import type { Card, SelectionType } from '@/types'
 import { formatDisplayQuestion } from '@/utils/questionFormatter'
 
@@ -54,23 +52,17 @@ const displayQuestion = computed(() => {
   return formatDisplayQuestion(props.card.question, props.selection)
 })
 
-// Check if auto-submit should be disabled when extended features are active
-// (range includes values >= 11, which means 3-digit answers are possible)
-const shouldDisableAutoSubmit = computed(() => {
-  const range = loadRange()
-  return range.some(n => n >= 11)
+// Calculate expected answer length for dynamic auto-submit
+// (1 digit for 3×3=9, 2 digits for 6×8=48, 3 digits for 12×15=180)
+const expectedAnswerLength = computed(() => {
+  return String(props.card.answer).length
 })
 
-// Auto-submit after configured digit count (unless extended features are active)
+// Auto-submit after user enters expected number of digits
 watch(userAnswer, newValue => {
-  if (
-    newValue !== null &&
-    newValue !== undefined &&
-    !showFeedback.value &&
-    !shouldDisableAutoSubmit.value
-  ) {
+  if (newValue !== null && newValue !== undefined && !showFeedback.value) {
     const valueStr = String(newValue)
-    if (valueStr.length >= AUTO_SUBMIT_DIGITS) {
+    if (valueStr.length >= expectedAnswerLength.value) {
       submitAnswer()
     }
   }
@@ -272,14 +264,17 @@ onUnmounted(() => {
           data-cy="question-display"
         >
           {{ displayQuestion }}
-        </div>
 
-        <!-- Show correct answer after submission -->
-        <div
-          v-if="showFeedback && answerData"
-          class="q-mt-lg text-h5 text-weight-medium text-positive"
-        >
-          {{ card.answer }}
+          <!-- Show correct answer after submission -->
+          <template v-if="showFeedback && answerData">
+            =
+            <output
+              class="text-positive"
+              :aria-label="`Correct answer: ${card.answer}`"
+            >
+              {{ card.answer }}
+            </output>
+          </template>
         </div>
       </q-card-section>
     </q-card>

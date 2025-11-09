@@ -6,14 +6,14 @@ import { useGameStore } from '@/composables/useGameStore'
 import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@/constants'
 import {
   clearGameResult,
+  clearGameState,
   getGameResult,
   incrementDailyGames,
-  loadGameStats,
   saveGameStats,
   saveHistory
 } from '@/services/storage'
 
-const { history: gameStoreHistory } = useGameStore()
+const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
 </script>
 
 <template>
@@ -21,8 +21,8 @@ const { history: gameStoreHistory } = useGameStore()
     :storage-functions="{
       getGameResult,
       clearGameResult,
+      clearGameState,
       incrementDailyGames,
-      loadGameStats,
       saveGameStats,
       saveHistory
     }"
@@ -33,6 +33,7 @@ const { history: gameStoreHistory } = useGameStore()
     }"
     :base-path="BASE_PATH"
     :game-store-history="gameStoreHistory"
+    :game-store-stats="gameStoreStats"
   >
     <template #mascot="{ isHappy, isGrinning }">
       <GroundhogMascot

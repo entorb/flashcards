@@ -144,23 +144,24 @@ export function useGameStore() {
       correctAnswers: baseStore.correctAnswersCount.value
     }
 
-    // Store the history entry in memory for GameOverPage to persist
+    // Update history and stats in memory only - GameOverPage will save to localStorage
     baseStore.history.value = [...baseStore.history.value, historyEntry]
-    // Update game stats in memory for GameOverPage to persist
     baseStore.gameStats.value.gamesPlayed++
     baseStore.gameStats.value.points += baseStore.points.value
     baseStore.gameStats.value.correctAnswers += baseStore.correctAnswersCount.value
 
-    // Save game result to session storage for GameOverPage
+    // Save game result to sessionStorage for GameOverPage
     storageSetGameResult({
       points: baseStore.points.value,
       correctAnswers: baseStore.correctAnswersCount.value,
       totalCards: baseStore.gameCards.value.length
     })
 
-    // Clear game state after finishing (sessionStorage and in-memory state)
+    // Clear game state from sessionStorage
     storageClearGameState()
-    baseStore.discardGame()
+
+    // Reset in-memory game state to prevent "11/10" bug when starting a new game
+    baseStore.resetGameState()
   }
 
   function resetCardsToDefaultSet() {

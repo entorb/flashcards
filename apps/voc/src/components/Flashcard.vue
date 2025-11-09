@@ -211,13 +211,16 @@ function handleTypingSubmit() {
           data-cy="game-page-question"
         >
           {{ question }}
-        </div>
-        <!-- Show answer if revealed -->
-        <div
-          v-if="showAnswer"
-          class="q-mt-md text-weight-bold text-h4"
-        >
-          {{ correctAnswer }}
+          <!-- Show answer if revealed -->
+          <template v-if="showAnswer">
+            =
+            <output
+              class="text-positive"
+              :aria-label="`Correct answer: ${correctAnswer}`"
+            >
+              {{ correctAnswer }}
+            </output>
+          </template>
         </div>
       </q-card-section>
     </q-card>
