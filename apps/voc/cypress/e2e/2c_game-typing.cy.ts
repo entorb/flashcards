@@ -155,6 +155,9 @@ describe('Typing Mode Game - DE to EN', () => {
         expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
 
+    // Verify gamesPlayed incremented to 1
+    cy.get('[data-cy="stats-games-played"]').should('contain', '1')
+
     // Navigate to history page
     cy.get('[data-cy="history-button"]').click()
 

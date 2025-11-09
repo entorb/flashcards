@@ -169,6 +169,9 @@ describe('Multiple Choice Game - EN to DE', () => {
         expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
 
+    // Verify gamesPlayed incremented to 1
+    cy.get('[data-cy="stats-games-played"]').should('contain', '1')
+
     // Navigate to history page
     cy.get('[data-cy="history-button"]').click()
     cy.url().should('include', '/history')
@@ -200,5 +203,134 @@ describe('Multiple Choice Game - EN to DE', () => {
     // Verify we're back on home page
     cy.url().should('not.include', '/history')
     cy.get('[data-cy="app-title"]').should('be.visible')
+  })
+
+  it('should correctly increment stats and reset state across multiple games', () => {
+    // Verify we're on home page
+    cy.get('[data-cy="app-title"]').should('be.visible')
+
+    // Verify initial stats are zero
+    cy.get('[data-cy="stats-games-played"]').should('contain', '0')
+    cy.get('[data-cy="stats-total-points"]').should('contain', '0')
+    cy.get('[data-cy="stats-correct-answers"]').should('contain', '0')
+
+    // Helper function to play a complete game
+    const playGame = (correctCount: number) => {
+      // Answer cards: all correct
+      for (let cardIndex = 0; cardIndex < 10; cardIndex++) {
+        cy.window().then(win => {
+          const stored = win.localStorage.getItem('voc-cards')
+          const cards = stored ? JSON.parse(stored) : []
+
+          cy.get('[data-cy="game-page-question"]')
+            .invoke('text')
+            .then(questionText => {
+              const card = cards.find((c: any) => c.en === questionText.trim())
+              if (card && cardIndex < correctCount) {
+                // Answer correctly
+                const correctAnswer = card.de
+                cy.get('[data-cy="multiple-choice-option"]').then($buttons => {
+                  let correctIndex = -1
+                  $buttons.each((index, btn) => {
+                    if (btn.textContent?.trim() === correctAnswer) {
+                      correctIndex = index
+                      return false
+                    }
+                  })
+                  if (correctIndex >= 0) {
+                    cy.get('[data-cy="multiple-choice-option"]').eq(correctIndex).click()
+                  }
+                })
+              } else {
+                // Answer incorrectly (for cards beyond correctCount)
+                cy.get('[data-cy="multiple-choice-option"]').eq(0).click()
+              }
+
+              cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
+              cy.get('body').then($body => {
+                if ($body.text().includes('Falsch')) {
+                  // eslint-disable-next-line cypress/no-unnecessary-waiting
+                  cy.wait(3100)
+                }
+              })
+              cy.get('[data-cy="continue-button"]').click()
+            })
+        })
+      }
+    }
+
+    // Play first game
+    cy.contains('Multiple Choice').click()
+    cy.contains('EN → DE').click()
+    cy.get('[data-cy="start-button"]').click()
+    cy.url().should('include', '/game')
+    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="multiple-choice-option"]', { timeout: 10000 }).should('have.length', 4)
+
+    playGame(10) // All 10 correct
+
+    // Verify on game over page
+    cy.url({ timeout: 15000 }).should('include', '/game-over')
+    cy.get('[data-cy="correct-answers-count"]').should('contain', '10')
+
+    // Capture stats from first game
+    let game1Points: number
+    cy.get('[data-cy="final-points"]')
+      .invoke('text')
+      .then(text => {
+        game1Points = parseInt(text.trim())
+      })
+
+    // Go back to home
+    cy.get('[data-cy="back-to-home-button"]').click()
+    cy.url().should('not.include', '/game-over')
+
+    // Verify stats incremented after first game
+    cy.get('[data-cy="stats-games-played"]').should('contain', '1')
+    cy.get('[data-cy="stats-correct-answers"]').should('contain', '10')
+    cy.get('[data-cy="stats-total-points"]')
+      .invoke('text')
+      .then(text => {
+        expect(parseInt(text.trim())).to.equal(game1Points)
+      })
+
+    // Play second game
+    cy.get('[data-cy="start-button"]').click()
+    cy.url().should('include', '/game')
+    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
+
+    // Verify game starts fresh at 1/10 (not 11/10 or corrupted state)
+    cy.get('body').should('contain', '1')
+    cy.get('body').should('contain', '10')
+
+    playGame(10) // All 10 correct
+
+    // Verify on game over page
+    cy.url({ timeout: 15000 }).should('include', '/game-over')
+    cy.get('[data-cy="correct-answers-count"]').should('contain', '10')
+
+    // Capture stats from second game
+    let game2Points: number
+    cy.get('[data-cy="final-points"]')
+      .invoke('text')
+      .then(text => {
+        game2Points = parseInt(text.trim())
+      })
+
+    // Go back to home
+    cy.get('[data-cy="back-to-home-button"]').click()
+    cy.url().should('not.include', '/game-over')
+
+    // Verify stats incremented after second game
+    cy.get('[data-cy="stats-games-played"]').should('contain', '2')
+    cy.get('[data-cy="stats-correct-answers"]').should('contain', '20')
+    cy.get('[data-cy="stats-total-points"]')
+      .invoke('text')
+      .then(text => {
+        const totalPoints = parseInt(text.trim())
+        // Total should be sum of both games
+        expect(totalPoints).to.be.greaterThan(game1Points)
+        expect(totalPoints).to.be.greaterThan(game2Points)
+      })
   })
 })

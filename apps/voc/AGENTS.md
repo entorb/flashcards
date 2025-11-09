@@ -269,7 +269,26 @@ Card data is persisted to localStorage and syncs to game store reactively.
 1. **Home Page**: Display statistics and select game settings
 2. **Game Page**: Play round with selected cards and settings
 3. **Game Over**: Show results (points, correct answers, accuracy)
-4. **Continue**: Auto-return to Home or navigate manually
+4. **Continue**: Return to Home
+
+### End-of-Game Flow Details
+
+**See `packages/shared/CLAUDE.md` for detailed end-of-game flow pattern.**
+
+Summary for voc app:
+
+1. `finishGame()` updates in-memory state (history + stats WITHOUT bonus)
+2. Saves game result to sessionStorage, clears game state
+3. GameOverPage calculates bonuses, adds to in-memory stats
+4. **Single save to localStorage immediately** on GameOverPage load (with bonuses)
+
+**Critical:**
+
+- `finishGame()` does NOT save to localStorage - only updates in-memory state
+- Save happens **immediately when GameOverPage loads**, not when user navigates
+  away
+- This ensures data persists even if user closes tab without clicking "Back to
+  Home"
 
 ## State Management Pattern
 

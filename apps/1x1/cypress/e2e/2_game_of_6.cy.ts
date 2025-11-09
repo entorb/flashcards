@@ -45,7 +45,7 @@ describe('Full Game Flow', () => {
         cy.get('[data-cy="answer-input"]').clear()
         cy.get('[data-cy="answer-input"]').type(String(wrongAnswer))
 
-        // Auto-submit happens after 2 digits, wait for wrong answer feedback (red dialog)
+        // Auto-submit happens after typing expected answer length, wait for wrong answer feedback (red dialog)
         cy.get('[data-cy="wrong-answer-feedback"]', { timeout: 5000 }).should('be.visible')
 
         // Wait for button to be enabled (3 second disable timer)
@@ -66,7 +66,7 @@ describe('Full Game Flow', () => {
           cy.get('[data-cy="answer-input"]').clear()
           cy.get('[data-cy="answer-input"]').type(String(answer))
 
-          // Wait for auto-submit after 2 digits or feedback to appear (green dialog)
+          // Wait for auto-submit after typing expected answer length or feedback to appear (green dialog)
           cy.get('[data-cy="correct-answer-feedback"]', { timeout: 5000 }).should('be.visible')
 
           // Wait for auto-close or press Enter to continue
@@ -127,6 +127,9 @@ describe('Full Game Flow', () => {
         expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
 
+    // Verify gamesPlayed incremented to 1
+    cy.get('[data-cy="stats-games-played"]').should('contain', '1')
+
     // Navigate to history page
     cy.get('[data-cy="history-button"]').click()
 
@@ -160,5 +163,129 @@ describe('Full Game Flow', () => {
     // Verify we're back on home page
     cy.url().should('not.include', '/history')
     cy.get('[data-cy="app-title"]').should('be.visible')
+  })
+
+  it('should correctly increment stats and reset state across multiple games', () => {
+    // Verify we're on the home page
+    cy.get('[data-cy="app-title"]').should('be.visible')
+
+    // Verify initial stats are zero
+    cy.get('[data-cy="stats-games-played"]').should('contain', '0')
+    cy.get('[data-cy="stats-total-points"]').should('contain', '0')
+    cy.get('[data-cy="stats-correct-answers"]').should('contain', '0')
+
+    // Play first game - select only [3]
+    cy.get('[data-cy="table-selection-button-3"]').click()
+    cy.get('[data-cy="start-button"]').click()
+    cy.url().should('include', '/game')
+
+    // Answer all 7 questions correctly in first game
+    for (let i = 0; i < 7; i++) {
+      cy.get('[data-cy="question-display"]')
+        .invoke('text')
+        .then(questionText => {
+          const { answer } = parseQuestion(questionText)
+          cy.get('[data-cy="answer-input"]').clear()
+          cy.get('[data-cy="answer-input"]').type(String(answer))
+          cy.get('[data-cy="correct-answer-feedback"]', { timeout: 5000 }).should('be.visible')
+          cy.get('body').type('{enter}')
+        })
+    }
+
+    // Verify on game over page
+    cy.url({ timeout: 10000 }).should('include', '/game-over')
+
+    // Capture stats from first game
+    let game1Points: number
+    let game1CorrectAnswers: number
+    cy.get('[data-cy="final-points"]')
+      .invoke('text')
+      .then(text => {
+        game1Points = parseInt(text.trim())
+      })
+
+    cy.get('[data-cy="correct-answers-count"]')
+      .invoke('text')
+      .then(text => {
+        game1CorrectAnswers = parseInt(text.trim())
+        expect(game1CorrectAnswers).to.equal(7)
+      })
+
+    // Go back to home
+    cy.get('[data-cy="back-to-home-button"]').click()
+    cy.url().should('not.include', '/game-over')
+
+    // Verify stats incremented after first game
+    cy.get('[data-cy="stats-games-played"]').should('contain', '1')
+    cy.get('[data-cy="stats-correct-answers"]').should('contain', '7')
+    cy.get('[data-cy="stats-total-points"]')
+      .invoke('text')
+      .then(text => {
+        expect(parseInt(text.trim())).to.equal(game1Points)
+      })
+
+    // Play second game - select only [4]
+    cy.get('[data-cy="table-selection-button-4"]').click()
+    cy.get('[data-cy="start-button"]').click()
+    cy.url().should('include', '/game')
+
+    // Verify game starts fresh at 1/7 (not 8/7 or corrupted state)
+    cy.get('body').should('contain', '1')
+    cy.get('body').should('contain', '7')
+
+    // Answer all 7 questions correctly in second game
+    for (let i = 0; i < 7; i++) {
+      cy.get('[data-cy="question-display"]')
+        .invoke('text')
+        .then(questionText => {
+          const { answer } = parseQuestion(questionText)
+          cy.get('[data-cy="answer-input"]').clear()
+          cy.get('[data-cy="answer-input"]').type(String(answer))
+          cy.get('[data-cy="correct-answer-feedback"]', { timeout: 5000 }).should('be.visible')
+          cy.get('body').type('{enter}')
+        })
+    }
+
+    // Verify on game over page
+    cy.url({ timeout: 10000 }).should('include', '/game-over')
+
+    // Capture stats from second game
+    let game2Points: number
+    let game2CorrectAnswers: number
+    cy.get('[data-cy="final-points"]')
+      .invoke('text')
+      .then(text => {
+        game2Points = parseInt(text.trim())
+      })
+
+    cy.get('[data-cy="correct-answers-count"]')
+      .invoke('text')
+      .then(text => {
+        game2CorrectAnswers = parseInt(text.trim())
+        expect(game2CorrectAnswers).to.equal(7)
+      })
+
+    // Go back to home
+    cy.get('[data-cy="back-to-home-button"]').click()
+    cy.url().should('not.include', '/game-over')
+
+    // Verify stats incremented after second game - should match sum of both games
+    cy.get('[data-cy="stats-games-played"]').should('contain', '2')
+
+    cy.get('[data-cy="stats-correct-answers"]')
+      .invoke('text')
+      .then(text => {
+        const totalCorrectAnswers = parseInt(text.trim())
+        const expectedCorrectAnswers = game1CorrectAnswers + game2CorrectAnswers
+        expect(totalCorrectAnswers).to.equal(expectedCorrectAnswers)
+      })
+
+    cy.get('[data-cy="stats-total-points"]')
+      .invoke('text')
+      .then(text => {
+        const totalPoints = parseInt(text.trim())
+        const expectedTotalPoints = game1Points + game2Points
+        expect(totalPoints).to.equal(expectedTotalPoints)
+      })
   })
 })

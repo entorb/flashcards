@@ -175,6 +175,25 @@ implies 1x12)
 
 ## Game Logic
 
+### End-of-Game Flow
+
+**See `packages/shared/CLAUDE.md` for detailed end-of-game flow pattern.**
+
+Summary for 1x1 app:
+
+1. `finishGame()` updates in-memory state (history + stats WITHOUT bonus)
+2. Saves game result to sessionStorage, clears game state
+3. GameOverPage calculates bonuses, adds to in-memory stats
+4. **Single save to localStorage immediately** on GameOverPage load (with bonuses)
+
+**Critical:**
+
+- `finishGame()` does NOT save to localStorage - only updates in-memory state
+- Save happens **immediately when GameOverPage loads**, not when user navigates
+  away
+- This ensures data persists even if user closes tab without clicking "Back to
+  Home"
+
 ### Card Selection Algorithm
 
 1. Filter cards where x OR y matches selected tables

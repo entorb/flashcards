@@ -232,6 +232,44 @@ useGameTimer(trigger: Ref<any>, maxTime?: number)
 
 **Used by:** Both apps on all pages
 
+#### `src/pages/GameOverPage.vue` (Game Results)
+
+**Shared game over screen with bonus calculation and final save:**
+
+**Key responsibilities:**
+
+- Display game results (points, correct answers, accuracy)
+- Calculate and display daily bonuses (first game, streak bonuses)
+- Add bonus points to in-memory stats
+- **Perform single final save** to localStorage when user returns home
+
+**Props:**
+
+- `storageFunctions`: Storage operations (getGameResult, clearGameResult,
+  clearGameState, incrementDailyGames, saveGameStats, saveHistory)
+- `bonusConfig`: Daily bonus configuration (firstGameBonus, streakGameBonus,
+  streakGameInterval)
+- `basePath`: App base path for usage stats
+- `gameStoreHistory`: History array from game store (passed by reference)
+- `gameStoreStats`: Stats object from game store (passed by reference)
+
+**Data flow:**
+
+1. `onMounted()`:
+   - Load game result, calculate bonuses
+   - Add to in-memory stats (mutates props)
+   - **Save final state to localStorage immediately** (history + stats with bonuses)
+2. `goHome()`: Clear session storage, navigate home
+
+**Important:**
+
+- This component mutates `gameStoreHistory` and `gameStoreStats` props
+  (arrays/objects passed by reference from store). This is intentional to ensure
+  HomePage sees updated stats immediately.
+- Save happens **immediately in onMounted()**, not when user navigates away.
+  This ensures data persists even if user closes tab without clicking "Back to
+  Home".
+
 #### `src/pages/HistoryPage.vue` (Game History)
 
 **Generic history display table:**
@@ -352,6 +390,55 @@ import { AppFooter, AnswerFeedback } from '@flashcards/shared/components'
 // Page imports
 import { HistoryPage } from '@flashcards/shared/pages'
 ```
+
+## End-of-Game Flow Pattern
+
+**Harmonized single-save architecture across both apps:**
+
+### Flow Overview
+
+1. **GamePage**: User completes final card
+   - Calls `finishGame()` in game store
+
+2. **`finishGame()` (app-specific store)**:
+   - Updates in-memory state ONLY:
+     - Adds entry to `history` array (without bonus)
+     - Increments `gameStats` counters (without bonus)
+   - Saves game result to **sessionStorage** for GameOverPage
+   - Clears game state from **sessionStorage** (gameCards, currentCardIndex,
+     etc.)
+   - Does NOT save to **localStorage** yet
+   - Navigates to GameOverPage
+
+3. **GameOverPage** (shared component):
+   - `onMounted()`:
+     - Loads game result from sessionStorage
+     - Calculates daily bonuses (first game, streak)
+     - Adds bonus points to in-memory history and stats (mutates props)
+     - **Single save to localStorage immediately** (history + stats with bonuses)
+   - `goHome()`:
+     - Clears sessionStorage (game result, game state)
+     - Navigates to HomePage
+
+4. **HomePage**: Displays updated stats from localStorage
+
+### Benefits
+
+- **Single source of truth**: One save operation with complete data
+- **No data loss**: Stats and bonus saved together atomically
+- **Immediate persistence**: Save happens as soon as GameOverPage loads, not on navigation
+- **User-friendly**: Data persists even if user closes tab without clicking "Back to Home"
+- **Clear separation**: Game logic in stores, bonus logic in shared component
+- **Type-safe**: All data flows through typed props and interfaces
+- **Testable**: E2E tests verify stats increment correctly across games
+
+### Critical Implementation Details
+
+- GameOverPage receives `gameStoreHistory` and `gameStoreStats` as props
+- These are **refs from the store** (passed by reference), not copies
+- Mutating them updates the store's state directly
+- ESLint warning suppressed with comment explaining intentional mutation
+- HomePage automatically sees updated stats (reactive refs)
 
 ## Commands & Workflow
 
