@@ -14,8 +14,8 @@ import { TEXT_DE } from '../text-de'
 export interface StorageFunctions<T extends BaseGameHistory> {
   getGameResult: () => GameResult | null
   clearGameResult: () => void
+  clearGameState: () => void
   incrementDailyGames: () => { isFirstGame: boolean; gamesPlayedToday: number }
-  loadGameStats: () => { gamesPlayed: number; points: number; correctAnswers: number }
   saveGameStats: (stats: { gamesPlayed: number; points: number; correctAnswers: number }) => void
   saveHistory: (history: T[]) => void
 }
@@ -25,6 +25,7 @@ export interface Props<T extends BaseGameHistory> {
   bonusConfig: DailyBonusConfig
   basePath: string
   gameStoreHistory: T[]
+  gameStoreStats: { gamesPlayed: number; points: number; correctAnswers: number }
 }
 
 const props = defineProps<Props<T>>()
@@ -76,25 +77,23 @@ onMounted(async () => {
   const calculatedBonuses = calculateDailyBonuses(dailyInfo, props.bonusConfig)
   bonusReasons.value = calculatedBonuses
 
-  // Persist history and stats with bonus points
+  // Add bonus points to in-memory state
   const totalBonusPoints = bonusReasons.value.reduce((sum, r) => sum + r.points, 0)
 
-  // Use history from game store (which includes the new entry added by finishGame)
+  // Update history in memory (last entry)
   if (props.gameStoreHistory.length > 0) {
-    // Directly mutate the last entry of the history array. While mutating props is
-    // generally discouraged, `gameStoreHistory` is a ref from the store. Modifying
-    // the object within the ref's array ensures the store's state remains consistent
-    // for other components like the HistoryPage. This approach also mirrors the
-    // pre-refactor logic and fixes a data inconsistency bug.
     const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
     lastEntry.points += totalBonusPoints
-    props.storageFunctions.saveHistory(props.gameStoreHistory)
   }
 
-  // Load and update stats
-  const stats = props.storageFunctions.loadGameStats()
-  stats.points += totalBonusPoints
-  props.storageFunctions.saveGameStats(stats)
+  // Update stats in memory - props are refs from store, so mutation is intentional
+  // eslint-disable-next-line vue/no-mutating-props
+  props.gameStoreStats.points += totalBonusPoints
+
+  // Save final state to localStorage immediately (don't wait for user navigation)
+  // This ensures data is persisted even if user closes tab or navigates away
+  props.storageFunctions.saveHistory(props.gameStoreHistory)
+  props.storageFunctions.saveGameStats(props.gameStoreStats)
 
   globalThis.addEventListener('keydown', handleKeyDown)
   // Update usage stats in DB
@@ -106,8 +105,11 @@ onUnmounted(() => {
 })
 
 function goHome() {
-  // Clear game result from session storage
+  // Clear game result and game state from session storage
+  // (final state already saved to localStorage in onMounted)
   props.storageFunctions.clearGameResult()
+  props.storageFunctions.clearGameState()
+
   router.push({ name: '/' })
 }
 </script>

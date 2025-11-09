@@ -25,11 +25,6 @@ export const BASE_PATH = '1x1'
 // ============================================================================
 
 /**
- * Auto-submit answer after entering this many digits
- */
-export const AUTO_SUBMIT_DIGITS = 2
-
-/**
  * Available multiplication table selections
  */
 export const SELECT_OPTIONS = [3, 4, 5, 6, 7, 8, 9]
