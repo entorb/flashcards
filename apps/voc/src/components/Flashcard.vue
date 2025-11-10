@@ -1,24 +1,27 @@
 <script setup lang="ts">
-import { type AnswerResult, TEXT_DE } from '@flashcards/shared'
+import {
+  type AnswerResult,
+  TEXT_DE,
+  useFeedbackTimers,
+  useKeyboardContinue
+} from '@flashcards/shared'
 import { shuffleArray } from '@flashcards/shared/utils'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { MAX_TIME } from '../constants'
-import type { Card, GameSettings, PointsBreakdown } from '../types'
+import { calculatePointsBreakdown } from '../services/pointsCalculation'
+import type { AnswerData, Card, GameSettings, PointsBreakdown } from '../types'
 import { validateTypingAnswer } from '../utils/helpers'
 
 interface Props {
   card: Card
   allCards: Card[]
   settings: GameSettings
-  elapsedTime?: number
-  earnedPoints?: number
-  pointsBreakdown?: PointsBreakdown
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  answer: [result: AnswerResult, answerTime: number]
+  answer: [data: AnswerData]
   next: []
 }>()
 
@@ -34,12 +37,20 @@ const feedbackData = ref<{
   highlightedText?: string
 }>({ type: 'simple' })
 const showProceedButton = ref(false)
-const isProceedDisabled = ref(false)
 const startTime = ref<number>(0)
-const disableStartTime = ref<number>(0)
+const earnedPoints = ref<number>(0)
+const pointsBreakdown = ref<PointsBreakdown | null>(null)
 
-let nextCardTimer: ReturnType<typeof setTimeout> | null = null
-let proceedEnableTimer: ReturnType<typeof setTimeout> | null = null
+// Use shared timer composable
+const {
+  isButtonDisabled: isProceedDisabled,
+  startAutoCloseTimer,
+  startButtonDisableTimer
+} = useFeedbackTimers()
+
+// Use shared keyboard continue composable
+const canProceed = computed(() => showProceedButton.value && !isProceedDisabled.value)
+useKeyboardContinue(canProceed, () => emit('next'))
 
 // Compute question and answer based on language direction
 const question = computed(() => {
@@ -91,38 +102,29 @@ watch(
     userAnswer.value = ''
     feedbackData.value = { type: 'simple' }
     showProceedButton.value = false
-    isProceedDisabled.value = false
     startTime.value = Date.now()
-    if (nextCardTimer) clearTimeout(nextCardTimer)
-    if (proceedEnableTimer) clearTimeout(proceedEnableTimer)
   },
   { immediate: true }
 )
-
-// Handle Enter key to proceed when button is enabled
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Enter' && showProceedButton.value && !isProceedDisabled.value) {
-    event.preventDefault()
-    emit('next')
-  }
-}
-
-onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyDown)
-})
-
-onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
-  if (nextCardTimer) clearTimeout(nextCardTimer)
-  if (proceedEnableTimer) clearTimeout(proceedEnableTimer)
-})
 
 function processAnswer(result: AnswerResult) {
   if (answerStatus.value) return
 
   // Calculate answer time in seconds
   const answerTime = (Date.now() - startTime.value) / 1000
-  emit('answer', result, answerTime)
+
+  // Calculate points breakdown
+  pointsBreakdown.value = calculatePointsBreakdown(result, props.card, props.settings, answerTime)
+  earnedPoints.value = pointsBreakdown.value.totalPoints
+
+  // Emit complete answer data to parent
+  emit('answer', {
+    result,
+    answerTime,
+    earnedPoints: earnedPoints.value,
+    pointsBreakdown: pointsBreakdown.value
+  })
+
   answerStatus.value = result
   showAnswer.value = true
 
@@ -131,13 +133,10 @@ function processAnswer(result: AnswerResult) {
 
   if (result === 'correct') {
     // For correct answers: auto-advance after 3 seconds, but allow manual continue
-    isProceedDisabled.value = false
-    nextCardTimer = setTimeout(() => emit('next'), 3000)
+    startAutoCloseTimer(() => emit('next'))
   } else {
     // For incorrect/close answers: disable button for 3 seconds
-    isProceedDisabled.value = true
-    disableStartTime.value = Date.now()
-    proceedEnableTimer = setTimeout(() => (isProceedDisabled.value = false), 3000)
+    startButtonDisableTimer()
 
     if (result === 'close') {
       const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
@@ -162,16 +161,7 @@ function handleMultipleChoiceSubmit(option: string) {
 
 function handleBlindSubmit(correct: boolean) {
   if (correct) {
-    // For correct answers in blind mode, show button and auto-advance
-    if (answerStatus.value) return
-    const answerTime = (Date.now() - startTime.value) / 1000
-    emit('answer', 'correct', answerTime)
-    answerStatus.value = 'correct'
-    showAnswer.value = true
-    showProceedButton.value = true
-    isProceedDisabled.value = false
-    // Auto-advance after 3 seconds, but allow manual continue
-    nextCardTimer = setTimeout(() => emit('next'), 3000)
+    processAnswer('correct')
   } else {
     processAnswer('incorrect')
   }
@@ -271,12 +261,7 @@ function handleTypingSubmit() {
 
       <!-- Points display on correct and close answers -->
       <q-card
-        v-if="
-          (answerStatus === 'correct' || answerStatus === 'close') &&
-          earnedPoints &&
-          earnedPoints > 0 &&
-          pointsBreakdown
-        "
+        v-if="(answerStatus === 'correct' || answerStatus === 'close') && pointsBreakdown"
         class="q-mb-md"
         :class="[answerStatus === 'correct' ? 'bg-positive-1' : 'bg-warning-1']"
       >
