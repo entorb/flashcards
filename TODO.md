@@ -17,6 +17,9 @@
 
 ## Wordplay
 
+- How to extend the voc app to support different languages? So besides 1 set of cards for English, add another set of cards for French. Please create a proposal, no implementation
+  yet.
+
 ---
 
 ## AI Proposals for 1x1
