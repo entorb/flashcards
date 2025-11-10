@@ -45,8 +45,13 @@ export interface GameState extends SharedGameState {
   cards: Card[] // Strongly typed with app-specific Card
 }
 
-// PointsBreakdown
+// ============================================================================
+// Points Breakdown
+// ============================================================================
 
+/**
+ * Detailed breakdown of points calculation for feedback display
+ */
 export interface PointsBreakdown {
   basePoints: number
   modeMultiplier: number
@@ -55,4 +60,19 @@ export interface PointsBreakdown {
   languageBonus: number
   timeBonus: number
   totalPoints: number
+}
+
+// ============================================================================
+// Answer Data (FlashCard component)
+// ============================================================================
+
+/**
+ * Data emitted from FlashCard component after answer submission
+ * Contains result, timing, and complete points breakdown
+ */
+export interface AnswerData {
+  result: 'correct' | 'incorrect' | 'close'
+  answerTime: number
+  earnedPoints: number
+  pointsBreakdown: PointsBreakdown
 }
