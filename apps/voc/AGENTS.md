@@ -1,363 +1,179 @@
-# CLAUDE.md - Wordplay Vocabulary App
+# Wordplay Vocabulary Learning App
 
-## Project Overview
+Vue.js PWA for vocabulary learning through spaced repetition and adaptive
+difficulty with custom flashcard decks.
 
-Wordplay is a Vue.js-based Progressive Web App (PWA) for learning vocabulary
-through spaced repetition and adaptive difficulty. Users can create custom
-flashcard decks and practice using three game modes with increasing complexity
-and point rewards.
+**Features:** Custom flashcard creation • 3 game modes (Multiple-choice 1×,
+Blind 2×, Typing 4×) • Bidirectional learning (EN↔DE) • 5-level adaptive
+difficulty • Language-specific bonuses (DE→EN +1pt) • Weighted card selection •
+3s feedback with icons • Timer tracking • PWA offline support
 
-**Key Features:**
+**Stack:** Vue 3 (Composition API), Quasar, TypeScript, Vite, Vitest, Cypress
 
-- Custom flashcard creation and management (vocabulary pairs)
-- Three game modes: Multiple-choice (1x points), Blind (2x points), Typing (4x
-  points)
-- Bidirectional learning: English→German and German→English
-- 5-level adaptive difficulty system with spaced repetition
-- Language-specific bonuses (DE→EN adds +1 point for complexity)
-- Smart card selection with weighted probability based on level and time
-- 3-second feedback display with visual icon feedback (correct/close/incorrect)
-- Timer tracking with configurable per-mode time limits
-- PWA support for offline use and smartphone installation
-
-**Data Storage:**
-
-- **localStorage** (persistent): Custom flashcards, game history, statistics,
-  user preferences
-- **sessionStorage** (temporary): Game configuration (mode, language, focus)
-
-### Key Technologies
-
-- **Framework:** Vue.js 3 (Composition API with `<script setup>`)
-- **UI:** Quasar Framework
-- **Build Tool:** Vite 6.x
-- **Language:** TypeScript
-- **Routing:** Vue Router
-- **Testing:** Vitest (unit tests)
-- **Linting/Formatting:** ESLint and Prettier
-- **Package Manager:** pnpm
+**Storage:** localStorage (cards, history, stats, settings) • sessionStorage
+(game config)
 
 ## Architecture
 
-### Directory Structure
-
 ```text
 src/
-├── __tests__/
-│   └── setup.ts                 # Vitest setup (mocks localStorage)
 ├── components/
-│   ├── Flashcard.vue            # Core game card component
-│   │                            # Handles MC, Blind, Typing modes
-│   ├── CardManagementCard.vue   # Individual card CRUD interface
-│   └── LanguagePicker.vue       # EN↔DE language selection
+│   ├── FlashCard.vue             # Core game component (MC, Blind, Typing)
+│   ├── CardManagementCard.vue    # Individual card CRUD
+│   └── LanguagePicker.vue        # EN↔DE selection
 ├── pages/
-│   ├── HomePage.vue             # Main navigation and statistics
-│   ├── GamePage.vue             # Active game interface
-│   ├── CardsPage.vue            # Create/edit/delete flashcards
-│   ├── GameOverPage.vue         # Game results display
-│   ├── HistoryPage.vue          # Game history table
-│   └── CardsPage.vue            # Progress visualization
+│   ├── HomePage.vue              # Navigation + stats
+│   ├── GamePage.vue              # Active game
+│   ├── CardsPage.vue             # Create/edit/delete flashcards
+│   ├── GameOverPage.vue          # Results
+│   └── HistoryPage.vue           # Game history
 ├── services/
-│   ├── storage.ts               # localStorage service
-│   ├── cardSelector.ts          # Card selection algorithm
-│   └── helpers.ts               # String normalization, Levenshtein distance
+│   ├── storage.ts                # localStorage service
+│   ├── cardSelector.ts           # Card selection algorithm
+│   ├── pointsCalculation.ts      # Points calculation
+│   └── helpers.ts                # String normalization, Levenshtein
 ├── composables/
-│   └── useGameStore.ts          # Game state management
-├── types/
-│   └── index.ts                 # TypeScript type definitions
-├── config/
-│   └── constants.ts             # Game rules, initial cards, timeouts
-├── App.vue                      # Root component
-├── main.ts                      # Application entry point
-├── router.ts                    # Route definitions
-└── quasar-variables.sass        # Quasar theme customization
+│   └── useGameStore.ts           # Game state management
+└── types/index.ts                # TypeScript definitions
 ```
 
-### Most Important Files
+### Key Files
 
-#### `src/components/Flashcard.vue` (Core Game Logic)
+| File                            | Responsibility                                                                                                                                                  |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/FlashCard.vue`      | Renders MC/Blind/Typing modes • Answer validation (Levenshtein for typing) • 3s feedback display • Timer tracking • Language direction logic                    |
+| `services/cardSelector.ts`      | Weighted random selection by level, time, focus (weak/strong/slow), language • Returns 10 cards (MC) or variable (Blind/Typing)                                 |
+| `services/storage.ts`           | CRUD: `loadCards()`, `saveCards()` • History: `loadHistory()`, `addHistory()` • Stats: `loadGameStats()`, `updateStatistics()` • Settings: `loadLastSettings()` |
+| `services/pointsCalculation.ts` | `calculatePointsBreakdown()` returns base × mode × close ± language ± time bonuses                                                                              |
+| `composables/useGameStore.ts`   | Extends base store • Card selection • Answer processing • Level/time updates • Card management (reset, import, moveAll)                                         |
+| `types/index.ts`                | `Card { en, de, time_blind, time_typing, level }` • `GameSettings { mode, focus, language }` • `AnswerData` • `PointsBreakdown`                                 |
 
-**Responsibilities:**
+**Storage Keys:** `voc-cards`, `voc-history`, `voc-stats`, `voc-last-settings`
 
-- Renders the current flashcard based on game mode (Multiple-choice, Blind,
-  Typing)
-- Handles answer submission and validation:
-  - **Multiple-choice:** Direct option comparison
-  - **Blind:** User confirms if answer was correct
-  - **Typing:** Levenshtein distance for typo tolerance
-- Shows visual feedback with 3-second display window
-- Manages timer and answer time tracking
-- Implements language-direction logic (EN→DE vs DE→EN)
+## Game Modes and Scoring
 
-**Key computed properties:**
+| Mode            | Multiplier | Validation                   | Features                                               |
+| --------------- | ---------- | ---------------------------- | ------------------------------------------------------ |
+| Multiple-choice | 1×         | Direct comparison            | 4 buttons (1 correct + 3 random) • No time bonus       |
+| Blind           | 2×         | Self-assessment              | Reveal answer → confirm if known • Time bonus: +5 pts  |
+| Typing          | 4×         | Levenshtein ≤2 (fuzzy match) | Type answer • "to" prefix handling • Time bonus: +5pts |
 
-- `question`: Returns question based on language direction
-- `correctAnswer`: Returns answer based on language direction
-- `displayTime`: Shows mode-specific time limits
-
-**Key methods:**
-
-- `handleTypingSubmit()`: Validates typed answers with fuzzy matching
-- `handleMultipleChoiceSubmit()`: Validates multiple-choice selection
-- `handleBlindSubmit()`: Validates blind mode self-assessment
-- `processAnswer()`: Emits answer event and shows feedback
-
-#### `src/services/cardSelector.ts` (Card Selection Algorithm)
-
-**Weighted random selection based on:**
-
-- Card level (1-5)
-- Card response time
-- Game mode focus type (weak/strong/slow)
-- Language direction (EN→DE vs DE→EN)
-
-**Algorithm:**
-
-1. Filter cards by focus type and language
-2. Calculate weight for each card:
-   - Weak mode: Prioritize lower-level cards
-   - Strong mode: Prioritize higher-level cards
-   - Slow mode: Prioritize cards with slower times
-3. Select cards using weighted random probability
-4. Return fixed count for round (10 cards for multiple-choice, variable for
-   blind/typing)
-
-#### `src/services/storage.ts` (Data Persistence)
-
-**localStorage operations:**
-
-- `loadCards()` / `saveCards()`: Flashcard CRUD
-- `loadHistory()` / `addHistory()`: Game history tracking
-- `loadGameStats()` / `updateStatistics()`: Overall statistics
-- `loadLastSettings()` / `saveLastSettings()`: User preferences
-
-**Key features:**
-
-- Uses shared storage operations from `@flashcards/shared`
-- Type-safe with TypeScript generics
-- Auto-recovery from corrupted data with fallback to initial cards
-
-#### `src/composables/useGameStore.ts` (State Management)
-
-**Shared game state:**
-
-- `allCards`: All available flashcards
-- `roundCards`: Cards selected for current round
-- `gameSettings`: Current game mode/language/focus
-- `points`: Current game score
-- `correctAnswersCount`: Correct answers in current game
-- `history`: Game history entries
-- `gameStats`: Overall statistics
-
-**Key actions:**
-
-- `startGame()`: Initialize round with card selection
-- `handleAnswer()`: Process answer and update card level/time
-- `finishGame()`: Save results to history and update statistics
-- Card management: `resetCards()`, `importCards()`, `moveAllCards()`
-
-**Extends base game store from @flashcards/shared with app-specific logic:**
-
-- Point calculation with multipliers per mode
-- Time-based bonuses for beating previous times
-- Language bonus (+1 point for DE→EN direction)
-- Level-based weighted selection
-
-#### `src/types/index.ts` (Type Definitions)
+### Scoring Formula
 
 ```typescript
-interface Card extends BaseCard {
-  en: string // English word/phrase (unique key)
-  de: string // German word/phrase
-  time_blind: number // Seconds for blind mode
-  time_typing: number // Seconds for typing mode
-  level: number // 1-5 (adaptive difficulty)
-}
-
-interface GameSettings {
-  mode: 'multiple-choice' | 'blind' | 'typing'
-  focus: 'weak' | 'strong' | 'slow'
-  language: 'en-de' | 'de-en'
-}
-
-interface GameHistory extends BaseGameHistory {
-  settings: GameSettings
-}
+points = basePoints × modeMultiplier × closeAdjustment + languageBonus + timeBonus
 ```
 
-#### `src/config/constants.ts` (Game Rules and Configuration)
+**Components:**
 
-**Key constants:**
-
-- `INITIAL_CARDS`: Default vocabulary deck (80+ pairs)
-- `MAX_LEVEL`: 5 (maximum difficulty level)
-- `MIN_LEVEL`: 1 (minimum difficulty level)
-- `MAX_TIME`: 60 seconds (timer cap)
-- `MIN_TIME`: 0.1 seconds (minimum trackable)
-- `LEVENSHTEIN_THRESHOLD`: 2 (typo tolerance in typing mode)
-- `MODE_MULTIPLIERS`: Points multiplier per game mode
-
-### Modes and Scoring
-
-#### Multiple-Choice Mode (1x points)
-
-- 4 buttons: 1 correct answer + 3 random incorrect
-- User selects correct option
-- Base points: `6 - card.level`
-- No time bonus
-
-#### Blind Mode (2x points)
-
-- Reveals answer face-down
-- User confirms if they knew the answer
-- Base points: `(6 - card.level) × 2`
-- Time bonus: +5 points if beat previous time
-- Self-assessment increases learning retention
-
-#### Typing Mode (4x points)
-
-- User types the answer
-- Fuzzy matching with Levenshtein distance ≤ 2
-- Handles "to" prefix removal for DE→EN verbs
-- Base points: `(6 - card.level) × 4`
-- Time bonus: +5 points if beat previous time
-- Close answers get 75% points with warning feedback
-
-#### Language Bonus
-
-- DE→EN direction: +1 point (accounts for increased difficulty)
-- EN→DE direction: No bonus
+- **Base points:** `6 - card.level` (level 1=5pts, level 5=1pt)
+- **Mode multiplier:** MC=1×, Blind=2×, Typing=4×
+- **Close adjustment:** 0.75 (75% points for Levenshtein match in typing mode)
+- **Language bonus:** +1 for DE→EN direction (accounts for complexity)
+- **Time bonus:** +5 if beat previous time (Blind/Typing modes only)
 
 ### Answer Feedback
 
-**Correct answers (3s auto-advance):**
+| Result    | Display                            | Behavior                                       |
+| --------- | ---------------------------------- | ---------------------------------------------- |
+| Correct   | Green background + checkmark       | Auto-advance after 3s • Button enabled         |
+| Close     | Yellow/orange background + warning | Strikethrough comparison • Button disabled 3s  |
+| Incorrect | Red background + X                 | Typing: strikethrough comparison • Disabled 3s |
 
-- Green background with checkmark icon
-- Continue button enabled immediately
-- Auto-advances after 3 seconds
-- User can press Enter or click to skip
+**Typing Mode Validation:**
 
-**Close answers (3s button disable):**
+- Fuzzy matching with Levenshtein distance ≤2
+- Handles "to" prefix removal for DE→EN verbs
+- Close answers: 75% points + warning feedback
+- Multiple valid answers: separated by "/" (e.g., "Welche/Welcher")
 
-- Yellow/orange background with warning icon
-- Shows strikethrough comparison (user input → correct answer)
-- Continue button disabled for 3 seconds (prevent accidental clicks)
-- Typing mode specific
+## Card Management
 
-**Incorrect answers (3s button disable):**
+Users can create/edit/delete/reset cards, import custom decks, and adjust levels.
 
-- Red background with X icon
-- Multiple-choice/Blind: No answer comparison shown
-- Typing mode: Shows strikethrough comparison (user input → correct answer)
-- Continue button disabled for 3 seconds
+**Import/Export:**
 
-### Card Management
+- Excel/TSV format: `EN{tab}DE{tab}LEVEL` (level optional)
+- Supports "/" for alternative answers
+- Clipboard integration (copy to Excel, paste to import)
 
-Users can:
+**Reset/Move All:**
 
-1. **Create** new cards: English ↔ German pairs
-2. **Edit** existing cards: Modify translations
-3. **Delete** cards: Remove from deck
-4. **Reset** deck: Revert to initial cards
-5. **Import** cards: Upload custom deck (JSON format)
-6. **Adjust levels**: Move all cards to specific level
+- Reset: Revert to initial deck (confirmation required)
+- Move All: Set all cards to specific level (confirmation required)
 
-Card data is persisted to localStorage and syncs to game store reactively.
-
-## Game Flow
-
-1. **Home Page**: Display statistics and select game settings
-2. **Game Page**: Play round with selected cards and settings
-3. **Game Over**: Show results (points, correct answers, accuracy)
-4. **Continue**: Return to Home
-
-### End-of-Game Flow Details
+## Game Flow & End-of-Game
 
 **See `packages/shared/CLAUDE.md` for detailed end-of-game flow pattern.**
 
-Summary for voc app:
+Summary:
 
 1. `finishGame()` updates in-memory state (history + stats WITHOUT bonus)
-2. Saves game result to sessionStorage, clears game state
+2. Saves to sessionStorage, clears game state
 3. GameOverPage calculates bonuses, adds to in-memory stats
-4. **Single save to localStorage immediately** on GameOverPage load (with bonuses)
+4. **Single save to localStorage immediately** on GameOverPage load (with
+   bonuses)
 
-**Critical:**
+**Critical:** `finishGame()` does NOT save to localStorage • Save happens
+immediately when GameOverPage loads • Ensures data persists even if tab closed
 
-- `finishGame()` does NOT save to localStorage - only updates in-memory state
-- Save happens **immediately when GameOverPage loads**, not when user navigates
-  away
-- This ensures data persists even if user closes tab without clicking "Back to
-  Home"
-
-## State Management Pattern
+## State Management
 
 Uses shared base store from
-`@flashcards/shared/composables/useBaseGameStore.ts`:
+`@flashcards/shared/composables/useBaseGameStore.ts` with app-specific logic:
 
-- Initialization on first use
-- Auto-save history and stats to localStorage
-- Reactive updates with Vue watchers
-- Type-safe with TypeScript generics
-
-App-specific logic in `useGameStore.ts`:
-
-- Card selection algorithm
-- Answer validation and scoring
-- Language direction handling
+- Card selection algorithm (weighted by level, time, focus, language)
+- Answer validation (fuzzy matching for typing mode)
+- Language direction handling (EN→DE vs DE→EN)
 - Mode-specific point calculation
 
 ## Testing
 
-### Unit Tests (`src/pages/HomePage.spec.ts`)
+**Unit Tests:** 9 tests in `src/pages/HomePage.spec.ts` covering component
+rendering, navigation, statistics, settings
 
-9 tests covering:
-
-- Component rendering and data binding
-- Button interactions and navigation
-- Statistics display and calculations
-- Game settings state management
-
-**Run tests:**
+**E2E Tests:** Cypress • Full game flows for all 3 modes
 
 ```bash
-pnpm run test
+pnpm test                 # Unit tests
+pnpm run cy:run:voc      # E2E tests
 ```
 
 ## Commands
 
+See root `CLAUDE.md` for full command reference. App-specific commands:
+
 ```bash
-# Development
-pnpm install && pnpm dev:voc   # Install and run dev server
-pnpm run types                 # Type check
-pnpm lint && pnpm run format        # Lint and format
-
-# Testing
-pnpm test                           # Run tests
-pnpm run cy:run:voc            # Cypress E2E tests
-
-# Production
-pnpm build:voc && pnpm preview:voc  # Build and preview
+pnpm dev:voc             # Dev server
+pnpm build:voc           # Build (with type check)
+pnpm run cy:run:voc     # E2E tests
 ```
 
-See root CLAUDE.md for full command documentation.
+## Quick Reference
 
-## Design Highlights
+**Types:** `Card { en, de, level: 1-5, time_blind: 0.1-60, time_typing: 0.1-60 }`,
+`GameSettings { mode, focus, language }`,
+`PointsBreakdown { basePoints, modeMultiplier, closeAdjustment, languageBonus, timeBonus, totalPoints }`
 
-- Custom user-created card decks with CRUD operations
-- 3 game modes with different point multipliers: Multiple-choice (1x), Blind
-  (2x), Typing (4x)
-- Spaced repetition via adaptive 5-level difficulty system
-- Bidirectional language learning: EN↔DE with language-specific bonuses
-- Intelligent card selection with weighted probability
-- PWA with offline support
+**Core Functions:** `selectCards()` (weighted selection),
+`calculatePointsBreakdown()` (scoring), `validateTypingAnswer()` (fuzzy
+matching)
+
+**Constants:** `MAX_TIME = 60`, `MIN_TIME = 0.1`, `MAX_LEVEL = 5`,
+`MIN_LEVEL = 1`, `LEVENSHTEIN_THRESHOLD = 2`,
+`MODE_MULTIPLIERS = { 'multiple-choice': 1, 'blind': 2, 'typing': 4 }`
+
+**Routes:** `/` (Home), `/game` (Game), `/game-over` (Results), `/history`
+(History), `/cards` (Cards)
+
+**Base Path:** `/voc/`
 
 ## Important Notes
 
-- Card `en` field is the unique identifier for lookups
+- Card `en` field is unique identifier for lookups
 - Time tracking is mode-specific: `time_blind` vs `time_typing`
-- Multiple-choice mode doesn't track time (not 1x1 style)
-- Levenshtein distance allows up to 2-character differences in typing mode
+- Multiple-choice mode doesn't track time
+- Levenshtein distance allows up to 2-character differences
 - "to " prefix handling is language-specific (EN verbs, DE verbs)
-- Points calculation: `basePoints × modeMultiplier ± bonuses`
-- Statistics include: games played, total points, correct answers count
+- Points calculation includes mode multipliers and bonuses
+- Statistics: games played, total points, correct answers count

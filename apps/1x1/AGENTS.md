@@ -1,220 +1,144 @@
-# CLAUDE.md - 1x1 Learning App
+# 1x1 Multiplication Learning App
 
-## Project Overview
+Vue.js PWA for primary school multiplication practice (3×3 to 9×9, optional
+extended ranges 1×2, 1×12, 1×20).
 
-Vue.js PWA for primary school students to practice multiplication tables (3x3 to
-9x9, with optional extended ranges 1x2, 1x12, 1x20).
+**Features:** 28 base cards + extended ranges • 5-level adaptive difficulty •
+Focus modes (weak/strong/slow) • Weighted selection • Auto-submit (disabled for
+3+ digits) • PWA offline support
 
-**Key Features:**
+**Stack:** Vue 3 (Composition API), Quasar, TypeScript, Vite, Vitest, Cypress
 
-- 28 base cards (3x3-9x9) + optional extended ranges (1x2, 1x12, 1x20)
-- 5-level adaptive difficulty system
-- Three focus modes: weak/strong/slow cards
-- Weighted random card selection
-- Auto-submit (disabled for 3+ digits when 1x12/1x20 active)
-- PWA with offline support
-
-**Stack:** Vue 3 (Composition API), Quasar, TypeScript, Vite 6.x, Vitest,
-Cypress
-
-**Storage:**
-
-- localStorage: Cards (level, time), history, stats, range configuration
-- sessionStorage: Game config, game results
-- **Lazy-loading**: Cards created on first correct answer, not pre-generated
+**Storage:** localStorage (cards, history, stats, range config) • sessionStorage
+(game config, results) • **Lazy-loading** (cards created on first correct
+answer)
 
 ## Architecture
 
-### Directory Structure
-
 ```text
 src/
-├── components/          # GroundhogMascot, FlashCard
-├── pages/              # Home, Game, GameOver, History, Cards
-├── services/           # storage.ts (persistence), cardSelector.ts
-├── types/              # TypeScript definitions
-└── constants.ts        # Game configuration
+├── components/     # GroundhogMascot, FlashCard
+├── pages/          # Home, Game, GameOver, History, Cards
+├── services/       # storage.ts, cardSelector.ts
+├── types/          # TypeScript definitions
+└── constants.ts    # Game configuration
 ```
 
 ### Key Files
 
-**`services/storage.ts`** - Data persistence with lazy-loaded range-based system
+| File                          | Responsibility                                                                                                                                                                                  |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `services/storage.ts`         | Data persistence • `loadCards()`, `saveCards()`, `initializeCards()` (28 cards 3×3-9×9, y≤x) • Range: `loadRange()`, `saveRange()`, `toggleFeature()` • **`updateCard()`** (lazy-load + update) |
+| `services/cardSelector.ts`    | Filtering: `filterCardsBySelection()` (OR logic: select=[6] → x=6 OR y=6), `filterCardsSquares()`, `filterCardsAll()` • Selection: `selectCards()` (focus-weighted, up to 10 cards)             |
+| `components/FlashCard.vue`    | Auto-submit after 2 digits (disabled for 1×12/1×20) • Timer + progress bar • Feedback (3s auto-close correct, 3s disable wrong)                                                                 |
+| `pages/HomePage.vue`          | Dynamic `selectOptions` from range • Selection buttons • Double-click: select all OR only that number • Focus selector                                                                          |
+| `pages/CardsPage.vue`         | Dynamic grid (range × range) • Shows cards with defaults (level 1, time 60s) if not played • "Weitere Karten" toggles (1×2, 1×12, 1×20)                                                         |
+| `composables/useGameStore.ts` | Extends shared base store • Card selection • Answer handling • Level/time updates                                                                                                               |
 
-- Base cards: `loadCards()`, `saveCards()`, `initializeCards()` (28 cards
-  3x3-9x9, y≤x)
-- Range management: `loadRange()`, `saveRange()`, `toggleFeature()` (array of
-  unlocked numbers [2,3,4,5,6,7,8,9,11-20])
-- Lazy-loading: `updateCard()` creates cards on first correct answer (not
-  pre-generated)
-- History/Stats: `loadHistory()`, `loadGameStats()`, `updateStatistics()`
-- Session: `setGameConfig()`, `getGameConfig()`, `setGameResult()`
-- Storage keys: `'1x1-cards'`, `'1x1-history'`, `'1x1-stats'`, `'1x1-range'`,
-  `'1x1-game-config'`, `'1x1-game-result'`
-
-**`services/cardSelector.ts`** - Card filtering and weighted random selection
-
-- **Filtering functions**:
-  - `filterCardsBySelection()`: Filters by number selection (OR logic:
-    select=[6] → all cards where x=6 OR y=6)
-  - `filterCardsSquares()`: Filters for x² cards (x === y)
-  - `filterCardsAll()`: Returns all cards within range
-  - All filters respect range boundaries (both x AND y must be in range)
-- **Selection function**:
-  - `selectCards()`: Applies focus-based weights (weak: low-level, strong:
-    high-level, slow: high-time)
-  - Returns up to 10 cards using weighted probability
-
-**`components/FlashCard.vue`** - Game card component
-
-- Auto-submit after 2 digits (disabled when `shouldDisableAutoSubmit` is true
-  for 1x12/1x20)
-- Timer with progress bar, answer validation
-- Feedback dialog (3s auto-close for correct, 3s disable for wrong)
-
-**`pages/HomePage.vue`** - Game configuration
-
-- Dynamic `selectOptions` computed from current range (array of unlocked
-  numbers)
-- Selection buttons: all numbers in current range (based on active features)
-- Default selection: all numbers in range
-- Double-click to select all in range (or select only that number if all
-  selected)
-- Focus selector: weak/strong/slow
-
-**`pages/CardsPage.vue`** - Progress visualization + range toggles
-
-- Dynamic grid displays all cards in current range (y and x axes)
-- Shows cards with default styling (level 1, time 60s) even if not yet played
-- "Weitere Karten" section with 3 toggles (1x2, 1x12, 1x20) - only updates range
-- No confirmation dialogs (no data loss from toggling)
-- Cell styling: background=level, text color=time
+**Storage Keys:** `1x1-cards`, `1x1-history`, `1x1-stats`, `1x1-range`,
+`1x1-game-config`, `1x1-game-result`, `1x1-daily-stats`
 
 ## Extended Cards Features (Range-Based System)
 
-### Overview
+Three optional features unlock multiplication ranges beyond 3×3-9×9 using
+**lazy-loading** (cards created only when answered correctly for first time):
 
-Three optional features unlock multiplication ranges beyond 3x3-9x9. Instead of
-pre-generating cards, the system uses **lazy-loading**: cards are created only
-when answered correctly for the first time.
+| Feature | Unlocks        | Cards Added              | Notes                       |
+| ------- | -------------- | ------------------------ | --------------------------- |
+| 1×2     | Number 2       | 2×2 through 2×9          | 7 new cards                 |
+| 1×12    | Numbers 11, 12 | Cross-products with 3-9  | Auto-enabled by 1×20        |
+| 1×20    | Numbers 13-20  | All cross-products 13-20 | Implies 1×12 (auto-enables) |
 
-1. **1x2**: Unlocks number 2 (2×2 through 2×9)
-2. **1x12**: Unlocks 11, 12 (cross-products with 3-9)
-3. **1x20**: Unlocks 13-20 (all cross-products, auto-enables 1x12)
-
-**Important:** 10 is intentionally skipped (no cards with X or Y == 10)
+**Important:** 10 is intentionally skipped (no cards with x=10 or y=10)
 
 ### Range Configuration
 
-Range is stored as an array of unlocked numbers (not min/max):
+Range stored as array of unlocked numbers (not min/max):
 
-**Default range:** `[3, 4, 5, 6, 7, 8, 9]` (28 base cards)
-
-**With 1x2 enabled:** `[2, 3, 4, 5, 6, 7, 8, 9]` (adds 2)
-
-**With 1x12 enabled:** `[2, 3, 4, 5, 6, 7, 8, 9, 11, 12]` (adds 11, 12)
-
-**With 1x20 enabled:**
-`[2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]` (adds 13-20,
-implies 1x12)
+- **Default:** `[3,4,5,6,7,8,9]` (28 base cards)
+- **1×2:** `[2,3,4,5,6,7,8,9]` (adds 2)
+- **1×12:** `[2,3,4,5,6,7,8,9,11,12]` (adds 11,12)
+- **1×20:**
+  `[2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20]` (adds 13-20)
 
 ### Feature Interactions
 
 **Activation:**
 
-- 1x20 → auto-enables 1x12 (adds 11, 12 if not present)
+- 1×20 → auto-enables 1×12 (adds 11,12 if not present)
 - No data loss: toggling only affects visible/playable range
 - Cards appear in grid with default styling (level 1, time 60s)
 
 **Deactivation:**
 
-- 1x12 deactivation → also removes 1x20 (warning shown)
+- 1×12 deactivation → also removes 1×20 (warning shown)
 - Cards remain in storage with their progress
-- Re-enabling feature restores the cards with preserved progress
+- Re-enabling restores cards with preserved progress
 
 ### Lazy-Loading Mechanism
 
 **`updateCard(question, updates)`:**
 
-- If card exists: updates level/time
-- If card doesn't exist: creates card with given updates + default values
+- Card exists → updates level/time
+- Card doesn't exist → creates with updates + defaults
 - Called on every answer submission
 
-**GamePage flow:**
+**Game Flow:**
 
-1. Filter available cards: `(x or y in select) AND (x in range AND y in range)`
-2. Present card to user (may not exist in storage yet)
-3. User answers → `updateCard()` creates card if needed + updates level/time
-4. Card now persists in storage for future games
+1. Filter: `(x OR y in select) AND (x in range AND y in range)`
+2. Present card (may not exist in storage yet)
+3. User answers → `updateCard()` creates/updates card
+4. Card persists for future games
 
-### Implementation Details
+**Implementation:**
 
-**CardsPage.vue:**
-
-- `toggleFeature()`: Updates range array (adds/removes numbers)
-- No confirmation dialogs (safe to toggle)
-- Grid displays: `yValues = range` and `xValues = range`
-- Shows all cards in range with current progress or defaults
-
-**HomePage.vue:**
-
-- `selectOptions = range.value` (array of available numbers)
-- Default select: all numbers in range (copy of range array)
-- Double-click behavior: select only that number OR select all in range
-
-**GamePage (useGameStore):**
-
-- Creates `rangeSet = new Set(range)` for fast lookup
-- Filter:
+- **CardsPage:** `toggleFeature()` updates range array • Grid shows all cards in
+  range
+- **HomePage:** `selectOptions = range` • Double-click: select all OR only that
+  number
+- **GameStore:** `rangeSet = new Set(range)` • Filter:
   `(selectSet.has(x) || selectSet.has(y)) && rangeSet.has(x) && rangeSet.has(y)`
-- Both x and y must be in range (prevents 9x16 when range is [2-9])
-
-**FlashCard.vue:**
-
-- `shouldDisableAutoSubmit = range.some(n => n >= 11)` (disable for 3-digit
-  answers)
+- **FlashCard:** `shouldDisableAutoSubmit = range.some(n => n >= 11)`
 
 ## Game Logic
 
 ### End-of-Game Flow
 
-**See `packages/shared/CLAUDE.md` for detailed end-of-game flow pattern.**
+**See `packages/shared/CLAUDE.md` for detailed pattern.**
 
-Summary for 1x1 app:
+Summary:
 
 1. `finishGame()` updates in-memory state (history + stats WITHOUT bonus)
-2. Saves game result to sessionStorage, clears game state
+2. Saves to sessionStorage, clears game state
 3. GameOverPage calculates bonuses, adds to in-memory stats
-4. **Single save to localStorage immediately** on GameOverPage load (with bonuses)
+4. **Single save to localStorage immediately** on GameOverPage load (with
+   bonuses)
 
-**Critical:**
+**Critical:** `finishGame()` does NOT save to localStorage • Save happens
+immediately when GameOverPage loads (not when user navigates away) • Ensures
+data persists even if tab closed
 
-- `finishGame()` does NOT save to localStorage - only updates in-memory state
-- Save happens **immediately when GameOverPage loads**, not when user navigates
-  away
-- This ensures data persists even if user closes tab without clicking "Back to
-  Home"
+### Card Selection
 
-### Card Selection Algorithm
-
-1. Filter cards where x OR y matches selected tables
-2. Apply focus-based weights (weak: level 1=5x, level 5=1x; strong: inverse;
-   slow: time-based)
+1. Filter cards: x OR y matches selected tables
+2. Apply focus weights (weak: level 1=5×, level 5=1×; strong: inverse; slow:
+   time-based)
 3. Weighted random selection (up to 10 cards)
 
-### Scoring System
+### Scoring
 
 ```typescript
 points = min(x, y) + (6 - level) + time_bonus
 ```
 
-- Base: smaller number (5×8 → 5 points)
-- Level bonus: 6 - level (level 3 → +3)
-- Time bonus: +5 if beat previous time
+- **Base:** Smaller number (5×8 → 5 points)
+- **Level bonus:** 6 - level (level 3 → +3)
+- **Time bonus:** +1 if beat previous time
 
 **Card updates:**
 
-- Correct: level +1 (max 5), time = actual
-- Wrong: level -1 (min 1)
+- ✅ Correct: level +1 (max 5), time = actual
+- ❌ Wrong: level -1 (min 1)
 
 **Daily bonuses:**
 
@@ -223,34 +147,25 @@ points = min(x, y) + (6 - level) + time_bonus
 
 ## Testing
 
-**Unit Tests:** tests across multiple files
+**Unit Tests:** Vitest (`.spec.ts` files) • localStorage mock in
+`src/__tests__/setup.ts`
 
-**E2E Tests** (Cypress): 4 tests (3 navigation + 1 full game flow)
+**E2E Tests:** Cypress • 4 tests (3 navigation + 1 full game flow)
 
 ```bash
-pnpm test                    # Run unit tests
-pnpm run cy:run:1x1         # Run E2E tests
+pnpm test                 # Unit tests
+pnpm run cy:run:1x1      # E2E tests
 ```
-
-**Test Infrastructure:**
-
-- Test files use `.spec.ts` suffix (Vitest convention)
-- localStorage mock: In-memory Storage implementation in
-  `src/__tests__/setup.ts`
-- Test isolation: Each test clears localStorage in `beforeEach`
 
 ## Commands
 
-```bash
-pnpm dev:1x1                # Dev server (single app)
-pnpm build:1x1              # Build (with type check pre-flight)
-pnpm test                   # Unit tests
-pnpm run cy:run:1x1         # E2E tests
-pnpm run check              # Comprehensive check (format, lint, types, spell, tests in parallel)
-```
+See root `CLAUDE.md` for full command reference. App-specific commands:
 
-**Note:** `pnpm run check` includes type checking, so `pnpm run types` does not
-need to be run manually.
+```bash
+pnpm dev:1x1             # Dev server
+pnpm build:1x1           # Build (with type check)
+pnpm run cy:run:1x1     # E2E tests
+```
 
 ## Quick Reference
 
@@ -261,11 +176,8 @@ need to be run manually.
 **Core Functions:** `selectCards()` (weighted selection), `updateCard()`
 (lazy-loads + updates), `toggleFeature()` (range updates)
 
-**Storage Keys:** `1x1-cards`, `1x1-history`, `1x1-stats`, `1x1-range`,
-`1x1-game-config`, `1x1-game-result`, `1x1-daily-stats`
-
-**Range Arrays:** `[3,4,5,6,7,8,9]` (default), `[2,3,4,5,6,7,8,9]` (1x2),
-`[2,3,4,5,6,7,8,9,11,12]` (1x12), `[2,3,4,5,6,7,8,9,11,12,13-20]` (1x20)
+**Range Arrays:** `[3,4,5,6,7,8,9]` (default), `[2,3,4,5,6,7,8,9]` (1×2),
+`[2,3,4,5,6,7,8,9,11,12]` (1×12), `[2,3,4,5,6,7,8,9,11,12,13-20]` (1×20)
 
 **Routes:** `/` (Home), `/game` (Game), `/game-over` (Results), `/history`
 (History), `/cards` (Progress)
