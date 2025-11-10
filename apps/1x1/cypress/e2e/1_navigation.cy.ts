@@ -7,7 +7,8 @@ describe('Navigation Smoke Tests', () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should('be.visible')
 
-    // Navigate to History
+    // Navigate to History - wait for button to be clickable
+    cy.get('[data-cy="history-button"]').should('be.visible').and('not.be.disabled')
     cy.get('[data-cy="history-button"]').click()
     cy.url().should('include', '/history')
     cy.get('[data-cy="history-page-title"]').should('be.visible')
@@ -22,6 +23,7 @@ describe('Navigation Smoke Tests', () => {
     cy.get('[data-cy="app-title"]').should('be.visible')
 
     // Navigate again for browser back test
+    cy.get('[data-cy="history-button"]').should('be.visible').and('not.be.disabled')
     cy.get('[data-cy="history-button"]').click()
     cy.url().should('include', '/history')
     cy.go('back')
@@ -29,6 +31,7 @@ describe('Navigation Smoke Tests', () => {
     cy.get('[data-cy="app-title"]').should('be.visible')
 
     // Navigate again for escape key test
+    cy.get('[data-cy="history-button"]').should('be.visible').and('not.be.disabled')
     cy.get('[data-cy="history-button"]').click()
     cy.url().should('include', '/history')
     cy.get('body').type('{esc}')

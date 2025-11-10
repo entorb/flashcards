@@ -9,17 +9,7 @@ import {
   MODE_MULTIPLIER_TYPING,
   SPEED_BONUS_POINTS
 } from '../constants'
-import type { Card, GameSettings } from '../types'
-
-export interface PointsBreakdown {
-  basePoints: number
-  modeMultiplier: number
-  pointsBeforeBonus: number
-  closeAdjustment: number
-  languageBonus: number
-  timeBonus: number
-  totalPoints: number
-}
+import type { Card, GameSettings, PointsBreakdown } from '../types'
 
 export function calculatePointsBreakdown(
   result: AnswerResult,

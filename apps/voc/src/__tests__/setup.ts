@@ -18,7 +18,7 @@ globalThis.matchMedia =
 
 // Create in-memory storage implementation for localStorage and sessionStorage
 class LocalStorageMock implements Storage {
-  private store: Map<string, string> = new Map()
+  private readonly store: Map<string, string> = new Map()
 
   get length(): number {
     return this.store.size
