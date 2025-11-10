@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { type AnswerResult, useGameTimer } from '@flashcards/shared'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { useGameTimer } from '@flashcards/shared'
+import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import Flashcard from '../components/Flashcard.vue'
+import FlashCard from '../components/FlashCard.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { MAX_TIME } from '../constants'
-import { calculatePointsBreakdown } from '../services/pointsCalculation'
-import type { PointsBreakdown } from '../types'
+import type { AnswerData } from '../types'
 
 const router = useRouter()
 const {
@@ -25,22 +24,11 @@ const {
 } = useGameStore()
 
 // Use shared timer logic with maxTime
-const { elapsedTime, stopTimer } = useGameTimer(currentCard, MAX_TIME)
+const { stopTimer } = useGameTimer(currentCard, MAX_TIME)
 
-const earnedPoints = ref<number>(0)
-const pointsBreakdown = ref<PointsBreakdown | undefined>()
-
-function handleAnswer(result: AnswerResult, answerTime: number) {
+function handleAnswer(data: AnswerData) {
   stopTimer()
-  const pointsBefore = points.value
-  storeHandleAnswer(result, answerTime)
-  earnedPoints.value = points.value - pointsBefore
-  pointsBreakdown.value = calculatePointsBreakdown(
-    result,
-    currentCard.value,
-    gameSettings.value,
-    answerTime
-  )
+  storeHandleAnswer(data.result, data.answerTime)
 }
 
 function handleNextCard() {
@@ -105,15 +93,12 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <Flashcard
+    <FlashCard
       v-if="currentCard"
       :key="currentCard.en"
       :card="currentCard"
       :all-cards="allCards"
       :settings="gameSettings!"
-      :elapsed-time="elapsedTime"
-      :earned-points="earnedPoints"
-      :points-breakdown="pointsBreakdown"
       @answer="handleAnswer"
       @next="handleNextCard"
     />

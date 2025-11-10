@@ -1,30 +1,15 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { TEXT_DE, useFeedbackTimers, useKeyboardContinue } from '@flashcards/shared'
+import { computed, nextTick, ref, watch } from 'vue'
 
-import {
-  AUTO_CLOSE_DURATION,
-  BUTTON_DISABLE_DURATION,
-  COUNTDOWN_INTERVAL,
-  MAX_CARD_TIME
-} from '@/constants'
-import type { Card, SelectionType } from '@/types'
+import { MAX_CARD_TIME } from '@/constants'
+import type { AnswerData, Card, SelectionType } from '@/types'
 import { formatDisplayQuestion } from '@/utils/questionFormatter'
 
 interface Props {
   card: Card
   elapsedTime: number
   selection?: SelectionType
-}
-
-interface AnswerData {
-  isCorrect: boolean
-  userAnswer: number
-  basePoints: number
-  levelBonus: number
-  speedBonus: number
-  totalPoints: number
-  timeTaken: number
 }
 
 const props = defineProps<Props>()
@@ -37,16 +22,15 @@ const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
 const answerData = ref<AnswerData | null>(null)
 const answerInput = ref<HTMLInputElement | null>(null)
-const autoCloseCountdown = ref(0)
-const isButtonDisabled = ref(false)
-const buttonDisableCountdown = ref(0)
-const isEnterDisabled = ref(false)
 
-let autoCloseTimer: ReturnType<typeof setTimeout> | null = null
-let countdownInterval: ReturnType<typeof setInterval> | null = null
-let buttonDisableTimer: ReturnType<typeof setTimeout> | null = null
-let buttonDisableCountdownInterval: ReturnType<typeof setInterval> | null = null
-let enterDisableTimer: ReturnType<typeof setTimeout> | null = null
+// Use shared timer composable
+const {
+  isButtonDisabled,
+  isEnterDisabled,
+  startAutoCloseTimer,
+  startButtonDisableTimer,
+  clearAllTimers
+} = useFeedbackTimers()
 
 const displayQuestion = computed(() => {
   return formatDisplayQuestion(props.card.question, props.selection)
@@ -68,6 +52,12 @@ watch(userAnswer, newValue => {
   }
 })
 
+// Use shared keyboard continue composable
+const canProceed = computed(
+  () => showFeedback.value && !isEnterDisabled.value && !isButtonDisabled.value
+)
+useKeyboardContinue(canProceed, handleContinue)
+
 // Reset state when card changes
 watch(
   () => props.card,
@@ -76,9 +66,6 @@ watch(
     showFeedback.value = false
     answerData.value = null
     clearAllTimers()
-    isButtonDisabled.value = false
-    buttonDisableCountdown.value = 0
-    isEnterDisabled.value = false
     nextTick(() => {
       nextTick(() => {
         answerInput.value?.focus()
@@ -87,14 +74,6 @@ watch(
   },
   { immediate: true }
 )
-
-function clearAllTimers() {
-  if (buttonDisableTimer) clearTimeout(buttonDisableTimer)
-  if (buttonDisableCountdownInterval) clearInterval(buttonDisableCountdownInterval)
-  if (enterDisableTimer) clearTimeout(enterDisableTimer)
-  if (autoCloseTimer) clearTimeout(autoCloseTimer)
-  if (countdownInterval) clearInterval(countdownInterval)
-}
 
 function submitAnswer() {
   if (userAnswer.value === null || userAnswer.value === undefined) return
@@ -137,106 +116,18 @@ function submitAnswer() {
 
   if (isCorrect) {
     // Auto-close after configured duration for correct answers
-    isEnterDisabled.value = false
-    startAutoCloseTimer(AUTO_CLOSE_DURATION / 1000)
+    startAutoCloseTimer(handleContinue)
   } else {
     // Wrong answer: disable button and Enter key
     startButtonDisableTimer()
-    isEnterDisabled.value = true
-
-    enterDisableTimer = setTimeout(() => {
-      isEnterDisabled.value = false
-    }, BUTTON_DISABLE_DURATION)
   }
-}
-
-function startAutoCloseTimer(seconds: number) {
-  clearTimers()
-  autoCloseCountdown.value = seconds
-
-  // Update countdown
-  countdownInterval = setInterval(() => {
-    autoCloseCountdown.value--
-    if (autoCloseCountdown.value <= 0 && countdownInterval) {
-      clearInterval(countdownInterval)
-    }
-  }, COUNTDOWN_INTERVAL)
-
-  // Auto-close after the specified time
-  autoCloseTimer = setTimeout(() => {
-    handleContinue()
-  }, seconds * 1000)
-}
-
-function clearTimers() {
-  if (autoCloseTimer) {
-    clearTimeout(autoCloseTimer)
-    autoCloseTimer = null
-  }
-  if (countdownInterval) {
-    clearInterval(countdownInterval)
-    countdownInterval = null
-  }
-  autoCloseCountdown.value = 0
-}
-
-function startButtonDisableTimer() {
-  isButtonDisabled.value = true
-  buttonDisableCountdown.value = BUTTON_DISABLE_DURATION / 1000
-
-  buttonDisableCountdownInterval = setInterval(() => {
-    buttonDisableCountdown.value--
-    if (buttonDisableCountdown.value <= 0 && buttonDisableCountdownInterval) {
-      clearInterval(buttonDisableCountdownInterval)
-    }
-  }, COUNTDOWN_INTERVAL)
-
-  buttonDisableTimer = setTimeout(() => {
-    isButtonDisabled.value = false
-    buttonDisableCountdown.value = 0
-  }, BUTTON_DISABLE_DURATION)
-}
-
-function clearButtonDisableTimers() {
-  if (buttonDisableTimer) {
-    clearTimeout(buttonDisableTimer)
-    buttonDisableTimer = null
-  }
-  if (buttonDisableCountdownInterval) {
-    clearInterval(buttonDisableCountdownInterval)
-    buttonDisableCountdownInterval = null
-  }
-  if (enterDisableTimer) {
-    clearTimeout(enterDisableTimer)
-    enterDisableTimer = null
-  }
-  isButtonDisabled.value = false
-  buttonDisableCountdown.value = 0
-  isEnterDisabled.value = false
 }
 
 function handleContinue() {
-  clearTimers()
-  clearButtonDisableTimers()
+  clearAllTimers()
   showFeedback.value = false
   emit('next')
 }
-
-function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Enter' && showFeedback.value && !isEnterDisabled.value) {
-    handleContinue()
-  }
-}
-
-onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyDown)
-})
-
-onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
-  clearAllTimers()
-  clearButtonDisableTimers()
-})
 </script>
 
 <template>
@@ -343,7 +234,7 @@ onUnmounted(() => {
       >
         <q-card-section class="text-center q-pa-md">
           <div class="text-h5 text-weight-bold text-positive">
-            +{{ answerData.totalPoints }} {{ TEXT_DE.words.points }}
+            {{ answerData.totalPoints }} {{ TEXT_DE.words.points }}
           </div>
           <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
             <span v-if="answerData.speedBonus > 0">

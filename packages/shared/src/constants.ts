@@ -58,6 +58,12 @@ export const AUTO_CLOSE_DURATION = 3000
  */
 export const BUTTON_DISABLE_DURATION = 3000
 
+/**
+ * Countdown update interval in milliseconds
+ * Used for updating countdown displays during feedback timers
+ */
+export const COUNTDOWN_INTERVAL = 1000
+
 // ============================================================================
 // DAILY BONUSES
 // ============================================================================

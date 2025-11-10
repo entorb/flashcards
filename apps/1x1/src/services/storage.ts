@@ -195,10 +195,7 @@ export function updateCard(question: string, updates: Partial<Card>): void {
     updates.time = Math.max(MIN_CARD_TIME, Math.min(MAX_CARD_TIME, updates.time))
   }
 
-  if (index !== -1) {
-    // Card exists, update it
-    cards[index] = { ...cards[index], ...updates }
-  } else {
+  if (index === -1) {
     // Card doesn't exist yet, create it (lazy loading)
     const { x, y } = parseCardQuestion(question)
     const newCard = createDefaultCard(y, x)
@@ -207,6 +204,9 @@ export function updateCard(question: string, updates: Partial<Card>): void {
       level: updates.level ?? MIN_CARD_LEVEL,
       time: updates.time ?? MAX_CARD_TIME
     })
+  } else {
+    // Card exists, update it
+    cards[index] = { ...cards[index], ...updates }
   }
 
   saveCards(cards)

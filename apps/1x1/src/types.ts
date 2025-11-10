@@ -51,3 +51,21 @@ export interface GameHistory extends BaseGameHistory {
 export interface GameState extends SharedGameState {
   cards: Card[] // Strongly typed with app-specific Card
 }
+
+// ============================================================================
+// Answer Data (FlashCard component)
+// ============================================================================
+
+/**
+ * Data emitted from FlashCard component after answer submission
+ * Contains answer correctness, points breakdown, and timing information
+ */
+export interface AnswerData {
+  isCorrect: boolean
+  userAnswer: number
+  basePoints: number
+  levelBonus: number
+  speedBonus: number
+  totalPoints: number
+  timeTaken: number
+}

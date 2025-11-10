@@ -11,6 +11,7 @@ export {
   MAX_TIME as MAX_CARD_TIME,
   AUTO_CLOSE_DURATION,
   BUTTON_DISABLE_DURATION,
+  COUNTDOWN_INTERVAL,
   FIRST_GAME_BONUS,
   STREAK_GAME_BONUS,
   STREAK_GAME_INTERVAL,
@@ -38,11 +39,6 @@ export const DEFAULT_SELECT = [3, 4, 5, 6, 7, 8, 9]
  * Maximum number of cards per game
  */
 export const MAX_CARDS_PER_GAME = 10
-
-/**
- * Countdown update interval (milliseconds)
- */
-export const COUNTDOWN_INTERVAL = 1000
 
 // ============================================================================
 // COLOR SCHEMES
