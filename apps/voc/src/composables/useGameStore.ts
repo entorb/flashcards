@@ -247,11 +247,11 @@ export function useGameStore() {
     // If current deck was removed, update settings and switch to a new default
     const settings = loadLastSettings()
     if (settings?.deck === name) {
-      const newDeckName = filtered.length > 0 ? filtered[0].name : undefined
-      settings.deck = newDeckName
+      const newDeck = filtered[0]
+      settings.deck = newDeck.name
       saveLastSettings(settings)
-      // Reload cards to reflect the new current deck
-      baseStore.allCards.value = loadCards()
+      // Load cards directly from the deck we already have in memory
+      baseStore.allCards.value = newDeck.cards
     }
     return true
   }
