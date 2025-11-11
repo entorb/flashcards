@@ -4,23 +4,9 @@
 
 ## Both
 
-- Update @apps/1x1/README.md and @apps/1x1/AGENTS.md
-
-- For each page and component in 1x1, voc, shared, create a single very simple
-  unit test, that ensures that the component is loaded successfully. And where
-  needed, add some core logic tests.
-
 ## 1x1
 
-- Flashcard: auto-submit answer after N chars with N being the number of digits
-  the true result has
-
 ## Wordplay
-
-- How to extend the voc app to support different languages? So besides 1 set of cards for English, add another set of cards for French. Please create a proposal, no implementation
-  yet.
-
----
 
 ## AI Proposals for 1x1
 

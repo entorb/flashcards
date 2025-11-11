@@ -6,6 +6,36 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 
-// No custom commands needed - using built-in Cypress commands
+/**
+ * Helper function to get cards from localStorage
+ * Extracts cards from the deck structure (voc-cards)
+ * @param win - Window object
+ * @returns Array of cards from the first deck
+ */
+export function getCardsFromStorage(win: Window): any[] {
+  const stored = win.localStorage.getItem('voc-cards')
+  const decks = stored ? JSON.parse(stored) : []
+  // Extract cards from the first deck (or current deck)
+  const cards = Array.isArray(decks) && decks.length > 0 && decks[0].cards ? decks[0].cards : []
+  return cards
+}
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to get cards from localStorage
+       * @example cy.getCardsFromStorage()
+       */
+      getCardsFromStorage(): Chainable<any[]>
+    }
+  }
+}
+
+Cypress.Commands.add('getCardsFromStorage', () => {
+  return cy.window().then(win => {
+    return getCardsFromStorage(win)
+  })
+})
 
 export {}

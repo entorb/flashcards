@@ -8,7 +8,7 @@ import type { Card, GameSettings } from '@/types'
 
 describe('FlashCard Component', () => {
   const mockCard: Card = {
-    en: 'hello',
+    voc: 'hello',
     de: 'hallo',
     level: 3,
     time_blind: 5.0,
@@ -18,14 +18,14 @@ describe('FlashCard Component', () => {
   const mockSettings: GameSettings = {
     mode: 'multiple-choice',
     focus: 'weak',
-    language: 'en-de'
+    language: 'voc-de'
   }
 
   const mockAllCards: Card[] = [
     mockCard,
-    { en: 'goodbye', de: 'auf Wiedersehen', level: 2, time_blind: 8.0, time_typing: 12.0 },
-    { en: 'thank you', de: 'danke', level: 1, time_blind: 3.0, time_typing: 6.0 },
-    { en: 'please', de: 'bitte', level: 4, time_blind: 4.0, time_typing: 7.0 }
+    { voc: 'goodbye', de: 'auf Wiedersehen', level: 2, time_blind: 8.0, time_typing: 12.0 },
+    { voc: 'thank you', de: 'danke', level: 1, time_blind: 3.0, time_typing: 6.0 },
+    { voc: 'please', de: 'bitte', level: 4, time_blind: 4.0, time_typing: 7.0 }
   ]
 
   const mountOptions = {
@@ -58,12 +58,12 @@ describe('FlashCard Component', () => {
     expect(wrapper.find('[data-cy="game-page-question"]').exists()).toBe(true)
   })
 
-  it('computes question correctly for en-de direction', () => {
+  it('computes question correctly for voc-de direction', () => {
     const wrapper = mount(FlashCard, {
       props: {
         card: mockCard,
         allCards: mockAllCards,
-        settings: { ...mockSettings, language: 'en-de' }
+        settings: { ...mockSettings, language: 'voc-de' }
       },
       ...mountOptions
     })
@@ -71,12 +71,12 @@ describe('FlashCard Component', () => {
     expect(vm.question).toBe('hello')
   })
 
-  it('computes question correctly for de-en direction', () => {
+  it('computes question correctly for de-voc direction', () => {
     const wrapper = mount(FlashCard, {
       props: {
         card: mockCard,
         allCards: mockAllCards,
-        settings: { ...mockSettings, language: 'de-en' }
+        settings: { ...mockSettings, language: 'de-voc' }
       },
       ...mountOptions
     })
@@ -84,12 +84,12 @@ describe('FlashCard Component', () => {
     expect(vm.question).toBe('hallo')
   })
 
-  it('computes correctAnswer for en-de direction', () => {
+  it('computes correctAnswer for voc-de direction', () => {
     const wrapper = mount(FlashCard, {
       props: {
         card: mockCard,
         allCards: mockAllCards,
-        settings: { ...mockSettings, language: 'en-de' }
+        settings: { ...mockSettings, language: 'voc-de' }
       },
       ...mountOptions
     })
@@ -97,12 +97,12 @@ describe('FlashCard Component', () => {
     expect(vm.correctAnswer).toBe('hallo')
   })
 
-  it('computes correctAnswer for de-en direction', () => {
+  it('computes correctAnswer for de-voc direction', () => {
     const wrapper = mount(FlashCard, {
       props: {
         card: mockCard,
         allCards: mockAllCards,
-        settings: { ...mockSettings, language: 'de-en' }
+        settings: { ...mockSettings, language: 'de-voc' }
       },
       ...mountOptions
     })
@@ -115,7 +115,7 @@ describe('FlashCard Component', () => {
       props: {
         card: mockCard,
         allCards: mockAllCards,
-        settings: { ...mockSettings, language: 'en-de' }
+        settings: { ...mockSettings, language: 'voc-de' }
       },
       ...mountOptions
     })

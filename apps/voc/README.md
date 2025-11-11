@@ -66,7 +66,7 @@ Each card tracks:
      - Blind mode: Uses time_blind
      - Typing mode: Uses time_typing
      - Multiple-choice mode: Uses min of time_blind and time_typing
-3. **Direction**: EN→DE or DE→EN
+3. **Direction**: Voc→DE or DE→EN
 4. **Random Selection**: Pick up to 10 cards using weighted probability
 
 ### Scoring System

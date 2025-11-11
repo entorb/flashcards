@@ -9,7 +9,6 @@ node_modules/
 .cspellcache
 .DS_Store
 .env
-.eslintcache
 .github/copilot-instructions.md
 *.tsbuildinfo
 CLAUDE.md

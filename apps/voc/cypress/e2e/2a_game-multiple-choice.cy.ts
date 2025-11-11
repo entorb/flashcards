@@ -1,4 +1,6 @@
-describe('Multiple Choice Game - EN to DE', () => {
+import { getCardsFromStorage } from '../support/commands'
+
+describe('Multiple Choice Game - Voc to DE', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
     cy.clearLocalStorage()
@@ -10,8 +12,8 @@ describe('Multiple Choice Game - EN to DE', () => {
     // Select Multiple Choice mode
     cy.contains('Multiple Choice').click()
 
-    // Select EN → DE language direction
-    cy.contains('EN → DE').click()
+    // Select Voc → DE language direction
+    cy.contains('Voc → DE').click()
 
     // Start the game
     cy.get('[data-cy="start-button"]').click()
@@ -30,8 +32,7 @@ describe('Multiple Choice Game - EN to DE', () => {
     const answerCard = (cardIndex: number) => {
       // Get the question text and cards from localStorage
       cy.window().then(win => {
-        const stored = win.localStorage.getItem('voc-cards')
-        const cards = stored ? JSON.parse(stored) : []
+        const cards = getCardsFromStorage(win)
 
         cy.get('[data-cy="game-page-question"]')
           .invoke('text')
@@ -39,7 +40,7 @@ describe('Multiple Choice Game - EN to DE', () => {
             if (cardIndex === 0) {
               // First card: answer incorrectly
               // Find the correct answer first, then click a different button
-              const card = cards.find((c: any) => c.en === questionText.trim())
+              const card = cards.find((c: any) => c.voc === questionText.trim())
               if (card) {
                 const correctAnswer = card.de
 
@@ -64,7 +65,7 @@ describe('Multiple Choice Game - EN to DE', () => {
               }
             } else {
               // Remaining cards: answer correctly
-              const card = cards.find((c: any) => c.en === questionText.trim())
+              const card = cards.find((c: any) => c.voc === questionText.trim())
 
               if (card) {
                 // Match against full card.de value (includes alternatives like "Welche/Welcher/Welches")
@@ -219,13 +220,12 @@ describe('Multiple Choice Game - EN to DE', () => {
       // Answer cards: all correct
       for (let cardIndex = 0; cardIndex < 10; cardIndex++) {
         cy.window().then(win => {
-          const stored = win.localStorage.getItem('voc-cards')
-          const cards = stored ? JSON.parse(stored) : []
+          const cards = getCardsFromStorage(win)
 
           cy.get('[data-cy="game-page-question"]')
             .invoke('text')
             .then(questionText => {
-              const card = cards.find((c: any) => c.en === questionText.trim())
+              const card = cards.find((c: any) => c.voc === questionText.trim())
               if (card && cardIndex < correctCount) {
                 // Answer correctly
                 const correctAnswer = card.de
@@ -261,7 +261,7 @@ describe('Multiple Choice Game - EN to DE', () => {
 
     // Play first game
     cy.contains('Multiple Choice').click()
-    cy.contains('EN → DE').click()
+    cy.contains('Voc → DE').click()
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
     cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
