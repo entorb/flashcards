@@ -223,9 +223,13 @@ export function useGameStore() {
       return false // Deck not found
     }
     saveDecks(filtered)
-    // Reload all cards if current deck was removed
+    // If current deck was removed, update settings and switch to a new default
     const settings = loadLastSettings()
     if (settings?.deck === name) {
+      const newDeckName = filtered.length > 0 ? filtered[0].name : undefined
+      settings.deck = newDeckName
+      saveLastSettings(settings)
+      // Reload cards to reflect the new current deck
       baseStore.allCards.value = loadCards()
     }
     return true
