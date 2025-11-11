@@ -107,7 +107,7 @@ export function useGameStore() {
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {
-      if (card.en === currentCard.en) {
+      if (card.voc === currentCard.voc) {
         const updates: Partial<Card> = {}
 
         // Update level

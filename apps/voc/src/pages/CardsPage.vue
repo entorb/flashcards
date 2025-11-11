@@ -134,10 +134,10 @@ function getLevelColor(level: number): string {
           >
             <q-item
               v-for="card in cardsToShow"
-              :key="card.en"
+              :key="card.voc"
             >
               <q-item-section>
-                <q-item-label>{{ card.en }} → {{ card.de }}</q-item-label>
+                <q-item-label>{{ card.voc }} → {{ card.de }}</q-item-label>
               </q-item-section>
               <q-item-section side>
                 <q-badge

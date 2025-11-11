@@ -54,15 +54,15 @@ useKeyboardContinue(canProceed, () => emit('next'))
 
 // Compute question and answer based on language direction
 const question = computed(() => {
-  return props.settings.language === 'en-de' ? props.card.en : props.card.de
+  return props.settings.language === 'voc-de' ? props.card.voc : props.card.de
 })
 
 const correctAnswer = computed(() => {
-  return props.settings.language === 'en-de' ? props.card.de : props.card.en
+  return props.settings.language === 'voc-de' ? props.card.de : props.card.voc
 })
 
 const targetLang = computed(() => {
-  return props.settings.language === 'en-de' ? 'de' : 'en'
+  return props.settings.language === 'voc-de' ? 'de' : 'voc'
 })
 
 // Determine which time to display based on mode
@@ -81,7 +81,7 @@ watch(
   () => {
     if (props.settings.mode === 'multiple-choice') {
       const otherAnswers = props.allCards
-        .filter(c => c.en !== props.card.en)
+        .filter(c => c.voc !== props.card.voc)
         .map(c => c[targetLang.value])
 
       const shuffledOthers = shuffleArray(otherAnswers)

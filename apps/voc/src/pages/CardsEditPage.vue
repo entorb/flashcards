@@ -49,8 +49,8 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 function handleExport() {
-  const header = 'en\tde\tlevel\n'
-  const tsvContent = editingCards.value.map(c => `${c.en}\t${c.de}\t${c.level}`).join('\n')
+  const header = 'voc\tde\tlevel\n'
+  const tsvContent = editingCards.value.map(c => `${c.voc}\t${c.de}\t${c.level}`).join('\n')
   navigator.clipboard
     .writeText(header + tsvContent)
     .then(() => {
@@ -129,7 +129,7 @@ function processImportText(text: string) {
 function handleSave() {
   // Validate all cards
   for (const card of editingCards.value) {
-    if (!card.en.trim()) {
+    if (!card.voc.trim()) {
       $q.notify({
         type: 'negative',
         message: TEXT_DE.voc.cards.validationEnEmpty
@@ -168,7 +168,7 @@ function handleSave() {
 
 function addNewCard() {
   editingCards.value.push({
-    en: '',
+    voc: '',
     de: '',
     level: 1,
     time_blind: 60,
@@ -252,7 +252,7 @@ function onCardChange() {
           <!-- Header Row -->
           <q-item class="bg-grey-2">
             <q-item-section style="flex: 0 0 40%">
-              <q-item-label class="text-weight-bold">{{ TEXT_DE.words.english }}</q-item-label>
+              <q-item-label class="text-weight-bold">{{ TEXT_DE.words.vocable }}</q-item-label>
             </q-item-section>
             <q-item-section style="flex: 0 0 40%">
               <q-item-label class="text-weight-bold">{{ TEXT_DE.words.german }}</q-item-label>
@@ -272,11 +272,11 @@ function onCardChange() {
           >
             <q-item-section style="flex: 0 0 40%">
               <q-input
-                v-model="card.en"
+                v-model="card.voc"
                 outlined
                 dense
-                :placeholder="TEXT_DE.voc.cards.enPlaceholder"
-                data-cy="`card-en-${index}`"
+                :placeholder="TEXT_DE.voc.cards.vocPlaceholder"
+                data-cy="`card-voc-${index}`"
                 @update:model-value="onCardChange"
               />
             </q-item-section>

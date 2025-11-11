@@ -21,7 +21,7 @@ const { gameStats, startGame: startGameStore } = useGameStore()
 const settings = ref<GameSettings>({
   mode: 'multiple-choice',
   focus: 'weak',
-  language: 'en-de'
+  language: 'voc-de'
 })
 
 const totalGamesPlayedByAll = ref<number>(0)
@@ -33,8 +33,8 @@ const modeOptions = [
 ]
 
 const languageOptions = [
-  { label: TEXT_DE.voc.language.en_de, value: 'en-de' as const },
-  { label: TEXT_DE.voc.language.de_en, value: 'de-en' as const }
+  { label: TEXT_DE.voc.direction.voc_de, value: 'voc-de' as const },
+  { label: TEXT_DE.voc.direction.de_voc, value: 'de-voc' as const }
 ]
 
 onMounted(async () => {

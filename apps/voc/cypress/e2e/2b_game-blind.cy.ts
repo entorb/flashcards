@@ -1,4 +1,4 @@
-describe('Blind Mode Game - DE to EN', () => {
+describe('Blind Mode Game - DE to Voc', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
     cy.clearLocalStorage()
@@ -38,8 +38,8 @@ describe('Blind Mode Game - DE to EN', () => {
     // Select Blind mode
     cy.contains('Blind').click()
 
-    // Select DE → EN language direction
-    cy.contains('DE → EN').click()
+    // Select DE → Voc language direction
+    cy.contains('DE → Voc').click()
 
     // Start the game
     cy.get('[data-cy="start-button"]').click()

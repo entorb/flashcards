@@ -4,7 +4,7 @@ Vue.js PWA for vocabulary learning through spaced repetition and adaptive
 difficulty with custom flashcard decks.
 
 **Features:** Custom flashcard creation • 3 game modes (Multiple-choice 1×,
-Blind 2×, Typing 4×) • Bidirectional learning (EN↔DE) • 5-level adaptive
+Blind 2×, Typing 4×) • Bidirectional learning (Voc↔DE) • 5-level adaptive
 difficulty • Language-specific bonuses (DE→EN +1pt) • Weighted card selection •
 3s feedback with icons • Timer tracking • PWA offline support
 
@@ -46,7 +46,7 @@ src/
 | `services/storage.ts`           | CRUD: `loadCards()`, `saveCards()` • History: `loadHistory()`, `addHistory()` • Stats: `loadGameStats()`, `updateStatistics()` • Settings: `loadLastSettings()` |
 | `services/pointsCalculation.ts` | `calculatePointsBreakdown()` returns base × mode × close ± language ± time bonuses                                                                              |
 | `composables/useGameStore.ts`   | Extends base store • Card selection • Answer processing • Level/time updates • Card management (reset, import, moveAll)                                         |
-| `types/index.ts`                | `Card { en, de, time_blind, time_typing, level }` • `GameSettings { mode, focus, language }` • `AnswerData` • `PointsBreakdown`                                 |
+| `types/index.ts`                | `Card { voc, de, time_blind, time_typing, level }` • `GameSettings { mode, focus, language }` • `AnswerData` • `PointsBreakdown`                                |
 
 **Storage Keys:** `voc-cards`, `voc-history`, `voc-stats`, `voc-last-settings`
 
@@ -93,7 +93,7 @@ Users can create/edit/delete/reset cards, import custom decks, and adjust levels
 
 **Import/Export:**
 
-- Excel/TSV format: `EN{tab}DE{tab}LEVEL` (level optional)
+- Excel/TSV format: `Voc{tab}DE{tab}LEVEL` (level optional)
 - Supports "/" for alternative answers
 - Clipboard integration (copy to Excel, paste to import)
 
@@ -151,7 +151,7 @@ pnpm run cy:run:voc     # E2E tests
 
 ## Quick Reference
 
-**Types:** `Card { en, de, level: 1-5, time_blind: 0.1-60, time_typing: 0.1-60 }`,
+**Types:** `Card { voc, de, level: 1-5, time_blind: 0.1-60, time_typing: 0.1-60 }`,
 `GameSettings { mode, focus, language }`,
 `PointsBreakdown { basePoints, modeMultiplier, closeAdjustment, languageBonus, timeBonus, totalPoints }`
 
@@ -170,10 +170,10 @@ matching)
 
 ## Important Notes
 
-- Card `en` field is unique identifier for lookups
+- Card `voc` field is unique identifier for lookups
 - Time tracking is mode-specific: `time_blind` vs `time_typing`
 - Multiple-choice mode doesn't track time
 - Levenshtein distance allows up to 2-character differences
-- "to " prefix handling is language-specific (EN verbs, DE verbs)
+- "to " prefix handling is language-specific (Voc verbs, DE verbs)
 - Points calculation includes mode multipliers and bonuses
 - Statistics: games played, total points, correct answers count

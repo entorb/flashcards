@@ -1,4 +1,4 @@
-describe('Typing Mode Game - DE to EN', () => {
+describe('Typing Mode Game - DE to Voc', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
     cy.clearLocalStorage()
@@ -11,8 +11,8 @@ describe('Typing Mode Game - DE to EN', () => {
     // cspell:disable-next-line
     cy.contains('Tippen').click()
 
-    // Select DE → EN language direction
-    cy.contains('DE → EN').click()
+    // Select DE → Voc language direction
+    cy.contains('DE → Voc').click()
 
     // Start the game
     cy.get('[data-cy="start-button"]').click()
@@ -47,7 +47,7 @@ describe('Typing Mode Game - DE to EN', () => {
               // Find the correct answer and introduce a small typo
               const card = cards.find((c: any) => c.de === questionText.trim())
               if (card) {
-                const correctAnswer = card.en.split('/')[0].trim()
+                const correctAnswer = card.voc.split('/')[0].trim()
                 // Add a typo by changing one character (e.g., replace first char with 'x')
                 answerToType = `x${correctAnswer.substring(1)}`
               } else {
@@ -58,7 +58,7 @@ describe('Typing Mode Game - DE to EN', () => {
               // Remaining cards: answer correctly
               const card = cards.find((c: any) => c.de === questionText.trim())
               if (card) {
-                const correctAnswer = card.en.split('/')[0].trim()
+                const correctAnswer = card.voc.split('/')[0].trim()
                 answerToType = correctAnswer
               } else {
                 // Fallback: generic answer

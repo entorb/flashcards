@@ -101,7 +101,7 @@ type AnswerResult = 'correct' | 'incorrect' | 'close'
 fields:
 
 - 1x1: Card has `question`, `answer`, `time`
-- Wordplay: Card has `en`, `de`, `time_blind`, `time_typing`
+- Wordplay: Card has `voc`, `de`, `time_blind`, `time_typing`
 
 #### `src/services/storage.ts` (Storage Operations)
 
