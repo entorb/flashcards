@@ -45,21 +45,21 @@ export const MODE_MULTIPLIER_TYPING = 4
 export const CLOSE_ANSWER_PENALTY = 0.75
 
 /**
- * Bonus points for answering in DE→EN direction (increased difficulty)
+ * Bonus points for answering in DE→Voc direction (increased difficulty)
  */
-export const LANGUAGE_BONUS_DE_EN = 1
+export const LANGUAGE_BONUS_DE_VOC = 1
 
 export const INITIAL_CARDS: Card[] = [
-  { en: 'Where', de: 'Wo', level: 1, time_blind: 60, time_typing: 60 },
-  { en: 'Who', de: 'Wer', level: 1, time_blind: 60, time_typing: 60 },
-  { en: 'What', de: 'Was', level: 2, time_blind: 60, time_typing: 60 },
-  { en: 'Why', de: 'Warum', level: 2, time_blind: 60, time_typing: 60 },
-  { en: 'When', de: 'Wann', level: 3, time_blind: 60, time_typing: 60 },
-  { en: 'How', de: 'Wie', level: 3, time_blind: 60, time_typing: 60 },
-  { en: 'Which', de: 'Welche/Welcher/Welches', level: 4, time_blind: 60, time_typing: 60 },
-  { en: 'From where', de: 'Woher', level: 4, time_blind: 60, time_typing: 60 },
-  { en: 'Where to', de: 'Wohin', level: 5, time_blind: 60, time_typing: 60 },
-  { en: 'How much', de: 'Wie viel', level: 5, time_blind: 60, time_typing: 60 }
+  { voc: 'Where', de: 'Wo', level: 1, time_blind: 60, time_typing: 60 },
+  { voc: 'Who', de: 'Wer', level: 1, time_blind: 60, time_typing: 60 },
+  { voc: 'What', de: 'Was', level: 2, time_blind: 60, time_typing: 60 },
+  { voc: 'Why', de: 'Warum', level: 2, time_blind: 60, time_typing: 60 },
+  { voc: 'When', de: 'Wann', level: 3, time_blind: 60, time_typing: 60 },
+  { voc: 'How', de: 'Wie', level: 3, time_blind: 60, time_typing: 60 },
+  { voc: 'Which', de: 'Welche/Welcher/Welches', level: 4, time_blind: 60, time_typing: 60 },
+  { voc: 'From where', de: 'Woher', level: 4, time_blind: 60, time_typing: 60 },
+  { voc: 'Where to', de: 'Wohin', level: 5, time_blind: 60, time_typing: 60 },
+  { voc: 'How much', de: 'Wie viel', level: 5, time_blind: 60, time_typing: 60 }
 ]
 
 /**

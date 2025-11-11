@@ -15,14 +15,20 @@ import type {
 // ============================================================================
 
 export type GameMode = 'multiple-choice' | 'blind' | 'typing'
-export type Language = 'en-de' | 'de-en'
+export type Direction = 'voc-de' | 'de-voc'
 
 // Card Definition (extends BaseCard)
 export interface Card extends BaseCard {
-  en: string // Used as unique key/identifier
+  voc: string // Used as unique key/identifier
   de: string
   time_blind: number // Seconds for last correct answer in blind mode (0.1-60s, default 60)
   time_typing: number // Seconds for last correct answer in typing mode (0.1-60s, default 60)
+}
+
+// Card Deck Definition
+export interface CardDeck {
+  name: string // Unique deck identifier
+  cards: Card[] // Cards in this deck
 }
 
 // Game Configuration
@@ -30,7 +36,8 @@ export interface Card extends BaseCard {
 export interface GameSettings {
   mode: GameMode
   focus: FocusType // 'weak', 'strong', or 'slow'
-  language: Language
+  language: Direction
+  deck?: string // Optional deck name (for future compatibility)
 }
 
 // Game History (extends BaseGameHistory)

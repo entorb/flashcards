@@ -18,100 +18,100 @@ import {
 describe('helpers - Typing Answer Validation', () => {
   describe('Exact matches', () => {
     it('should return correct for exact match', () => {
-      const result = validateTypingAnswer('apple', 'apple', 'en-de')
+      const result = validateTypingAnswer('apple', 'apple', 'voc-de')
       expect(result).toBe('correct')
     })
 
     it('should normalize case differences', () => {
-      const result = validateTypingAnswer('APPLE', 'apple', 'en-de')
+      const result = validateTypingAnswer('APPLE', 'apple', 'voc-de')
       expect(result).toBe('correct')
     })
 
     it('should trim whitespace', () => {
-      const result = validateTypingAnswer('  apple  ', 'apple', 'en-de')
+      const result = validateTypingAnswer('  apple  ', 'apple', 'voc-de')
       expect(result).toBe('correct')
     })
 
     it('should handle multiple answer options separated by slash', () => {
-      const result = validateTypingAnswer('hello', 'hello / hallo', 'en-de')
+      const result = validateTypingAnswer('hello', 'hello / hallo', 'voc-de')
       expect(result).toBe('correct')
     })
 
     it('should match second option in slash-separated answers', () => {
-      const result = validateTypingAnswer('hallo', 'hello / hallo', 'en-de')
+      const result = validateTypingAnswer('hallo', 'hello / hallo', 'voc-de')
       expect(result).toBe('correct')
     })
   })
 
   describe('Close matches (Levenshtein distance <= 2)', () => {
     it('should return close for 1 character deletion', () => {
-      const result = validateTypingAnswer('aple', 'apple', 'en-de')
+      const result = validateTypingAnswer('aple', 'apple', 'voc-de')
       expect(result).toBe('close')
     })
 
     it('should return close for 1 character substitution', () => {
-      const result = validateTypingAnswer('appl', 'apple', 'en-de')
+      const result = validateTypingAnswer('appl', 'apple', 'voc-de')
       expect(result).toBe('close')
     })
 
     it('should return close for 2 character differences', () => {
-      const result = validateTypingAnswer('apl', 'apple', 'en-de')
+      const result = validateTypingAnswer('apl', 'apple', 'voc-de')
       expect(result).toBe('close')
     })
 
     it('should return incorrect for 3+ character differences', () => {
-      const result = validateTypingAnswer('xyz', 'apple', 'en-de')
+      const result = validateTypingAnswer('xyz', 'apple', 'voc-de')
       expect(result).toBe('incorrect')
     })
   })
 
-  describe('DE->EN language direction (verb handling)', () => {
-    it('should accept verbs without "to" prefix in DE->EN', () => {
-      const result = validateTypingAnswer('walk', 'to walk', 'de-en')
+  describe('DE->Voc language direction (verb handling)', () => {
+    it('should accept verbs without "to" prefix in DE->Voc', () => {
+      const result = validateTypingAnswer('walk', 'to walk', 'de-voc')
       expect(result).toBe('correct')
     })
 
-    it('should still accept "to" prefix in DE->EN', () => {
-      const result = validateTypingAnswer('to walk', 'to walk', 'de-en')
+    it('should still accept "to" prefix in DE->Voc', () => {
+      const result = validateTypingAnswer('to walk', 'to walk', 'de-voc')
       expect(result).toBe('correct')
     })
 
-    it('should not accept without "to" prefix in EN->DE', () => {
-      const result = validateTypingAnswer('walk', 'to walk', 'en-de')
+    it('should not accept without "to" prefix in Voc->DE', () => {
+      const result = validateTypingAnswer('walk', 'to walk', 'voc-de')
       expect(result).toBe('incorrect')
     })
 
     it('should handle multiple verb options with "to" prefix', () => {
-      const result = validateTypingAnswer('run', 'to run / to execute', 'de-en')
+      const result = validateTypingAnswer('run', 'to run / to execute', 'de-voc')
       expect(result).toBe('correct')
     })
 
-    it('should handle mixed options in DE->EN', () => {
-      const result = validateTypingAnswer('leap', 'to jump / leap', 'de-en')
+    it('should handle mixed options in DE->Voc', () => {
+      const result = validateTypingAnswer('leap', 'to jump / leap', 'de-voc')
       expect(result).toBe('correct')
     })
   })
 
   describe('Edge cases', () => {
     it('should handle empty user input', () => {
-      const result = validateTypingAnswer('', 'apple', 'en-de')
+      const result = validateTypingAnswer('', 'apple', 'voc-de')
       expect(result).toBe('incorrect')
     })
 
     it('should handle special characters and accents', () => {
-      const result = validateTypingAnswer('café', 'café', 'en-de')
+      const result = validateTypingAnswer('café', 'café', 'voc-de')
       expect(result).toBe('correct')
     })
 
     it('should handle whitespace in answer options', () => {
-      const result = validateTypingAnswer('hello world', 'hello world', 'en-de')
+      const result = validateTypingAnswer('hello world', 'hello world', 'voc-de')
       expect(result).toBe('correct')
     })
 
     it('should handle multiple spaces with fuzzy matching', () => {
       // normalizeString only trims edges, not internal spaces
       // So '  hello  world  ' becomes 'hello  world' which is distance 1 from 'hello world'
-      const result = validateTypingAnswer('  hello  world  ', 'hello world', 'en-de')
+      const result = validateTypingAnswer('  hello  world  ', 'hello world', 'voc-de')
       expect(result).toBe('close') // Close due to extra space
     })
   })
@@ -207,7 +207,7 @@ describe('helpers - Card Text Parsing', () => {
       const result = parseCardsFromText('apple\tApfel\t2')
       expect(result?.cards).toHaveLength(1)
       expect(result?.cards[0]).toEqual({
-        en: 'apple',
+        voc: 'apple',
         de: 'Apfel',
         level: 2,
         time_blind: DEFAULT_TIME,
@@ -230,7 +230,7 @@ describe('helpers - Card Text Parsing', () => {
     it('should trim whitespace from card values', () => {
       const result = parseCardsFromText('  apple  \t  Apfel  \t  2  ')
       expect(result?.cards[0]).toEqual({
-        en: 'apple',
+        voc: 'apple',
         de: 'Apfel',
         level: 2,
         time_blind: DEFAULT_TIME,
@@ -240,26 +240,26 @@ describe('helpers - Card Text Parsing', () => {
   })
 
   describe('Header handling', () => {
-    it('should skip header line containing "en" and "de"', () => {
-      const text = 'en\tde\tlevel\n' + 'apple\tApfel\t1'
+    it('should skip header line containing "voc" and "de"', () => {
+      const text = 'voc\tde\tlevel\n' + 'apple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
-      expect(result?.cards[0].en).toBe('apple')
+      expect(result?.cards[0].voc).toBe('apple')
     })
 
-    it('should skip header with lowercase "en" and "de"', () => {
-      const text = 'en\tde\tlevel\n' + 'apple\tApfel\t1'
+    it('should skip header with lowercase "voc" and "de"', () => {
+      const text = 'voc\tde\tlevel\n' + 'apple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
     })
 
     it('should skip header with mixed case', () => {
-      const text = 'EN\tDE\tLevel\n' + 'apple\tApfel\t1'
+      const text = 'Voc\tDE\tLevel\n' + 'apple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
     })
 
-    it('should not skip first line if it does not contain "en" and "de"', () => {
+    it('should not skip first line if it does not contain "Voc" and "de"', () => {
       const text = 'apple\tApfel\t1\n' + 'banana\tBanane\t2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
@@ -299,14 +299,14 @@ describe('helpers - Card Text Parsing', () => {
   describe('Multi-word and special characters', () => {
     it('should parse multi-word phrases', () => {
       const result = parseCardsFromText('to walk\tzu Fuß gehen\t1')
-      expect(result?.cards[0].en).toBe('to walk')
+      expect(result?.cards[0].voc).toBe('to walk')
       expect(result?.cards[0].de).toBe('zu Fuß gehen')
     })
 
     it('should handle special characters and umlauts', () => {
       const result = parseCardsFromText('Müller\tmüller@example.com\t1')
       expect(result?.cards[0]).toEqual({
-        en: 'Müller',
+        voc: 'Müller',
         de: 'müller@example.com',
         level: 1,
         time_blind: DEFAULT_TIME,
@@ -316,13 +316,13 @@ describe('helpers - Card Text Parsing', () => {
 
     it('should handle numbers in card text', () => {
       const result = parseCardsFromText('chapter 5\tkapitel 5\t2')
-      expect(result?.cards[0].en).toBe('chapter 5')
+      expect(result?.cards[0].voc).toBe('chapter 5')
       expect(result?.cards[0].de).toBe('kapitel 5')
     })
 
     it('should handle punctuation in card text', () => {
       const result = parseCardsFromText("don't\tdarf nicht\t1")
-      expect(result?.cards[0].en).toBe("don't")
+      expect(result?.cards[0].voc).toBe("don't")
       expect(result?.cards[0].de).toBe('darf nicht')
     })
   })
@@ -332,14 +332,14 @@ describe('helpers - Card Text Parsing', () => {
       const text = 'apple\tApfel\n' + '\tBanane\n' + 'cherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards.map(c => c.en)).toEqual(['apple', 'cherry'])
+      expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
     })
 
     it('should skip lines with empty German field', () => {
       const text = 'apple\tApfel\n' + 'banana\t\n' + 'cherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards.map(c => c.en)).toEqual(['apple', 'cherry'])
+      expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
     })
 
     it('should skip lines with only whitespace in fields', () => {
@@ -352,16 +352,16 @@ describe('helpers - Card Text Parsing', () => {
       const text = 'apple\tApfel\n' + 'banana\t\n' + 'cherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards.map(c => c.en)).toEqual(['apple', 'cherry'])
+      expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
     })
   })
 
   describe('Different delimiters in single parse', () => {
     it('should parse semicolon-delimited cards correctly', () => {
-      const text = 'en;de;level\n' + 'apple;Apfel;1\n' + 'banana;Banane;2'
+      const text = 'voc;de;level\n' + 'apple;Apfel;1\n' + 'banana;Banane;2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards[0].en).toBe('apple')
+      expect(result?.cards[0].voc).toBe('apple')
       expect(result?.cards[0].de).toBe('Apfel')
     })
 
@@ -369,14 +369,14 @@ describe('helpers - Card Text Parsing', () => {
       const text = 'apple,Apfel,1\n' + 'banana,Banane,2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards[0].en).toBe('apple')
+      expect(result?.cards[0].voc).toBe('apple')
     })
 
     it('should parse slash-delimited cards correctly', () => {
       const text = 'apple/Apfel/1\n' + 'banana/Banane/2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards[0].en).toBe('apple')
+      expect(result?.cards[0].voc).toBe('apple')
     })
   })
 
@@ -407,7 +407,7 @@ describe('helpers - Card Text Parsing', () => {
     it('should handle cards with extra delimiter occurrences', () => {
       const result = parseCardsFromText('apple pie\tApfelkuchen\t1')
       expect(result?.cards).toHaveLength(1)
-      expect(result?.cards[0].en).toBe('apple pie')
+      expect(result?.cards[0].voc).toBe('apple pie')
     })
 
     it('should handle empty lines in input', () => {
@@ -427,13 +427,13 @@ describe('helpers - Card Text Parsing', () => {
       const longEn = 'a'.repeat(1000)
       const longDe = 'b'.repeat(1000)
       const result = parseCardsFromText(`${longEn}\t${longDe}\t1`)
-      expect(result?.cards[0].en).toBe(longEn)
+      expect(result?.cards[0].voc).toBe(longEn)
       expect(result?.cards[0].de).toBe(longDe)
     })
 
     it('should preserve spaces within card values', () => {
       const result = parseCardsFromText('to walk quickly\tschnell zu Fuß gehen\t1')
-      expect(result?.cards[0].en).toBe('to walk quickly')
+      expect(result?.cards[0].voc).toBe('to walk quickly')
       expect(result?.cards[0].de).toBe('schnell zu Fuß gehen')
     })
   })
@@ -441,7 +441,7 @@ describe('helpers - Card Text Parsing', () => {
   describe('Real-world scenarios', () => {
     it('should parse TSV export format', () => {
       const text =
-        'en\tde\tlevel\n' + 'apple\tApfel\t1\n' + 'banana\tBanane\t2\n' + 'cherry\tKirsche\t3'
+        'voc\tde\tlevel\n' + 'apple\tApfel\t1\n' + 'banana\tBanane\t2\n' + 'cherry\tKirsche\t3'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
       expect(result?.delimiter).toBe('\t')
@@ -456,7 +456,7 @@ describe('helpers - Card Text Parsing', () => {
 
     it('should parse mixed language content', () => {
       const text =
-        'en\tde\tlevel\n' +
+        'voc\tde\tlevel\n' +
         'hello\thallo\t1\n' +
         'goodbye\tAuf Wiedersehen\t2\n' +
         'thank you\tDanke schön\t2\n' +

@@ -29,10 +29,10 @@ function handleReset() {
 </script>
 
 <template>
-  <q-card class="level-card">
+  <q-card>
     <q-card-section>
-      <div class="row items-center justify-between q-mb-md">
-        <div class="text-h6">
+      <div class="row items-center justify-between q-mb-none">
+        <div class="text-subtitle1 text-weight-bold q-ma-none">
           {{ TEXT_DE.cards.cardsPerLevel }}
         </div>
         <q-btn

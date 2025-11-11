@@ -12,14 +12,17 @@ import {
   saveGameStats,
   saveHistory,
   saveLastSettings,
+  loadLastSettings,
   clearGameState as storageClearGameState,
   loadGameSettings as storageLoadGameSettings,
   loadGameState as storageLoadGameState,
   saveGameSettings as storageSaveGameSettings,
   saveGameState as storageSaveGameState,
-  setGameResult as storageSetGameResult
+  setGameResult as storageSetGameResult,
+  loadDecks,
+  saveDecks
 } from '../services/storage'
-import type { Card, GameHistory, GameSettings } from '../types'
+import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -30,6 +33,43 @@ const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
   saveGameStats,
   saveCards
 })
+
+// Deck management functions
+function getDecks(): CardDeck[] {
+  return loadDecks()
+}
+
+function addDeck(name: string): boolean {
+  const decks = loadDecks()
+  // Check for duplicate name
+  if (decks.some(d => d.name === name)) {
+    return false
+  }
+  decks.push({ name, cards: [...INITIAL_CARDS] })
+  saveDecks(decks)
+  return true
+}
+
+function renameDeck(oldName: string, newName: string): boolean {
+  const decks = loadDecks()
+  // Check for duplicate name
+  if (decks.some(d => d.name === newName)) {
+    return false
+  }
+  const deck = decks.find(d => d.name === oldName)
+  if (!deck) {
+    return false
+  }
+  deck.name = newName
+  saveDecks(decks)
+  // Update settings if current deck was renamed
+  const settings = loadLastSettings()
+  if (settings?.deck === oldName) {
+    settings.deck = newName
+    saveLastSettings(settings)
+  }
+  return true
+}
 
 export function useGameStore() {
   // Initialize store on first use
@@ -77,6 +117,11 @@ export function useGameStore() {
       return
     }
 
+    // Ensure the correct deck is loaded before starting the game
+    if (settings.deck) {
+      switchDeck(settings.deck)
+    }
+
     saveLastSettings(settings)
     storageSaveGameSettings(settings)
     baseStore.gameSettings.value = settings
@@ -107,7 +152,7 @@ export function useGameStore() {
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {
-      if (card.en === currentCard.en) {
+      if (card.voc === currentCard.voc) {
         const updates: Partial<Card> = {}
 
         // Update level
@@ -188,6 +233,39 @@ export function useGameStore() {
     baseStore.discardGame()
   }
 
+  function removeDeck(name: string): boolean {
+    const decks = loadDecks()
+    // Cannot remove last deck
+    if (decks.length <= 1) {
+      return false
+    }
+    const filtered = decks.filter(d => d.name !== name)
+    if (filtered.length === decks.length) {
+      return false // Deck not found
+    }
+    saveDecks(filtered)
+    // If current deck was removed, update settings and switch to a new default
+    const settings = loadLastSettings()
+    if (settings?.deck === name) {
+      const newDeckName = filtered.length > 0 ? filtered[0].name : undefined
+      settings.deck = newDeckName
+      saveLastSettings(settings)
+      // Reload cards to reflect the new current deck
+      baseStore.allCards.value = loadCards()
+    }
+    return true
+  }
+
+  function switchDeck(deckName: string) {
+    const decks = loadDecks()
+    const deck = decks.find(d => d.name === deckName)
+    if (!deck) {
+      return
+    }
+    // Update all cards to the new deck's cards
+    baseStore.allCards.value = deck.cards
+  }
+
   // Computed
   const currentCard = computed(() => {
     return baseStore.gameCards.value[baseStore.currentCardIndex.value] || null
@@ -218,6 +296,13 @@ export function useGameStore() {
     discardGame,
     resetCards: resetCardsToDefaultSet,
     importCards,
-    moveAllCards
+    moveAllCards,
+
+    // Deck management
+    getDecks,
+    addDeck,
+    removeDeck,
+    renameDeck,
+    switchDeck
   }
 }

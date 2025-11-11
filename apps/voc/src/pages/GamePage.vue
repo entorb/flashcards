@@ -95,7 +95,7 @@ onUnmounted(() => {
 
     <FlashCard
       v-if="currentCard"
-      :key="currentCard.en"
+      :key="currentCard.voc"
       :card="currentCard"
       :all-cards="allCards"
       :settings="gameSettings!"
