@@ -4,6 +4,7 @@ import type { FocusType } from '../types'
 
 interface Props {
   modelValue: FocusType
+  hideLabel?: boolean
 }
 
 defineProps<Props>()
@@ -24,7 +25,12 @@ function handleFocusChange(value: FocusType) {
 
 <template>
   <div>
-    <div class="text-subtitle2 q-mb-xs">{{ TEXT_DE.words.focus }}</div>
+    <div
+      v-if="!hideLabel"
+      class="text-subtitle2 q-mb-xs"
+    >
+      {{ TEXT_DE.words.focus }}
+    </div>
     <div class="row q-col-gutter-sm">
       <div
         v-for="option in focusOptions"

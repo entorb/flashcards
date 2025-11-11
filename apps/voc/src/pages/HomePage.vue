@@ -12,17 +12,20 @@ import { useRouter } from 'vue-router'
 import FoxIcon from '../components/FoxIcon.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH } from '../constants'
-import { loadLastSettings } from '../services/storage'
+import { loadLastSettings, saveLastSettings } from '../services/storage'
 import type { GameSettings } from '../types'
 
 const router = useRouter()
-const { gameStats, startGame: startGameStore } = useGameStore()
+const { gameStats, startGame: startGameStore, getDecks, switchDeck } = useGameStore()
 
 const settings = ref<GameSettings>({
   mode: 'multiple-choice',
   focus: 'weak',
-  language: 'en-de'
+  language: 'voc-de',
+  deck: 'en'
 })
+
+const deckOptions = ref<{ label: string; value: string }[]>([])
 
 const totalGamesPlayedByAll = ref<number>(0)
 
@@ -33,8 +36,8 @@ const modeOptions = [
 ]
 
 const languageOptions = [
-  { label: TEXT_DE.voc.language.en_de, value: 'en-de' as const },
-  { label: TEXT_DE.voc.language.de_en, value: 'de-en' as const }
+  { label: TEXT_DE.voc.direction.voc_de, value: 'voc-de' as const },
+  { label: TEXT_DE.voc.direction.de_voc, value: 'de-voc' as const }
 ]
 
 onMounted(async () => {
@@ -42,9 +45,21 @@ onMounted(async () => {
   if (lastSettings) {
     settings.value = lastSettings
   }
+  // Refresh deck list and options
+  const loadedDecks = getDecks()
+  deckOptions.value = loadedDecks.map(deck => ({
+    label: deck.name,
+    value: deck.name
+  }))
   // Fetch total games played by all users from database
   totalGamesPlayedByAll.value = await helperStatsDataRead(BASE_PATH)
 })
+
+function handleDeckChange(deckName: string) {
+  settings.value.deck = deckName
+  switchDeck(deckName)
+  saveLastSettings(settings.value)
+}
 
 function startGame() {
   startGameStore(settings.value)
@@ -107,34 +122,82 @@ function goToInfo() {
     <!-- Game Configuration -->
     <q-card class="q-mb-md">
       <q-card-section class="q-pa-md">
-        <!-- Mode Selection -->
-        <div class="q-mb-sm">
-          <div class="text-subtitle2 q-mb-xs">{{ TEXT_DE.words.mode }}</div>
-          <q-btn-toggle
-            v-model="settings.mode"
-            spread
-            no-caps
-            toggle-color="primary"
-            :options="modeOptions"
-          />
-        </div>
+        <q-list>
+          <!-- Deck Selection -->
+          <q-item class="q-px-none q-mb-sm">
+            <q-item-section
+              side
+              style="min-width: 100px"
+            >
+              <div class="text-subtitle2">{{ TEXT_DE.voc.decks.title }}</div>
+            </q-item-section>
+            <q-item-section>
+              <q-select
+                v-model="settings.deck"
+                outlined
+                dense
+                :options="deckOptions"
+                emit-value
+                map-options
+                @update:model-value="handleDeckChange"
+              />
+            </q-item-section>
+          </q-item>
 
-        <!-- Language Direction -->
-        <div>
-          <div class="text-subtitle2 q-mb-xs">{{ TEXT_DE.words.direction }}</div>
-          <q-btn-toggle
-            v-model="settings.language"
-            spread
-            no-caps
-            toggle-color="primary"
-            :options="languageOptions"
-          />
-        </div>
+          <!-- Mode Selection -->
+          <q-item class="q-px-none q-mb-sm">
+            <q-item-section
+              side
+              style="min-width: 100px"
+            >
+              <div class="text-subtitle2">{{ TEXT_DE.words.mode }}</div>
+            </q-item-section>
+            <q-item-section>
+              <q-btn-toggle
+                v-model="settings.mode"
+                spread
+                no-caps
+                toggle-color="primary"
+                :options="modeOptions"
+              />
+            </q-item-section>
+          </q-item>
 
-        <!-- Focus Selection -->
-        <div class="q-mb-sm">
-          <FocusSelector v-model="settings.focus" />
-        </div>
+          <!-- Language Direction -->
+          <q-item class="q-px-none q-mb-sm">
+            <q-item-section
+              side
+              style="min-width: 100px"
+            >
+              <div class="text-subtitle2">{{ TEXT_DE.words.direction }}</div>
+            </q-item-section>
+            <q-item-section>
+              <q-btn-toggle
+                v-model="settings.language"
+                spread
+                no-caps
+                toggle-color="primary"
+                :options="languageOptions"
+              />
+            </q-item-section>
+          </q-item>
+
+          <!-- Focus Selection -->
+          <q-item class="q-px-none">
+            <q-item-section
+              side
+              style="min-width: 100px"
+            >
+              <div class="text-subtitle2">{{ TEXT_DE.words.focus }}</div>
+            </q-item-section>
+            <q-item-section>
+              <FocusSelector
+                v-model="settings.focus"
+                hide-label
+              />
+            </q-item-section>
+          </q-item>
+        </q-list>
       </q-card-section>
     </q-card>
 

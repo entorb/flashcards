@@ -60,19 +60,19 @@ export function formatDate(dateString: string): string {
 /**
  * Validates a typed answer against the correct answer(s)
  * Supports multiple possible answers separated by '/'
- * Handles language-specific rules (e.g., removing "to " prefix for DE->EN)
+ * Handles language-specific rules (e.g., removing "to " prefix for DE->Voc)
  * Returns 'correct', 'close' (typo tolerance), or 'incorrect'
  */
 export function validateTypingAnswer(
   userInput: string,
   correctAnswer: string,
-  language: 'en-de' | 'de-en'
+  language: 'voc-de' | 'de-voc'
 ): 'correct' | 'close' | 'incorrect' {
   const normalizedUserAnswer = normalizeString(userInput)
   const possibleAnswers = correctAnswer.split('/').map(normalizeString)
 
-  // If DE->EN, also accept answers without the leading "to "
-  if (language === 'de-en') {
+  // If DE->Voc, also accept answers without the leading "to "
+  if (language === 'de-voc') {
     const answersWithoutTo = possibleAnswers
       .filter(ans => ans.startsWith('to '))
       .map(ans => ans.substring(3))
@@ -120,14 +120,14 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
 
   const newCards: Card[] = []
   for (const [index, line] of lines.entries()) {
-    if (index === 0 && line.toLowerCase().includes('en') && line.toLowerCase().includes('de')) {
+    if (index === 0 && line.toLowerCase().includes('voc') && line.toLowerCase().includes('de')) {
       continue // Skip header
     }
 
     const parts = line.split(delimiter)
     if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
       newCards.push({
-        en: parts[0].trim(),
+        voc: parts[0].trim(),
         de: parts[1].trim(),
         level: Number.parseInt(parts[2], 10) || 1,
         time_blind: DEFAULT_TIME,
