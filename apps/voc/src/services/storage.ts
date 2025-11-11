@@ -148,13 +148,11 @@ export function saveCards(cards: Card[]): void {
 
   if (deckIndex >= 0) {
     decks[deckIndex].cards = cards
+    saveDecks(decks)
   } else {
-    // If deck not found, update first deck
-    decks[0].cards = cards
+    // Deck not found, log an error and do not save to prevent data corruption.
+    console.error(`Attempted to save cards to a non-existent deck: "${deckName}". Aborting.`)
   }
-
-  saveDecks(decks)
-}
 
 // History - Using shared operations
 
