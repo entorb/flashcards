@@ -17,13 +17,14 @@ export function installQuasarPlugin() {
 
 // Stub Quasar components for faster tests
 const DIV_SLOT_TEMPLATE = '<div><slot /></div>'
+const SPAN_SLOT_TEMPLATE = '<span><slot /></span>'
 
 export const quasarStubs = {
   QPage: { template: DIV_SLOT_TEMPLATE },
   QBtn: { template: '<button><slot /></button>' },
   QCard: { template: DIV_SLOT_TEMPLATE },
   QCardSection: { template: DIV_SLOT_TEMPLATE },
-  QBadge: { template: '<span><slot /></span>' },
+  QBadge: { template: SPAN_SLOT_TEMPLATE },
   QInput: {
     template: '<input />',
     props: ['modelValue'],
@@ -40,10 +41,18 @@ export const quasarStubs = {
   QList: { template: DIV_SLOT_TEMPLATE },
   QItem: { template: DIV_SLOT_TEMPLATE },
   QItemSection: { template: DIV_SLOT_TEMPLATE },
-  QItemLabel: { template: '<div><slot /></div>' },
+  QItemLabel: { template: DIV_SLOT_TEMPLATE },
   QSeparator: { template: '<hr />' },
-  QChip: { template: '<span><slot /></span>' },
-  QTooltip: { template: DIV_SLOT_TEMPLATE }
+  QChip: { template: SPAN_SLOT_TEMPLATE },
+  QTooltip: { template: DIV_SLOT_TEMPLATE },
+  QAvatar: { template: DIV_SLOT_TEMPLATE }
+}
+
+// Mock Quasar directives
+export const quasarDirectives = {
+  ripple: () => ({
+    // Stub ripple directive
+  })
 }
 
 // Mock Quasar globals for components that use $q
