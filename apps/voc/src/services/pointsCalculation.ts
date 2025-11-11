@@ -2,7 +2,7 @@ import type { AnswerResult } from '@flashcards/shared'
 
 import {
   CLOSE_ANSWER_PENALTY,
-  LANGUAGE_BONUS_DE_EN,
+  LANGUAGE_BONUS_DE_VOC,
   LEVEL_BONUS_NUMERATOR,
   MAX_TIME,
   MODE_MULTIPLIER_BLIND,
@@ -50,10 +50,10 @@ export function calculatePointsBreakdown(
     closeAdjustment = pointsBeforeBonus - Math.round(basePoints * modeMultiplier)
   }
 
-  // Apply language bonus (only for correct answers in DE->EN direction)
+  // Apply language bonus (only for correct answers in DE->Voc direction)
   let languageBonus = 0
-  if (result === 'correct' && gameSettings.language === 'de-en') {
-    languageBonus = LANGUAGE_BONUS_DE_EN
+  if (result === 'correct' && gameSettings.language === 'de-voc') {
+    languageBonus = LANGUAGE_BONUS_DE_VOC
   }
 
   // Apply time bonus (only for correct answers in blind/typing modes)
