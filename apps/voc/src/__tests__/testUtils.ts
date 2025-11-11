@@ -43,7 +43,15 @@ export const quasarStubs = {
   QItemLabel: { template: '<div><slot /></div>' },
   QSeparator: { template: '<hr />' },
   QChip: { template: '<span><slot /></span>' },
-  QTooltip: { template: DIV_SLOT_TEMPLATE }
+  QTooltip: { template: DIV_SLOT_TEMPLATE },
+  QAvatar: { template: '<div><slot /></div>' }
+}
+
+// Mock Quasar directives
+export const quasarDirectives = {
+  ripple: () => ({
+    // Stub ripple directive
+  })
 }
 
 // Mock Quasar globals for components that use $q
