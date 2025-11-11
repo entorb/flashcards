@@ -48,8 +48,6 @@ export const TEXT_DE = {
     infoTooltip: 'Info zu Scoring-Regeln'
   },
 
-  history: {},
-
   cards: {
     cardsPerLevel: 'Karten pro Level',
     legend: 'Legende',
@@ -68,10 +66,11 @@ export const TEXT_DE = {
     bonusPoints: 'Bonus',
     firstGameBonus: 'Erstes Spiel heute',
     streakGameBonus: 'Spiel des Tages',
-    english: 'Englisch',
+    vocable: 'Vokabel',
     german: 'Deutsch',
     actions: 'Aktionen',
-    delete: 'Löschen'
+    delete: 'Löschen',
+    deck: 'Deck'
   },
 
   // Common focus options
@@ -105,9 +104,9 @@ export const TEXT_DE = {
       wasYourAnswerCorrect: 'War deine Antwort richtig?',
       typePlaceholder: 'Antwort tippen...'
     },
-    language: {
-      en_de: 'EN → DE',
-      de_en: 'DE → EN'
+    direction: {
+      voc_de: 'Voc → DE',
+      de_voc: 'DE → Voc'
     },
     cards: {
       // title: 'Kartenverwaltung',
@@ -119,7 +118,7 @@ export const TEXT_DE = {
       moveAllTitle: 'Alle Karten verschieben',
       dangerZoneTitle: 'Gefahrenzone',
       importDialogTitle: 'Karten importieren',
-      importDialogMessage: 'Füge deine Karten aus Excel (oder so) ein (Format: En | De | Level)',
+      importDialogMessage: 'Füge deine Karten aus Excel (oder so) ein (Format: Voc | De | Level)',
       importHintExcel:
         'Tipps: Unterstützt Wortalternativen mit "/": "Welche/Welcher". Verwende Excel order Google Tabellen um mehrere Vokabellisten zu verwalten und zu speichern.',
       confirmMoveTitle: 'Verschieben bestätigen',
@@ -130,23 +129,34 @@ export const TEXT_DE = {
       emptyTextError: 'Das Textfeld ist leer.',
       noDelimiterError: 'Konnte kein Trennzeichen (Tab, Komma, Semikolon) finden.',
       noCardsFoundError:
-        'Keine gültigen Karten gefunden. Format: EN{delimiter}DE{delimiter}LEVEL (optional)',
+        'Keine gültigen Karten gefunden. Format: Voc{delimiter}De{delimiter}LEVEL (optional)',
       clipboardError: 'Zugriff auf Zwischenablage fehlgeschlagen.',
       invalidLevelError: 'Bitte gib ein Level zwischen {min} und {max} ein.',
       importSuccess: '{count} Karten erfolgreich importiert!',
-      moveSuccess: 'Alle Karten verschoben!',
       resetSuccess: 'Kartenstapel wurde zurückgesetzt!',
       editCardsTitle: 'Karten Bearbeiten',
       editCardsButton: 'Bearbeiten',
       addNewCard: 'Neue Karte',
-      enPlaceholder: 'Englisches Wort',
-      dePlaceholder: 'Deutsches Wort',
+      vocPlaceholder: 'Vocable',
+      dePlaceholder: 'Deutsch',
       save: 'Speichern',
       validationEnEmpty: 'Das englische Wort darf nicht leer sein.',
       validationDeEmpty: 'Das deutsche Wort darf nicht leer sein.',
-      saveSuccess: 'Karten erfolgreich gespeichert!',
       unsavedChangesTitle: 'Ungespeicherte Änderungen',
       unsavedChangesMessage: 'Du hast ungespeicherte Änderungen. Möchtest du die Seite verlassen?'
+    },
+    decks: {
+      title: 'Deck',
+      editDecksButton: 'Karten Decks/Sprachen bearbeiten',
+      addDeck: 'Neues Deck',
+      removeDeck: 'Löschen',
+      renameDeck: 'Umbenennen',
+      deckNamePlaceholder: 'Deck Name',
+      confirmRemoveTitle: 'Deck entfernen?',
+      confirmRemoveMessage: 'Möchtest du das Deck "{name}" wirklich löschen?',
+      lastDeckError: 'Das letzte Deck kann nicht gelöscht werden.',
+      duplicateNameError: 'Ein Deck mit diesem Namen existiert bereits.',
+      emptyNameError: 'Der Deck-Name darf nicht leer sein.'
     },
     info: {
       title: 'Scoring-Regeln',
