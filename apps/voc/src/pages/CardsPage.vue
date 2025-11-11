@@ -16,7 +16,6 @@ const { allCards, moveAllCards } = useGameStore()
 const store = useGameStore()
 const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(allCards)
 
-const deckSelector = ref<InstanceType<typeof DeckSelector> | null>(null)
 const targetLevel = ref(1)
 
 const cardsToShow = computed(() => {
@@ -48,13 +47,9 @@ function handleEditDecks() {
   router.push('/decks-edit')
 }
 
-// Refresh deck selector when returning from deck edit page
 onMounted(() => {
   globalThis.addEventListener('keydown', handleKeyDown)
-  // Refresh deck selector in case decks were changed
-  if (deckSelector.value) {
-    deckSelector.value.refresh()
-  }
+  // DeckSelector's own onMounted already fetches fresh decks
 })
 
 function handleMoveClick() {
@@ -121,7 +116,7 @@ function getLevelColor(level: number): string {
         <q-card-section>
           <div class="text-subtitle1 text-weight-bold q-ma-none">
             {{ TEXT_DE.voc.decks.title }}
-            <DeckSelector ref="deckSelector" />
+            <DeckSelector />
           </div>
           <q-separator class="q-my-md" />
           <q-btn
