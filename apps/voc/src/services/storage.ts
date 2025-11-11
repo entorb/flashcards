@@ -14,7 +14,7 @@ import {
 } from '@flashcards/shared'
 
 import { INITIAL_CARDS } from '../constants'
-import type { Card, GameHistory, GameSettings } from '../types'
+import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 
 const STORAGE_KEYS = {
   CARDS: 'voc-cards',
@@ -40,32 +40,120 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
   STORAGE_KEYS.GAME_STATE
 )
 
-// Cards
+// Decks
 
 /**
- * Load flashcards from storage
+ * Migrate old card structure to deck structure
+ * Old: Card[] with "en" field
+ * New: CardDeck[] with "voc" field
+ * TODO: Delete migration logic on 2025-11-18 (after migration period)
  */
-export function loadCards(): Card[] {
+
+function migrateToDecks(data: unknown): CardDeck[] {
+  if (!Array.isArray(data) || data.length === 0) {
+    return [{ name: 'en', cards: INITIAL_CARDS }]
+  }
+
+  // Check if first item has "en" field (old structure)
+  const firstItem = data[0] as Record<string, unknown>
+  if ('en' in firstItem && typeof firstItem.en === 'string') {
+    // Migration needed: rename "en" to "voc"
+    const migratedCards: Card[] = data.map(item => {
+      const oldCard = item as {
+        en: string
+        de: string
+        level: number
+        time_blind: number
+        time_typing: number
+      }
+      return {
+        voc: oldCard.en,
+        de: oldCard.de,
+        level: oldCard.level,
+        time_blind: oldCard.time_blind,
+        time_typing: oldCard.time_typing
+      }
+    })
+    return [{ name: 'en', cards: migratedCards }]
+  }
+
+  // Check if it's already deck structure
+  if ('name' in firstItem && 'cards' in firstItem) {
+    return data as CardDeck[]
+  }
+
+  // Otherwise treat as new card structure
+  return [{ name: 'en', cards: data as Card[] }]
+}
+
+/**
+ * Load all card decks from storage
+ */
+export function loadDecks(): CardDeck[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
   if (!stored) {
-    // No cards in storage - save and return initial cards
-    saveCards(INITIAL_CARDS)
-    return INITIAL_CARDS
+    const defaultDecks = [{ name: 'en', cards: INITIAL_CARDS }]
+    saveDecks(defaultDecks)
+    return defaultDecks
   }
   try {
-    return JSON.parse(stored) as Card[]
+    const parsed = JSON.parse(stored)
+    const decks = migrateToDecks(parsed)
+    // Save migrated data back to storage
+    if (stored !== JSON.stringify(decks)) {
+      saveDecks(decks)
+    }
+    return decks
   } catch {
-    // If parsing fails, save and return initial cards
-    saveCards(INITIAL_CARDS)
-    return INITIAL_CARDS
+    const defaultDecks = [{ name: 'en', cards: INITIAL_CARDS }]
+    saveDecks(defaultDecks)
+    return defaultDecks
   }
 }
 
 /**
- * Save flashcards to storage
+ * Save all card decks to storage
+ */
+export function saveDecks(decks: CardDeck[]): void {
+  saveJSON(STORAGE_KEYS.CARDS, decks)
+}
+
+/**
+ * Get current deck name from settings
+ */
+export function getCurrentDeckName(): string {
+  const settings = loadLastSettings()
+  return settings?.deck || 'en'
+}
+
+// Cards (for backward compatibility - operates on current deck)
+
+/**
+ * Load flashcards from current deck
+ */
+export function loadCards(): Card[] {
+  const decks = loadDecks()
+  const deckName = getCurrentDeckName()
+  const deck = decks.find(d => d.name === deckName)
+  return deck ? deck.cards : decks[0].cards
+}
+
+/**
+ * Save flashcards to current deck
  */
 export function saveCards(cards: Card[]): void {
-  saveJSON(STORAGE_KEYS.CARDS, cards)
+  const decks = loadDecks()
+  const deckName = getCurrentDeckName()
+  const deckIndex = decks.findIndex(d => d.name === deckName)
+
+  if (deckIndex >= 0) {
+    decks[deckIndex].cards = cards
+  } else {
+    // If deck not found, update first deck
+    decks[0].cards = cards
+  }
+
+  saveDecks(decks)
 }
 
 // History - Using shared operations
@@ -99,7 +187,14 @@ export function addHistory(history: GameHistory): void {
  * Load last game settings
  */
 export function loadLastSettings(): GameSettings | null {
-  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
+  const settings = loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
+  // eslint-disable-next-line sonarjs/todo-tag
+  // TODO: Delete migration logic on 2025-11-18 (after migration period)
+  // Ensure deck property exists (migration)
+  if (settings && !settings.deck) {
+    settings.deck = 'en'
+  }
+  return settings
 }
 
 /**

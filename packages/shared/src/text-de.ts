@@ -69,7 +69,8 @@ export const TEXT_DE = {
     vocable: 'Vokabel',
     german: 'Deutsch',
     actions: 'Aktionen',
-    delete: 'Löschen'
+    delete: 'Löschen',
+    deck: 'Deck'
   },
 
   // Common focus options
@@ -132,7 +133,6 @@ export const TEXT_DE = {
       clipboardError: 'Zugriff auf Zwischenablage fehlgeschlagen.',
       invalidLevelError: 'Bitte gib ein Level zwischen {min} und {max} ein.',
       importSuccess: '{count} Karten erfolgreich importiert!',
-      moveSuccess: 'Alle Karten verschoben!',
       resetSuccess: 'Kartenstapel wurde zurückgesetzt!',
       editCardsTitle: 'Karten Bearbeiten',
       editCardsButton: 'Bearbeiten',
@@ -142,9 +142,21 @@ export const TEXT_DE = {
       save: 'Speichern',
       validationEnEmpty: 'Das englische Wort darf nicht leer sein.',
       validationDeEmpty: 'Das deutsche Wort darf nicht leer sein.',
-      saveSuccess: 'Karten erfolgreich gespeichert!',
       unsavedChangesTitle: 'Ungespeicherte Änderungen',
       unsavedChangesMessage: 'Du hast ungespeicherte Änderungen. Möchtest du die Seite verlassen?'
+    },
+    decks: {
+      title: 'Deck',
+      editDecksButton: 'Karten Decks/Sprachen bearbeiten',
+      addDeck: 'Neues Deck',
+      removeDeck: 'Löschen',
+      renameDeck: 'Umbenennen',
+      deckNamePlaceholder: 'Deck Name',
+      confirmRemoveTitle: 'Deck entfernen?',
+      confirmRemoveMessage: 'Möchtest du das Deck "{name}" wirklich löschen?',
+      lastDeckError: 'Das letzte Deck kann nicht gelöscht werden.',
+      duplicateNameError: 'Ein Deck mit diesem Namen existiert bereits.',
+      emptyNameError: 'Der Deck-Name darf nicht leer sein.'
     },
     info: {
       title: 'Scoring-Regeln',

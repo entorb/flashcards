@@ -16,7 +16,7 @@ applications using flashcards
 - ESLint
 - Vitest unit tests
 - Cypress E2E test
-- [SonarCloud](https://sonarcloud.io/project/issues?id=entorb_flashcards) for
+- [SonarQube](https://sonarcloud.io/project/issues?id=entorb_flashcards) for
   code quality analysis
 
 ## Scripts

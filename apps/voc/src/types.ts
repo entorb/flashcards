@@ -25,12 +25,19 @@ export interface Card extends BaseCard {
   time_typing: number // Seconds for last correct answer in typing mode (0.1-60s, default 60)
 }
 
+// Card Deck Definition
+export interface CardDeck {
+  name: string // Unique deck identifier
+  cards: Card[] // Cards in this deck
+}
+
 // Game Configuration
 
 export interface GameSettings {
   mode: GameMode
   focus: FocusType // 'weak', 'strong', or 'slow'
   language: Direction
+  deck?: string // Optional deck name (for future compatibility)
 }
 
 // Game History (extends BaseGameHistory)

@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/DecksEditPage': RouteRecordInfo<
+      '/DecksEditPage',
+      '/DecksEditPage',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/GameOverPage': RouteRecordInfo<
       '/GameOverPage',
       '/GameOverPage',
@@ -94,6 +101,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/CardsPage.vue': {
       routes:
         | '/CardsPage'
+      views:
+        | never
+    }
+    'src/pages/DecksEditPage.vue': {
+      routes:
+        | '/DecksEditPage'
       views:
         | never
     }

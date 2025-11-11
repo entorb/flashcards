@@ -32,7 +32,10 @@ describe('Typing Mode Game - DE to Voc', () => {
       // Get the question text and cards from localStorage
       cy.window().then(win => {
         const stored = win.localStorage.getItem('voc-cards')
-        const cards = stored ? JSON.parse(stored) : []
+        const decks = stored ? JSON.parse(stored) : []
+        // Extract cards from the first deck (or current deck)
+        const cards =
+          Array.isArray(decks) && decks.length > 0 && decks[0].cards ? decks[0].cards : []
 
         cy.get('[data-cy="game-page-question"]')
           .invoke('text')

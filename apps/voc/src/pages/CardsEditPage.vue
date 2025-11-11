@@ -158,11 +158,6 @@ function handleSave() {
   importCards(editingCards.value)
   hasChanges.value = false
 
-  $q.notify({
-    type: 'positive',
-    message: TEXT_DE.voc.cards.saveSuccess
-  })
-
   router.push('/cards')
 }
 

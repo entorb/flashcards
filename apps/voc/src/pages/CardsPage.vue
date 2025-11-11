@@ -5,6 +5,7 @@ import { useQuasar } from 'quasar'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import DeckSelector from '../components/DeckSelector.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { MAX_LEVEL, MIN_LEVEL } from '../constants'
 
@@ -15,6 +16,7 @@ const { allCards, moveAllCards } = useGameStore()
 const store = useGameStore()
 const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(allCards)
 
+const deckSelector = ref<InstanceType<typeof DeckSelector> | null>(null)
 const targetLevel = ref(1)
 
 const cardsToShow = computed(() => {
@@ -34,10 +36,6 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
-onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyDown)
-})
-
 onUnmounted(() => {
   globalThis.removeEventListener('keydown', handleKeyDown)
 })
@@ -45,6 +43,19 @@ onUnmounted(() => {
 function handleEditCards() {
   router.push('/cards-edit')
 }
+
+function handleEditDecks() {
+  router.push('/decks-edit')
+}
+
+// Refresh deck selector when returning from deck edit page
+onMounted(() => {
+  globalThis.addEventListener('keydown', handleKeyDown)
+  // Refresh deck selector in case decks were changed
+  if (deckSelector.value) {
+    deckSelector.value.refresh()
+  }
+})
 
 function handleMoveClick() {
   const level = Number(targetLevel.value)
@@ -66,7 +77,6 @@ function handleMoveClick() {
     cancel: true
   }).onOk(() => {
     moveAllCards(level)
-    $q.notify({ type: 'positive', message: TEXT_DE.voc.cards.moveSuccess })
   })
 }
 
@@ -93,7 +103,7 @@ function getLevelColor(level: number): string {
     style="max-width: 700px; margin: 0 auto"
   >
     <!-- Header-like section with back button and title -->
-    <div class="row items-center justify-between q-mb-lg">
+    <div class="row items-center justify-between q-mb-md">
       <q-btn
         flat
         round
@@ -105,8 +115,27 @@ function getLevelColor(level: number): string {
         <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
       </q-btn>
     </div>
+    <div class="q-gutter-md">
+      <!-- Deck Selection and Management -->
+      <q-card class="q-mb-md">
+        <q-card-section>
+          <div class="text-subtitle1 text-weight-bold q-ma-none">
+            {{ TEXT_DE.voc.decks.title }}
+            <DeckSelector ref="deckSelector" />
+          </div>
+          <q-separator class="q-my-md" />
+          <q-btn
+            outline
+            color="primary"
+            icon="edit"
+            :label="TEXT_DE.voc.decks.editDecksButton"
+            no-caps
+            data-cy="edit-decks-button"
+            @click="handleEditDecks"
+          />
+        </q-card-section>
+      </q-card>
 
-    <div class="q-gutter-lg">
       <!-- Level Distribution -->
       <LevelDistribution
         :cards="allCards"
@@ -115,10 +144,10 @@ function getLevelColor(level: number): string {
         @level-click="handleLevelClick"
       />
 
-      <!-- Current Deck -->
-      <div class="q-pt-lg">
-        <div class="row items-center justify-between q-mb-md">
-          <h3 class="text-h6 text-weight-bold">
+      <!-- Current Deck Cards -->
+      <q-card>
+        <q-card-section>
+          <h3 class="text-subtitle1 text-weight-bold q-ma-none">
             <span v-if="selectedLevel === null">
               {{ TEXT_DE.words.cards }} ({{ allCards.length }})
             </span>
@@ -126,86 +155,87 @@ function getLevelColor(level: number): string {
               {{ TEXT_DE.words.level }} {{ selectedLevel }} ({{ cardsToShow.length }})
             </span>
           </h3>
-        </div>
-        <div style="overflow-y: auto">
-          <q-list
-            bordered
-            separator
-          >
-            <q-item
-              v-for="card in cardsToShow"
-              :key="card.voc"
+          <div style="overflow-y: auto; max-height: 400px">
+            <q-list
+              bordered
+              separator
             >
-              <q-item-section>
-                <q-item-label>{{ card.voc }} → {{ card.de }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-badge
-                  :label="`Level ${card.level}`"
-                  :style="{ backgroundColor: getLevelColor(card.level) }"
-                />
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </div>
-      </div>
+              <q-item
+                v-for="card in cardsToShow"
+                :key="card.voc"
+              >
+                <q-item-section>
+                  <q-item-label>{{ card.voc }} → {{ card.de }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-badge
+                    :label="`Level ${card.level}`"
+                    :style="{ backgroundColor: getLevelColor(card.level) }"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+        </q-card-section>
+      </q-card>
 
-      <!-- Edit Cards -->
-      <div>
-        <h3 class="text-subtitle1 text-weight-bold q-mb-xs">
-          {{ TEXT_DE.voc.cards.editCardsTitle }}
-        </h3>
-        <q-btn
-          outline
-          color="grey-8"
-          :label="TEXT_DE.voc.cards.editCardsButton"
-          no-caps
-          data-cy="edit-cards-button"
-          @click="handleEditCards"
-        />
-      </div>
-
-      <!-- Move All Cards -->
-      <div>
-        <h3 class="text-subtitle1 text-weight-bold q-mb-xs">
-          {{ TEXT_DE.voc.cards.moveAllTitle }}
-        </h3>
-        <div class="row q-gutter-sm items-center">
-          <q-input
-            v-model.number="targetLevel"
-            type="number"
-            :min="MIN_LEVEL"
-            :max="MAX_LEVEL"
-            outlined
-            dense
-            style="width: 80px"
-          />
+      <!-- Card Management Actions -->
+      <q-card>
+        <q-card-section>
+          <h3 class="text-subtitle1 text-weight-bold q-ma-none">
+            {{ TEXT_DE.voc.cards.editCardsTitle }}
+          </h3>
           <q-btn
             outline
-            color="grey-8"
-            :label="TEXT_DE.voc.cards.moveAll"
+            color="primary"
+            icon="edit"
+            :label="TEXT_DE.voc.cards.editCardsButton"
             no-caps
-            @click="handleMoveClick"
+            class="q-mb-none"
+            data-cy="edit-cards-button"
+            @click="handleEditCards"
           />
-        </div>
-      </div>
+          <q-separator class="q-my-md" />
+          <h3 class="text-subtitle1 text-weight-bold q-ma-none">
+            {{ TEXT_DE.voc.cards.moveAllTitle }}
+          </h3>
+          <div class="row q-gutter-sm items-center">
+            <q-input
+              v-model.number="targetLevel"
+              type="number"
+              :min="MIN_LEVEL"
+              :max="MAX_LEVEL"
+              outlined
+              dense
+              style="width: 80px"
+            />
+            <q-btn
+              outline
+              color="primary"
+              :label="TEXT_DE.voc.cards.moveAll"
+              no-caps
+              @click="handleMoveClick"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
 
       <!-- Danger Zone -->
-      <div
-        class="q-pt-lg"
-        style="border-top: 1px solid #e0e0e0"
-      >
-        <h3 class="text-subtitle1 text-weight-bold q-mb-xs text-negative">
-          {{ TEXT_DE.voc.cards.dangerZoneTitle }}
-        </h3>
-        <q-btn
-          outline
-          color="negative"
-          :label="TEXT_DE.voc.cards.reset"
-          no-caps
-          @click="handleResetCardsToDefaultSet"
-        />
-      </div>
+      <q-card class="bg-red-1">
+        <q-card-section>
+          <h3 class="text-subtitle1 text-weight-bold q-ma-none text-negative">
+            {{ TEXT_DE.voc.cards.dangerZoneTitle }}
+          </h3>
+          <q-btn
+            outline
+            color="negative"
+            icon="warning"
+            :label="TEXT_DE.voc.cards.reset"
+            no-caps
+            @click="handleResetCardsToDefaultSet"
+          />
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
