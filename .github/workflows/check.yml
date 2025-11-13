@@ -45,6 +45,7 @@ jobs:
 
       - name: Run formatter
         run: pnpm run format
+
       - name: Run linter
         run: pnpm run lint
 

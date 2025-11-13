@@ -28,6 +28,9 @@ jobs:
           node-version: 24
           cache: 'pnpm'
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Update Vite, etc.
         run: pnpm up vite cspell eslint prettier vue-tsc
 
