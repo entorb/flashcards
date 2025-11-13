@@ -43,7 +43,11 @@ const languageOptions = [
 onMounted(async () => {
   const lastSettings = loadLastSettings()
   if (lastSettings) {
-    settings.value = lastSettings
+    // Merge loaded settings with defaults to ensure all properties exist
+    settings.value = { ...settings.value, ...lastSettings }
+  } else {
+    // Save default settings to localStorage on first run
+    saveLastSettings(settings.value)
   }
   // Refresh deck list and options
   const loadedDecks = getDecks()
