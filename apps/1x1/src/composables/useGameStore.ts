@@ -6,7 +6,7 @@ import {
   filterCardsAll,
   filterCardsBySelection,
   filterCardsSquares,
-  selectCards
+  selectCardsForRound
 } from '@/services/cardSelector'
 import {
   getVirtualCardsForRange,
@@ -123,7 +123,11 @@ export function useGameStore() {
       filteredCards = filterCardsBySelection(allAvailableCards, selectArray, rangeSet)
     }
 
-    baseStore.gameCards.value = selectCards(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
+    baseStore.gameCards.value = selectCardsForRound(
+      filteredCards,
+      settings.focus,
+      MAX_CARDS_PER_GAME
+    )
   }
 
   function handleAnswer(data: AnswerData) {

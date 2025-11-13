@@ -14,6 +14,7 @@ const emit = defineEmits<{
 
 const focusOptions = [
   { label: TEXT_DE.focusOptions.weak, value: 'weak' as const, icon: 'trending_down' },
+  { label: TEXT_DE.focusOptions.medium, value: 'medium' as const, icon: 'change_history' },
   { label: TEXT_DE.focusOptions.strong, value: 'strong' as const, icon: 'trending_up' },
   { label: TEXT_DE.focusOptions.slow, value: 'slow' as const, icon: 'schedule' }
 ]
@@ -35,7 +36,7 @@ function handleFocusChange(value: FocusType) {
       <div
         v-for="option in focusOptions"
         :key="option.value"
-        class="col-4"
+        class="col-6 col-sm-3"
       >
         <q-btn
           :outline="modelValue !== option.value"

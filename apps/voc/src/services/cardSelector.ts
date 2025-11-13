@@ -5,7 +5,7 @@ import { LEVEL_BONUS_NUMERATOR, ROUND_SIZE } from '../constants'
 import type { Card, GameMode } from '../types'
 
 /**
- * Select cards for a game round based on focus/priority strategy
+ * Select cards for a game round based on focus strategy
  */
 export function selectCardsForRound(allCards: Card[], focus: FocusType, mode: GameMode): Card[] {
   if (allCards.length === 0) {
@@ -36,9 +36,9 @@ export function selectCardsForRound(allCards: Card[], focus: FocusType, mode: Ga
     return shuffleArray(sortedByTime.slice(0, cardsToSelect))
   }
 
-  // Calculate weights for each card
+  // Calculate weights for each card based on focus type
   const weightedCards = allCards.map(card => {
-    let weight = 1
+    let weight = 1 // Default weight for all cards
 
     if (focus === 'weak') {
       // Prioritize lower level cards (weaker)
@@ -48,6 +48,10 @@ export function selectCardsForRound(allCards: Card[], focus: FocusType, mode: Ga
       // Prioritize higher level cards (stronger)
       // Level 1 = 1x weight, Level 5 = 5x weight
       weight = card.level
+    } else if (focus === 'medium') {
+      // Medium levels: 1->1, 2->3, 3->5, 4->3, 5->1
+      const mediumWeights = [1, 3, 5, 3, 1]
+      weight = mediumWeights[card.level - 1]
     }
 
     return { item: card, weight }

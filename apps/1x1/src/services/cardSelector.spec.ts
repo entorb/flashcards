@@ -4,7 +4,7 @@ import {
   filterCardsAll,
   filterCardsBySelection,
   filterCardsSquares,
-  selectCards
+  selectCardsForRound
 } from '@/services/cardSelector'
 import { initializeCards, loadCards, parseCardQuestion } from '@/services/storage'
 import type { Card } from '@/types'
@@ -154,7 +154,7 @@ describe('Card Selection', () => {
       { question: '6x5', answer: 30, level: 1, time: 60 }
     ]
 
-    const selected = selectCards(cards, 'weak', 10)
+    const selected = selectCardsForRound(cards, 'weak', 10)
     expect(selected).toHaveLength(3)
   })
 
@@ -169,7 +169,7 @@ describe('Card Selection', () => {
       { question: '9x6', answer: 54, level: 1, time: 60 }
     ]
 
-    const selected = selectCards(cards, 'weak', 5)
+    const selected = selectCardsForRound(cards, 'weak', 5)
     expect(selected).toHaveLength(5)
   })
 
@@ -181,7 +181,7 @@ describe('Card Selection', () => {
     ]
 
     const originalLength = cards.length
-    selectCards(cards, 'weak', 2)
+    selectCardsForRound(cards, 'weak', 2)
 
     expect(cards).toHaveLength(originalLength)
   })
@@ -197,7 +197,7 @@ describe('Card Selection', () => {
       { question: '9x6', answer: 54, level: 1, time: 60 }
     ]
 
-    const selected = selectCards(cards, 'weak', 10)
+    const selected = selectCardsForRound(cards, 'weak', 10)
     expect(selected).toHaveLength(7)
   })
 
@@ -209,7 +209,7 @@ describe('Card Selection', () => {
 
     // Run multiple times to verify randomness works
     for (let i = 0; i < 10; i++) {
-      const selected = selectCards(cards, 'weak', 1)
+      const selected = selectCardsForRound(cards, 'weak', 1)
       expect(selected).toHaveLength(1)
       expect(['6x3', '6x4']).toContain(selected[0].question)
     }
@@ -233,7 +233,7 @@ describe('Integration: Filter + Select Pipeline', () => {
     expect(filtered).toHaveLength(7)
 
     // Selection step
-    const selected = selectCards(filtered, 'weak', 10)
+    const selected = selectCardsForRound(filtered, 'weak', 10)
     expect(selected).toHaveLength(7)
     expect(selected.map(c => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
       '6x3',
@@ -252,7 +252,7 @@ describe('Integration: Filter + Select Pipeline', () => {
     expect(filtered).toHaveLength(7)
 
     // Selection step (limit to 5)
-    const selected = selectCards(filtered, 'strong', 5)
+    const selected = selectCardsForRound(filtered, 'strong', 5)
     expect(selected).toHaveLength(5)
 
     // All selected should be squares
