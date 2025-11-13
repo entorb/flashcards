@@ -75,8 +75,9 @@ export const TEXT_DE = {
 
   // Common focus options
   focusOptions: {
-    weak: 'Niedrige Level',
-    strong: 'Hohe Level',
+    weak: 'Schwache',
+    strong: 'Starke',
+    medium: 'Mittlere',
     slow: 'Langsame'
   },
 

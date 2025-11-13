@@ -3,7 +3,7 @@ import { weightedRandomSelection } from '@flashcards/shared/utils'
 
 import { parseCardQuestion } from './storage'
 
-import { MAX_CARD_LEVEL } from '@/constants'
+import { LEVEL_BONUS_NUMERATOR } from '@/constants'
 import type { Card } from '@/types'
 
 /**
@@ -48,17 +48,23 @@ export function filterCardsAll(cards: Card[], range: Set<number>): Card[] {
 /**
  * Select cards for a game round based on focus strategy
  */
-export function selectCards(cards: Card[], focus: FocusType, count: number): Card[] {
+export function selectCardsForRound(cards: Card[], focus: FocusType, count: number): Card[] {
   // Calculate weights for each card based on focus type
   const weightedCards = cards.map(card => {
     let weight: number
 
     if (focus === 'weak') {
-      // Level 1=highest weight, Level 5=lowest weight
-      weight = MAX_CARD_LEVEL + 1 - card.level
+      // Prioritize lower level cards (weaker)
+      // Level 1 = 5x weight, Level 5 = 1x weight
+      weight = LEVEL_BONUS_NUMERATOR - card.level
     } else if (focus === 'strong') {
-      // Level 5=highest weight, Level 1=lowest weight
+      // Prioritize higher level cards (stronger)
+      // Level 1 = 1x weight, Level 5 = 5x weight
       weight = card.level
+    } else if (focus === 'medium') {
+      // Medium levels: 1->1, 2->3, 3->5, 4->3, 5->1
+      const mediumWeights = [1, 3, 5, 3, 1]
+      weight = mediumWeights[card.level - 1]
     } else {
       // slow: prioritize cards with higher time (slower)
       weight = card.time
