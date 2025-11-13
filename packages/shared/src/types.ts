@@ -25,7 +25,7 @@ export interface BaseCard {
  * Common FocusType for both apps
  * Represents learning focus strategy
  */
-export type FocusType = 'weak' | 'strong' | 'slow'
+export type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
 
 /**
  * Common AnswerResult for both apps
