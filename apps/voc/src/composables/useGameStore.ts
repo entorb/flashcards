@@ -177,6 +177,10 @@ export function useGameStore() {
       }
       return card
     })
+
+    // Explicitly save cards on every answer because the watcher in the base store
+    // doesn't seem to fire consistently. This is a workaround to ensure data is saved.
+    saveCards(baseStore.allCards.value)
   }
 
   function finishGame() {
@@ -207,6 +211,8 @@ export function useGameStore() {
 
     // Reset in-memory game state to prevent "11/10" bug when starting a new game
     baseStore.resetGameState()
+    // Clear game cards to ensure fresh load from localStorage on next game start
+    baseStore.gameCards.value = []
   }
 
   function resetCardsToDefaultSet() {
