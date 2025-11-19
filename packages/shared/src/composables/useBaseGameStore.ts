@@ -62,11 +62,9 @@ export function createBaseGameStore<
       if (config.saveCards) {
         const saveCardsCallback = config.saveCards
         watch(
-          allCards,
+          () => allCards.value,
           newCards => {
-            if (newCards.length > 0) {
-              saveCardsCallback(newCards)
-            }
+            saveCardsCallback(newCards)
           },
           { deep: true }
         )
