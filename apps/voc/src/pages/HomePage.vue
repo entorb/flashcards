@@ -35,6 +35,8 @@ const modeOptions = [
   { label: TEXT_DE.voc.mode.typing, value: 'typing' as const }
 ]
 
+const hasLevel1Cards = ref<boolean>(true)
+
 const languageOptions = [
   { label: TEXT_DE.voc.direction.voc_de, value: 'voc-de' as const },
   { label: TEXT_DE.voc.direction.de_voc, value: 'de-voc' as const }
@@ -55,6 +57,8 @@ onMounted(async () => {
     label: deck.name,
     value: deck.name
   }))
+  // Check if current deck has level 1 cards
+  checkLevel1Cards()
   // Fetch total games played by all users from database
   totalGamesPlayedByAll.value = await helperStatsDataRead(BASE_PATH)
 })
@@ -63,6 +67,19 @@ function handleDeckChange(deckName: string) {
   settings.value.deck = deckName
   switchDeck(deckName)
   saveLastSettings(settings.value)
+  checkLevel1Cards()
+  // Switch to blind mode if multiple-choice is disabled
+  if (!hasLevel1Cards.value && settings.value.mode === 'multiple-choice') {
+    settings.value.mode = 'blind'
+  }
+}
+
+function checkLevel1Cards() {
+  const decks = getDecks()
+  const currentDeck = decks.find(d => d.name === settings.value.deck)
+  if (currentDeck) {
+    hasLevel1Cards.value = currentDeck.cards.some(card => card.level === 1)
+  }
 }
 
 function startGame() {
@@ -163,7 +180,20 @@ function goToInfo() {
                 no-caps
                 toggle-color="primary"
                 :options="modeOptions"
-              />
+              >
+                <template
+                  v-if="!hasLevel1Cards"
+                  #multiple-choice
+                >
+                  <q-btn
+                    disable
+                    no-caps
+                    :label="TEXT_DE.voc.mode.multipleChoice"
+                  >
+                    <q-tooltip>{{ TEXT_DE.voc.mode.tooGoodForMultipleChoice }}</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-btn-toggle>
             </q-item-section>
           </q-item>
 

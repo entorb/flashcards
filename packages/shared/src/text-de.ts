@@ -98,7 +98,8 @@ export const TEXT_DE = {
     mode: {
       multipleChoice: 'Multiple Choice',
       blind: 'Blind',
-      typing: 'Tippen'
+      typing: 'Tippen',
+      tooGoodForMultipleChoice: 'Dafür bist du zu gut'
     },
     game: {
       revealAnswer: 'Antwort aufdecken',
