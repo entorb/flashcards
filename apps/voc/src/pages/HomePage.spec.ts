@@ -51,4 +51,36 @@ describe('HomePage Component', () => {
     expect(wrapper.exists()).toBe(true)
     expect(wrapper.html()).toBeTruthy()
   })
+
+  it('disables multiple choice button when no level 1 cards exist', async () => {
+    const router = createMockRouter()
+
+    // Move all cards to level 2 to simulate no level 1 cards
+    const { useGameStore } = await import('@/composables/useGameStore')
+    const store = useGameStore()
+    store.moveAllCards(2)
+
+    const wrapper = mount(HomePage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+
+    // Check that hasLevel1Cards is false
+    const vm = wrapper.vm as unknown as { hasLevel1Cards: boolean }
+    expect(vm.hasLevel1Cards).toBe(false)
+  })
+
+  it('disables blind mode button when no level 1 or 2 cards exist', async () => {
+    const router = createMockRouter()
+
+    // Move all cards to level 3 to simulate no level 1 or 2 cards
+    const { useGameStore } = await import('@/composables/useGameStore')
+    const store = useGameStore()
+    store.moveAllCards(3)
+
+    const wrapper = mount(HomePage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+
+    // Check that hasLevel1Or2Cards is false
+    const vm = wrapper.vm as unknown as { hasLevel1Or2Cards: boolean }
+    expect(vm.hasLevel1Or2Cards).toBe(false)
+  })
 })

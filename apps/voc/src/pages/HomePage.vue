@@ -6,7 +6,7 @@ import {
   PwaInstallInfo,
   StatisticsCard
 } from '@flashcards/shared/components'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import FoxIcon from '../components/FoxIcon.vue'
@@ -16,10 +16,12 @@ import { loadLastSettings, saveLastSettings } from '../services/storage'
 import type { GameSettings } from '../types'
 
 const router = useRouter()
-const { gameStats, startGame: startGameStore, getDecks, switchDeck } = useGameStore()
+const { gameStats, startGame: startGameStore, getDecks, switchDeck, allCards } = useGameStore()
+
+const MODE_MULTIPLE_CHOICE = 'multiple-choice'
 
 const settings = ref<GameSettings>({
-  mode: 'multiple-choice',
+  mode: MODE_MULTIPLE_CHOICE,
   focus: 'weak',
   language: 'voc-de',
   deck: 'en'
@@ -29,11 +31,24 @@ const deckOptions = ref<{ label: string; value: string }[]>([])
 
 const totalGamesPlayedByAll = ref<number>(0)
 
-const modeOptions = [
-  { label: TEXT_DE.voc.mode.multipleChoice, value: 'multiple-choice' as const },
-  { label: TEXT_DE.voc.mode.blind, value: 'blind' as const },
+const hasLevel1Cards = ref<boolean>(true)
+const hasLevel1Or2Cards = ref<boolean>(true)
+
+const modeOptions = computed(() => [
+  {
+    label: TEXT_DE.voc.mode.multipleChoice,
+    value: 'multiple-choice' as const,
+    disable: !hasLevel1Cards.value,
+    tooltip: hasLevel1Cards.value ? undefined : TEXT_DE.voc.mode.tooGoodForMultipleChoice
+  },
+  {
+    label: TEXT_DE.voc.mode.blind,
+    value: 'blind' as const,
+    disable: !hasLevel1Or2Cards.value,
+    tooltip: hasLevel1Or2Cards.value ? undefined : TEXT_DE.voc.mode.tooGoodForMultipleChoice
+  },
   { label: TEXT_DE.voc.mode.typing, value: 'typing' as const }
-]
+])
 
 const languageOptions = [
   { label: TEXT_DE.voc.direction.voc_de, value: 'voc-de' as const },
@@ -55,14 +70,38 @@ onMounted(async () => {
     label: deck.name,
     value: deck.name
   }))
+  // Check if current deck has level 1 cards
+  checkLevel1Cards()
   // Fetch total games played by all users from database
   totalGamesPlayedByAll.value = await helperStatsDataRead(BASE_PATH)
 })
+
+// Watch allCards to update hasLevel1Cards whenever cards change
+watch(
+  allCards,
+  () => {
+    checkLevel1Cards()
+  },
+  { deep: true }
+)
 
 function handleDeckChange(deckName: string) {
   settings.value.deck = deckName
   switchDeck(deckName)
   saveLastSettings(settings.value)
+  checkLevel1Cards()
+  // Switch to typing mode if both multiple-choice and blind are disabled
+  if (!hasLevel1Cards.value && settings.value.mode === MODE_MULTIPLE_CHOICE) {
+    settings.value.mode = hasLevel1Or2Cards.value ? 'blind' : 'typing'
+  } else if (!hasLevel1Or2Cards.value && settings.value.mode === 'blind') {
+    settings.value.mode = 'typing'
+  }
+}
+
+function checkLevel1Cards() {
+  // Use allCards from store which reflects the current deck's cards
+  hasLevel1Cards.value = allCards.value.some(card => card.level === 1)
+  hasLevel1Or2Cards.value = allCards.value.some(card => card.level === 1 || card.level === 2)
 }
 
 function startGame() {
@@ -157,13 +196,22 @@ function goToInfo() {
               <div class="text-subtitle2">{{ TEXT_DE.words.mode }}</div>
             </q-item-section>
             <q-item-section>
-              <q-btn-toggle
-                v-model="settings.mode"
-                spread
-                no-caps
-                toggle-color="primary"
-                :options="modeOptions"
-              />
+              <div class="row q-gutter-xs">
+                <q-btn
+                  v-for="option in modeOptions"
+                  :key="option.value"
+                  :label="option.label"
+                  :disable="option.disable"
+                  :outline="settings.mode !== option.value"
+                  :unelevated="settings.mode === option.value"
+                  :color="settings.mode === option.value ? 'primary' : 'grey-7'"
+                  no-caps
+                  class="col"
+                  @click="settings.mode = option.value"
+                >
+                  <q-tooltip v-if="option.tooltip">{{ option.tooltip }}</q-tooltip>
+                </q-btn>
+              </div>
             </q-item-section>
           </q-item>
 
