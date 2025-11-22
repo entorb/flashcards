@@ -2,8 +2,7 @@ packages:
   - apps/*
   - packages/*
 
-# sideEffectsCache: false
-
 onlyBuiltDependencies:
+  - '@parcel/watcher'
   - cypress
   - esbuild
