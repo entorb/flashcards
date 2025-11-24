@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "cy:open": "cypress open --e2e --quiet",
+    "cy:open": "cypress open --e2e",
     "cy:run": "cypress run --e2e --quiet",
     "dev": "vite",
     "format": "prettier --cache --cache-location .cache/prettiercache --write --ignore-path .prettierignore \"**/*.{html,ts,json,md,vue,js,tsx,jsx}\" --log-level silent",
