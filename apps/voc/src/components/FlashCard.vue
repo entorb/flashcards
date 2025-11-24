@@ -404,6 +404,7 @@ function handleTypingSubmit() {
           size="lg"
           class="full-width q-mb-md"
           :label="TEXT_DE.common.check"
+          :disable="userAnswer.trim() === ''"
           icon="check"
           type="submit"
           data-cy="check-answer-button"
