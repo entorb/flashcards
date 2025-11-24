@@ -98,13 +98,13 @@ export const TEXT_DE = {
     mode: {
       multipleChoice: 'Multiple Choice',
       blind: 'Blind',
-      typing: 'Tippen',
+      typing: 'Schreiben',
       tooGoodForMultipleChoice: 'Dafür bist du zu gut'
     },
     game: {
       revealAnswer: 'Antwort aufdecken',
       wasYourAnswerCorrect: 'War deine Antwort richtig?',
-      typePlaceholder: 'Antwort tippen...'
+      typePlaceholder: 'Antwort schreiben...'
     },
     direction: {
       voc_de: 'Voc → DE',
@@ -176,10 +176,10 @@ export const TEXT_DE = {
       modeMultiplierDescription: 'Die Basispunkte werden mit einem Multiplikator versehen:',
       modeMultiplierChoice: 'Multiple Choice: x1 (Standard)',
       modeMultiplierBlind: 'Blind: x2',
-      modeMultiplierTyping: 'Tippen: x4',
+      modeMultiplierTyping: 'Schreiben: x4',
       additionalRulesTitle: '3. Zusätzliche Regeln',
       additionalRuleFastCorrect:
-        '"Fast richtig": Im Tippen-Modus erhältst du bei kleinen Tippfehlern (ein Buchstabe falsch) 75% der möglichen Punkte.',
+        '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern (ein Buchstabe falsch) 75% der möglichen Punkte.',
       additionalRuleLanguageBonus:
         'Sprachrichtung: Für eine richtige Antwort in der Richtung Deutsch → Englisch erhältst du +1 Zusatzpunkt.',
       additionalRuleWrong: 'Falsche Antworten geben immer 0 Punkte.'
