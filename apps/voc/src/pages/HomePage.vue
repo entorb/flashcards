@@ -90,18 +90,25 @@ function handleDeckChange(deckName: string) {
   switchDeck(deckName)
   saveLastSettings(settings.value)
   checkLevel1Cards()
-  // Switch to typing mode if both multiple-choice and blind are disabled
-  if (!hasLevel1Cards.value && settings.value.mode === MODE_MULTIPLE_CHOICE) {
-    settings.value.mode = hasLevel1Or2Cards.value ? 'blind' : 'typing'
-  } else if (!hasLevel1Or2Cards.value && settings.value.mode === 'blind') {
-    settings.value.mode = 'typing'
-  }
+  // ensureValidMode is called within checkLevel1Cards
 }
 
 function checkLevel1Cards() {
   // Use allCards from store which reflects the current deck's cards
   hasLevel1Cards.value = allCards.value.some(card => card.level === 1)
   hasLevel1Or2Cards.value = allCards.value.some(card => card.level === 1 || card.level === 2)
+  ensureValidMode()
+}
+
+function ensureValidMode() {
+  // Automatically switch to next available mode if current mode is disabled
+  if (settings.value.mode === MODE_MULTIPLE_CHOICE && !hasLevel1Cards.value) {
+    // Multiple choice disabled, try blind
+    settings.value.mode = hasLevel1Or2Cards.value ? 'blind' : 'typing'
+  } else if (settings.value.mode === 'blind' && !hasLevel1Or2Cards.value) {
+    // Blind disabled, switch to typing
+    settings.value.mode = 'typing'
+  }
 }
 
 function startGame() {
@@ -207,7 +214,7 @@ function goToInfo() {
                   :color="settings.mode === option.value ? 'primary' : 'grey-7'"
                   no-caps
                   class="col"
-                  @click="settings.mode = option.value"
+                  @click="!option.disable && (settings.mode = option.value)"
                 >
                   <q-tooltip v-if="option.tooltip">{{ option.tooltip }}</q-tooltip>
                 </q-btn>

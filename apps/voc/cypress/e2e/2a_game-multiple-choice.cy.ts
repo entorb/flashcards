@@ -291,19 +291,35 @@ describe('Multiple Choice Game - Voc to DE', () => {
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        expect(parseInt(text.trim())).to.equal(game1Points)
+        expect(Number.parseInt(text.trim(), 10)).to.equal(game1Points)
       })
 
-    // Play second game
+    // Reset all cards to level 1 before second game
+    cy.window().then(win => {
+      const cards = getCardsFromStorage(win)
+      const resetCards = cards.map((card: any) => ({ ...card, level: 1 }))
+      win.localStorage.setItem('voc-cards', JSON.stringify([{ name: 'en', cards: resetCards }]))
+    })
+
+    // Reload page to apply reset and re-enable multiple choice mode
+    cy.reload()
+    cy.get('[data-cy="app-title"]').should('be.visible')
+
+    // Play second game - now multiple choice should be available
+    cy.contains('Multiple Choice').click()
+    cy.contains('Voc → DE').click()
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
     cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
 
     // Verify game starts fresh at 1/10 (not 11/10 or corrupted state)
-    cy.get('body').should('contain', '1')
-    cy.get('body').should('contain', '10')
+    cy.get('[data-cy="card-counter"]').should('contain', '1 / 10')
 
-    playGame(10) // All 10 correct
+    // Wait for multiple choice options to appear
+    cy.get('[data-cy="multiple-choice-option"]', { timeout: 10000 }).should('have.length', 4)
+
+    // Play through 10 cards with correct answers using the playGame helper
+    playGame(10)
 
     // Verify on game over page
     cy.url({ timeout: 15000 }).should('include', '/game-over')
@@ -314,7 +330,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
-        game2Points = parseInt(text.trim())
+        game2Points = Number.parseInt(text.trim(), 10)
       })
 
     // Go back to home
@@ -327,7 +343,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        const totalPoints = parseInt(text.trim())
+        const totalPoints = Number.parseInt(text.trim(), 10)
         // Total should be sum of both games
         expect(totalPoints).to.be.greaterThan(game1Points)
         expect(totalPoints).to.be.greaterThan(game2Points)

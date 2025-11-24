@@ -19,8 +19,7 @@ const {
   handleAnswer: storeHandleAnswer,
   nextCard,
   finishGame,
-  discardGame,
-  startGame
+  discardGame
 } = useGameStore()
 
 // Use shared timer logic with maxTime
@@ -54,8 +53,10 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  if (gameSettings.value) {
-    startGame(gameSettings.value)
+  // Redirect home if there's no game in progress and no settings
+  // This handles the case where user accessed /game directly without starting a game
+  if (gameCards.value.length === 0 && !gameSettings.value) {
+    router.push({ name: '/' })
   }
   globalThis.addEventListener('keydown', handleKeyDown)
 })
@@ -88,7 +89,10 @@ onUnmounted(() => {
         />
         {{ points }}
       </div>
-      <div class="text-h6 text-weight-bold">
+      <div
+        class="text-h6 text-weight-bold"
+        data-cy="card-counter"
+      >
         {{ currentCardIndex + 1 }} / {{ gameCards.length }}
       </div>
     </div>
