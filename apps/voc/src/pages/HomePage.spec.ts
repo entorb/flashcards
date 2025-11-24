@@ -83,4 +83,44 @@ describe('HomePage Component', () => {
     const vm = wrapper.vm as unknown as { hasLevel1Or2Cards: boolean }
     expect(vm.hasLevel1Or2Cards).toBe(false)
   })
+
+  it('automatically switches from multiple-choice to blind when level 1 cards are removed', async () => {
+    const router = createMockRouter()
+    const { useGameStore } = await import('@/composables/useGameStore')
+    const store = useGameStore()
+
+    const wrapper = mount(HomePage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+
+    const vm = wrapper.vm as unknown as { settings: { mode: string } }
+    // Set mode to multiple-choice
+    vm.settings.mode = 'multiple-choice'
+
+    // Move all cards to level 2 (no level 1 cards)
+    store.moveAllCards(2)
+    await wrapper.vm.$nextTick()
+
+    // Should automatically switch to blind mode
+    expect(vm.settings.mode).toBe('blind')
+  })
+
+  it('automatically switches from blind to typing when level 1 and 2 cards are removed', async () => {
+    const router = createMockRouter()
+    const { useGameStore } = await import('@/composables/useGameStore')
+    const store = useGameStore()
+
+    const wrapper = mount(HomePage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+
+    const vm = wrapper.vm as unknown as { settings: { mode: string } }
+    // Set mode to blind
+    vm.settings.mode = 'blind'
+
+    // Move all cards to level 3 (no level 1 or 2 cards)
+    store.moveAllCards(3)
+    await wrapper.vm.$nextTick()
+
+    // Should automatically switch to typing mode
+    expect(vm.settings.mode).toBe('typing')
+  })
 })
