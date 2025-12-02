@@ -11,7 +11,7 @@ describe('Typing Mode Game - DE to Voc', () => {
   it('should complete a game with 1 wrong, 1 close, and 8 correct answers', () => {
     // Select Typing mode
     // cspell:disable-next-line
-    cy.contains('Tippen').click()
+    cy.contains('Schreiben').click()
 
     // Select DE → Voc language direction
     cy.contains('DE → Voc').click()
@@ -107,7 +107,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        const count = parseInt(text)
+        const count = Number.parseInt(text, 10)
         expect(count).to.be.at.least(7).and.at.most(9)
       })
     cy.get('[data-cy="total-questions-count"]').should('contain', '10')
@@ -119,7 +119,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
-        gameOverPoints = parseInt(text.trim())
+        gameOverPoints = Number.parseInt(text.trim(), 10)
         cy.log('GameOver Points:', gameOverPoints)
         expect(gameOverPoints).to.greaterThan(1)
       })
@@ -127,7 +127,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        gameOverCorrectAnswers = parseInt(text.trim())
+        gameOverCorrectAnswers = Number.parseInt(text.trim(), 10)
         cy.log('GameOver Correct Answers:', gameOverCorrectAnswers)
         expect(gameOverCorrectAnswers).to.be.at.least(7).and.at.most(9)
       })
@@ -143,7 +143,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        const homePagePoints = parseInt(text.trim())
+        const homePagePoints = Number.parseInt(text.trim(), 10)
         cy.log('HomePage Points:', homePagePoints)
         expect(homePagePoints).to.equal(gameOverPoints)
       })
@@ -151,7 +151,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="stats-correct-answers"]')
       .invoke('text')
       .then(text => {
-        const homePageCorrectAnswers = parseInt(text.trim())
+        const homePageCorrectAnswers = Number.parseInt(text.trim(), 10)
         cy.log('HomePage Correct Answers:', homePageCorrectAnswers)
         expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
@@ -173,7 +173,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="history-game-0-correct"]')
       .invoke('text')
       .then(text => {
-        const historyCorrectAnswers = parseInt(text.trim())
+        const historyCorrectAnswers = Number.parseInt(text.trim(), 10)
         cy.log('History Correct Answers:', historyCorrectAnswers)
         expect(historyCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
@@ -181,7 +181,7 @@ describe('Typing Mode Game - DE to Voc', () => {
     cy.get('[data-cy="history-game-0-points"]')
       .invoke('text')
       .then(text => {
-        const historyPoints = parseInt(text.trim())
+        const historyPoints = Number.parseInt(text.trim(), 10)
         cy.log('History Points:', historyPoints)
         expect(historyPoints).to.equal(gameOverPoints)
       })

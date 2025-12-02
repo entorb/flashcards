@@ -11,8 +11,8 @@ describe('Full Game Flow', () => {
   const parseQuestion = (questionText: string): { x: number; y: number; answer: number } => {
     const match = questionText.match(/(\d+)\s*×\s*(\d+)/)
     if (!match) throw new Error(`Could not parse question: ${questionText}`)
-    const x = parseInt(match[1])
-    const y = parseInt(match[2])
+    const x = Number.parseInt(match[1])
+    const y = Number.parseInt(match[2])
     return { x, y, answer: x * y }
   }
 
@@ -90,7 +90,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
-        gameOverPoints = parseInt(text.trim())
+        gameOverPoints = Number.parseInt(text.trim())
         cy.log('GameOver Points:', gameOverPoints)
         expect(gameOverPoints).to.greaterThan(1)
       })
@@ -98,7 +98,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        gameOverCorrectAnswers = parseInt(text.trim())
+        gameOverCorrectAnswers = Number.parseInt(text.trim())
         cy.log('GameOver Correct Answers:', gameOverCorrectAnswers)
         expect(gameOverCorrectAnswers).to.equal(6)
       })
@@ -114,7 +114,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        const homePagePoints = parseInt(text.trim())
+        const homePagePoints = Number.parseInt(text.trim())
         cy.log('HomePage Points:', homePagePoints)
         expect(homePagePoints).to.equal(gameOverPoints)
       })
@@ -122,7 +122,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="stats-correct-answers"]')
       .invoke('text')
       .then(text => {
-        const homePageCorrectAnswers = parseInt(text.trim())
+        const homePageCorrectAnswers = Number.parseInt(text.trim())
         cy.log('HomePage Correct Answers:', homePageCorrectAnswers)
         expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
@@ -144,7 +144,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="history-game-0-correct"]')
       .invoke('text')
       .then(text => {
-        const historyCorrectAnswers = parseInt(text.trim())
+        const historyCorrectAnswers = Number.parseInt(text.trim())
         cy.log('History Correct Answers:', historyCorrectAnswers)
         expect(historyCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
@@ -152,7 +152,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="history-game-0-points"]')
       .invoke('text')
       .then(text => {
-        const historyPoints = parseInt(text.trim())
+        const historyPoints = Number.parseInt(text.trim())
         cy.log('History Points:', historyPoints)
         expect(historyPoints).to.equal(gameOverPoints)
       })
@@ -201,13 +201,13 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
-        game1Points = parseInt(text.trim())
+        game1Points = Number.parseInt(text.trim())
       })
 
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        game1CorrectAnswers = parseInt(text.trim())
+        game1CorrectAnswers = Number.parseInt(text.trim())
         expect(game1CorrectAnswers).to.equal(7)
       })
 
@@ -255,13 +255,13 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
-        game2Points = parseInt(text.trim())
+        game2Points = Number.parseInt(text.trim())
       })
 
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        game2CorrectAnswers = parseInt(text.trim())
+        game2CorrectAnswers = Number.parseInt(text.trim())
         expect(game2CorrectAnswers).to.equal(7)
       })
 
@@ -275,7 +275,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="stats-correct-answers"]')
       .invoke('text')
       .then(text => {
-        const totalCorrectAnswers = parseInt(text.trim())
+        const totalCorrectAnswers = Number.parseInt(text.trim())
         const expectedCorrectAnswers = game1CorrectAnswers + game2CorrectAnswers
         expect(totalCorrectAnswers).to.equal(expectedCorrectAnswers)
       })
@@ -283,7 +283,7 @@ describe('Full Game Flow', () => {
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        const totalPoints = parseInt(text.trim())
+        const totalPoints = Number.parseInt(text.trim())
         const expectedTotalPoints = game1Points + game2Points
         expect(totalPoints).to.equal(expectedTotalPoints)
       })

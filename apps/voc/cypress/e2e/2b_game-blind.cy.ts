@@ -74,7 +74,7 @@ describe('Blind Mode Game - DE to Voc', () => {
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
-        gameOverPoints = parseInt(text.trim())
+        gameOverPoints = Number.parseInt(text.trim())
         cy.log('GameOver Points:', gameOverPoints)
         expect(gameOverPoints).to.greaterThan(1)
       })
@@ -82,7 +82,7 @@ describe('Blind Mode Game - DE to Voc', () => {
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        gameOverCorrectAnswers = parseInt(text.trim())
+        gameOverCorrectAnswers = Number.parseInt(text.trim())
         cy.log('GameOver Correct Answers:', gameOverCorrectAnswers)
         expect(gameOverCorrectAnswers).to.equal(9)
       })
@@ -98,7 +98,7 @@ describe('Blind Mode Game - DE to Voc', () => {
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        const homePagePoints = parseInt(text.trim())
+        const homePagePoints = Number.parseInt(text.trim())
         cy.log('HomePage Points:', homePagePoints)
         expect(homePagePoints).to.equal(gameOverPoints)
       })
@@ -106,7 +106,7 @@ describe('Blind Mode Game - DE to Voc', () => {
     cy.get('[data-cy="stats-correct-answers"]')
       .invoke('text')
       .then(text => {
-        const homePageCorrectAnswers = parseInt(text.trim())
+        const homePageCorrectAnswers = Number.parseInt(text.trim())
         cy.log('HomePage Correct Answers:', homePageCorrectAnswers)
         expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
@@ -128,7 +128,7 @@ describe('Blind Mode Game - DE to Voc', () => {
     cy.get('[data-cy="history-game-0-correct"]')
       .invoke('text')
       .then(text => {
-        const historyCorrectAnswers = parseInt(text.trim())
+        const historyCorrectAnswers = Number.parseInt(text.trim())
         cy.log('History Correct Answers:', historyCorrectAnswers)
         expect(historyCorrectAnswers).to.equal(gameOverCorrectAnswers)
       })
@@ -136,7 +136,7 @@ describe('Blind Mode Game - DE to Voc', () => {
     cy.get('[data-cy="history-game-0-points"]')
       .invoke('text')
       .then(text => {
-        const historyPoints = parseInt(text.trim())
+        const historyPoints = Number.parseInt(text.trim())
         cy.log('History Points:', historyPoints)
         expect(historyPoints).to.equal(gameOverPoints)
       })

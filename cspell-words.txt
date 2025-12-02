@@ -36,6 +36,7 @@ Richtig
 Richtige
 Runden
 schnell
+Schreiben
 Schriftfarbe
 sonarjs
 SonarQube
