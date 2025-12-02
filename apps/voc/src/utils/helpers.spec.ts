@@ -285,7 +285,7 @@ describe('helpers - Card Text Parsing', () => {
     })
 
     it('should default to level 1 when level is 0 (falsy check)', () => {
-      // Note: parseInt('0', 10) returns 0, but 0 || 1 evaluates to 1
+      // Note: Number.parseInt('0', 10) returns 0, but 0 || 1 evaluates to 1
       const result = parseCardsFromText('apple\tApfel\t0')
       expect(result?.cards[0].level).toBe(1)
     })
