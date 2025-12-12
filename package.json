@@ -57,7 +57,7 @@
     "jiti": "^2.6.1",
     "jsdom": "^27.2.0",
     "npm-run-all2": "^7.0.2",
-    "prettier": "^3.7.3",
+    "prettier": "^3.7.4",
     "sass": "^1.94.2",
     "typescript": "^5.9.3",
     "unplugin-vue-router": "^0.16.2",
