@@ -122,6 +122,29 @@ onUnmounted(() => {
           <li>{{ TEXT_DE.voc.info.additionalRuleWrong }}</li>
         </ul>
       </div>
+
+      <div>
+        <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+          {{ TEXT_DE.voc.info.dailyBonusesTitle }}
+        </h3>
+        <ul class="q-pl-md">
+          <li class="q-mb-sm">
+            <strong class="text-positive">{{ TEXT_DE.voc.info.dailyBonusFirstGame }}</strong>
+          </li>
+          <li>
+            <strong class="text-positive">{{ TEXT_DE.voc.info.dailyBonusStreak }}</strong>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+          {{ TEXT_DE.voc.info.speedBonusTitle }}
+        </h3>
+        <p>
+          <strong class="text-positive">{{ TEXT_DE.voc.info.speedBonusDescription }}</strong>
+        </p>
+      </div>
     </div>
   </q-page>
 </template>

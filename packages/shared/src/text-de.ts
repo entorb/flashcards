@@ -90,6 +90,25 @@ export const TEXT_DE = {
       feature1x2: '1x2',
       feature1x12: '1x12',
       feature1x20: '1x20'
+    },
+    info: {
+      title: 'Scoring-Regeln',
+      description:
+        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Aufgaben zu schaffen.',
+      basePointsTitle: '1. Basispunkte',
+      basePointsDescription:
+        'Die Grundlage für die Punktzahl ist das Level der Karte. Aufgaben, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
+      basePointsLevel1: 'Level 1: 5 Punkte',
+      basePointsLevel2: 'Level 2: 4 Punkte',
+      basePointsLevel3: 'Level 3: 3 Punkte',
+      basePointsLevel4: 'Level 4: 2 Punkte',
+      basePointsLevel5: 'Level 5: 1 Punkt',
+      dailyBonusesTitle: '2. Tages-Boni',
+      dailyBonusFirstGame: 'Erstes Spiel des Tages: +5 Bonuspunkte',
+      dailyBonusStreak: 'Alle 5 Spiele des Tages: +5 Bonuspunkte',
+      speedBonusTitle: '3. Geschwindigkeits-Bonus',
+      speedBonusDescription:
+        'Wenn du eine Aufgabe schneller als beim letzten Mal richtig beantwortest: +5 Bonuspunkte'
     }
   },
 
@@ -182,7 +201,13 @@ export const TEXT_DE = {
         '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern (ein Buchstabe falsch) 75% der möglichen Punkte.',
       additionalRuleLanguageBonus:
         'Sprachrichtung: Für eine richtige Antwort in der Richtung Deutsch → Englisch erhältst du +1 Zusatzpunkt.',
-      additionalRuleWrong: 'Falsche Antworten geben immer 0 Punkte.'
+      additionalRuleWrong: 'Falsche Antworten geben immer 0 Punkte.',
+      dailyBonusesTitle: '4. Tages-Boni',
+      dailyBonusFirstGame: 'Erstes Spiel des Tages: +5 Bonuspunkte',
+      dailyBonusStreak: 'Alle 5 Spiele des Tages: +5 Bonuspunkte',
+      speedBonusTitle: '5. Geschwindigkeits-Bonus',
+      speedBonusDescription:
+        'Wenn du eine Karte schneller als beim letzten Mal richtig beantwortest: +5 Bonuspunkte'
     }
   }
 } as const

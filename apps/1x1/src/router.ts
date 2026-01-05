@@ -5,6 +5,7 @@ import GameOverPage from './pages/GameOverPage.vue'
 import GamePage from './pages/GamePage.vue'
 import HistoryPage from './pages/HistoryPage.vue'
 import HomePage from './pages/HomePage.vue'
+import InfoPage from './pages/InfoPage.vue'
 
 export const router = createRouter({
   history: createWebHistory('/1x1/'),
@@ -33,6 +34,11 @@ export const router = createRouter({
       path: '/cards',
       name: '/cards',
       component: CardsPage
+    },
+    {
+      path: '/info',
+      name: '/info',
+      component: InfoPage
     }
   ]
 })
