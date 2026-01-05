@@ -42,42 +42,13 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
 
 // Decks
 
-/**
- * Migrate old card structure to deck structure
- * Old: Card[] with "en" field
- * New: CardDeck[] with "voc" field
- * TODO: Delete migration logic on 2025-11-18 (after migration period)
- */
-
 function migrateToDecks(data: unknown): CardDeck[] {
   if (!Array.isArray(data) || data.length === 0) {
     return [{ name: 'en', cards: INITIAL_CARDS }]
   }
 
-  // Check if first item has "en" field (old structure)
-  const firstItem = data[0] as Record<string, unknown>
-  if ('en' in firstItem && typeof firstItem.en === 'string') {
-    // Migration needed: rename "en" to "voc"
-    const migratedCards: Card[] = data.map(item => {
-      const oldCard = item as {
-        en: string
-        de: string
-        level: number
-        time_blind: number
-        time_typing: number
-      }
-      return {
-        voc: oldCard.en,
-        de: oldCard.de,
-        level: oldCard.level,
-        time_blind: oldCard.time_blind,
-        time_typing: oldCard.time_typing
-      }
-    })
-    return [{ name: 'en', cards: migratedCards }]
-  }
-
   // Check if it's already deck structure
+  const firstItem = data[0] as Record<string, unknown>
   if ('name' in firstItem && 'cards' in firstItem) {
     return data as CardDeck[]
   }
@@ -186,14 +157,7 @@ export function addHistory(history: GameHistory): void {
  * Load last game settings
  */
 export function loadLastSettings(): GameSettings | null {
-  const settings = loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
-  // eslint-disable-next-line sonarjs/todo-tag
-  // TODO: Delete migration logic on 2025-11-18 (after migration period)
-  // Ensure deck property exists (migration)
-  if (settings && !settings.deck) {
-    settings.deck = 'en'
-  }
-  return settings
+  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
 }
 
 /**
