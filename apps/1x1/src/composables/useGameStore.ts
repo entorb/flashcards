@@ -88,10 +88,10 @@ export function useGameStore() {
   )
 
   // App-specific actions
-  function startGame(settings: GameSettings) {
-    // Only start a new game if there are no cards in game cards (new game)
-    // If cards exist, user reloaded page during game - just resume (return early)
-    if (baseStore.gameCards.value.length > 0) {
+  function startGame(settings: GameSettings, forceReset = false) {
+    // If forceReset is true, always start a new game (user clicked Start button)
+    // Otherwise, only start if there are no cards (handles page reload recovery)
+    if (!forceReset && baseStore.gameCards.value.length > 0) {
       return
     }
 
