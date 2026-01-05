@@ -32,7 +32,11 @@ function handleReset() {
   <q-card>
     <q-card-section>
       <div class="row items-center justify-between q-mb-none">
-        <div class="text-subtitle1 text-weight-bold q-ma-none">
+        <div class="text-h6 q-mb-md">
+          <q-icon
+            name="bar_chart"
+            class="q-mr-sm"
+          />
           {{ TEXT_DE.cards.cardsPerLevel }}
         </div>
         <q-btn
