@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 
 import {
   BG_COLORS,
+  DEFAULT_RANGE,
   LEVEL_COLORS,
   MAX_CARD_TIME,
   MIN_CARD_TIME,
@@ -25,7 +26,7 @@ import type { Card } from '@/types'
 const router = useRouter()
 const { showResetDialog } = useResetCards()
 const cards = ref<Card[]>([])
-const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])
+const range = ref<number[]>([...DEFAULT_RANGE])
 
 // Get virtual cards for current range (includes non-existent cards with defaults)
 const cardsInRange = computed(() => {

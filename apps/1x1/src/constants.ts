@@ -16,7 +16,9 @@ export {
   STREAK_GAME_BONUS,
   STREAK_GAME_INTERVAL,
   SPEED_BONUS_POINTS,
-  LEVEL_BONUS_NUMERATOR
+  LEVEL_BONUS_NUMERATOR,
+  LEVEL_COLORS,
+  BG_COLORS
 } from '@flashcards/shared'
 
 export const BASE_PATH = '1x1'
@@ -26,14 +28,11 @@ export const BASE_PATH = '1x1'
 // ============================================================================
 
 /**
- * Available multiplication table selections
+ * Default range configuration (base multiplication tables)
+ * Extended features can add: 2, 11-12, 13-20 via feature toggles
+ * Note: 10 is intentionally skipped
  */
-export const SELECT_OPTIONS = [3, 4, 5, 6, 7, 8, 9]
-
-/**
- * Default select values when app starts
- */
-export const DEFAULT_SELECT = [3, 4, 5, 6, 7, 8, 9]
+export const DEFAULT_RANGE = [3, 4, 5, 6, 7, 8, 9]
 
 /**
  * Maximum number of cards per game
@@ -43,17 +42,6 @@ export const MAX_CARDS_PER_GAME = 10
 // ============================================================================
 // COLOR SCHEMES
 // ============================================================================
-
-/**
- * CardsPage: Level colors (from red=weak to green=strong)
- */
-export const LEVEL_COLORS = {
-  1: '#ffcdd2', // red-100
-  2: '#ffe0b2', // orange-100
-  3: '#fff9c4', // yellow-100
-  4: '#dcedc8', // light-green-100
-  5: '#c8e6c9' // green-100
-}
 
 /**
  * CardsPage: Time colors (from green=fast to red=slow)
@@ -74,15 +62,6 @@ export const TIME_COLOR_THRESHOLDS = {
   fast: 0.4,
   medium: 0.6,
   slow: 0.8
-}
-
-/**
- * Background colors
- */
-export const BG_COLORS = {
-  disabled: '#f5f5f5',
-  grey: '#fafafa',
-  lightGrey: '#f8f9fa'
 }
 
 // ============================================================================
