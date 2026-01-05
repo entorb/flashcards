@@ -98,9 +98,18 @@ export const SPEED_BONUS_POINTS = 5
  * Used by LevelDistribution component and level visualizations
  */
 export const LEVEL_COLORS: Record<number, string> = {
-  1: '#ffcccc', // Red - Level 1 (beginner)
-  2: '#ffe0b2', // Orange - Level 2
-  3: '#fff9c4', // Amber - Level 3 (intermediate)
-  4: '#c8e6c9', // Light green - Level 4
-  5: '#81c784' // Green - Level 5 (advanced)
+  1: '#ffcdd2', // red-100 - Level 1 (beginner)
+  2: '#ffe0b2', // orange-100 - Level 2
+  3: '#fff9c4', // yellow-100 - Level 3 (intermediate)
+  4: '#dcedc8', // light-green-100 - Level 4
+  5: '#c8e6c9' // green-100 - Level 5 (advanced)
+}
+
+/**
+ * Background colors
+ */
+export const BG_COLORS = {
+  disabled: '#f5f5f5',
+  grey: '#fafafa',
+  lightGrey: '#f8f9fa'
 }
