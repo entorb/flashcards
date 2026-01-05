@@ -97,7 +97,7 @@ function getLevelColor(level: number): string {
     class="q-pa-md card-management-page"
     style="max-width: 700px; margin: 0 auto"
   >
-    <!-- Header-like section with back button and title -->
+    <!-- Header with back button -->
     <div class="row items-center justify-between q-mb-md">
       <q-btn
         flat
@@ -109,24 +109,76 @@ function getLevelColor(level: number): string {
       >
         <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
       </q-btn>
+      <div class="text-h6">
+        {{ TEXT_DE.voc.cards.editCardsTitle }}
+      </div>
+      <div style="width: 40px"></div>
     </div>
+
+    <!-- Info Banner -->
+    <q-banner
+      rounded
+      class="bg-blue-1 q-mb-md"
+    >
+      <template #avatar>
+        <q-icon
+          name="info"
+          color="primary"
+        />
+      </template>
+      <div class="text-body2">
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <span v-html="TEXT_DE.voc.cards.header"></span>
+      </div>
+    </q-banner>
+
     <div class="q-gutter-md">
-      <!-- Deck Selection and Management -->
-      <q-card class="q-mb-md">
+      <!-- Deck Selection - Prominent -->
+      <q-card class="q-mb-md deck-selector-card">
         <q-card-section>
-          <div class="text-subtitle1 text-weight-bold q-ma-none">
+          <div class="text-h6 q-mb-md">
+            <q-icon
+              name="style"
+              class="q-mr-sm"
+            />
             {{ TEXT_DE.voc.decks.title }}
-            <DeckSelector />
           </div>
-          <q-separator class="q-my-md" />
+          <div class="row items-center q-gutter-md">
+            <div class="col">
+              <DeckSelector />
+            </div>
+            <q-btn
+              outline
+              color="primary"
+              icon="edit"
+              :label="TEXT_DE.voc.decks.editDecksButton"
+              no-caps
+              data-cy="edit-decks-button"
+              @click="handleEditDecks"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+
+      <!-- Card Management Actions -->
+      <q-card>
+        <q-card-section>
+          <div class="text-h6 q-mb-md">
+            <q-icon
+              name="edit"
+              class="q-mr-sm"
+            />
+            {{ TEXT_DE.voc.cards.editCardsTitle }}
+          </div>
           <q-btn
             outline
             color="primary"
             icon="edit"
-            :label="TEXT_DE.voc.decks.editDecksButton"
+            :label="TEXT_DE.voc.cards.editCardsButton"
             no-caps
-            data-cy="edit-decks-button"
-            @click="handleEditDecks"
+            class="full-width"
+            data-cy="edit-cards-button"
+            @click="handleEditCards"
           />
         </q-card-section>
       </q-card>
@@ -142,14 +194,18 @@ function getLevelColor(level: number): string {
       <!-- Current Deck Cards -->
       <q-card>
         <q-card-section>
-          <h3 class="text-subtitle1 text-weight-bold q-ma-none">
+          <div class="text-h6 q-mb-md">
+            <q-icon
+              name="collections_bookmark"
+              class="q-mr-sm"
+            />
             <span v-if="selectedLevel === null">
               {{ TEXT_DE.words.cards }} ({{ allCards.length }})
             </span>
             <span v-else>
               {{ TEXT_DE.words.level }} {{ selectedLevel }} ({{ cardsToShow.length }})
             </span>
-          </h3>
+          </div>
           <div style="overflow-y: auto; max-height: 400px">
             <q-list
               bordered
@@ -174,26 +230,19 @@ function getLevelColor(level: number): string {
         </q-card-section>
       </q-card>
 
-      <!-- Card Management Actions -->
+      <!-- Advanced Actions -->
       <q-card>
         <q-card-section>
-          <h3 class="text-subtitle1 text-weight-bold q-ma-none">
-            {{ TEXT_DE.voc.cards.editCardsTitle }}
-          </h3>
-          <q-btn
-            outline
-            color="primary"
-            icon="edit"
-            :label="TEXT_DE.voc.cards.editCardsButton"
-            no-caps
-            class="q-mb-none"
-            data-cy="edit-cards-button"
-            @click="handleEditCards"
-          />
-          <q-separator class="q-my-md" />
-          <h3 class="text-subtitle1 text-weight-bold q-ma-none">
+          <div class="text-h6 q-mb-sm">
+            <q-icon
+              name="tune"
+              class="q-mr-sm"
+            />
             {{ TEXT_DE.voc.cards.moveAllTitle }}
-          </h3>
+          </div>
+          <div class="text-caption text-grey-7 q-mb-md">
+            Setze alle Karten im aktuellen Deck auf ein bestimmtes Level
+          </div>
           <div class="row q-gutter-sm items-center">
             <q-input
               v-model.number="targetLevel"
@@ -202,11 +251,13 @@ function getLevelColor(level: number): string {
               :max="MAX_LEVEL"
               outlined
               dense
-              style="width: 80px"
+              label="Ziel-Level"
+              style="width: 120px"
             />
             <q-btn
               outline
               color="primary"
+              icon="arrow_forward"
               :label="TEXT_DE.voc.cards.moveAll"
               no-caps
               @click="handleMoveClick"
@@ -218,13 +269,20 @@ function getLevelColor(level: number): string {
       <!-- Danger Zone -->
       <q-card class="bg-red-1">
         <q-card-section>
-          <h3 class="text-subtitle1 text-weight-bold q-ma-none text-negative">
+          <div class="text-h6 q-mb-sm text-negative">
+            <q-icon
+              name="warning"
+              class="q-mr-sm"
+            />
             {{ TEXT_DE.voc.cards.dangerZoneTitle }}
-          </h3>
+          </div>
+          <div class="text-caption text-grey-8 q-mb-md">
+            Diese Aktion löscht alle Karten und setzt den Lernfortschritt zurück
+          </div>
           <q-btn
             outline
             color="negative"
-            icon="warning"
+            icon="delete_forever"
             :label="TEXT_DE.voc.cards.reset"
             no-caps
             @click="handleResetCardsToDefaultSet"
@@ -239,5 +297,9 @@ function getLevelColor(level: number): string {
 .card-management-page {
   min-height: 100vh;
   padding-bottom: 100px !important;
+}
+
+.deck-selector-card {
+  border-left: 4px solid var(--q-primary);
 }
 </style>

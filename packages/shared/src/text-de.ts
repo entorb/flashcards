@@ -131,6 +131,8 @@ export const TEXT_DE = {
     },
     cards: {
       // title: 'Kartenverwaltung',
+      header:
+        'Du kannst mehrere Karten-<strong>Decks</strong> anlegen (z.B. Kapitel deines Buches oder verschiedene Sprachen). Ein Deck enthält mehrere <strong>Karten</strong>. Jede Karte hat ein <strong>Level</strong> (1=unbekannt bis 5=sicher). Richtige Antworten im Spiel erhöhen das Level, falsche verringern es.',
       export: 'Raus kopieren',
       import: 'Rein kopieren',
       copied: 'Kopiert!',
@@ -168,7 +170,7 @@ export const TEXT_DE = {
     },
     decks: {
       title: 'Deck',
-      editDecksButton: 'Karten Decks/Sprachen bearbeiten',
+      editDecksButton: 'Decks bearbeiten',
       addDeck: 'Neues Deck',
       removeDeck: 'Löschen',
       renameDeck: 'Umbenennen',
