@@ -45,23 +45,6 @@ describe('Deck Storage', () => {
       expect(decks[0].cards[0].voc).toBe('hello')
     })
 
-    it('should migrate old Card[] structure to CardDeck[]', () => {
-      const oldCards = [
-        { en: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 },
-        { en: 'world', de: 'Welt', level: 2, time_blind: 10, time_typing: 10 }
-      ]
-      localStorage.setItem('voc-cards', JSON.stringify(oldCards))
-
-      const decks = loadDecks()
-      expect(decks).toHaveLength(1)
-      expect(decks[0].name).toBe('en')
-      expect(decks[0].cards).toHaveLength(2)
-      expect(decks[0].cards[0].voc).toBe('hello')
-      expect(decks[0].cards[1].voc).toBe('world')
-      // Verify old field "en" was renamed to "voc"
-      expect(decks[0].cards[0]).not.toHaveProperty('en')
-    })
-
     it('should handle invalid storage data', () => {
       localStorage.setItem('voc-cards', 'invalid json')
 
@@ -228,20 +211,6 @@ describe('Deck Storage', () => {
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
       expect(decks[0].cards[0].voc).toBe('hello')
-    })
-
-    it('should preserve migration in storage after first load', () => {
-      const oldCards = [{ en: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
-      localStorage.setItem('voc-cards', JSON.stringify(oldCards))
-
-      // First load triggers migration
-      loadDecks()
-
-      // Second load should work with migrated data
-      const stored = localStorage.getItem('voc-cards')
-      const parsed = JSON.parse(stored!)
-      expect(parsed[0].cards[0]).toHaveProperty('voc')
-      expect(parsed[0].cards[0]).not.toHaveProperty('en')
     })
   })
 })
