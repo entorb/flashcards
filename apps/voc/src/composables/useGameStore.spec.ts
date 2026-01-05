@@ -143,9 +143,8 @@ describe('useGameStore - Deck Operations', () => {
     })
 
     it('should update settings when current deck is removed', async () => {
-      const { loadDecks, loadLastSettings, saveLastSettings, loadCards } = await import(
-        '../services/storage'
-      )
+      const { loadDecks, loadLastSettings, saveLastSettings, loadCards } =
+        await import('../services/storage')
 
       const testDecks: CardDeck[] = [
         {
