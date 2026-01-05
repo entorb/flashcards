@@ -12,7 +12,7 @@ import { useRouter } from 'vue-router'
 
 import GroundhogMascot from '@/components/GroundhogMascot.vue'
 import { useGameStore } from '@/composables/useGameStore'
-import { BASE_PATH, DEFAULT_SELECT } from '@/constants'
+import { BASE_PATH, DEFAULT_RANGE } from '@/constants'
 import { loadGameStats, loadRange } from '@/services/storage'
 import type { SelectionType } from '@/types'
 
@@ -20,9 +20,9 @@ const router = useRouter()
 
 const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
-const select = ref<SelectionType>(DEFAULT_SELECT)
+const select = ref<SelectionType>([...DEFAULT_RANGE])
 const focus = ref<FocusType>('weak')
-const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])
+const range = ref<number[]>([...DEFAULT_RANGE])
 
 // Compute available selection options based on current range
 const selectOptions = computed<number[]>(() => range.value)
@@ -45,7 +45,15 @@ onMounted(() => {
 
   // Restore select and focus from gameSettings in store
   if (gameSettings.value) {
-    select.value = gameSettings.value.select
+    // Validate select against current range
+    if (gameSettings.value.select === 'x²' || gameSettings.value.select === 'all') {
+      select.value = gameSettings.value.select
+    } else if (Array.isArray(gameSettings.value.select)) {
+      // Filter out numbers not in current range
+      const validSelect = gameSettings.value.select.filter(num => range.value.includes(num))
+      // If no valid selections remain, use all from range
+      select.value = validSelect.length > 0 ? validSelect : [...range.value]
+    }
     focus.value = gameSettings.value.focus
   }
 
@@ -67,10 +75,14 @@ watch(
 
 function startGame() {
   // Save game config to store and navigate
-  storeStartGame({
-    select: select.value,
-    focus: focus.value
-  })
+  // Pass true as second parameter to force a fresh game start
+  storeStartGame(
+    {
+      select: select.value,
+      focus: focus.value
+    },
+    true
+  )
 
   // Navigate to game page without query parameters
   router.push({ name: '/game' })
@@ -82,6 +94,10 @@ function goToHistory() {
 
 function goToCards() {
   router.push({ name: '/cards' })
+}
+
+function goToInfo() {
+  router.push({ name: '/info' })
 }
 
 function toggleSelect(option: number) {
@@ -121,11 +137,25 @@ function toggleSquares() {
 
 <template>
   <q-page class="q-pa-md">
-    <div
-      class="text-h5 q-mb-md"
-      data-cy="app-title"
-    >
-      {{ TEXT_DE.appTitle_1x1 }}
+    <!-- Header with Info Button -->
+    <div class="row items-center justify-between q-mb-md">
+      <div
+        class="text-h5"
+        data-cy="app-title"
+      >
+        {{ TEXT_DE.appTitle_1x1 }}
+      </div>
+      <q-btn
+        flat
+        round
+        dense
+        icon="info_outline"
+        color="grey-6"
+        data-cy="info-button"
+        @click="goToInfo"
+      >
+        <q-tooltip>{{ TEXT_DE.nav.infoTooltip }}</q-tooltip>
+      </q-btn>
     </div>
 
     <!-- Mascot and Statistics -->

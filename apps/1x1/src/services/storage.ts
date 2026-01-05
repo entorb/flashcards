@@ -14,7 +14,7 @@ import {
   incrementDailyGames as sharedIncrementDailyGames
 } from '@flashcards/shared'
 
-import { MAX_CARD_TIME, MIN_CARD_LEVEL, MIN_CARD_TIME, SELECT_OPTIONS } from '@/constants'
+import { MAX_CARD_TIME, MIN_CARD_LEVEL, MIN_CARD_TIME, DEFAULT_RANGE } from '@/constants'
 import type { Card, GameHistory, GameSettings } from '@/types'
 
 const STORAGE_KEYS = {
@@ -80,8 +80,8 @@ export function createDefaultCard(y: number, x: number): Card {
  */
 export function initializeCards(): Card[] {
   const cards: Card[] = []
-  const minTable = Math.min(...SELECT_OPTIONS)
-  const maxTable = Math.max(...SELECT_OPTIONS)
+  const minTable = Math.min(...DEFAULT_RANGE)
+  const maxTable = Math.max(...DEFAULT_RANGE)
 
   for (let y = minTable; y <= maxTable; y++) {
     for (let x = minTable; x <= y; x++) {
@@ -363,13 +363,13 @@ export function clearGameState(): void {
 export function loadRange(): number[] {
   const stored = localStorage.getItem(STORAGE_KEYS.RANGE)
   if (!stored) {
-    return [3, 4, 5, 6, 7, 8, 9]
+    return [...DEFAULT_RANGE]
   }
   try {
     return JSON.parse(stored) as number[]
   } catch {
     console.error('Error parsing range from localStorage. Using defaults.')
-    return [3, 4, 5, 6, 7, 8, 9]
+    return [...DEFAULT_RANGE]
   }
 }
 
