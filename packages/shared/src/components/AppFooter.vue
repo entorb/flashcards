@@ -36,7 +36,7 @@ onMounted(async () => {
         >by Torben</a
       >
       <a
-        href="https://entorb.net"
+        href="https://entorb.net/flashcards/"
         target="_blank"
         rel="noopener noreferrer"
         >Home</a
