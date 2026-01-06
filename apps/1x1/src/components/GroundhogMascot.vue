@@ -2,11 +2,13 @@
 interface Props {
   smile?: boolean
   grin?: boolean
+  size?: number
 }
 
 withDefaults(defineProps<Props>(), {
   smile: false,
-  grin: false
+  grin: false,
+  size: 60
 })
 </script>
 
@@ -14,8 +16,9 @@ withDefaults(defineProps<Props>(), {
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="20 20 60 55"
-    width="100%"
-    height="100%"
+    :width="size"
+    :height="size"
+    class="inline-block"
     aria-labelledby="groundhog-title"
   >
     <title id="groundhog-title">Friendly Groundhog Mascot</title>
@@ -93,11 +96,3 @@ withDefaults(defineProps<Props>(), {
     </g>
   </svg>
 </template>
-
-<style scoped>
-svg {
-  display: block;
-  margin: auto;
-  max-width: 150px;
-}
-</style>
