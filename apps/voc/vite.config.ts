@@ -44,7 +44,8 @@ export default mergeConfig(
         manifest: {
           name: APP_TITLE,
           short_name: APP_TITLE,
-          description: APP_TITLE,
+          description:
+            'Vokabeln lernen mit 5-stufigem adaptivem System, eigenen Decks und 3 Spielmodi',
           theme_color: '#1976d2',
           background_color: '#ffffff',
           display: 'standalone',
