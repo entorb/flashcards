@@ -9,7 +9,7 @@ import {
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import FoxIcon from '../components/FoxIcon.vue'
+import FoxIcon from '../components/FoxMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH } from '../constants'
 import { loadLastSettings, saveLastSettings } from '../services/storage'
@@ -157,7 +157,7 @@ function goToInfo() {
       <div class="col-12 col-sm-auto text-center">
         <!-- Mascot happiness based on total points -->
         <FoxIcon
-          :is-happy="gameStats.points > 1000"
+          smile
           :size="100"
         />
       </div>

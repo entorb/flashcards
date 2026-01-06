@@ -1,12 +1,13 @@
 <script setup lang="ts">
 interface Props {
-  isHappy: boolean
-  isGrinning?: boolean
+  smile?: boolean
+  grin?: boolean
   size?: number
 }
 
 withDefaults(defineProps<Props>(), {
-  isGrinning: false,
+  smile: false,
+  grin: false,
   size: 60
 })
 </script>
@@ -18,7 +19,7 @@ withDefaults(defineProps<Props>(), {
     viewBox="0 0 60 60"
     xmlns="http://www.w3.org/2000/svg"
     class="inline-block"
-    :aria-label="isHappy ? 'Happy fox icon' : 'Neutral fox icon'"
+    :aria-label="smile ? 'Happy fox icon' : 'Neutral fox icon'"
   >
     <g>
       <!-- Ears -->
@@ -61,7 +62,7 @@ withDefaults(defineProps<Props>(), {
 
       <!-- Eyes -->
       <g
-        v-if="isHappy || isGrinning"
+        v-if="smile || grin"
         stroke="#27272a"
         stroke-width="2"
         stroke-linecap="round"
@@ -88,7 +89,7 @@ withDefaults(defineProps<Props>(), {
 
       <!-- Mouth -->
       <path
-        v-if="isGrinning"
+        v-if="grin"
         d="M22 38 Q 30 48, 38 38"
         stroke="#27272a"
         stroke-width="2.5"
@@ -96,7 +97,7 @@ withDefaults(defineProps<Props>(), {
         fill="none"
       />
       <path
-        v-else-if="isHappy"
+        v-else-if="smile"
         d="M25 38 Q 30 45, 35 38"
         stroke="#27272a"
         stroke-width="2"
