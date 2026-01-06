@@ -162,6 +162,7 @@ function toggleSquares() {
     <div class="row items-center justify-center q-mb-md">
       <div class="col-12 col-sm-auto text-center">
         <GroundhogMascot
+          smile
           style="width: 100px; height: 100px"
           data-cy="mascot"
         />

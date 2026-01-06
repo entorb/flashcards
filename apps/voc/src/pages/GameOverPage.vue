@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { GameOverPage } from '@flashcards/shared/pages'
 
-import FoxIcon from '../components/FoxIcon.vue'
+import FoxIcon from '../components/FoxMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '../constants'
 import {
