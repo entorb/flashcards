@@ -12,7 +12,21 @@ import globals from 'globals'
 export default [
   // Global ignores
   {
-    ignores: ['**/*.d.ts', '**/.vite/', 'coverage', 'dist', 'node_modules', 'public']
+    ignores: [
+      '**/*.d.ts',
+      '**/.vite/',
+      '**/coverage',
+      '**/dist',
+      '**/node_modules',
+      '**/public',
+      '**/.cache',
+      '**/pnpm-lock.yaml',
+      '**/.pnpm',
+      '**/cypress/downloads',
+      '**/cypress/screenshots',
+      '**/cypress/videos',
+      'scripts/**'
+    ]
   },
 
   // ==========================================
