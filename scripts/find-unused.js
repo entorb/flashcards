@@ -666,6 +666,7 @@ async function main() {
   const textFile = path.join(projectRoot, 'packages/shared/src/text-de.ts')
   const constants1x1File = path.join(projectRoot, 'apps/1x1/src/constants.ts')
   const constantsVocFile = path.join(projectRoot, 'apps/voc/src/constants.ts')
+  const constantsSpellFile = path.join(projectRoot, 'apps/spell/src/constants.ts')
   const cspellFile = path.join(projectRoot, 'cspell-words.txt')
   const sourceDir = projectRoot
 
@@ -724,7 +725,8 @@ async function main() {
 
   for (const [appName, constantsFile] of [
     ['1x1', constants1x1File],
-    ['voc', constantsVocFile]
+    ['voc', constantsVocFile],
+    ['spell', constantsSpellFile]
   ]) {
     if (fs.existsSync(constantsFile)) {
       const constants = extractConstants(constantsFile, appName)
