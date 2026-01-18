@@ -1,5 +1,7 @@
 // Shared test utilities for LWK Cypress tests
 
+import { STORAGE_KEYS } from '../../src/types'
+
 export type SpellCard = {
   word: string
   level: number
@@ -19,14 +21,8 @@ export type LwkGameState = {
   gameCards?: SpellCard[]
 }
 
-export const STORAGE_KEYS = {
-  decks: 'lwk-decks',
-  lastSettings: 'lwk-last-settings',
-  gameState: 'lwk-game-state'
-} as const
-
 export const loadDecks = (win: Cypress.AUTWindow): SpellDeck[] => {
-  const stored = win.localStorage.getItem(STORAGE_KEYS.decks)
+  const stored = win.localStorage.getItem(STORAGE_KEYS.DECKS)
   if (!stored) return []
   try {
     return JSON.parse(stored) as SpellDeck[]
@@ -36,11 +32,11 @@ export const loadDecks = (win: Cypress.AUTWindow): SpellDeck[] => {
 }
 
 export const saveDecks = (win: Cypress.AUTWindow, decks: SpellDeck[]): void => {
-  win.localStorage.setItem(STORAGE_KEYS.decks, JSON.stringify(decks))
+  win.localStorage.setItem(STORAGE_KEYS.DECKS, JSON.stringify(decks))
 }
 
 export const getCurrentDeckName = (win: Cypress.AUTWindow): string => {
-  const stored = win.localStorage.getItem(STORAGE_KEYS.lastSettings)
+  const stored = win.localStorage.getItem(STORAGE_KEYS.LAST_SETTINGS)
   if (!stored) return ''
   try {
     const parsed = JSON.parse(stored) as SpellLastSettings
@@ -67,7 +63,7 @@ export const normalizeDecks = (win: Cypress.AUTWindow, level: number, time: numb
 }
 
 export const loadGameState = (win: Cypress.AUTWindow): LwkGameState | null => {
-  const stored = win.sessionStorage.getItem(STORAGE_KEYS.gameState)
+  const stored = win.sessionStorage.getItem(STORAGE_KEYS.GAME_STATE)
   if (!stored) return null
   try {
     return JSON.parse(stored) as LwkGameState
