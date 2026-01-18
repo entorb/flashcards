@@ -32,7 +32,7 @@ export const TEXT_DE = {
   // App titles (used in vite.config.ts manifests)
   appTitle_1x1: "Vyvit's 1x1 Spiel",
   appTitle_voc: "Rabat's Wortspiel",
-  appTitle_spell: "Eisi's Lernwörter",
+  appTitle_lwk: "Eisi's Lernwörter",
 
   footer: {
     gamesPlayedByAll: 'Spiele gespielt.',
@@ -235,8 +235,8 @@ export const TEXT_DE = {
     }
   },
 
-  // Spelling App specific
-  spell: {
+  // LWK app specific
+  lwk: {
     mode: {
       copy: 'Abschreiben',
       hidden: 'Verdeckt',

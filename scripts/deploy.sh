@@ -9,8 +9,8 @@ rsync -rhv --delete --no-perms --ignore-times www/* entorb@entorb.net:html/flash
 pnpm run check || exit 1
 pnpm run cy:run || exit 1
 
-for app in 1x1 voc spell; do
+for app in 1x1 voc lwk; do
   pnpm run build:$app || exit 1
-  rsync -rhv --delete --no-perms --ignore-times apps/$app/dist/ entorb@entorb.net:html/$app/
-  rsync -rhv --delete --no-perms --ignore-times apps/$app/assets/icon.svg entorb@entorb.net:html/$app/icon.svg
+  rsync -rhv --delete --no-perms --ignore-times apps/$app/dist/ entorb@entorb.net:html/fc-$app/
+  rsync -rhv --delete --no-perms --ignore-times apps/$app/assets/icon.svg entorb@entorb.net:html/fc-$app/icon.svg
 done

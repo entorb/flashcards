@@ -149,7 +149,7 @@ Apps use prefixes to avoid collisions:
 Each app defines `BASE_PATH` in `src/constants.ts`:
 
 ```typescript
-export const BASE_PATH = '1x1' // or 'voc'
+export const BASE_PATH = 'fc-1x1' // or 'fc-voc', 'fc-lwk'
 ```
 
 Used for: router base, Cypress baseUrl, DB collection names
