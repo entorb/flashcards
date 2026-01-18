@@ -3,7 +3,7 @@
  * Manages game state, cards, settings, and deck operations
  */
 
-import { type AnswerResult, createBaseGameStore } from '@flashcards/shared'
+import { type AnswerResult, createBaseGameStore, roundTime } from '@flashcards/shared'
 import { computed, watch } from 'vue'
 
 import {
@@ -148,7 +148,7 @@ export function useGameStore() {
   }
 
   // Save game state whenever it changes for reload recovery
-  const saveGameStateDebounced = () => {
+  const persistGameState = () => {
     saveGameState({
       gameCards: baseStore.gameCards.value,
       currentCardIndex: baseStore.currentCardIndex.value,
@@ -166,7 +166,7 @@ export function useGameStore() {
       baseStore.points.value,
       baseStore.correctAnswersCount.value
     ],
-    saveGameStateDebounced
+    persistGameState
   )
 
   // ============================================================================
@@ -236,7 +236,7 @@ export function useGameStore() {
           baseStore.gameSettings.value?.mode === 'hidden'
         ) {
           const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-          updates.time = clampedTime
+          updates.time = roundTime(clampedTime)
         }
 
         return { ...card, ...updates }

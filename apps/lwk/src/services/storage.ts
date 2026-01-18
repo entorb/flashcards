@@ -96,32 +96,6 @@ export function saveCards(cards: Card[]): void {
   }
 }
 
-/**
- * Update a single card
- */
-export function updateCard(updatedCard: Card): void {
-  const cards = loadCards()
-  const index = cards.findIndex(c => c.word === updatedCard.word)
-  if (index !== -1) {
-    cards[index] = updatedCard
-    saveCards(cards)
-  }
-}
-
-/**
- * Update multiple cards
- */
-export function updateCards(updatedCards: Card[]): void {
-  const cards = loadCards()
-  for (const updatedCard of updatedCards) {
-    const index = cards.findIndex(c => c.word === updatedCard.word)
-    if (index !== -1) {
-      cards[index] = updatedCard
-    }
-  }
-  saveCards(cards)
-}
-
 // ============================================================================
 // History
 // ============================================================================

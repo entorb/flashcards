@@ -110,7 +110,7 @@ function parseCardFromLine(line: string): Card | null {
   // Parse time (default to MAX_TIME if missing/invalid)
   let time = MAX_TIME
   if (parts[2]) {
-    const parsedTime = Number.parseInt(parts[2], 10)
+    const parsedTime = Number.parseFloat(parts[2])
     if (!Number.isNaN(parsedTime) && parsedTime >= MIN_TIME && parsedTime <= MAX_TIME) {
       time = parsedTime
     }
@@ -168,7 +168,7 @@ function handleSave() {
 
   $q.notify({
     type: 'positive',
-    message: TEXT_DE.lwk.cards.saveSuccess || 'Änderungen gespeichert!'
+    message: TEXT_DE.lwk.cards.saveSuccess
   })
 
   router.push('/cards')
@@ -333,7 +333,7 @@ function getTimeOptions() {
       v-else
       class="text-center q-pa-xl text-grey-6"
     >
-      {{ TEXT_DE.lwk.cards.noCardsYet || 'Noch keine Wörter vorhanden' }}
+      {{ TEXT_DE.lwk.cards.noCardsYet }}
     </div>
 
     <!-- Save button -->

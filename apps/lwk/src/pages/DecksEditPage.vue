@@ -40,23 +40,12 @@ onMounted(() => {
 onUnmounted(() => {
   globalThis.removeEventListener('keydown', handleKeyDown)
 })
-
 function handleAddDeck() {
-  // Find the next available deck_N index
-  const existingIndices: number[] = []
-  for (const deck of decks.value) {
-    const match = deck.name.match(/^Lernwörter_(\d+)$/)
-    if (match && match[1]) {
-      existingIndices.push(Number.parseInt(match[1], 10))
-    }
-  }
-
   let newIndex = 1
-  while (existingIndices.includes(newIndex)) {
-    newIndex++
-  }
-
-  const deckName = `Lernwörter_${newIndex}`
+  let deckName: string
+  do {
+    deckName = `Lernwörter_${newIndex++}`
+  } while (decks.value.some(d => d.name === deckName))
 
   const success = addDeck(deckName)
   if (success) {
