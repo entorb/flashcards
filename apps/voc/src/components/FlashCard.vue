@@ -391,7 +391,7 @@ function handleTypingSubmit() {
           v-model="userAnswer"
           autofocus
           outlined
-          :placeholder="TEXT_DE.voc.game.typePlaceholder"
+          :placeholder="TEXT_DE.common.typePlaceholder"
           autocapitalize="none"
           autocorrect="off"
           spellcheck="false"

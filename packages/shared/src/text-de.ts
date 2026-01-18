@@ -62,7 +62,9 @@ export const TEXT_DE = {
     no: 'Nein',
     cancel: 'Abbrechen',
     correct: 'Richtig',
-    incorrect: 'Falsch'
+    incorrect: 'Falsch',
+    closeMatch: 'Fast richtig!',
+    typePlaceholder: 'Schreibe...'
   },
 
   // Navigation
@@ -148,8 +150,7 @@ export const TEXT_DE = {
     },
     game: {
       revealAnswer: 'Antwort aufdecken',
-      wasYourAnswerCorrect: 'War deine Antwort richtig?',
-      typePlaceholder: 'Antwort schreiben...'
+      wasYourAnswerCorrect: 'War deine Antwort richtig?'
     },
     direction: {
       voc_de: 'Voc → DE',
@@ -246,10 +247,8 @@ export const TEXT_DE = {
       showWord: 'Wort zeigen',
       hideWord: 'Wort verbergen',
       wordHiddenIn: 'Wort wird verdeckt in',
-      typePlaceholder: 'Schreibe...',
       correct: 'Richtig!',
       incorrect: 'Leider falsch',
-      closeMatch: 'Fast richtig!',
       timeBonus: 'Geschwindigkeits-Bonus!',
       newRecord: 'Neue Bestzeit!'
     },
@@ -302,6 +301,13 @@ export const TEXT_DE = {
       deckAdded: 'Kiste "{name}" wurde hinzugefügt',
       deckRemoved: 'Kiste "{name}" wurde gelöscht',
       deckRenamed: 'Kiste wurde umbenannt'
+    },
+    gameOver: {
+      superMade: 'Super gemacht!',
+      wellDone: 'Gut gemacht!',
+      results: 'Ergebnis',
+      points: 'Punkte:',
+      correctAnswers: 'Richtige Antworten:'
     },
     info: {
       title: SCORING_TITLE,
