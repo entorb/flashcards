@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <title>Eisi - Ice Bear Mascot</title>
+  <!-- Body -->
+  <ellipse cx="50" cy="60" rx="25" ry="30" fill="#E0F2F7"/>
+  <!-- Head -->
+  <circle cx="50" cy="35" r="22" fill="#F0F8FF"/>
+  <!-- Ears -->
+  <circle cx="35" cy="20" r="8" fill="#E0F2F7"/>
+  <circle cx="65" cy="20" r="8" fill="#E0F2F7"/>
+  <!-- Inner ears -->
+  <circle cx="35" cy="22" r="4" fill="#B0E0E6"/>
+  <circle cx="65" cy="22" r="4" fill="#B0E0E6"/>
+  <!-- Eyes -->
+  <circle cx="42" cy="32" r="3" fill="#000000"/>
+  <circle cx="58" cy="32" r="3" fill="#000000"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="40" rx="4" ry="3" fill="#000000"/>
+  <!-- Smile -->
+  <path d="M 40,46 Q 50,54 60,46" stroke="#4FC3F7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Paws -->
+  <ellipse cx="35" cy="75" rx="8" ry="10" fill="#E0F2F7"/>
+  <ellipse cx="65" cy="75" rx="8" ry="10" fill="#E0F2F7"/>
+</svg>
