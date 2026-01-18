@@ -24,6 +24,7 @@ describe('FlashCard Component', () => {
   const mockAllCards: Card[] = [
     mockCard,
     { voc: 'goodbye', de: 'auf Wiedersehen', level: 2, time_blind: 8.0, time_typing: 12.0 },
+    // cspell:disable-next-line
     { voc: 'thank you', de: 'danke', level: 1, time_blind: 3.0, time_typing: 6.0 },
     { voc: 'please', de: 'bitte', level: 4, time_blind: 4.0, time_typing: 7.0 }
   ]

@@ -1,5 +1,12 @@
 import { vi } from 'vitest'
 
+// Suppress Vue warnings about unresolved Quasar components
+const originalWarn = console.warn
+console.warn = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('Failed to resolve component')) return
+  originalWarn(...args)
+}
+
 // Setup global test environment for jsdom
 globalThis.CSS = { supports: () => false } as any
 

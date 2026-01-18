@@ -181,7 +181,7 @@ function saveRename() {
                 size="sm"
                 @click="startRename(deck.name)"
               >
-                <q-tooltip>{{ TEXT_DE.voc.decks.renameDeck }}</q-tooltip>
+                <q-tooltip>{{ TEXT_DE.cards.rename }}</q-tooltip>
               </q-btn>
               <q-btn
                 v-else
@@ -206,7 +206,7 @@ function saveRename() {
                 :disable="decks.length <= 1"
                 @click="handleRemoveDeck(deck.name)"
               >
-                <q-tooltip>{{ TEXT_DE.voc.decks.removeDeck }}</q-tooltip>
+                <q-tooltip>{{ TEXT_DE.cards.delete }}</q-tooltip>
               </q-btn>
               <q-btn
                 v-else
