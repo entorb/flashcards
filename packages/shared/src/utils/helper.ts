@@ -10,6 +10,8 @@ export const getFocusText = (focus: string): string => {
   switch (focus) {
     case 'weak':
       return TEXT_DE.focusOptions.weak
+    case 'medium':
+      return TEXT_DE.focusOptions.medium
     case 'strong':
       return TEXT_DE.focusOptions.strong
     default:
