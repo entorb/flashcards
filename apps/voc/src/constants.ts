@@ -21,7 +21,7 @@ export {
 /**
  * Base path for the Wordplay app - used in routing, PWA config, and database
  */
-export const BASE_PATH = 'voc'
+export const BASE_PATH = 'fc-voc'
 
 export const ROUND_SIZE = 10
 

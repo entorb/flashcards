@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { helperStatsDataRead, TEXT_DE } from '@flashcards/shared'
+import { TEXT_DE } from '@flashcards/shared'
 import {
   AppFooter,
   FocusSelector,
@@ -9,7 +9,7 @@ import {
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import FoxIcon from '../components/FoxMascot.vue'
+import FoxMascot from '../components/FoxMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH } from '../constants'
 import { loadLastSettings, saveLastSettings } from '../services/storage'
@@ -28,8 +28,6 @@ const settings = ref<GameSettings>({
 })
 
 const deckOptions = ref<{ label: string; value: string }[]>([])
-
-const totalGamesPlayedByAll = ref<number>(0)
 
 const hasLevel1Cards = ref<boolean>(true)
 const hasLevel1Or2Cards = ref<boolean>(true)
@@ -72,8 +70,6 @@ onMounted(async () => {
   }))
   // Check if current deck has level 1 cards
   checkLevel1Cards()
-  // Fetch total games played by all users from database
-  totalGamesPlayedByAll.value = await helperStatsDataRead(BASE_PATH)
 })
 
 // Watch allCards to update hasLevel1Cards whenever cards change
@@ -155,8 +151,7 @@ function goToInfo() {
     <!-- Mascot and Statistics -->
     <div class="row items-center justify-center q-mb-md">
       <div class="col-12 col-sm-auto text-center">
-        <!-- Mascot happiness based on total points -->
-        <FoxIcon
+        <FoxMascot
           smile
           :size="100"
         />
@@ -260,7 +255,7 @@ function goToInfo() {
       </q-card-section>
     </q-card>
 
-    <!-- Start Game Button -->
+    <!-- Start Button -->
     <q-btn
       color="positive"
       size="lg"
