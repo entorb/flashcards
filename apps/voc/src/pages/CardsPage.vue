@@ -1,13 +1,23 @@
 <script setup lang="ts">
-import { LEVEL_COLORS, TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
-import { LevelDistribution } from '@flashcards/shared/components'
+import {
+  LEVEL_COLORS,
+  TEXT_DE,
+  useCardFiltering,
+  useResetCards,
+  MAX_LEVEL,
+  MIN_LEVEL
+} from '@flashcards/shared'
+import {
+  LevelDistribution,
+  DeckSelector,
+  CardManagementActions
+} from '@flashcards/shared/components'
 import { useQuasar } from 'quasar'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import DeckSelector from '../components/DeckSelector.vue'
 import { useGameStore } from '../composables/useGameStore'
-import { MAX_LEVEL, MIN_LEVEL } from '../constants'
+import { loadLastSettings, saveLastSettings } from '../services/storage'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -54,10 +64,10 @@ onMounted(() => {
 
 function handleMoveClick() {
   const level = Number(targetLevel.value)
-  if (level < MIN_LEVEL || level > MAX_LEVEL) {
+  if (Number.isNaN(level) || level < MIN_LEVEL || level > MAX_LEVEL) {
     $q.notify({
       type: 'negative',
-      message: TEXT_DE.voc.cards.invalidLevelError
+      message: TEXT_DE.shared.cardActions.invalidLevelError
         .replace('{min}', MIN_LEVEL.toString())
         .replace('{max}', MAX_LEVEL.toString())
     })
@@ -65,8 +75,8 @@ function handleMoveClick() {
   }
 
   $q.dialog({
-    title: TEXT_DE.voc.cards.confirmMoveTitle,
-    message: TEXT_DE.voc.cards.confirmMoveMessage
+    title: TEXT_DE.shared.cardActions.confirmMoveTitle,
+    message: TEXT_DE.shared.cardActions.confirmMoveMessage
       .replace('{count}', allCards.value.length.toString())
       .replace('{level}', level.toString()),
     cancel: true
@@ -107,7 +117,7 @@ function getLevelColor(level: number): string {
         data-cy="back-button"
         @click="handleGoBack"
       >
-        <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
+        <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
       </q-btn>
       <div class="text-h6">
         {{ TEXT_DE.voc.cards.editCardsTitle }}
@@ -145,13 +155,18 @@ function getLevelColor(level: number): string {
           </div>
           <div class="row items-center q-gutter-md">
             <div class="col">
-              <DeckSelector />
+              <DeckSelector
+                :get-decks="() => store.getDecks()"
+                :switch-deck="name => store.switchDeck(name)"
+                :load-last-settings="loadLastSettings"
+                :save-last-settings="saveLastSettings"
+              />
             </div>
             <q-btn
               outline
               color="primary"
               icon="edit"
-              :label="TEXT_DE.cards.edit"
+              :label="TEXT_DE.shared.cards.edit"
               no-caps
               data-cy="edit-decks-button"
               @click="handleEditDecks"
@@ -174,7 +189,7 @@ function getLevelColor(level: number): string {
             outline
             color="primary"
             icon="edit"
-            :label="TEXT_DE.cards.edit"
+            :label="TEXT_DE.shared.cards.edit"
             no-caps
             class="full-width"
             data-cy="edit-cards-button"
@@ -200,10 +215,10 @@ function getLevelColor(level: number): string {
               class="q-mr-sm"
             />
             <span v-if="selectedLevel === null">
-              {{ TEXT_DE.words.cards }} ({{ allCards.length }})
+              {{ TEXT_DE.shared.words.cards }} ({{ allCards.length }})
             </span>
             <span v-else>
-              {{ TEXT_DE.words.level }} {{ selectedLevel }} ({{ cardsToShow.length }})
+              {{ TEXT_DE.shared.words.level }} {{ selectedLevel }} ({{ cardsToShow.length }})
             </span>
           </div>
           <div style="overflow-y: auto; max-height: 400px">
@@ -230,65 +245,13 @@ function getLevelColor(level: number): string {
         </q-card-section>
       </q-card>
 
-      <!-- Advanced Actions -->
-      <q-card>
-        <q-card-section>
-          <div class="text-h6 q-mb-sm">
-            <q-icon
-              name="tune"
-              class="q-mr-sm"
-            />
-            {{ TEXT_DE.voc.cards.moveAllTitle }}
-          </div>
-          <div class="text-caption text-grey-7 q-mb-md">
-            Setze alle Karten im aktuellen Deck auf ein bestimmtes Level
-          </div>
-          <div class="row q-gutter-sm items-center">
-            <q-input
-              v-model.number="targetLevel"
-              type="number"
-              :min="MIN_LEVEL"
-              :max="MAX_LEVEL"
-              outlined
-              dense
-              label="Ziel-Level"
-              style="width: 120px"
-            />
-            <q-btn
-              outline
-              color="primary"
-              icon="arrow_forward"
-              :label="TEXT_DE.voc.cards.moveAll"
-              no-caps
-              @click="handleMoveClick"
-            />
-          </div>
-        </q-card-section>
-      </q-card>
-
-      <!-- Danger Zone -->
-      <q-card class="bg-red-1">
-        <q-card-section>
-          <div class="text-h6 q-mb-sm text-negative">
-            <q-icon
-              name="warning"
-              class="q-mr-sm"
-            />
-            {{ TEXT_DE.voc.cards.dangerZoneTitle }}
-          </div>
-          <div class="text-caption text-grey-8 q-mb-md">
-            Diese Aktion löscht alle Karten und setzt den Lernfortschritt zurück
-          </div>
-          <q-btn
-            outline
-            color="negative"
-            icon="delete_forever"
-            :label="TEXT_DE.voc.cards.reset"
-            no-caps
-            @click="handleResetCardsToDefaultSet"
-          />
-        </q-card-section>
-      </q-card>
+      <CardManagementActions
+        app-prefix="voc"
+        :target-level="targetLevel"
+        @update:target-level="targetLevel = $event"
+        @move-click="handleMoveClick"
+        @reset-click="handleResetCardsToDefaultSet"
+      />
     </div>
   </q-page>
 </template>

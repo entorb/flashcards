@@ -1,29 +1,11 @@
 import type { Card } from './types'
 
 /**
- * Re-export shared constants
- */
-export {
-  MIN_LEVEL,
-  MAX_LEVEL,
-  MIN_TIME,
-  MAX_TIME,
-  DEFAULT_TIME,
-  AUTO_CLOSE_DURATION,
-  BUTTON_DISABLE_DURATION,
-  FIRST_GAME_BONUS,
-  STREAK_GAME_BONUS,
-  STREAK_GAME_INTERVAL,
-  SPEED_BONUS_POINTS,
-  LEVEL_BONUS_NUMERATOR
-} from '@flashcards/shared'
-
-/**
  * Base path for the Wordplay app - used in routing, PWA config, and database
  */
 export const BASE_PATH = 'fc-voc'
 
-export const ROUND_SIZE = 10
+export const MAX_CARDS_PER_GAME = 10
 
 // ============================================================================
 // GAME SCORING
@@ -42,7 +24,7 @@ export const MODE_MULTIPLIER_TYPING = 4
 /**
  * Points earned for closing answer with typos in typing mode (75% of base)
  */
-export const CLOSE_ANSWER_PENALTY = 0.75
+export const CLOSE_MATCH_SCORE_PERCENTAGE = 0.75
 
 /**
  * Bonus points for answering in DE→Voc direction (increased difficulty)
@@ -67,8 +49,3 @@ export const INITIAL_CARDS: Card[] = [
  * Distance of 2 means up to 2 character changes are tolerated
  */
 export const LEVENSHTEIN_THRESHOLD = 2
-
-/**
- * Database column name for web stats tracking - derived from BASE_PATH
- */
-export const STATS_DB_COL = BASE_PATH

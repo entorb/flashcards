@@ -1,8 +1,7 @@
 // cspell:disable
 import { describe, expect, it } from 'vitest'
 
-import { levenshteinDistance } from '@flashcards/shared'
-import { DEFAULT_TIME } from '../constants'
+import { levenshteinDistance, DEFAULT_TIME } from '@flashcards/shared'
 
 import { normalizeString, parseCardsFromText, validateTypingAnswer } from './helpers'
 

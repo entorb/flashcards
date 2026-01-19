@@ -30,7 +30,13 @@ export interface Props<T extends BaseGameHistory> {
 
 const props = defineProps<Props<T>>()
 
-const router = useRouter()
+let router: ReturnType<typeof useRouter> | null = null
+try {
+  router = useRouter()
+} catch {
+  // Router not available, will use window.location as fallback
+  router = null
+}
 
 const result = ref<GameResult | null>(null)
 const bonusReasons = ref<Array<{ label: string; points: number }>>([])
@@ -63,12 +69,31 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
+function hasTotalCards(entry: BaseGameHistory): entry is BaseGameHistory & { totalCards: number } {
+  return 'totalCards' in entry && typeof entry.totalCards === 'number'
+}
+
 onMounted(async () => {
   result.value = props.storageFunctions.getGameResult()
 
+  if (!result.value && props.gameStoreHistory.length > 0) {
+    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
+    if (hasTotalCards(lastEntry)) {
+      result.value = {
+        points: lastEntry.points,
+        correctAnswers: lastEntry.correctAnswers,
+        totalCards: lastEntry.totalCards
+      }
+    }
+  }
+
   // No result found, redirect to home
   if (!result.value) {
-    router.push({ name: '/' })
+    if (router) {
+      router.push('/')
+    } else {
+      globalThis.location.href = `/${props.basePath}/`
+    }
     return
   }
 
@@ -110,7 +135,11 @@ function goHome() {
   props.storageFunctions.clearGameResult()
   props.storageFunctions.clearGameState()
 
-  router.push({ name: '/' })
+  if (router) {
+    router.push('/')
+  } else {
+    globalThis.location.href = `/${props.basePath}/`
+  }
 }
 </script>
 
@@ -172,7 +201,7 @@ function goHome() {
                 name="star"
                 color="amber"
               />
-              {{ TEXT_DE.words.bonusPoints }}
+              {{ TEXT_DE.shared.words.bonusPoints }}
             </div>
             <div
               v-for="(reason, index) in bonusReasons"
@@ -203,7 +232,7 @@ function goHome() {
         size="lg"
         class="full-width q-mt-lg"
         icon="home"
-        :label="TEXT_DE.nav.backToHome"
+        :label="TEXT_DE.shared.nav.backToHome"
         unelevated
         data-cy="back-to-home-button"
         @click="goHome"

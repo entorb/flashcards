@@ -1,7 +1,7 @@
-import { type AnswerResult, createBaseGameStore } from '@flashcards/shared'
+import { type AnswerResult, createBaseGameStore, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '@flashcards/shared'
 import { computed, watch } from 'vue'
 
-import { INITIAL_CARDS, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
+import { INITIAL_CARDS } from '../constants'
 import { selectCardsForRound } from '../services/cardSelector'
 import { calculatePoints } from '../services/pointsCalculation'
 import {
