@@ -3,7 +3,7 @@
  * Provides common state management patterns used across both apps
  */
 
-import { type Ref, ref, watch } from 'vue'
+import { type Ref, ref } from 'vue'
 
 import type { BaseCard, BaseGameHistory, GameStats } from '../types'
 
@@ -57,18 +57,11 @@ export function createBaseGameStore<
       history.value = config.loadHistory()
       gameStats.value = config.loadGameStats()
       initialized = true
-
-      // Watch for changes in allCards and save to storage (if saveCards is provided)
-      if (config.saveCards) {
-        const saveCardsCallback = config.saveCards
-        watch(
-          () => allCards.value,
-          newCards => {
-            saveCardsCallback(newCards)
-          },
-          { deep: true }
-        )
-      }
+      // Note: Cards are saved explicitly via config.saveCards when needed,
+      // rather than via a watcher on card state. A previous implementation
+      // used a watcher to auto-save whenever card collections changed, but
+      // this could trigger additional card/state updates inside the save
+      // path, leading to recursive update cycles and repeated save loops.
     }
   }
 

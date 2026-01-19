@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
+import { TEXT_DE, MAX_LEVEL, MIN_LEVEL } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
-import { MAX_LEVEL, MIN_LEVEL } from '../constants'
 import type { Card } from '../types'
 import { parseCardsFromText } from '../utils/helpers'
 
@@ -16,7 +15,6 @@ const { allCards, importCards } = useGameStore()
 // Create a working copy of cards for editing
 const editingCards = ref<Card[]>([])
 const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
-const hasChanges = ref(false)
 
 onMounted(() => {
   // Initialize with a copy of current cards
@@ -29,17 +27,35 @@ onUnmounted(() => {
 })
 
 function handleGoBack() {
-  if (hasChanges.value) {
-    $q.dialog({
-      title: TEXT_DE.voc.cards.unsavedChangesTitle,
-      message: TEXT_DE.voc.cards.unsavedChangesMessage,
-      cancel: true
-    }).onOk(() => {
-      router.push('/cards')
-    })
-  } else {
-    router.push('/cards')
+  // Validate all cards before auto-saving
+  for (const card of editingCards.value) {
+    if (!card.voc.trim()) {
+      $q.notify({
+        type: 'negative',
+        message: TEXT_DE.voc.cards.validationEnEmpty
+      })
+      return
+    }
+    if (!card.de.trim()) {
+      $q.notify({
+        type: 'negative',
+        message: TEXT_DE.voc.cards.validationDeEmpty
+      })
+      return
+    }
+    if (card.level < MIN_LEVEL || card.level > MAX_LEVEL) {
+      $q.notify({
+        type: 'negative',
+        message: TEXT_DE.shared.cardActions.invalidLevelError
+          .replace('{min}', MIN_LEVEL.toString())
+          .replace('{max}', MAX_LEVEL.toString())
+      })
+      return
+    }
   }
+
+  importCards(editingCards.value)
+  router.push('/cards')
 }
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -60,7 +76,7 @@ function handleExport() {
     .catch(() => {
       $q.notify({
         type: 'negative',
-        message: TEXT_DE.voc.cards.clipboardError
+        message: TEXT_DE.shared.cardActions.clipboardError
       })
     })
 }
@@ -94,7 +110,7 @@ function showManualImportDialog() {
 
 function processImportText(text: string) {
   if (!text) {
-    $q.notify({ type: 'negative', message: TEXT_DE.voc.cards.emptyTextError })
+    $q.notify({ type: 'negative', message: TEXT_DE.shared.cardActions.emptyTextError })
     return
   }
 
@@ -119,46 +135,10 @@ function processImportText(text: string) {
   }
 
   editingCards.value = newCards
-  hasChanges.value = true
   $q.notify({
     type: 'positive',
     message: TEXT_DE.voc.cards.importSuccess.replace('{count}', newCards.length.toString())
   })
-}
-
-function handleSave() {
-  // Validate all cards
-  for (const card of editingCards.value) {
-    if (!card.voc.trim()) {
-      $q.notify({
-        type: 'negative',
-        message: TEXT_DE.voc.cards.validationEnEmpty
-      })
-      return
-    }
-    if (!card.de.trim()) {
-      $q.notify({
-        type: 'negative',
-        message: TEXT_DE.voc.cards.validationDeEmpty
-      })
-      return
-    }
-    if (card.level < MIN_LEVEL || card.level > MAX_LEVEL) {
-      $q.notify({
-        type: 'negative',
-        message: TEXT_DE.voc.cards.invalidLevelError
-          .replace('{min}', MIN_LEVEL.toString())
-          .replace('{max}', MAX_LEVEL.toString())
-      })
-      return
-    }
-  }
-
-  // Import the edited cards (replaces current cards)
-  importCards(editingCards.value)
-  hasChanges.value = false
-
-  router.push('/cards')
 }
 
 function addNewCard() {
@@ -169,16 +149,14 @@ function addNewCard() {
     time_blind: 60,
     time_typing: 60
   })
-  hasChanges.value = true
 }
 
 function removeCard(index: number) {
   editingCards.value.splice(index, 1)
-  hasChanges.value = true
 }
 
 function onCardChange() {
-  hasChanges.value = true
+  // Auto-save could be triggered here if needed
 }
 </script>
 
@@ -197,7 +175,7 @@ function onCardChange() {
         data-cy="back-button"
         @click="handleGoBack"
       >
-        <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
+        <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
       </q-btn>
       <h2 class="q-ma-none text-h6">{{ TEXT_DE.voc.cards.editCardsTitle }}</h2>
       <div style="width: 40px" />
@@ -247,16 +225,17 @@ function onCardChange() {
           <!-- Header Row -->
           <q-item class="bg-grey-2">
             <q-item-section style="flex: 0 0 40%">
-              <q-item-label class="text-weight-bold">{{ TEXT_DE.words.vocable }}</q-item-label>
+              <q-item-label class="text-weight-bold">{{
+                TEXT_DE.shared.words.vocable
+              }}</q-item-label>
             </q-item-section>
             <q-item-section style="flex: 0 0 40%">
-              <q-item-label class="text-weight-bold">{{ TEXT_DE.words.german }}</q-item-label>
+              <q-item-label class="text-weight-bold">{{
+                TEXT_DE.shared.words.german
+              }}</q-item-label>
             </q-item-section>
-            <q-item-section style="flex: 0 0 15%">
-              <q-item-label class="text-weight-bold">{{ TEXT_DE.words.level }}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label class="text-weight-bold">{{ TEXT_DE.words.actions }}</q-item-label>
+            <q-item-section style="flex: 0 0 20%">
+              <q-item-label class="text-weight-bold">{{ TEXT_DE.shared.words.level }}</q-item-label>
             </q-item-section>
           </q-item>
 
@@ -285,58 +264,35 @@ function onCardChange() {
                 @update:model-value="onCardChange"
               />
             </q-item-section>
-            <q-item-section style="flex: 0 0 15%">
-              <q-input
-                v-model.number="card.level"
-                type="number"
-                outlined
-                dense
-                :min="MIN_LEVEL"
-                :max="MAX_LEVEL"
-                style="width: 60px"
-                data-cy="`card-level-${index}`"
-                @update:model-value="onCardChange"
-              />
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                flat
-                round
-                dense
-                icon="delete"
-                color="negative"
-                size="sm"
-                data-cy="`delete-card-${index}`"
-                @click="removeCard(index)"
-              >
-                <q-tooltip>{{ TEXT_DE.words.delete }}</q-tooltip>
-              </q-btn>
+            <q-item-section style="flex: 0 0 20%">
+              <div class="row items-center q-gutter-xs">
+                <q-input
+                  v-model.number="card.level"
+                  type="number"
+                  outlined
+                  dense
+                  :min="MIN_LEVEL"
+                  :max="MAX_LEVEL"
+                  style="width: 60px"
+                  data-cy="`card-level-${index}`"
+                  @update:model-value="onCardChange"
+                />
+                <q-btn
+                  flat
+                  round
+                  dense
+                  icon="delete"
+                  color="negative"
+                  size="sm"
+                  data-cy="`delete-card-${index}`"
+                  @click="removeCard(index)"
+                >
+                  <q-tooltip>{{ TEXT_DE.shared.words.delete }}</q-tooltip>
+                </q-btn>
+              </div>
             </q-item-section>
           </q-item>
         </q-list>
-      </div>
-
-      <!-- Save Button -->
-      <div class="row q-gutter-md q-pt-lg justify-end">
-        <q-btn
-          outline
-          color="grey-8"
-          :label="TEXT_DE.common.cancel"
-          no-caps
-          data-cy="cancel-button"
-          @click="handleGoBack"
-        />
-        <q-btn
-          :outline="!hasChanges"
-          :unelevated="hasChanges"
-          :color="hasChanges ? 'positive' : 'primary'"
-          icon="save"
-          :label="TEXT_DE.voc.cards.save"
-          no-caps
-          data-cy="save-button"
-          :class="{ 'save-btn-changed': hasChanges }"
-          @click="handleSave"
-        />
       </div>
     </div>
   </q-page>
@@ -346,20 +302,5 @@ function onCardChange() {
 .card-edit-page {
   min-height: 100vh;
   padding-bottom: 100px !important;
-}
-
-.save-btn-changed {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
-  }
-
-  50% {
-    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
-  }
 }
 </style>

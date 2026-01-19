@@ -3,12 +3,12 @@ import {
   type AnswerResult,
   TEXT_DE,
   useFeedbackTimers,
-  useKeyboardContinue
+  useKeyboardContinue,
+  MAX_TIME
 } from '@flashcards/shared'
 import { shuffleArray } from '@flashcards/shared/utils'
 import { computed, ref, watch } from 'vue'
 
-import { MAX_TIME } from '../constants'
 import { calculatePointsBreakdown } from '../services/pointsCalculation'
 import type { AnswerData, Card, GameSettings, PointsBreakdown } from '../types'
 import { validateTypingAnswer } from '../utils/helpers'
@@ -270,7 +270,7 @@ function handleTypingSubmit() {
             class="text-h5 text-weight-bold"
             :class="[answerStatus === 'correct' ? 'text-positive' : 'text-warning']"
           >
-            +{{ pointsBreakdown.totalPoints }} {{ TEXT_DE.words.points }}
+            +{{ pointsBreakdown.totalPoints }} {{ TEXT_DE.shared.words.points }}
           </div>
           <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
             <span>
@@ -301,7 +301,9 @@ function handleTypingSubmit() {
               : 'negative'
         "
         :disable="isProceedDisabled"
-        :label="isProceedDisabled ? `${TEXT_DE.common.wait}` : TEXT_DE.common.continue"
+        :label="
+          isProceedDisabled ? `${TEXT_DE.shared.common.wait}` : TEXT_DE.shared.common.continue
+        "
         data-cy="continue-button"
         :icon="
           answerStatus === 'correct'
@@ -359,7 +361,7 @@ function handleTypingSubmit() {
               <q-btn
                 :disable="!!answerStatus"
                 color="negative"
-                :label="TEXT_DE.common.no"
+                :label="TEXT_DE.shared.common.no"
                 no-caps
                 class="full-width"
                 data-cy="blind-no-button"
@@ -370,7 +372,7 @@ function handleTypingSubmit() {
               <q-btn
                 :disable="!!answerStatus"
                 color="positive"
-                :label="TEXT_DE.common.yes"
+                :label="TEXT_DE.shared.common.yes"
                 no-caps
                 class="full-width"
                 data-cy="blind-yes-button"
@@ -391,7 +393,7 @@ function handleTypingSubmit() {
           v-model="userAnswer"
           autofocus
           outlined
-          :placeholder="TEXT_DE.common.typePlaceholder"
+          :placeholder="TEXT_DE.shared.common.typePlaceholder"
           autocapitalize="none"
           autocorrect="off"
           spellcheck="false"
@@ -403,7 +405,7 @@ function handleTypingSubmit() {
           color="primary"
           size="lg"
           class="full-width q-mb-md"
-          :label="TEXT_DE.common.check"
+          :label="TEXT_DE.shared.common.check"
           :disable="userAnswer.trim() === ''"
           icon="check"
           type="submit"

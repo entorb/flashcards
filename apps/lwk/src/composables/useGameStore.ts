@@ -3,17 +3,19 @@
  * Manages game state, cards, settings, and deck operations
  */
 
-import { type AnswerResult, createBaseGameStore, roundTime } from '@flashcards/shared'
-import { computed, watch } from 'vue'
-
 import {
-  DEFAULT_DECKS,
+  type AnswerResult,
+  createBaseGameStore,
+  roundTime,
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
   SPEED_BONUS_POINTS
-} from '../constants'
+} from '@flashcards/shared'
+import { computed } from 'vue'
+
+import { DEFAULT_DECKS } from '../constants'
 import { selectCards } from '../services/cardSelector'
 import {
   clearGameState,
@@ -49,12 +51,6 @@ const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
 // ============================================================================
 // Deck Management
 // ============================================================================
-
-// Track current deck name
-const currentDeck = computed(() => {
-  const lastSettings = loadLastSettings()
-  return lastSettings?.deck || DEFAULT_DECKS[0].name
-})
 
 function getDecks(): CardDeck[] {
   return loadDecks()
@@ -137,37 +133,20 @@ export function useGameStore() {
   const savedGameState = loadGameState()
   const savedGameSettings = loadGameConfig()
 
-  if (savedGameState && savedGameSettings) {
-    // Restore game settings
+  if (savedGameSettings) {
+    // Always restore game settings
     baseStore.gameSettings.value = savedGameSettings
-    // Restore game state
+  }
+
+  // gameCards is only populated when a game is active in memory; an empty array
+  // means there is no current in-memory game, so it is safe to restore from storage.
+  if (savedGameState && savedGameSettings && baseStore.gameCards.value.length === 0) {
+    // Restore game state only when no in-memory game is active
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
     baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
   }
-
-  // Save game state whenever it changes for reload recovery
-  const persistGameState = () => {
-    saveGameState({
-      gameCards: baseStore.gameCards.value,
-      currentCardIndex: baseStore.currentCardIndex.value,
-      points: baseStore.points.value,
-      correctAnswersCount: baseStore.correctAnswersCount.value,
-      showWord: false,
-      countdown: 0
-    })
-  }
-
-  watch(
-    () => [
-      baseStore.gameCards.value.length,
-      baseStore.currentCardIndex.value,
-      baseStore.points.value,
-      baseStore.correctAnswersCount.value
-    ],
-    persistGameState
-  )
 
   // ============================================================================
   // Game Actions
@@ -190,6 +169,16 @@ export function useGameStore() {
     baseStore.gameSettings.value = settings
     baseStore.gameCards.value = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
     baseStore.resetGameState()
+
+    // Save initial game state so GamePage can load it
+    saveGameState({
+      gameCards: baseStore.gameCards.value,
+      currentCardIndex: 0,
+      points: 0,
+      correctAnswersCount: 0,
+      showWord: false,
+      countdown: 0
+    })
   }
 
   function handleAnswer(result: AnswerResult, isCloseMatch: boolean = false, answerTime?: number) {
@@ -249,13 +238,15 @@ export function useGameStore() {
   }
 
   function finishGame() {
-    if (!baseStore.gameSettings.value) return
+    const resolvedSettings = baseStore.gameSettings.value ?? loadLastSettings()
+    if (!resolvedSettings) return
 
     const historyEntry: GameHistory = {
       date: new Date().toISOString(),
       points: baseStore.points.value,
-      settings: baseStore.gameSettings.value,
-      correctAnswers: baseStore.correctAnswersCount.value
+      settings: resolvedSettings,
+      correctAnswers: baseStore.correctAnswersCount.value,
+      totalCards: baseStore.gameCards.value.length
     }
 
     // Update history and stats in memory only - GameOverPage will save to localStorage
@@ -315,6 +306,12 @@ export function useGameStore() {
     saveCards(baseStore.allCards.value)
   }
 
+  // Wrap nextCard to save state after moving to next card
+  function nextCard() {
+    const isGameOver = baseStore.nextCard()
+    return isGameOver
+  }
+
   // ============================================================================
   // Computed Properties
   // ============================================================================
@@ -339,12 +336,11 @@ export function useGameStore() {
     gameStats: baseStore.gameStats,
     currentCard,
     isEisiHappy,
-    currentDeck,
 
     // Actions
     startGame,
     handleAnswer,
-    nextCard: baseStore.nextCard,
+    nextCard,
     finishGame,
     discardGame,
     resetCards: resetCardsToDefault,

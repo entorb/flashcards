@@ -1,7 +1,8 @@
 import type { FocusType } from '@flashcards/shared'
+import { LEVEL_BONUS_NUMERATOR } from '@flashcards/shared'
 import { shuffleArray, weightedRandomSelection } from '@flashcards/shared/utils'
 
-import { LEVEL_BONUS_NUMERATOR, ROUND_SIZE } from '../constants'
+import { MAX_CARDS_PER_GAME } from '../constants'
 import type { Card, GameMode } from '../types'
 
 /**
@@ -32,7 +33,7 @@ export function selectCardsForRound(allCards: Card[], focus: FocusType, mode: Ga
 
       return timeB - timeA
     })
-    const cardsToSelect = Math.min(ROUND_SIZE, allCards.length)
+    const cardsToSelect = Math.min(MAX_CARDS_PER_GAME, allCards.length)
     return shuffleArray(sortedByTime.slice(0, cardsToSelect))
   }
 
@@ -57,7 +58,7 @@ export function selectCardsForRound(allCards: Card[], focus: FocusType, mode: Ga
     return { item: card, weight }
   })
 
-  const cardsToSelect = Math.min(ROUND_SIZE, allCards.length)
+  const cardsToSelect = Math.min(MAX_CARDS_PER_GAME, allCards.length)
 
   // Use shared weighted random selection utility
   const selectedCards = weightedRandomSelection(weightedCards, cardsToSelect)

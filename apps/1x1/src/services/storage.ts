@@ -11,10 +11,13 @@ import {
   createHistoryOperations,
   createStatsOperations,
   saveJSON,
-  incrementDailyGames as sharedIncrementDailyGames
+  incrementDailyGames as sharedIncrementDailyGames,
+  MAX_TIME,
+  MIN_LEVEL,
+  MIN_TIME
 } from '@flashcards/shared'
 
-import { MAX_CARD_TIME, MIN_CARD_LEVEL, MIN_CARD_TIME, DEFAULT_RANGE } from '@/constants'
+import { DEFAULT_RANGE } from '@/constants'
 import type { Card, GameHistory, GameSettings } from '@/types'
 
 const STORAGE_KEYS = {
@@ -51,7 +54,7 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
  * @returns Object with x and y numbers
  */
 export function parseCardQuestion(question: string): { x: number; y: number } {
-  const [y, x] = question.split('x').map(Number)
+  const [y, x] = question.split('x').map(s => Number.parseInt(s, 10))
   return { x, y }
 }
 
@@ -65,8 +68,8 @@ export function createDefaultCard(y: number, x: number): Card {
   return {
     question: `${y}x${x}`,
     answer: x * y,
-    level: MIN_CARD_LEVEL,
-    time: MAX_CARD_TIME
+    level: MIN_LEVEL,
+    time: MAX_TIME
   }
 }
 
@@ -102,7 +105,7 @@ export function initializeCards(): Card[] {
 function migrateCardsToNewFormat(cards: Card[]): Card[] {
   let migrated = false
   const migratedCards = cards.map(card => {
-    const [first, second] = card.question.split('x').map(Number)
+    const [first, second] = card.question.split('x').map(s => Number.parseInt(s, 10))
 
     // If first <= second, it's old format (y <= x), needs migration
     if (first < second) {
@@ -192,7 +195,7 @@ export function updateCard(question: string, updates: Partial<Card>): void {
 
   // Clamp time within allowed range
   if (updates.time !== undefined) {
-    updates.time = Math.max(MIN_CARD_TIME, Math.min(MAX_CARD_TIME, updates.time))
+    updates.time = Math.max(MIN_TIME, Math.min(MAX_TIME, updates.time))
   }
 
   if (index === -1) {
@@ -201,8 +204,8 @@ export function updateCard(question: string, updates: Partial<Card>): void {
     const newCard = createDefaultCard(y, x)
     cards.push({
       ...newCard,
-      level: updates.level ?? MIN_CARD_LEVEL,
-      time: updates.time ?? MAX_CARD_TIME
+      level: updates.level ?? MIN_LEVEL,
+      time: updates.time ?? MAX_TIME
     })
   } else {
     // Card exists, update it
@@ -218,8 +221,8 @@ export function updateCard(question: string, updates: Partial<Card>): void {
 export function resetCards(): void {
   const cards = loadCards()
   for (const card of cards) {
-    card.level = MIN_CARD_LEVEL
-    card.time = MAX_CARD_TIME
+    card.level = MIN_LEVEL
+    card.time = MAX_TIME
   }
   saveCards(cards)
 }

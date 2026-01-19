@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { TEXT_DE, useFeedbackTimers, useKeyboardContinue } from '@flashcards/shared'
+import { TEXT_DE, useFeedbackTimers, useKeyboardContinue, MAX_TIME } from '@flashcards/shared'
 import { computed, nextTick, ref, watch } from 'vue'
 
-import { MAX_CARD_TIME } from '@/constants'
 import type { AnswerData, Card, SelectionType } from '@/types'
 import { formatDisplayQuestion } from '@/utils/questionFormatter'
 
@@ -87,12 +86,12 @@ function submitAnswer() {
 
   if (isCorrect) {
     // Calculate points for correct answer
-    const [x, y] = props.card.question.split('x').map(Number)
+    const [x, y] = props.card.question.split('x').map(s => Number.parseInt(s, 10))
     basePoints = Math.min(x, y)
     levelBonus = 6 - props.card.level
 
-    // Add speed bonus if last time < MAX_CARD_TIME and current time <= last time
-    if (props.card.time < MAX_CARD_TIME && timeTaken <= props.card.time) {
+    // Add speed bonus if last time < MAX_TIME and current time <= last time
+    if (props.card.time < MAX_TIME && timeTaken <= props.card.time) {
       speedBonus = 1
     }
   }
@@ -142,7 +141,7 @@ function handleContinue() {
             data-cy="card-level"
           />
           <div
-            v-if="card.time < MAX_CARD_TIME"
+            v-if="card.time < MAX_TIME"
             class="text-caption text-weight-medium text-grey-7"
             data-cy="card-time"
           >
@@ -195,7 +194,7 @@ function handleContinue() {
         class="full-width q-mb-md"
         :disable="userAnswer === null || userAnswer === undefined || isButtonDisabled"
         icon="check"
-        :label="TEXT_DE.common.check"
+        :label="TEXT_DE.shared.common.check"
         data-cy="submit-answer-button"
         @click="submitAnswer"
       />
@@ -234,7 +233,7 @@ function handleContinue() {
       >
         <q-card-section class="text-center q-pa-md">
           <div class="text-h5 text-weight-bold text-positive">
-            {{ answerData.totalPoints }} {{ TEXT_DE.words.points }}
+            {{ answerData.totalPoints }} {{ TEXT_DE.shared.words.points }}
           </div>
           <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
             <span v-if="answerData.speedBonus > 0">
@@ -256,7 +255,9 @@ function handleContinue() {
         :color="answerData.isCorrect ? 'positive' : 'negative'"
         :disable="isButtonDisabled || isEnterDisabled"
         :label="
-          isButtonDisabled || isEnterDisabled ? `${TEXT_DE.common.wait}` : TEXT_DE.common.continue
+          isButtonDisabled || isEnterDisabled
+            ? `${TEXT_DE.shared.common.wait}`
+            : TEXT_DE.shared.common.continue
         "
         data-cy="continue-button"
         :icon="answerData.isCorrect ? 'check_circle' : 'cancel'"

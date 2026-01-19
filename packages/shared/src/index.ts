@@ -1,5 +1,5 @@
 // Main entry point for @flashcards/shared package
-export * from './utils/helper.js'
+export * from './utils/index.js'
 export * from './test-utils.js'
 export { TEXT_DE } from './text-de.js'
 export * from './types.js'

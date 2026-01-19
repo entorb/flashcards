@@ -17,7 +17,7 @@ export function formatDisplayQuestion(
 
   if (isSingleNumberSelected) {
     const selectedNum = selection[0]
-    const [x, y] = cardQuestion.split('x').map(Number)
+    const [x, y] = cardQuestion.split('x').map(s => Number.parseInt(s, 10))
 
     // If the selected number matches one of the operands, rearrange so it's last
     if (selectedNum === x || selectedNum === y) {

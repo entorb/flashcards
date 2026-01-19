@@ -30,17 +30,17 @@ onMounted(() => {
           class="q-mr-sm"
         />
         <div class="text-subtitle1 text-weight-medium">
-          {{ TEXT_DE.pwaInstall.title }}
+          {{ TEXT_DE.shared.pwa.install.title }}
         </div>
       </div>
       <div>
         <div class="q-mb-xs">
-          <strong>{{ TEXT_DE.pwaInstall.android }}</strong>
-          {{ TEXT_DE.pwaInstall.androidInstructions }}
+          <strong>{{ TEXT_DE.shared.pwa.install.android }}</strong>
+          {{ TEXT_DE.shared.pwa.install.androidInstructions }}
         </div>
         <div>
-          <strong>{{ TEXT_DE.pwaInstall.iPhone }}</strong>
-          {{ TEXT_DE.pwaInstall.iPhoneInstructions }}
+          <strong>{{ TEXT_DE.shared.pwa.install.iPhone }}</strong>
+          {{ TEXT_DE.shared.pwa.install.iPhoneInstructions }}
         </div>
       </div>
     </q-card-section>

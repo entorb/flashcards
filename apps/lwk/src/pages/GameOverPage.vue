@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@flashcards/shared'
 import { GameOverPage } from '@flashcards/shared/pages'
 
 import EisiMascot from '../components/EisiMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
-import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '../constants'
+import { BASE_PATH } from '../constants'
 import {
   clearGameResult,
   clearGameState,
   getGameResult,
   incrementDailyGames,
   saveHistory,
-  saveStats
+  saveGameStats
 } from '../services/storage'
 
 const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
@@ -23,7 +24,7 @@ const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
       clearGameResult,
       clearGameState,
       incrementDailyGames,
-      saveGameStats: saveStats,
+      saveGameStats,
       saveHistory
     }"
     :bonus-config="{

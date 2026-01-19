@@ -67,7 +67,7 @@ describe('FlashCard Component', () => {
     expect(wrapper.find('[data-cy="card-level"]').exists()).toBe(true)
   })
 
-  it('displays card time when below MAX_CARD_TIME', () => {
+  it('displays card time when below MAX_TIME', () => {
     const wrapper = mount(FlashCard, {
       props: {
         card: { ...mockCard, time: 5.0 },

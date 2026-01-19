@@ -1,9 +1,8 @@
 import type { FocusType } from '@flashcards/shared'
+import { LEVEL_BONUS_NUMERATOR } from '@flashcards/shared'
 import { weightedRandomSelection } from '@flashcards/shared/utils'
 
-import { parseCardQuestion } from './storage'
-
-import { LEVEL_BONUS_NUMERATOR } from '@/constants'
+import { parseCardQuestion } from '@/services/storage'
 import type { Card } from '@/types'
 
 /**

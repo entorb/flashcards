@@ -13,10 +13,10 @@ const emit = defineEmits<{
 }>()
 
 const focusOptions = [
-  { label: TEXT_DE.focusOptions.weak, value: 'weak' as const, icon: 'trending_down' },
-  { label: TEXT_DE.focusOptions.medium, value: 'medium' as const, icon: 'change_history' },
-  { label: TEXT_DE.focusOptions.strong, value: 'strong' as const, icon: 'trending_up' },
-  { label: TEXT_DE.focusOptions.slow, value: 'slow' as const, icon: 'schedule' }
+  { label: TEXT_DE.shared.focusOptions.weak, value: 'weak' as const, icon: 'trending_down' },
+  { label: TEXT_DE.shared.focusOptions.medium, value: 'medium' as const, icon: 'change_history' },
+  { label: TEXT_DE.shared.focusOptions.strong, value: 'strong' as const, icon: 'trending_up' },
+  { label: TEXT_DE.shared.focusOptions.slow, value: 'slow' as const, icon: 'schedule' }
 ]
 
 function handleFocusChange(value: FocusType) {
@@ -30,7 +30,7 @@ function handleFocusChange(value: FocusType) {
       v-if="!hideLabel"
       class="text-subtitle2 q-mb-xs"
     >
-      {{ TEXT_DE.words.focus }}
+      {{ TEXT_DE.shared.words.focus }}
     </div>
     <div class="row q-col-gutter-sm">
       <div

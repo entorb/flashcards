@@ -22,14 +22,6 @@ const {
 // Use shared timer logic
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
 
-onMounted(() => {
-  // Redirect home if there's no game in progress and no settings
-  // This handles the case where user accessed /game directly without starting a game
-  if (gameCards.value.length === 0 && !gameSettings.value) {
-    router.push({ name: '/' })
-  }
-})
-
 function handleAnswer(data: AnswerData) {
   stopTimer()
   storeHandleAnswer(data)
@@ -58,6 +50,11 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
+  // Redirect home if there's no game in progress and no settings
+  // This handles the case where user accessed /game directly without starting a game
+  if (gameCards.value.length === 0 && !gameSettings.value) {
+    router.push({ name: '/' })
+  }
   globalThis.addEventListener('keydown', handleKeyDown)
 })
 

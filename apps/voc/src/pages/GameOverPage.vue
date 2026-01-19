@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@flashcards/shared'
 import { GameOverPage } from '@flashcards/shared/pages'
 
 import FoxIcon from '../components/FoxMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
-import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '../constants'
+import { BASE_PATH } from '../constants'
 import {
   clearGameResult,
   clearGameState,
@@ -37,8 +38,8 @@ const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
   >
     <template #mascot="{ isHappy, isGrinning }">
       <FoxIcon
-        :is-happy="isHappy"
-        :is-grinning="isGrinning"
+        :smile="isHappy"
+        :grin="isGrinning"
         :size="150"
       />
     </template>

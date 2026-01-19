@@ -9,13 +9,13 @@ import type { DailyBonusConfig } from '../types'
 export const getFocusText = (focus: string): string => {
   switch (focus) {
     case 'weak':
-      return TEXT_DE.focusOptions.weak
+      return TEXT_DE.shared.focusOptions.weak
     case 'medium':
-      return TEXT_DE.focusOptions.medium
+      return TEXT_DE.shared.focusOptions.medium
     case 'strong':
-      return TEXT_DE.focusOptions.strong
+      return TEXT_DE.shared.focusOptions.strong
     default:
-      return TEXT_DE.focusOptions.slow
+      return TEXT_DE.shared.focusOptions.slow
   }
 }
 
@@ -73,14 +73,14 @@ export const calculateDailyBonuses = (
 
   if (dailyInfo.isFirstGame) {
     bonuses.push({
-      label: TEXT_DE.words.firstGameBonus,
+      label: TEXT_DE.shared.words.firstGameBonus,
       points: bonusConfig.firstGameBonus
     })
   }
 
   if (dailyInfo.gamesPlayedToday % bonusConfig.streakGameInterval === 0) {
     bonuses.push({
-      label: TEXT_DE.words.streakGameBonus,
+      label: TEXT_DE.shared.words.streakGameBonus,
       points: bonusConfig.streakGameBonus
     })
   }

@@ -32,7 +32,7 @@ const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     // Prompt user before reloading to avoid data loss
-    if (confirm(TEXT_DE.pwaUpdate.confirmMessage)) {
+    if (confirm(TEXT_DE.shared.pwa.update.confirmMessage)) {
       updateSW(true)
     }
   }

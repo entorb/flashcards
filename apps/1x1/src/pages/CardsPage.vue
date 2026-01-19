@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
+import {
+  TEXT_DE,
+  useCardFiltering,
+  useResetCards,
+  LEVEL_COLORS,
+  BG_COLORS,
+  MAX_TIME,
+  MIN_TIME
+} from '@flashcards/shared'
 import { LevelDistribution } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import {
-  BG_COLORS,
-  DEFAULT_RANGE,
-  LEVEL_COLORS,
-  MAX_CARD_TIME,
-  MIN_CARD_TIME,
-  TIME_COLOR_THRESHOLDS,
-  TIME_COLORS
-} from '@/constants'
+import { DEFAULT_RANGE, TIME_COLOR_THRESHOLDS, TIME_COLORS } from '@/constants'
 import {
   createDefaultCard,
   loadCards,
@@ -57,8 +57,8 @@ const sortedFilteredCards = computed(() => {
   const cards = [...filteredCards.value]
   cards.sort((a, b) => {
     // Parse question format "5x3" to get y=5, x=3
-    const [aY, aX] = a.question.split('x').map(Number)
-    const [bY, bX] = b.question.split('x').map(Number)
+    const [aY, aX] = a.question.split('x').map(s => Number.parseInt(s, 10))
+    const [bY, bX] = b.question.split('x').map(s => Number.parseInt(s, 10))
 
     // Sort by X first (column), then by Y (row)
     if (aX !== bX) return aX - bX
@@ -68,12 +68,12 @@ const sortedFilteredCards = computed(() => {
 })
 
 const minTime = computed(() => {
-  if (cardsInRange.value.length === 0) return MIN_CARD_TIME
-  return Math.max(MIN_CARD_TIME, Math.min(...cardsInRange.value.map(c => c.time)))
+  if (cardsInRange.value.length === 0) return MIN_TIME
+  return Math.max(MIN_TIME, Math.min(...cardsInRange.value.map(c => c.time)))
 })
 const maxTime = computed(() => {
-  if (cardsInRange.value.length === 0) return MAX_CARD_TIME
-  return Math.min(MAX_CARD_TIME, Math.max(...cardsInRange.value.map(c => c.time)))
+  if (cardsInRange.value.length === 0) return MAX_TIME
+  return Math.min(MAX_TIME, Math.max(...cardsInRange.value.map(c => c.time)))
 })
 
 // Get Y values to display based on current range
@@ -159,16 +159,22 @@ function goHome() {
     class="q-pa-md"
     style="max-width: 1200px; margin: 0 auto"
   >
-    <!-- Header -->
-    <div class="row items-center q-mb-md">
+    <!-- Header with back button -->
+    <div class="row items-center justify-between q-mb-md">
       <q-btn
         flat
         round
+        dense
         icon="arrow_back"
-        size="md"
         data-cy="back-button"
         @click="goHome"
-      />
+      >
+        <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
+      </q-btn>
+      <div class="text-h6">
+        {{ TEXT_DE.multiply.cards.title }}
+      </div>
+      <div style="width: 40px"></div>
     </div>
 
     <!-- Content -->
@@ -190,7 +196,9 @@ function goHome() {
         <q-card-section>
           <div class="row items-center justify-between q-mb-md">
             <div class="text-h6">
-              {{ TEXT_DE.words.level }} {{ selectedLevel }} ({{ sortedFilteredCards.length }})
+              {{ TEXT_DE.shared.words.level }} {{ selectedLevel }} ({{
+                sortedFilteredCards.length
+              }})
             </div>
           </div>
           <div style="overflow-y: auto">
@@ -228,7 +236,7 @@ function goHome() {
               name="grid_on"
               class="q-mr-xs"
             />
-            {{ TEXT_DE.words.cards }}
+            {{ TEXT_DE.shared.words.cards }}
           </div>
 
           <div class="cards-grid-container">
@@ -287,7 +295,7 @@ function goHome() {
                 size="18px"
                 class="q-mr-xs"
               />
-              {{ TEXT_DE.cards.legend }}
+              {{ TEXT_DE.shared.cards.legend }}
             </div>
             <div class="row q-col-gutter-sm">
               <div class="col-12 col-sm-6">
@@ -301,7 +309,7 @@ function goHome() {
                     size="16px"
                     class="q-mr-xs"
                   />
-                  <span class="text-caption">{{ TEXT_DE.cards.legendBackground }}</span>
+                  <span class="text-caption">{{ TEXT_DE.shared.cards.legendBackground }}</span>
                 </q-chip>
               </div>
               <div class="col-12 col-sm-6">
@@ -315,7 +323,7 @@ function goHome() {
                     size="16px"
                     class="q-mr-xs"
                   />
-                  <span class="text-caption">{{ TEXT_DE.cards.legendTextColor }}</span>
+                  <span class="text-caption">{{ TEXT_DE.shared.cards.legendTextColor }}</span>
                 </q-chip>
               </div>
             </div>

@@ -1,13 +1,11 @@
 import type { AnswerResult } from '@flashcards/shared'
+import { LEVEL_BONUS_NUMERATOR, MAX_TIME, SPEED_BONUS_POINTS } from '@flashcards/shared'
 
 import {
-  CLOSE_ANSWER_PENALTY,
+  CLOSE_MATCH_SCORE_PERCENTAGE,
   LANGUAGE_BONUS_DE_VOC,
-  LEVEL_BONUS_NUMERATOR,
-  MAX_TIME,
   MODE_MULTIPLIER_BLIND,
-  MODE_MULTIPLIER_TYPING,
-  SPEED_BONUS_POINTS
+  MODE_MULTIPLIER_TYPING
 } from '../constants'
 import type { Card, GameSettings, PointsBreakdown } from '../types'
 
@@ -46,7 +44,7 @@ export function calculatePointsBreakdown(
   // Apply close answer penalty (only for 'close' results)
   let closeAdjustment = 0
   if (result === 'close') {
-    pointsBeforeBonus = Math.round(pointsBeforeBonus * CLOSE_ANSWER_PENALTY)
+    pointsBeforeBonus = Math.round(pointsBeforeBonus * CLOSE_MATCH_SCORE_PERCENTAGE)
     closeAdjustment = pointsBeforeBonus - Math.round(basePoints * modeMultiplier)
   }
 
