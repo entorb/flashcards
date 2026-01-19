@@ -5,7 +5,7 @@ import {
   useFeedbackTimers,
   useKeyboardContinue
 } from '@flashcards/shared'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
@@ -35,9 +35,10 @@ const showFeedback = ref(false)
 const readyToStart = ref(false) // For hidden mode: waiting for user to click GO
 const showProceedButton = ref(false)
 const proceedCountdown = ref(0) // Countdown for auto-proceed after correct answer
+const totalCards = ref(0)
 
-let countdownInterval: ReturnType<typeof setInterval> | null = null
-let proceedCountdownInterval: ReturnType<typeof setInterval> | null = null
+let countdownInterval: number | null = null
+let proceedCountdownInterval: number | null = null
 
 // Use shared feedback timers for blocking proceed on wrong/close answers
 const { isButtonDisabled: isProceedDisabled, startButtonDisableTimer } = useFeedbackTimers()
@@ -55,9 +56,9 @@ const feedbackIcon = computed(() => {
 })
 
 const feedbackMessage = computed(() => {
-  if (answerStatus.value === 'correct') return TEXT_DE.common.correct
-  if (answerStatus.value === 'close') return TEXT_DE.common.closeMatch
-  return TEXT_DE.common.incorrect
+  if (answerStatus.value === 'correct') return TEXT_DE.shared.common.correct
+  if (answerStatus.value === 'close') return TEXT_DE.shared.common.closeMatch
+  return TEXT_DE.shared.common.incorrect
 })
 
 // Enable keyboard continue when feedback is shown and button is enabled
@@ -70,11 +71,20 @@ useKeyboardContinue(canProceed, proceedToNext)
 const canStart = computed(() => readyToStart.value && !showFeedback.value)
 useKeyboardContinue(canStart, startHiddenMode)
 
+// Handle Escape key
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    quitGame()
+  }
+}
+
 onMounted(() => {
   if (!currentCard.value) {
     router.push({ name: '/' })
     return
   }
+
+  totalCards.value = gameCards.value.length
 
   // Initialize based on mode
   if (gameSettings.value?.mode === 'copy') {
@@ -86,6 +96,20 @@ onMounted(() => {
     showWord.value = true
     readyToStart.value = true
   }
+
+  globalThis.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  // Clean up intervals
+  if (countdownInterval !== null) {
+    globalThis.clearInterval(countdownInterval)
+  }
+  if (proceedCountdownInterval !== null) {
+    globalThis.clearInterval(proceedCountdownInterval)
+  }
+  // Clean up keyboard listener
+  globalThis.removeEventListener('keydown', handleKeyDown)
 })
 
 function startHiddenMode() {
@@ -98,13 +122,13 @@ function startHiddenMode() {
 function showWordForDuration() {
   countdown.value = WORD_DISPLAY_DURATION
 
-  countdownInterval = setInterval(() => {
+  countdownInterval = globalThis.setInterval(() => {
     countdown.value--
     if (countdown.value <= 0) {
-      if (countdownInterval) clearInterval(countdownInterval)
+      if (countdownInterval !== null) globalThis.clearInterval(countdownInterval)
       startTime.value = Date.now()
     }
-  }, 1000)
+  }, 1000) as unknown as number
 }
 
 function submitAnswer() {
@@ -145,15 +169,19 @@ function submitAnswer() {
   if (resultType === 'correct') {
     // For correct answers: show countdown and auto-advance after 3 seconds
     proceedCountdown.value = 3
-    if (proceedCountdownInterval) clearInterval(proceedCountdownInterval)
+    if (proceedCountdownInterval !== null) {
+      globalThis.clearInterval(proceedCountdownInterval)
+    }
 
-    proceedCountdownInterval = setInterval(() => {
+    proceedCountdownInterval = globalThis.setInterval(() => {
       proceedCountdown.value--
       if (proceedCountdown.value <= 0) {
-        if (proceedCountdownInterval) clearInterval(proceedCountdownInterval)
+        if (proceedCountdownInterval !== null) {
+          globalThis.clearInterval(proceedCountdownInterval)
+        }
         proceedToNext()
       }
-    }, 1000)
+    }, 1000) as unknown as number
   } else {
     // For incorrect/close answers: disable button for 3 seconds
     startButtonDisableTimer()
@@ -162,8 +190,8 @@ function submitAnswer() {
 
 function proceedToNext() {
   // Clear any active countdown intervals
-  if (proceedCountdownInterval) {
-    clearInterval(proceedCountdownInterval)
+  if (proceedCountdownInterval !== null) {
+    globalThis.clearInterval(proceedCountdownInterval)
     proceedCountdownInterval = null
   }
 
@@ -175,24 +203,25 @@ function proceedToNext() {
   userInput.value = ''
   isSubmitting.value = false
 
-  if (currentCardIndex.value >= gameCards.value.length - 1) {
+  if (currentCardIndex.value + 1 >= totalCards.value) {
     finishGame()
     router.push({ name: '/game-over' })
-  } else {
-    nextCard()
+    return
+  }
 
-    // Prepare for next word based on mode
-    if (gameSettings.value?.mode === 'copy') {
-      showWord.value = true
-      startTime.value = Date.now()
-    } else {
-      // Hidden mode: show word and wait for user to click GO again
-      showWord.value = true
-      // Delay setting readyToStart to avoid Enter key triggering startHiddenMode
-      setTimeout(() => {
-        readyToStart.value = true
-      }, 150)
-    }
+  nextCard()
+
+  // Prepare for next word based on mode
+  if (gameSettings.value?.mode === 'copy') {
+    showWord.value = true
+    startTime.value = Date.now()
+  } else {
+    // Hidden mode: show word and wait for user to click GO again
+    showWord.value = true
+    // Delay setting readyToStart to avoid Enter key triggering startHiddenMode
+    setTimeout(() => {
+      readyToStart.value = true
+    }, 150)
   }
 }
 
@@ -208,8 +237,8 @@ function quitGame() {
       <q-btn
         flat
         round
-        dense
-        icon="close"
+        icon="arrow_back"
+        size="md"
         data-cy="quit-button"
         @click="quitGame"
       />
@@ -265,7 +294,7 @@ function quitGame() {
             v-if="!showFeedback && !readyToStart && countdown === 0"
             v-model="userInput"
             autofocus
-            :placeholder="TEXT_DE.common.typePlaceholder"
+            :placeholder="TEXT_DE.shared.common.typePlaceholder"
             outlined
             class="q-mt-md"
             data-cy="spelling-input"
@@ -338,7 +367,7 @@ function quitGame() {
             class="text-h6 text-weight-bold"
             :class="`text-${feedbackColor}`"
           >
-            +{{ earnedPoints }} {{ TEXT_DE.words.points }}
+            +{{ earnedPoints }} {{ TEXT_DE.shared.words.points }}
           </div>
         </q-card-section>
       </q-card>
@@ -399,10 +428,10 @@ function quitGame() {
         @click="proceedToNext"
       >
         <span v-if="isProceedDisabled">
-          {{ TEXT_DE.common.wait }}
+          {{ TEXT_DE.shared.common.wait }}
         </span>
         <span v-else>
-          {{ TEXT_DE.common.continue }}
+          {{ TEXT_DE.shared.common.continue }}
         </span>
       </q-btn>
     </div>

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useGameTimer } from '@flashcards/shared'
+import { useGameTimer, MAX_TIME } from '@flashcards/shared'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import FlashCard from '../components/FlashCard.vue'
 import { useGameStore } from '../composables/useGameStore'
-import { MAX_TIME } from '../constants'
 import type { AnswerData } from '../types'
 
 const router = useRouter()

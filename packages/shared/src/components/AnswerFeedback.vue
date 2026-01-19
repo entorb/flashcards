@@ -117,7 +117,7 @@ function getColor(status: FeedbackStatus): string {
     >
       <q-btn
         :color="getColor(status)"
-        :label="isButtonDisabled ? TEXT_DE.common.wait : TEXT_DE.common.continue"
+        :label="isButtonDisabled ? TEXT_DE.shared.common.wait : TEXT_DE.shared.common.continue"
         size="lg"
         unelevated
         class="full-width text-weight-medium"

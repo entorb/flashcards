@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@flashcards/shared'
 import { GameOverPage } from '@flashcards/shared/pages'
 
 import GroundhogMascot from '@/components/GroundhogMascot.vue'
 import { useGameStore } from '@/composables/useGameStore'
-import { BASE_PATH, FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@/constants'
+import { BASE_PATH } from '@/constants'
 import {
   clearGameResult,
   clearGameState,
@@ -39,7 +40,7 @@ const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
       <GroundhogMascot
         :smile="isHappy"
         :grin="isGrinning"
-        style="width: 150px; height: 150px"
+        :size="150"
       />
     </template>
   </GameOverPage>

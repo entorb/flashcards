@@ -17,8 +17,8 @@ function getModeText(mode: string): string {
 
 function formatDetails(game: GameHistory): string {
   const mode = getModeText(game.settings.mode)
-  const focus = `${TEXT_DE.words.focus}: ${getFocusText(game.settings.focus)}`
-  const deck = game.settings.deck ? `${TEXT_DE.words.deck}: ${game.settings.deck}` : ''
+  const focus = `${TEXT_DE.shared.words.focus}: ${getFocusText(game.settings.focus)}`
+  const deck = game.settings.deck ? `${TEXT_DE.shared.words.deck}: ${game.settings.deck}` : ''
   const parts = [deck, mode, focus]
   return parts.filter(Boolean).join(' | ')
 }

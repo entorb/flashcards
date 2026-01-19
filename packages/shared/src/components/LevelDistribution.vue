@@ -37,14 +37,14 @@ function handleReset() {
             name="bar_chart"
             class="q-mr-sm"
           />
-          {{ TEXT_DE.cards.cardsPerLevel }}
+          {{ TEXT_DE.shared.cards.cardsPerLevel }}
         </div>
         <q-btn
           flat
           dense
           color="negative"
           icon="refresh"
-          :label="TEXT_DE.common.reset"
+          :label="TEXT_DE.shared.common.reset"
           size="sm"
           data-cy="reset-levels-button"
           @click="handleReset"
@@ -72,7 +72,9 @@ function handleReset() {
             @click="emit('levelClick', level)"
           >
             <q-card-section class="text-center q-pa-sm">
-              <div class="text-caption text-grey-8">{{ TEXT_DE.words.level }} {{ level }}</div>
+              <div class="text-caption text-grey-8">
+                {{ TEXT_DE.shared.words.level }} {{ level }}
+              </div>
               <div class="text-h5 text-weight-bold text-grey-9">
                 {{ getCardCountByLevel(level) }}
               </div>

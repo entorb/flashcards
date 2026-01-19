@@ -4,9 +4,10 @@
  */
 
 import type { FocusType } from '@flashcards/shared'
+import { LEVEL_BONUS_NUMERATOR } from '@flashcards/shared'
 import { shuffleArray, weightedRandomSelection } from '@flashcards/shared/utils'
 
-import { LEVEL_BONUS_NUMERATOR, MAX_CARDS_PER_GAME } from '../constants'
+import { MAX_CARDS_PER_GAME } from '../constants'
 import type { Card, GameMode } from '../types'
 
 /**

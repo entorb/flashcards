@@ -144,7 +144,7 @@ function goToInfo() {
         data-cy="info-button"
         @click="goToInfo"
       >
-        <q-tooltip>{{ TEXT_DE.nav.infoTooltip }}</q-tooltip>
+        <q-tooltip>{{ TEXT_DE.shared.nav.infoTooltip }}</q-tooltip>
       </q-btn>
     </div>
 
@@ -195,7 +195,7 @@ function goToInfo() {
               side
               style="min-width: 100px"
             >
-              <div class="text-subtitle2">{{ TEXT_DE.words.mode }}</div>
+              <div class="text-subtitle2">{{ TEXT_DE.shared.words.mode }}</div>
             </q-item-section>
             <q-item-section>
               <div class="row q-gutter-xs">
@@ -223,7 +223,7 @@ function goToInfo() {
               side
               style="min-width: 100px"
             >
-              <div class="text-subtitle2">{{ TEXT_DE.words.direction }}</div>
+              <div class="text-subtitle2">{{ TEXT_DE.shared.words.direction }}</div>
             </q-item-section>
             <q-item-section>
               <q-btn-toggle
@@ -242,7 +242,7 @@ function goToInfo() {
               side
               style="min-width: 100px"
             >
-              <div class="text-subtitle2">{{ TEXT_DE.words.focus }}</div>
+              <div class="text-subtitle2">{{ TEXT_DE.shared.words.focus }}</div>
             </q-item-section>
             <q-item-section>
               <FocusSelector
@@ -264,7 +264,7 @@ function goToInfo() {
       data-cy="start-button"
       @click="startGame"
     >
-      <span class="text-body1">{{ TEXT_DE.common.start }}</span>
+      <span class="text-body1">{{ TEXT_DE.shared.common.start }}</span>
     </q-btn>
 
     <!-- Navigation Buttons -->
@@ -275,7 +275,7 @@ function goToInfo() {
         size="md"
         class="col"
         icon="layers"
-        :label="TEXT_DE.nav.cards"
+        :label="TEXT_DE.shared.nav.cards"
         data-cy="cards-button"
         @click="goToCards"
       />
@@ -285,7 +285,7 @@ function goToInfo() {
         size="md"
         class="col"
         icon="history"
-        :label="TEXT_DE.nav.history"
+        :label="TEXT_DE.shared.nav.history"
         data-cy="history-button"
         @click="goToHistory"
       />

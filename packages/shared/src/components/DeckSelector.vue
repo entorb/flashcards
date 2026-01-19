@@ -1,23 +1,38 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+  generic="T extends { name: string; cards: unknown[] }, S extends { deck?: string }"
+>
 import { onMounted, ref } from 'vue'
 
-import { useGameStore } from '../composables/useGameStore'
-import { loadLastSettings, saveLastSettings } from '../services/storage'
+export interface DeckSelectorProps<
+  T extends { name: string; cards: unknown[] },
+  S extends { deck?: string }
+> {
+  getDecks: () => T[]
+  switchDeck: (deckName: string) => void
+  loadLastSettings: () => S | null
+  saveLastSettings: (settings: S) => void
+}
 
-const { getDecks, switchDeck } = useGameStore()
+const props = defineProps<DeckSelectorProps<T, S>>()
 
-const currentDeck = ref<string>('en')
+const currentDeck = ref<string>('')
 const deckOptions = ref<{ label: string; value: string }[]>([])
 
 onMounted(() => {
+  loadDecksAndSettings()
+})
+
+function loadDecksAndSettings() {
   // Load current deck from settings
-  const settings = loadLastSettings()
+  const settings = props.loadLastSettings()
   if (settings?.deck) {
     currentDeck.value = settings.deck
   }
 
   // Load deck options
-  const decks = getDecks()
+  const decks = props.getDecks()
   deckOptions.value = decks.map(deck => ({
     label: deck.name,
     value: deck.name
@@ -28,33 +43,23 @@ onMounted(() => {
   if (!deckExists && decks.length > 0) {
     handleDeckChange(decks[0].name)
   }
-})
+}
 
 function handleDeckChange(deckName: string) {
   currentDeck.value = deckName
-  switchDeck(deckName)
+  props.switchDeck(deckName)
 
   // Update settings
-  const settings = loadLastSettings()
+  const settings = props.loadLastSettings()
   if (settings) {
-    settings.deck = deckName
-    saveLastSettings(settings)
+    const updatedSettings = { ...settings, deck: deckName }
+    props.saveLastSettings(updatedSettings)
   }
 }
 
 // Expose refresh method for parent components
 function refresh() {
-  const decks = getDecks()
-  deckOptions.value = decks.map(deck => ({
-    label: deck.name,
-    value: deck.name
-  }))
-
-  // Check if current deck still exists
-  const deckExists = decks.some(d => d.name === currentDeck.value)
-  if (!deckExists && decks.length > 0) {
-    handleDeckChange(decks[0].name)
-  }
+  loadDecksAndSettings()
 }
 
 defineExpose({ refresh })

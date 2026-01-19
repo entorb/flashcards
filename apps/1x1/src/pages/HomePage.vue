@@ -154,7 +154,7 @@ function toggleSquares() {
         data-cy="info-button"
         @click="goToInfo"
       >
-        <q-tooltip>{{ TEXT_DE.nav.infoTooltip }}</q-tooltip>
+        <q-tooltip>{{ TEXT_DE.shared.nav.infoTooltip }}</q-tooltip>
       </q-btn>
     </div>
 
@@ -226,7 +226,7 @@ function toggleSquares() {
       data-cy="start-button"
       @click="startGame"
     >
-      <span class="text-body1">{{ TEXT_DE.common.start }}</span>
+      <span class="text-body1">{{ TEXT_DE.shared.common.start }}</span>
     </q-btn>
 
     <!-- Navigation Buttons -->
@@ -237,7 +237,7 @@ function toggleSquares() {
         size="md"
         class="col"
         icon="layers"
-        :label="TEXT_DE.nav.cards"
+        :label="TEXT_DE.shared.nav.cards"
         data-cy="cards-button"
         @click="goToCards"
       />
@@ -247,7 +247,7 @@ function toggleSquares() {
         size="md"
         class="col"
         icon="history"
-        :label="TEXT_DE.nav.history"
+        :label="TEXT_DE.shared.nav.history"
         data-cy="history-button"
         @click="goToHistory"
       />
