@@ -120,6 +120,7 @@ const statsOps = createStatsOperations(STORAGE_KEYS.STATS, DEFAULT_STATS)
 
 export const loadStats = statsOps.load
 export const saveStats = statsOps.save
+export const saveGameStats = statsOps.save // Alias for consistency with other apps
 export const updateStats = statsOps.update
 
 // ============================================================================

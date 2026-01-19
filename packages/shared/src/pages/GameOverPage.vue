@@ -63,8 +63,23 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
+function hasTotalCards(entry: BaseGameHistory): entry is BaseGameHistory & { totalCards: number } {
+  return 'totalCards' in entry && typeof entry.totalCards === 'number'
+}
+
 onMounted(async () => {
   result.value = props.storageFunctions.getGameResult()
+
+  if (!result.value && props.gameStoreHistory.length > 0) {
+    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
+    if (hasTotalCards(lastEntry)) {
+      result.value = {
+        points: lastEntry.points,
+        correctAnswers: lastEntry.correctAnswers,
+        totalCards: lastEntry.totalCards
+      }
+    }
+  }
 
   // No result found, redirect to home
   if (!result.value) {
@@ -172,7 +187,7 @@ function goHome() {
                 name="star"
                 color="amber"
               />
-              {{ TEXT_DE.words.bonusPoints }}
+              {{ TEXT_DE.shared.words.bonusPoints }}
             </div>
             <div
               v-for="(reason, index) in bonusReasons"
@@ -203,7 +218,7 @@ function goHome() {
         size="lg"
         class="full-width q-mt-lg"
         icon="home"
-        :label="TEXT_DE.nav.backToHome"
+        :label="TEXT_DE.shared.nav.backToHome"
         unelevated
         data-cy="back-to-home-button"
         @click="goHome"

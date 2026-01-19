@@ -72,7 +72,7 @@ function goHome() {
         class="text-h5 q-ml-sm text-weight-bold text-grey-8"
         data-cy="history-page-title"
       >
-        {{ TEXT_DE.nav.history }}
+        {{ TEXT_DE.shared.nav.history }}
       </div>
     </div>
 

@@ -1,8 +1,8 @@
-import { levenshteinDistance } from '@flashcards/shared'
+import { levenshteinDistance, DEFAULT_TIME } from '@flashcards/shared'
 
+import { LEVENSHTEIN_THRESHOLD } from '../constants'
 import type { Card } from '../types'
 
-import { DEFAULT_TIME, LEVENSHTEIN_THRESHOLD } from '@/constants'
 
 /**
  * Normalize a string for comparison (lowercase, trim)

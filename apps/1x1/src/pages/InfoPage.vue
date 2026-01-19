@@ -38,12 +38,12 @@ onUnmounted(() => {
         data-cy="back-button"
         @click="handleGoBack"
       >
-        <q-tooltip>{{ TEXT_DE.nav.backToHome }}</q-tooltip>
+        <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
       </q-btn>
       <q-toolbar-title
         class="text-center"
         data-cy="info-page-title"
-        >{{ TEXT_DE.multiply.info.title }}</q-toolbar-title
+        >{{ TEXT_DE.shared.scoring.title }}</q-toolbar-title
       >
       <q-btn
         flat
@@ -66,50 +66,50 @@ onUnmounted(() => {
 
       <div>
         <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
-          {{ TEXT_DE.multiply.info.basePointsTitle }}
+          {{ TEXT_DE.shared.scoring.basePointsTitle }}
         </h3>
         <p>
-          {{ TEXT_DE.multiply.info.basePointsDescription }}
+          {{ TEXT_DE.shared.scoring.basePointsDescription }}
         </p>
         <ul class="q-pl-md q-mt-sm">
           <li>
-            <strong class="text-primary">{{ TEXT_DE.multiply.info.basePointsLevel1 }}</strong>
+            <strong class="text-primary">{{ TEXT_DE.shared.scoring.basePointsLevel1 }}</strong>
           </li>
           <li>
-            <strong class="text-primary">{{ TEXT_DE.multiply.info.basePointsLevel2 }}</strong>
+            <strong class="text-primary">{{ TEXT_DE.shared.scoring.basePointsLevel2 }}</strong>
           </li>
           <li>
-            <strong class="text-primary">{{ TEXT_DE.multiply.info.basePointsLevel3 }}</strong>
+            <strong class="text-primary">{{ TEXT_DE.shared.scoring.basePointsLevel3 }}</strong>
           </li>
           <li>
-            <strong class="text-primary">{{ TEXT_DE.multiply.info.basePointsLevel4 }}</strong>
+            <strong class="text-primary">{{ TEXT_DE.shared.scoring.basePointsLevel4 }}</strong>
           </li>
           <li>
-            <strong class="text-primary">{{ TEXT_DE.multiply.info.basePointsLevel5 }}</strong>
+            <strong class="text-primary">{{ TEXT_DE.shared.scoring.basePointsLevel5 }}</strong>
           </li>
         </ul>
       </div>
 
       <div>
         <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
-          {{ TEXT_DE.multiply.info.dailyBonusesTitle }}
+          {{ TEXT_DE.shared.scoring.dailyBonusesTitle }}
         </h3>
         <ul class="q-pl-md">
           <li class="q-mb-sm">
-            <strong class="text-positive">{{ TEXT_DE.multiply.info.dailyBonusFirstGame }}</strong>
+            <strong class="text-positive">{{ TEXT_DE.shared.scoring.dailyBonusFirstGame }}</strong>
           </li>
           <li>
-            <strong class="text-positive">{{ TEXT_DE.multiply.info.dailyBonusStreak }}</strong>
+            <strong class="text-positive">{{ TEXT_DE.shared.scoring.dailyBonusStreak }}</strong>
           </li>
         </ul>
       </div>
 
       <div>
         <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
-          {{ TEXT_DE.multiply.info.speedBonusTitle }}
+          {{ TEXT_DE.shared.scoring.speedBonusTitle }}
         </h3>
         <p>
-          <strong class="text-positive">{{ TEXT_DE.multiply.info.speedBonusDescription }}</strong>
+          <strong class="text-positive">{{ TEXT_DE.shared.scoring.speedBonusDescription }}</strong>
         </p>
       </div>
     </div>
