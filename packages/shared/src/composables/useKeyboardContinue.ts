@@ -11,6 +11,12 @@ import { onMounted, onUnmounted, type Ref } from 'vue'
  */
 export function useKeyboardContinue(canProceed: Ref<boolean>, onContinue: () => void) {
   function handleKeyDown(event: KeyboardEvent) {
+    // Don't trigger if user is typing in an input field
+    const target = event.target as HTMLElement
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+      return
+    }
+
     if (event.key === 'Enter' && canProceed.value) {
       event.preventDefault()
       onContinue()
