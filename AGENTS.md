@@ -1,16 +1,17 @@
 # Flashcards Monorepo
 
-**pnpm workspace** with two Vue.js/Quasar educational apps sharing common code.
+**pnpm workspace** with three Vue.js/Quasar educational apps sharing common code.
 
-- **[apps/1x1](apps/1x1/CLAUDE.md)** - Multiplication practice (28+ cards, 5-level adaptive)
-- **[apps/voc](apps/voc/CLAUDE.md)** - Vocabulary learning (custom decks, 3 modes)
-- **[packages/shared](packages/shared/CLAUDE.md)** - Shared types, components, composables
+- **[apps/1x1](apps/1x1/AGENTS.md)**
+- **[apps/voc](apps/voc/AGENTS.md)**
+- **[apps/lwk](apps/lwk/AGENTS.md)**
+- **[packages/shared](packages/shared/AGENTS.md)**
 
 ## Workflow Rules
 
 - ❌ No commits (propose to user)
 - ✅ Run `pnpm run check` after changes (format, lint, types, spell, tests)
-- ✅ Run `pnpm run cy:run:1x1` and `pnpm run cy:run:voc` after phases
+- ✅ Run `pnpm run cy:run:1x1` / `pnpm run cy:run:voc` / `pnpm run cy:run:lwk` after phases
 - ✅ All text in `@flashcards/shared/src/text-de.ts`
 - ✅ Unit tests: `.spec.ts` suffix, import functions (don't copy)
 - ✅ E2E tests: `data-cy` locators (not text/ids)
@@ -46,10 +47,6 @@
 <!-- eslint-enable vuejs-accessibility/no-autofocus -->
 ```
 
-## Tech Stack
-
-Vue 3 (Composition API), Quasar, TypeScript (strict), Vite 6.x, Vitest, Cypress, ESLint, Prettier, pnpm workspaces, PWA
-
 ## Key Files
 
 | Category        | Location                                              | Purpose                           |
@@ -69,32 +66,13 @@ Vue 3 (Composition API), Quasar, TypeScript (strict), Vite 6.x, Vitest, Cypress,
 flashcards/
 ├── apps/
 │   ├── 1x1/              # Port 5173/4173
-│   └── voc/              # Port 5174/4174
+│   ├── voc/              # Port 5174/4174
+│   └── lwk/              # Port 5175/4175
 ├── packages/shared/       # Workspace package
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json     # Shared TS config
 ├── vite.config.base.ts    # Shared Vite config
 └── vitest.config.base.ts  # Shared Vitest config
-```
-
-## Essential Commands
-
-```bash
-# Development
-pnpm dev              # Both apps
-pnpm dev:1x1          # Single app
-pnpm dev:voc
-
-# Quality checks (runs all: format, lint, types, spell, test)
-pnpm run check
-
-# E2E tests
-pnpm run cy:run:1x1
-pnpm run cy:run:voc
-
-# Build
-pnpm build            # All apps (with type check)
-pnpm build:1x1
 ```
 
 ## Configuration Patterns
@@ -104,11 +82,6 @@ pnpm build:1x1
 - TypeScript: `tsconfig.base.json` → apps extend with paths
 - Vite: `vite.config.base.ts` → apps merge with `mergeConfig()`
 - Vitest: `vitest.config.base.ts` → apps call `getVitestConfig(rootDir)`
-
-**Port Assignment:**
-
-- 1x1: Dev 5173, Preview 4173 (Vite defaults)
-- voc: Dev 5174, Preview 4174 (incremented)
 
 ## Shared Package Import Patterns
 
@@ -132,29 +105,11 @@ import { HistoryPage, GameOverPage } from '@flashcards/shared/pages'
 3. **Use vitest workspace config** → Causes path resolution failures. Use per-app configs.
 4. **Use `registerType: 'autoUpdate'` in PWA** → Returns undefined. Use `'prompt'`.
 
-### ✅ Storage Key Pattern
-
-Apps use prefixes to avoid collisions:
-
-```typescript
-// 1x1 app
-;('1x1-cards', '1x1-history', '1x1-stats', '1x1-game-config', '1x1-game-result', '1x1-daily-stats')
-
-// voc app
-;('voc-cards', 'voc-history', 'voc-stats', 'voc-last-settings', 'voc-daily-stats')
-```
-
 ### ✅ BASE_PATH Pattern
 
-Each app defines `BASE_PATH` in `src/constants.ts`:
+Each app defines `BASE_PATH` in `src/constants.ts` AND `vite.config.ts`:
 
-```typescript
-export const BASE_PATH = 'fc-1x1' // or 'fc-voc', 'fc-lwk'
-```
-
-Used for: router base, Cypress baseUrl, DB collection names
-
-**Critical:** Must be **hardcoded separately** in `vite.config.ts` (ESM issue).
+Used for: router base, Cypress baseUrl, DB usage-stats
 
 ## End-of-Game Flow (Critical Pattern)
 
@@ -216,9 +171,3 @@ API fetch:
 ```bash
 curl "https://sonarcloud.io/api/issues/search?componentKeys=entorb_flashcards&ps=500" | jq '.'
 ```
-
-## See Also
-
-- **[apps/1x1/CLAUDE.md](apps/1x1/CLAUDE.md)** - Multiplication app details
-- **[apps/voc/CLAUDE.md](apps/voc/CLAUDE.md)** - Vocabulary app details
-- **[packages/shared/CLAUDE.md](packages/shared/CLAUDE.md)** - Shared code details
