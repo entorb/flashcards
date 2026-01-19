@@ -133,8 +133,8 @@ function getLevelColor(level: number): string {
     </q-banner>
 
     <div class="q-gutter-md">
-      <!-- Deck Selection - Prominent -->
-      <q-card class="q-mb-md deck-selector-card">
+      <!-- Deck Selection -->
+      <q-card class="q-mb-md">
         <q-card-section>
           <div class="text-h6 q-mb-md">
             <q-icon
@@ -151,7 +151,7 @@ function getLevelColor(level: number): string {
               outline
               color="primary"
               icon="edit"
-              :label="TEXT_DE.voc.decks.editDecksButton"
+              :label="TEXT_DE.cards.edit"
               no-caps
               data-cy="edit-decks-button"
               @click="handleEditDecks"
@@ -160,12 +160,12 @@ function getLevelColor(level: number): string {
         </q-card-section>
       </q-card>
 
-      <!-- Card Management Actions -->
+      <!-- Card Management -->
       <q-card>
         <q-card-section>
           <div class="text-h6 q-mb-md">
             <q-icon
-              name="edit"
+              name="collections_bookmark"
               class="q-mr-sm"
             />
             {{ TEXT_DE.voc.cards.editCardsTitle }}
@@ -174,7 +174,7 @@ function getLevelColor(level: number): string {
             outline
             color="primary"
             icon="edit"
-            :label="TEXT_DE.voc.cards.editCardsButton"
+            :label="TEXT_DE.cards.edit"
             no-caps
             class="full-width"
             data-cy="edit-cards-button"

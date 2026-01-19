@@ -1,14 +1,10 @@
 // cspell:disable
 import { describe, expect, it } from 'vitest'
 
+import { levenshteinDistance } from '@flashcards/shared'
 import { DEFAULT_TIME } from '../constants'
 
-import {
-  levenshteinDistance,
-  normalizeString,
-  parseCardsFromText,
-  validateTypingAnswer
-} from './helpers'
+import { normalizeString, parseCardsFromText, validateTypingAnswer } from './helpers'
 
 /**
  * Unit tests for helpers utility functions
