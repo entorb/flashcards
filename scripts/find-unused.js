@@ -43,16 +43,13 @@ function extractConstants(filePath, appName) {
 
   while ((match = exportRegex.exec(fileContent)) !== null) {
     const name = match[1]
-    // Skip BASE_PATH and STATS_DB_COL as they're special
-    if (name !== 'BASE_PATH' && name !== 'STATS_DB_COL') {
-      constants.push({
-        key: name,
-        fullKey: name,
-        type: 'constant',
-        app: appName,
-        file: filePath
-      })
-    }
+    constants.push({
+      key: name,
+      fullKey: name,
+      type: 'constant',
+      app: appName,
+      file: filePath
+    })
   }
 
   // Also match re-exports: export { ... } from '@flashcards/shared'
@@ -64,15 +61,13 @@ function extractConstants(filePath, appName) {
     })
 
     for (const name of reexports) {
-      if (name && name !== 'BASE_PATH' && name !== 'STATS_DB_COL') {
-        constants.push({
-          key: name,
-          fullKey: name,
-          type: 'constant',
-          app: appName,
-          file: filePath
-        })
-      }
+      constants.push({
+        key: name,
+        fullKey: name,
+        type: 'constant',
+        app: appName,
+        file: filePath
+      })
     }
   }
 
