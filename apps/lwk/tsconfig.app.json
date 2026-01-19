@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@flashcards/shared": ["../../packages/shared/src/index.ts"],
+      "@flashcards/shared/components": ["../../packages/shared/src/components/index.ts"],
+      "@flashcards/shared/layouts": ["../../packages/shared/src/layouts/index.ts"],
+      "@flashcards/shared/pages": ["../../packages/shared/src/pages/index.ts"],
+      "@flashcards/shared/utils": ["../../packages/shared/src/utils/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "src/**/*.vue"],
+  "exclude": [],
+  "references": [{ "path": "../../packages/shared" }]
+}
