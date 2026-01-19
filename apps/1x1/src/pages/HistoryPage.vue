@@ -29,7 +29,7 @@ function formatSelection(select: number[] | string): string {
 
 function formatDetails(game: GameHistory): string {
   const selection = `${TEXT_DE.multiply.selection}: ${formatSelection(game.settings.select)}`
-  const focus = `${TEXT_DE.words.focus}: ${getFocusText(game.settings.focus)}`
+  const focus = `${TEXT_DE.shared.words.focus}: ${getFocusText(game.settings.focus)}`
   return `${selection} | ${focus}`
 }
 

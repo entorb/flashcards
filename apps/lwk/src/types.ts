@@ -40,6 +40,7 @@ export interface GameSettings {
 
 export interface GameHistory extends BaseGameHistory {
   settings: GameSettings
+  totalCards?: number
 }
 
 // Game State (extends shared GameState)

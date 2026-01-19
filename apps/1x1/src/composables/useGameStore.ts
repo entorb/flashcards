@@ -1,7 +1,7 @@
-import { createBaseGameStore } from '@flashcards/shared'
+import { createBaseGameStore, MAX_LEVEL, MIN_LEVEL } from '@flashcards/shared'
 import { computed, watch } from 'vue'
 
-import { MAX_CARD_LEVEL, MAX_CARDS_PER_GAME, MIN_CARD_LEVEL } from '@/constants'
+import { MAX_CARDS_PER_GAME } from '@/constants'
 import {
   filterCardsAll,
   filterCardsBySelection,
@@ -138,13 +138,13 @@ export function useGameStore() {
       baseStore.points.value += data.totalPoints
       baseStore.correctAnswersCount.value++
 
-      const newLevel = Math.min(card.level + 1, MAX_CARD_LEVEL)
+      const newLevel = Math.min(card.level + 1, MAX_LEVEL)
       storageUpdateCard(card.question, {
         level: newLevel,
         time: data.timeTaken
       })
     } else {
-      const newLevel = Math.max(card.level - 1, MIN_CARD_LEVEL)
+      const newLevel = Math.max(card.level - 1, MIN_LEVEL)
       storageUpdateCard(card.question, {
         level: newLevel
       })
