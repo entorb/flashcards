@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Migration - Wortspiel</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #1976d2;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>🔄 Migration</h1>
+    <div class="spinner"></div>
+    <!-- cspell:disable-next-line -->
+
+    <p>Das Wortspiel wurde verschoben.</p>
+    <!-- cspell:disable-next-line -->
+
+    <p>Deine Daten werden migriert und du wirst weitergeleitet...</p>
+    <script type="module">
+      // Migration script
+      const newUrl = '/fc-voc/'
+
+      console.log('Starting migration from /voc/ to /fc-voc/')
+
+      // 1. Unregister ALL service workers (not just voc scope)
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations()
+          console.log('Found', registrations.length, 'service worker(s)')
+          for (const registration of registrations) {
+            console.log('Unregistering service worker:', registration.scope)
+            await registration.unregister()
+          }
+        } catch (error) {
+          console.error('Failed to unregister service worker:', error)
+        }
+      }
+
+      // 2. Clear ALL cache storage (aggressive cleanup)
+      if ('caches' in globalThis) {
+        try {
+          const cacheNames = await caches.keys()
+          console.log('Found', cacheNames.length, 'cache(s)')
+          for (const cacheName of cacheNames) {
+            console.log('Deleting cache:', cacheName)
+            await caches.delete(cacheName)
+          }
+        } catch (error) {
+          console.error('Failed to clear cache:', error)
+        }
+      }
+
+      // 3. Redirect to new URL (use replace for better PWA navigation)
+      setTimeout(() => {
+        globalThis.location.replace(newUrl)
+      }, 2000)
+    </script>
+  </body>
+</html>
