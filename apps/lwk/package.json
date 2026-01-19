@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "vite build",
+    "check": "run-p format lint types spell test",
     "cy:open": "cypress open --e2e",
     "cy:run": "cypress run --e2e --quiet",
     "dev": "vite",
@@ -16,12 +17,9 @@
     "preview": "vite preview",
     "run": "run-s build preview",
     "spell": "cspell --cache --quiet \"src/**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",
-    "spell:store": "cspell --cache --quiet --words-only --unique \"src/**/*.{txt,md,html,js,ts,vue,json,yml,py}\" > cspell-unknown-words.txt",
-    "test": "vitest --watch=false",
     "test:cov": "vitest --watch=false --coverage",
-    "test:watch": "vitest --watch=true",
-    "types": "vue-tsc --build",
-    "check": "run-p format lint types spell test"
+    "test": "vitest --watch=false",
+    "types": "vue-tsc --build"
   },
   "dependencies": {
     "@flashcards/shared": "workspace:*",
