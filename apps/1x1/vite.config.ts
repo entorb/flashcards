@@ -12,7 +12,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { baseViteConfig } from '../../vite.config.base'
 
 // Hardcoded constants to avoid Node.js ESM resolution issues in vite.config
-const BASE_PATH = '1x1'
+const BASE_PATH = 'fc-1x1'
 const APP_TITLE = "Vyvit's 1x1 Spiel"
 
 // https://vite.dev/config/

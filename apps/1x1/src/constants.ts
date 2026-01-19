@@ -21,7 +21,7 @@ export {
   BG_COLORS
 } from '@flashcards/shared'
 
-export const BASE_PATH = '1x1'
+export const BASE_PATH = 'fc-1x1'
 
 // ============================================================================
 // GAME LOGIC CONSTANTS

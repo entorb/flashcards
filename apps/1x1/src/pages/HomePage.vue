@@ -217,7 +217,7 @@ function toggleSquares() {
       </q-card-section>
     </q-card>
 
-    <!-- Start Game Button -->
+    <!-- Start Button -->
     <q-btn
       color="positive"
       size="lg"

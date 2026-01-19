@@ -8,7 +8,7 @@ import HomePage from './pages/HomePage.vue'
 import InfoPage from './pages/InfoPage.vue'
 
 export const router = createRouter({
-  history: createWebHistory('/1x1/'),
+  history: createWebHistory('/fc-1x1/'),
   routes: [
     {
       path: '/',
