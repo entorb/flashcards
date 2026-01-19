@@ -12,7 +12,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { baseViteConfig } from '../../vite.config.base'
 
 // Hardcoded constants to avoid Node.js ESM resolution issues in vite.config
-const BASE_PATH = 'voc'
+const BASE_PATH = 'fc-voc'
 const APP_TITLE = "Rabat's Wortspiel"
 
 // https://vite.dev/config/

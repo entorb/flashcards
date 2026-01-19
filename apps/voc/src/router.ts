@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 export const router = createRouter({
-  history: createWebHistory('/voc/'),
+  history: createWebHistory('/fc-voc/'),
   routes: [
     {
       path: '/',

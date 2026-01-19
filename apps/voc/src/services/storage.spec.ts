@@ -166,6 +166,7 @@ describe('Deck Storage', () => {
       saveLastSettings({ mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: 'fr' })
 
       const newCards: Card[] = [
+        // cspell:disable-next-line
         { voc: 'merci', de: 'danke', level: 2, time_blind: 10, time_typing: 10 }
       ]
       saveCards(newCards)

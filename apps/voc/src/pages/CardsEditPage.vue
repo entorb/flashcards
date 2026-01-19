@@ -209,6 +209,15 @@ function onCardChange() {
         <q-btn
           outline
           color="primary"
+          icon="add"
+          :label="TEXT_DE.voc.cards.addNewCard"
+          no-caps
+          data-cy="add-card-button"
+          @click="addNewCard"
+        />
+        <q-btn
+          outline
+          color="primary"
           icon="arrow_upward"
           :label="exportButtonText"
           no-caps
@@ -223,15 +232,6 @@ function onCardChange() {
           no-caps
           data-cy="import-button"
           @click="handleImport"
-        />
-        <q-btn
-          outline
-          color="primary"
-          icon="add"
-          :label="TEXT_DE.voc.cards.addNewCard"
-          no-caps
-          data-cy="add-card-button"
-          @click="addNewCard"
         />
       </div>
 
