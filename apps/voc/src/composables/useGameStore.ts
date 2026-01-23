@@ -1,4 +1,11 @@
-import { type AnswerResult, createBaseGameStore, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '@flashcards/shared'
+import {
+  type AnswerResult,
+  createBaseGameStore,
+  MAX_LEVEL,
+  MAX_TIME,
+  MIN_LEVEL,
+  MIN_TIME
+} from '@flashcards/shared'
 import { computed, watch } from 'vue'
 
 import { INITIAL_CARDS } from '../constants'
