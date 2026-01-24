@@ -52,10 +52,7 @@ describe('GamePage Component', () => {
       mocks: quasarMocks,
       plugins: [router],
       provide: quasarProvide,
-      stubs: {
-        ...quasarStubs,
-        FlashCard: { template: '<div />' }
-      }
+      stubs: quasarStubs
     }
   })
 
@@ -65,5 +62,20 @@ describe('GamePage Component', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
     expect(wrapper.html()).toBeTruthy()
+  })
+
+  it('renders question display', async () => {
+    const router = createMockRouter()
+    const wrapper = mount(GamePage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-cy="question-display"]').exists()).toBe(true)
+  })
+
+  it('renders multiple-choice options for MC mode', async () => {
+    const router = createMockRouter()
+    const wrapper = mount(GamePage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+    const options = wrapper.findAll('[data-cy="multiple-choice-option"]')
+    expect(options).toHaveLength(4)
   })
 })
