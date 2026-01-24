@@ -44,6 +44,7 @@ export interface GameSettings {
 
 export interface GameHistory extends BaseGameHistory {
   settings: GameSettings
+  totalCards?: number // Optional for compatibility, but should be set by finishGame
 }
 
 // Game State (extends shared GameState)
@@ -70,11 +71,11 @@ export interface PointsBreakdown {
 }
 
 // ============================================================================
-// Answer Data (FlashCard component)
+// Answer Data (GamePage)
 // ============================================================================
 
 /**
- * Data emitted from FlashCard component after answer submission
+ * Data used in GamePage after answer submission
  * Contains result, timing, and complete points breakdown
  */
 export interface AnswerData {
