@@ -1,5 +1,6 @@
 describe('Navigation Smoke Tests', () => {
   beforeEach(() => {
+    cy.clearAllSessionStorage()
     cy.visit('/')
   })
 
@@ -76,13 +77,22 @@ describe('Navigation Smoke Tests', () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should('be.visible')
 
+    // Initialize game settings by making a table selection (this ensures selection is initialized)
+    cy.get('[data-cy="table-selection-button-3"]').click()
+
+    // Verify the selection is registered
+    cy.get('[data-cy="table-selection-button-3"]').should('have.class', 'q-btn--unelevated')
+
     // Navigate to Game
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
+    // Wait for game page to load - check for question display which appears when card is ready
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
     cy.get('[data-cy="submit-answer-button"]').should('be.visible')
 
     // Test page reload persistence
     cy.reload()
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
     cy.get('[data-cy="submit-answer-button"]').should('be.visible')
 
     // Test back via button

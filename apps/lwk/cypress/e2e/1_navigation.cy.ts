@@ -82,14 +82,14 @@ describe('LWK Navigation Smoke Tests', () => {
     // Start the game
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
-    cy.get('[data-cy="word-display"]', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Test page reload persistence
     cy.reload()
-    cy.get('[data-cy="word-display"]', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Quit back to home
-    cy.get('[data-cy="quit-button"]').click()
+    cy.get('[data-cy="back-button"]').click()
     cy.url().should('not.include', '/game')
     cy.get('[data-cy="app-title"]').should('be.visible')
 

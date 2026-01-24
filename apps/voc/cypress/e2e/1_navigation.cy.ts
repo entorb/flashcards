@@ -73,14 +73,19 @@ describe('Navigation Smoke Tests', () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should('be.visible')
 
+    // Initialize game settings by selecting mode and language
+    cy.contains('Multiple Choice').click()
+    cy.contains('Voc → DE').click()
+
     // Navigate to Game
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
-    cy.get('[data-cy="game-page-question"]', { timeout: 10000 }).should('be.visible')
+    // Wait for game page to load properly
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Test page reload persistence
     cy.reload()
-    cy.get('[data-cy="game-page-question"]', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Test back via button
     cy.get('[data-cy="back-button"]').click()

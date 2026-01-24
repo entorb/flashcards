@@ -26,8 +26,8 @@ describe('Blind Mode Game - DE to Voc', () => {
 
     // Check if it's a wrong answer (button will be disabled for 3s)
     if (!isCorrect) {
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(3100) // Wait for button to be enabled
+      // Wait for button to be enabled
+      cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
     }
 
     // Click continue button
@@ -47,9 +47,8 @@ describe('Blind Mode Game - DE to Voc', () => {
     // Verify we're on the game page
     cy.url().should('include', '/game')
 
-    // Wait for flashcard container and game question to be visible
-    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
-    cy.get('[data-cy="game-page-question"]', { timeout: 10000 }).should('be.visible')
+    // Wait for game question to be visible
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Play through 10 cards
     // Cards 0: Answer wrongly
