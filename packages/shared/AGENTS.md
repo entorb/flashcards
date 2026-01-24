@@ -1,45 +1,19 @@
 # Shared Package
 
-The shared package (`@flashcards/shared`) provides common types, utilities, components, and services used across all apps in the monorepo (1x1 and voc). It eliminates code duplication and ensures consistency.
-
-**Key Technologies:** Vue.js 3, TypeScript, pnpm, Vite 6.x, Vitest
+Common types, utilities, components, and services for flashcards apps (1x1, voc, lwk).
 
 ## Directory Structure
 
 ```text
 src/
 ├── components/          # Shared Vue components
-│   ├── AnswerFeedback.vue
-│   ├── AppFooter.vue
-│   ├── FocusSelector.vue
-│   ├── LevelDistribution.vue
-│   ├── PwaInstallInfo.vue
-│   ├── StatisticsCard.vue
-│   └── index.ts
 ├── composables/         # Shared Vue composables
-│   ├── useAnswerFeedback.ts
-│   ├── useBaseGameStore.ts
-│   ├── useCardFiltering.ts
-│   ├── useCountdownTimer.ts
-│   ├── useFeedbackTimers.ts
-│   ├── useGameTimer.ts
-│   ├── useKeyboardContinue.ts
-│   └── useResetCards.ts
 ├── pages/               # Shared Vue pages
-│   ├── GameOverPage.vue
-│   ├── HistoryPage.vue
-│   └── index.ts
-├── services/
-│   └── storage.ts       # localStorage/sessionStorage utilities
-├── utils/
-│   ├── cardSelection.ts # Card selection algorithms
-│   ├── helper.ts        # Helper functions
-│   └── index.ts
+├── services/storage.ts  # localStorage/sessionStorage utilities
+├── utils/               # Helper functions
 ├── constants.ts         # Shared constants
-├── index.ts             # Main exports
-├── test-utils.ts        # Test utilities
-├── text-de.ts           # German i18n strings
-└── types.ts             # Shared type definitions
+├── types.ts             # Shared type definitions
+└── text-de.ts           # German i18n strings
 ```
 
 ## Key Types
@@ -73,18 +47,46 @@ type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
 type AnswerResult = 'correct' | 'incorrect' | 'close'
 ```
 
-**Design note:** Apps extend `BaseCard` and `BaseGameHistory` with app-specific fields.
-
 ## Key Functions
 
-### Storage Operations (`services/storage.ts`)
+### Storage Operations
 
-- `loadJSON<T>(key, fallback)` / `saveJSON<T>(key, data)`
+- `loadJSON<T>(key, fallback)` / `saveJSON<T>(key, data)` — localStorage
+- `loadSessionJSON<T>(key, fallback)` / `saveSessionJSON<T>(key, data)` — sessionStorage
 - `createHistoryOperations<T>(storageKey)` → `{ load(), save(), add() }`
 - `createStatsOperations<T>(storageKey, defaultStats)` → `{ load(), save(), update() }`
-- `createGamePersistence<TSettings, TState>(settingsKey, stateKey)` → sessionStorage helpers
+- `createAppGameStorage(resultKey, gameStateKey, dailyStatsKey)` → `{ setGameResult, getGameResult, clearGameResult, incrementDailyGames, clearGameState }`
+- `incrementDailyGames(key)` → `{ isFirstGame, gamesPlayedToday }`
 
-### Game Store (`composables/useBaseGameStore.ts`)
+### Game State Flow
+
+```typescript
+interface GameStateFlowConfig {
+  settingsKey: string      // localStorage: game settings
+  selectedCardsKey: string // sessionStorage: cards for this game
+  gameResultKey: string    // sessionStorage: game result/stats
+  historyKey: string       // localStorage: all past games
+  statsKey: string         // localStorage: aggregate statistics
+  dailyStatsKey: string    // localStorage: daily bonus tracking
+}
+
+// HomePage: Initialize game
+initializeGameFlow<TSettings, TCard>(config, settings, selectedCards): void
+
+// GamePage: Get/manage cards during gameplay
+getGameCards<TCard>(config): TCard[]
+removeCardFromGame(config, cardIndex): void
+updateGameStats(config, points, correctAnswers, totalCards): void
+
+// GameOverPage: Transfer results with bonuses
+transferGameResultsWithBonuses<THistory>(config, bonusConfig, historyEntry, saveHistoryFn, saveStatsFn): { bonusPoints, totalPoints, dailyInfo }
+
+// Cleanup
+clearGameSessionData(config): void
+getLastGameSettings<TSettings>(config, fallback): TSettings
+```
+
+### Game Store
 
 ```typescript
 createBaseGameStore<TCard, THistory, TSettings>(config: {
@@ -97,7 +99,7 @@ createBaseGameStore<TCard, THistory, TSettings>(config: {
 })
 ```
 
-### Timer (`composables/useGameTimer.ts`)
+### Timer
 
 ```typescript
 useGameTimer(trigger: Ref<any>, maxTime?: number)
@@ -135,31 +137,23 @@ export { default as HistoryPage } from './HistoryPage.vue'
 export { default as GameOverPage } from './GameOverPage.vue'
 ```
 
-## Usage Examples
+## Storage Scoping
 
-```typescript
-// Main imports
-import { createBaseGameStore, useGameTimer, TEXT_DE } from '@flashcards/shared'
+- **localStorage** (persistent):
+  - `{app}-cards` — Card list with learned progress
+  - `{app}-history` — Array of all past games
+  - `{app}-stats` — Aggregate statistics
+  - `{app}-settings` — Last used game settings
+  - `{app}-daily-stats` — Daily bonus tracking
 
-// Component imports
-import { AppFooter, AnswerFeedback } from '@flashcards/shared/components'
+- **sessionStorage** (temporary):
+  - `{app}-selected-cards` — Cards for current game
+  - `{app}-game-result` — Current game result
 
-// Page imports
-import { HistoryPage } from '@flashcards/shared/pages'
-```
+## Critical Rules
 
-## Important Notes
-
-- Workspace package, not published to npm
-- Build order: `packages/shared` → `apps/*`
-- No circular dependencies
-- Type definitions are the contract
+- Apps extend `BaseCard` and `BaseGameHistory` with app-specific fields
+- No parallel sessions: Each app handles one game at a time
+- Card progress saved immediately after each answer
+- Game results saved atomically (history + stats together)
 - localStorage scoped per app via prefixed keys
-- Daily stats tracked separately per app
-
-## See Also
-
-- **[Root AGENTS.md](../AGENTS.md)** - Monorepo overview
-- **[apps/1x1/AGENTS.md](../apps/1x1/AGENTS.md)** - Multiplication app details
-- **[apps/voc/AGENTS.md](../apps/voc/AGENTS.md)** - Vocabulary app details
-- **[apps/lwk/AGENTS.md](../apps/lwk/AGENTS.md)** - Spelling app details

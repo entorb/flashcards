@@ -9,30 +9,30 @@
 
 ## Workflow Rules
 
-- ❌ No commits (propose to user)
-- ✅ Run `pnpm run check` after changes (format, lint, types, spell, tests)
-- ✅ Run `pnpm run cy:run:1x1` / `pnpm run cy:run:voc` / `pnpm run cy:run:lwk` after phases
-- ✅ All text in `@flashcards/shared/src/text-de.ts`
-- ✅ Unit tests: `.spec.ts` suffix, import functions (don't copy)
-- ✅ E2E tests: `data-cy` locators (not text/ids)
+- Run `pnpm run check` after changes (format, lint, types, spell, tests)
+- Run `pnpm run cy:run:{app}` after phases
+- All text in `@flashcards/shared/src/text-de.ts`
+- Unit tests: `.spec.ts` suffix, import functions (don't copy)
+- E2E tests: `data-cy` locators (not text/ids)
+- Commit after implementing new features, Only after `pnpm run check` and `pnpm run cy:run` pass. Only commit header, no body.
 
 ## Critical Code Rules
 
 **Type Safety:**
 
-- ❌ No `any` → use proper types
-- ✅ Type all refs: `ref<HTMLInputElement | null>(null)`
-- ❌ No `!` assertions → use null checks
-- ✅ Consolidate imports: `import type { Card, SelectionType } from '@/types'`
+- No `any` → use proper types
+- Type all refs: `ref<HTMLInputElement | null>(null)`
+- No `!` assertions → use null checks
+- Consolidate imports: `import type { Card, SelectionType } from '@/types'`
 
 **Patterns:**
 
-- ✅ `globalThis` not `window` or `global`
-- ✅ `for...of` not `.forEach()`
-- ✅ `Number.parseInt(str, 10)` not `parseInt(str)`
-- ✅ `items.sort((a, b) => a.localeCompare(b))` for strings
-- ✅ Cognitive complexity < 15 → extract functions
-- ✅ No duplicate strings (3+) → use `TEXT_DE` or constants
+- `globalThis` not `window` or `global`
+- `for...of` not `.forEach()`
+- `Number.parseInt(str, 10)` not `parseInt(str)`
+- `items.sort((a, b) => a.localeCompare(b))` for strings
+- Cognitive complexity < 15 → extract functions
+- No duplicate strings (3+) → use `TEXT_DE` or constants
 
 **Suppressing warnings (rare):**
 
@@ -98,46 +98,48 @@ import { HistoryPage, GameOverPage } from '@flashcards/shared/pages'
 
 ## Critical Gotchas
 
-### ❌ DO NOT Do These
+**❌ DO NOT:**
 
-1. **Import TEXT_DE/BASE_PATH in `vite.config.ts`** → Causes ESM errors. Hardcode instead.
-2. **Use tsconfig inheritance in `tsconfig.node.json`** → Causes `vue-tsc` to hang. Keep duplicated.
-3. **Use vitest workspace config** → Causes path resolution failures. Use per-app configs.
-4. **Use `registerType: 'autoUpdate'` in PWA** → Returns undefined. Use `'prompt'`.
+1. Import TEXT_DE/BASE_PATH in `vite.config.ts` → Causes ESM errors. Hardcode instead.
+2. Use tsconfig inheritance in `tsconfig.node.json` → Causes `vue-tsc` to hang. Keep duplicated.
+3. Use vitest workspace config → Causes path resolution failures. Use per-app configs.
+4. Use `registerType: 'autoUpdate'` in PWA → Returns undefined. Use `'prompt'`.
 
-### ✅ BASE_PATH Pattern
+**✅ BASE_PATH Pattern:**
+Each app defines `BASE_PATH` in `src/constants.ts` AND `vite.config.ts`
 
-Each app defines `BASE_PATH` in `src/constants.ts` AND `vite.config.ts`:
+## Game State Handling
 
-Used for: router base, Cypress baseUrl, DB usage-stats
+**No parallel sessions:** Each client handles one game at a time.
 
-## End-of-Game Flow (Critical Pattern)
+### HomePage → Start Game
 
-**Single-save architecture** (prevents data loss):
+- Store game settings to localStorage
+- Store selected cards to sessionStorage
+- Navigate to GamePage
 
-1. **GamePage** → `finishGame()`:
-   - Updates in-memory state (history + stats WITHOUT bonus)
-   - Saves game result to **sessionStorage**
-   - Clears game state from **sessionStorage**
-   - Does NOT save to **localStorage** yet
-   - Navigates to GameOverPage
+### GamePage Flow
 
-2. **GameOverPage** → `onMounted()`:
-   - Loads game result from sessionStorage
-   - Calculates daily bonuses
-   - Adds bonus to in-memory history/stats (mutates props by reference)
-   - **Single save to localStorage immediately** (complete data)
-   - Clears sessionStorage on home navigation
+- Read cards from sessionStorage at page load
+- Remove card from sessionStorage after answer
+- Update card properties (level, time) in localStorage immediately
+- Track game statistics in sessionStorage state
+- On finish: save result to sessionStorage, navigate to GameOverPage
 
-**Why:** Saves data as soon as GameOverPage loads, not on navigation. User can close tab without data loss.
+### GameOverPage → End-of-Game
+
+- Load game result from sessionStorage
+- Calculate daily bonuses (first game +5, every 5th game +5, time bonuses)
+- Transfer statistics + bonuses to localStorage (single atomic save)
+- Clear sessionStorage
 
 ## PWA Critical Config
 
-**Service Worker Registration** (`apps/*/src/main.ts`):
+**Service Worker** (`apps/*/src/main.ts`):
 
 ```typescript
 registerSW({
-  immediate: true, // Check on every load
+  immediate: true,
   onNeedRefresh() {
     if (confirm(TEXT_DE.pwaUpdate.confirmMessage)) {
       updateSW(true)
@@ -150,7 +152,7 @@ registerSW({
 
 ```typescript
 VitePWA({
-  registerType: 'prompt' // NOT 'autoUpdate' (returns undefined)
+  registerType: 'prompt' // NOT 'autoUpdate'
 })
 ```
 
