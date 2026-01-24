@@ -48,12 +48,8 @@ describe('Full Game Flow', () => {
         // Auto-submit happens after typing expected answer length, wait for wrong answer feedback (red dialog)
         cy.get('[data-cy="wrong-answer-feedback"]', { timeout: 5000 }).should('be.visible')
 
-        // Wait for button to be enabled (3 second disable timer)
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
-        cy.wait(3100)
-
-        // Click continue to next question
-        cy.get('[data-cy="continue-button"]').click()
+        // Wait for continue button to be enabled (3 second disable timer)
+        cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled').click()
       })
 
     // Answer next 6 questions CORRECTLY
@@ -244,8 +240,8 @@ describe('Full Game Flow', () => {
 
     // Verify game starts fresh at 1/7 (not 8/7 or corrupted state)
     // Table [4] only with range [3,4,5,6,7,8,9] gives 7 cards (3×7, 4×7, 5x7, 6x7, 7x7, 8x7, 9x7)
-    cy.get('[data-cy="game-progress"]').should('contain', '1')
-    cy.get('[data-cy="game-progress"]').should('contain', '7')
+    cy.get('[data-cy="card-counter"]').should('contain', '1')
+    cy.get('[data-cy="card-counter"]').should('contain', '7')
 
     // Answer all 7 questions correctly in second game
     for (let i = 0; i < 7; i++) {

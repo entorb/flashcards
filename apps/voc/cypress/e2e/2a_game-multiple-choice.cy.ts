@@ -21,9 +21,8 @@ describe('Multiple Choice Game - Voc to DE', () => {
     // Verify we're on the game page
     cy.url().should('include', '/game')
 
-    // Wait for flashcard container and game question to be visible
-    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
-    cy.get('[data-cy="game-page-question"]', { timeout: 10000 }).should('be.visible')
+    // Wait for question to be visible
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Wait for multiple choice options to appear (first card initialization)
     cy.get('[data-cy="multiple-choice-option"]', { timeout: 10000 }).should('have.length', 4)
@@ -34,7 +33,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
       cy.window().then(win => {
         const cards = getCardsFromStorage(win)
 
-        cy.get('[data-cy="game-page-question"]')
+        cy.get('[data-cy="question-display"]')
           .invoke('text')
           .then(questionText => {
             if (cardIndex === 0) {
@@ -101,8 +100,8 @@ describe('Multiple Choice Game - Voc to DE', () => {
             // Check if wrong answer (wait for button to enable)
             cy.get('body').then($body => {
               if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
-                // eslint-disable-next-line cypress/no-unnecessary-waiting
-                cy.wait(3100)
+                // Wait for button to be enabled
+                cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
               }
             })
 
@@ -222,7 +221,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
         cy.window().then(win => {
           const cards = getCardsFromStorage(win)
 
-          cy.get('[data-cy="game-page-question"]')
+          cy.get('[data-cy="question-display"]')
             .invoke('text')
             .then(questionText => {
               const card = cards.find((c: any) => c.voc === questionText.trim())
@@ -249,8 +248,8 @@ describe('Multiple Choice Game - Voc to DE', () => {
               cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
               cy.get('body').then($body => {
                 if ($body.text().includes('Falsch')) {
-                  // eslint-disable-next-line cypress/no-unnecessary-waiting
-                  cy.wait(3100)
+                  // Wait for button to be enabled
+                  cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
                 }
               })
               cy.get('[data-cy="continue-button"]').click()
@@ -264,7 +263,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
     cy.contains('Voc → DE').click()
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
-    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
     cy.get('[data-cy="multiple-choice-option"]', { timeout: 10000 }).should('have.length', 4)
 
     playGame(10) // All 10 correct
@@ -310,7 +309,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
     cy.contains('Voc → DE').click()
     cy.get('[data-cy="start-button"]').click()
     cy.url().should('include', '/game')
-    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Verify game starts fresh at 1/10 (not 11/10 or corrupted state)
     cy.get('[data-cy="card-counter"]').should('contain', '1 / 10')
