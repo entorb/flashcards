@@ -28,8 +28,7 @@ export const TEXT_DE = {
       cancel: 'Abbrechen',
       correct: 'Richtig',
       incorrect: 'Falsch',
-      closeMatch: 'Fast richtig!',
-      typePlaceholder: 'Schreibe...'
+      closeMatch: 'Fast richtig!'
     },
     nav: {
       history: 'Verlauf',
