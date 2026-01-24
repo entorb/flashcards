@@ -22,12 +22,11 @@ describe('Typing Mode Game - DE to Voc', () => {
     // Verify we're on the game page
     cy.url().should('include', '/game')
 
-    // Wait for flashcard container and game question to be visible
-    cy.get('.flashcard-container', { timeout: 10000 }).should('be.visible')
-    cy.get('[data-cy="game-page-question"]', { timeout: 10000 }).should('be.visible')
+    // Wait for game question to be visible
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     // Wait for typing input to appear (first card initialization)
-    cy.get('[data-cy="typing-input"]', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
 
     // Helper function to answer a card
     const answerCard = (cardIndex: number) => {
@@ -35,7 +34,7 @@ describe('Typing Mode Game - DE to Voc', () => {
       cy.window().then(win => {
         const cards = getCardsFromStorage(win)
 
-        cy.get('[data-cy="game-page-question"]')
+        cy.get('[data-cy="question-display"]')
           .invoke('text')
           .then(questionText => {
             let answerToType = ''
@@ -68,12 +67,12 @@ describe('Typing Mode Game - DE to Voc', () => {
             }
 
             // Wait for input to be ready, clear and type
-            cy.get('[data-cy="typing-input"]', { timeout: 10000 }).should('be.visible')
-            cy.get('[data-cy="typing-input"]').clear()
-            cy.get('[data-cy="typing-input"]').type(answerToType)
+            cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
+            cy.get('[data-cy="answer-input"]').clear()
+            cy.get('[data-cy="answer-input"]').type(answerToType)
 
             // Click Check button
-            cy.get('[data-cy="check-answer-button"]').click()
+            cy.get('[data-cy="submit-answer-button"]').click()
 
             // Wait for feedback and continue button
             cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
@@ -81,8 +80,8 @@ describe('Typing Mode Game - DE to Voc', () => {
             // Check if wrong or close answer (wait for button to enable)
             cy.get('body').then($body => {
               if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
-                // eslint-disable-next-line cypress/no-unnecessary-waiting
-                cy.wait(3100)
+                // Wait for button to be enabled
+                cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
               }
             })
 

@@ -23,7 +23,7 @@ describe('Hidden Mode Game', () => {
     cy.get('[data-cy="start-button"]').click()
 
     cy.url().should('include', '/game')
-    cy.get('[data-cy="word-display"]', { timeout: 10000 }).should('be.visible')
+    cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
 
     let totalCards = 0
 
@@ -39,19 +39,19 @@ describe('Hidden Mode Game', () => {
       })
 
     const answerHiddenCard = (isCorrect: boolean) => {
-      cy.get('[data-cy="word-display"]')
+      cy.get('[data-cy="question-display"]')
         .invoke('text')
         .then(text => {
           const word = text.trim()
 
           cy.get('[data-cy="start-countdown-button"]').click()
 
-          cy.get('[data-cy="spelling-input"]', { timeout: 10000 }).should('be.visible')
+          cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
 
           const answer = isCorrect ? word : `${word}zz`
-          cy.get('[data-cy="spelling-input"]').clear()
-          cy.get('[data-cy="spelling-input"]').type(answer)
-          cy.get('[data-cy="submit-button"]').click()
+          cy.get('[data-cy="answer-input"]').clear()
+          cy.get('[data-cy="answer-input"]').type(answer)
+          cy.get('[data-cy="submit-answer-button"]').click()
         })
 
       cy.get('[data-cy="proceed-button"]', { timeout: 10000 }).should('be.visible')
