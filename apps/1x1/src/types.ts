@@ -53,11 +53,11 @@ export interface GameState extends SharedGameState {
 }
 
 // ============================================================================
-// Answer Data (FlashCard component)
+// Answer Data (GamePage)
 // ============================================================================
 
 /**
- * Data emitted from FlashCard component after answer submission
+ * Data used in GamePage after answer submission
  * Contains answer correctness, points breakdown, and timing information
  */
 export interface AnswerData {
