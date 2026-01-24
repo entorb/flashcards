@@ -11,11 +11,12 @@ import {
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
-  SPEED_BONUS_POINTS
+  SPEED_BONUS_POINTS,
+  initializeGameFlow
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
-import { DEFAULT_DECKS } from '../constants'
+import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG } from '../constants'
 import { selectCards } from '../services/cardSelector'
 import {
   clearGameState,
@@ -130,18 +131,14 @@ export function useGameStore() {
   baseStore.initializeStore()
 
   // Restore game state and settings if page was reloaded during a game
+  // Only restore if there was an active game saved
   const savedGameState = loadGameState()
   const savedGameSettings = loadGameConfig()
 
-  if (savedGameSettings) {
-    // Always restore game settings
+  if (savedGameState && savedGameSettings && savedGameState.gameCards.length > 0) {
+    // Restore game settings
     baseStore.gameSettings.value = savedGameSettings
-  }
-
-  // gameCards is only populated when a game is active in memory; an empty array
-  // means there is no current in-memory game, so it is safe to restore from storage.
-  if (savedGameState && savedGameSettings && baseStore.gameCards.value.length === 0) {
-    // Restore game state only when no in-memory game is active
+    // Restore game state
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
@@ -167,7 +164,12 @@ export function useGameStore() {
     saveLastSettings(settings)
     saveGameConfig(settings)
     baseStore.gameSettings.value = settings
-    baseStore.gameCards.value = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
+    const selectedCards = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
+
+    // Use centralized game state flow to store settings + selected cards
+    initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
+
+    baseStore.gameCards.value = selectedCards
     baseStore.resetGameState()
 
     // Save initial game state so GamePage can load it

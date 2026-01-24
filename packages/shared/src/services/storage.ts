@@ -3,7 +3,9 @@
  * Common patterns used by both 1x1 and voc apps
  */
 
+import { LEVEL_BONUS_NUMERATOR } from '../constants'
 import type { DailyStats } from '../types'
+import { weightedRandomSelection } from '../utils'
 
 /**
  * Get today's date in ISO format (YYYY-MM-DD)
@@ -213,4 +215,120 @@ export function createGamePersistence<TSettings, TState>(settingsKey: string, st
       removeSessionJSON(stateKey)
     }
   }
+}
+
+/**
+ * Create game result operations for sessionStorage
+ * Handles save/load/clear for game result (points, correctAnswers, totalCards)
+ * Exported as a factory for app-specific key management
+ *
+ * @param resultKey - Storage key for game result
+ * @returns Object with methods to manage game result
+ */
+export function createGameResultOperations(resultKey: string) {
+  return {
+    save: (result: { points: number; correctAnswers: number; totalCards: number }) => {
+      saveSessionJSON(resultKey, result)
+    },
+    load: () => {
+      return loadSessionJSON<{ points: number; correctAnswers: number; totalCards: number } | null>(
+        resultKey,
+        null
+      )
+    },
+    clear: () => removeSessionJSON(resultKey)
+  }
+}
+
+/**
+ * Create app-specific storage operations manager
+ * Consolidates common game storage operations (result, game state, daily stats)
+ *
+ * @param resultKey - Storage key for game result
+ * @param gameStateKey - Storage key for game state (from createGamePersistence)
+ * @param dailyStatsKey - Storage key for daily stats
+ * @returns Object with methods to manage all game operations
+ */
+export function createAppGameStorage(
+  resultKey: string,
+  gameStateKey: string,
+  dailyStatsKey: string
+) {
+  const resultOps = createGameResultOperations(resultKey)
+
+  return {
+    // Game Result operations
+    setGameResult: (result: { points: number; correctAnswers: number; totalCards: number }) =>
+      resultOps.save(result),
+    getGameResult: () => resultOps.load(),
+    clearGameResult: () => resultOps.clear(),
+
+    // Daily Stats operations
+    incrementDailyGames: () => incrementDailyGames(dailyStatsKey),
+
+    // Game State clear
+    clearGameState: () => {
+      removeSessionJSON(gameStateKey)
+    }
+  }
+}
+
+/**
+ * Card selection factory: applies focus-weighted selection algorithm
+ * Supports 'weak', 'strong', 'medium', 'slow' focus strategies
+ */
+export interface CardSelectionConfig<T extends { level: number }> {
+  cards: T[]
+  focus: 'weak' | 'medium' | 'strong' | 'slow'
+  maxCards: number
+  modeFilter?: (card: T) => boolean
+  timeExtractor?: (card: T) => number
+}
+
+export function selectCardsByFocus<T extends { level: number }>(
+  config: CardSelectionConfig<T>
+): T[] {
+  const { cards, focus, maxCards, modeFilter, timeExtractor } = config
+
+  // Apply mode filter if provided
+  const eligible = modeFilter ? cards.filter(modeFilter) : cards
+
+  if (eligible.length === 0) {
+    return []
+  }
+
+  // Handle 'slow' focus separately (time-based sorting)
+  if (focus === 'slow' && timeExtractor) {
+    const sortedByTime = [...eligible].sort((a, b) => timeExtractor(b) - timeExtractor(a))
+    const count = Math.min(maxCards, sortedByTime.length)
+    return sortedByTime.slice(0, count)
+  }
+
+  // Calculate weights for each card based on focus type
+  interface WeightedCard {
+    item: T
+    weight: number
+  }
+
+  const weightedCards: WeightedCard[] = eligible.map(card => {
+    let weight: number
+
+    if (focus === 'weak') {
+      // Level 1 = 5x weight, Level 5 = 1x weight
+      weight = LEVEL_BONUS_NUMERATOR - card.level
+    } else if (focus === 'strong') {
+      // Level 1 = 1x weight, Level 5 = 5x weight
+      weight = card.level
+    } else {
+      // medium: 1->1, 2->3, 3->5, 4->3, 5->1
+      const mediumWeights = [1, 3, 5, 3, 1]
+      weight = mediumWeights[card.level - 1] ?? 1
+    }
+
+    return { item: card, weight }
+  })
+
+  // Use weighted random selection
+  const count = Math.min(maxCards, eligible.length)
+  return weightedRandomSelection(weightedCards, count)
 }

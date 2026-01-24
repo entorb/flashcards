@@ -1,9 +1,28 @@
+import type { GameStateFlowConfig } from '@flashcards/shared'
+
 import type { Card } from './types'
 
 /**
  * Base path for the Wordplay app - used in routing, PWA config, and database
  */
 export const BASE_PATH = 'fc-voc'
+
+// ============================================================================
+// GAME STATE FLOW CONFIGURATION
+// ============================================================================
+
+/**
+ * Centralized game state flow configuration
+ * Keys for localStorage and sessionStorage used throughout the game lifecycle
+ */
+export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
+  settingsKey: 'voc-settings',
+  selectedCardsKey: 'voc-selected-cards',
+  gameResultKey: 'voc-game-result',
+  historyKey: 'voc-history',
+  statsKey: 'voc-stats',
+  dailyStatsKey: 'voc-daily-stats'
+}
 
 export const MAX_CARDS_PER_GAME = 10
 

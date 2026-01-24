@@ -1,3 +1,5 @@
+import type { GameStateFlowConfig } from '@flashcards/shared'
+
 import type { Card } from './types'
 
 /**
@@ -5,6 +7,23 @@ import type { Card } from './types'
  * CRITICAL: Must be hardcoded separately in vite.config.ts (ESM issue)
  */
 export const BASE_PATH = 'fc-lwk'
+
+// ============================================================================
+// GAME STATE FLOW CONFIGURATION
+// ============================================================================
+
+/**
+ * Centralized game state flow configuration
+ * Keys for localStorage and sessionStorage used throughout the game lifecycle
+ */
+export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
+  settingsKey: 'lwk-settings',
+  selectedCardsKey: 'lwk-selected-cards',
+  gameResultKey: 'lwk-game-result',
+  historyKey: 'lwk-history',
+  statsKey: 'lwk-stats',
+  dailyStatsKey: 'lwk-daily-stats'
+}
 
 /**
  * Maximum number of cards per game

@@ -1,7 +1,7 @@
-import { createBaseGameStore, MAX_LEVEL, MIN_LEVEL } from '@flashcards/shared'
-import { computed, watch } from 'vue'
+import { createBaseGameStore, MAX_LEVEL, MIN_LEVEL, initializeGameFlow } from '@flashcards/shared'
+import { computed } from 'vue'
 
-import { MAX_CARDS_PER_GAME } from '@/constants'
+import { MAX_CARDS_PER_GAME, GAME_STATE_FLOW_CONFIG } from '@/constants'
 import {
   filterCardsAll,
   filterCardsBySelection,
@@ -58,34 +58,14 @@ export function useGameStore() {
   }
 
   // Restore game state if page was reloaded during a game
+  // Only restore if there was an active game saved
   const savedGameState = storageLoadGameState()
-
-  if (savedGameState) {
+  if (savedGameState && savedGameState.gameCards.length > 0) {
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
     baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
   }
-
-  // Save game state whenever it changes for reload recovery
-  const saveGameStateDebounced = () => {
-    storageSaveGameState({
-      gameCards: baseStore.gameCards.value,
-      currentCardIndex: baseStore.currentCardIndex.value,
-      points: baseStore.points.value,
-      correctAnswersCount: baseStore.correctAnswersCount.value
-    })
-  }
-
-  watch(
-    () => [
-      baseStore.gameCards.value.length,
-      baseStore.currentCardIndex.value,
-      baseStore.points.value,
-      baseStore.correctAnswersCount.value
-    ],
-    saveGameStateDebounced
-  )
 
   // App-specific actions
   function startGame(settings: GameSettings, forceReset = false) {
@@ -123,11 +103,20 @@ export function useGameStore() {
       filteredCards = filterCardsBySelection(allAvailableCards, selectArray, rangeSet)
     }
 
-    baseStore.gameCards.value = selectCardsForRound(
-      filteredCards,
-      settings.focus,
-      MAX_CARDS_PER_GAME
-    )
+    const selectedCards = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
+
+    // Use centralized game state flow to store settings + selected cards
+    initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
+
+    baseStore.gameCards.value = selectedCards
+
+    // Save initial game state for reload recovery
+    storageSaveGameState({
+      gameCards: baseStore.gameCards.value,
+      currentCardIndex: 0,
+      points: 0,
+      correctAnswersCount: 0
+    })
   }
 
   function handleAnswer(data: AnswerData) {
@@ -149,6 +138,30 @@ export function useGameStore() {
         level: newLevel
       })
     }
+
+    // Save game state after answer
+    storageSaveGameState({
+      gameCards: baseStore.gameCards.value,
+      currentCardIndex: baseStore.currentCardIndex.value,
+      points: baseStore.points.value,
+      correctAnswersCount: baseStore.correctAnswersCount.value
+    })
+  }
+
+  // Wrap nextCard to save state
+  const baseNextCard = baseStore.nextCard
+  function nextCard() {
+    const isGameOver = baseNextCard()
+    if (!isGameOver) {
+      // Save state after moving to next card (unless game is over)
+      storageSaveGameState({
+        gameCards: baseStore.gameCards.value,
+        currentCardIndex: baseStore.currentCardIndex.value,
+        points: baseStore.points.value,
+        correctAnswersCount: baseStore.correctAnswersCount.value
+      })
+    }
+    return isGameOver
   }
 
   function finishGame() {
@@ -221,7 +234,7 @@ export function useGameStore() {
     // Actions
     startGame,
     handleAnswer,
-    nextCard: baseStore.nextCard,
+    nextCard,
     finishGame,
     discardGame
   }

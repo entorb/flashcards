@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { useGameTimer, MAX_TIME } from '@flashcards/shared'
-import { onMounted, onUnmounted } from 'vue'
+import {
+  type AnswerResult,
+  TEXT_DE,
+  useFeedbackTimers,
+  useKeyboardContinue,
+  MAX_TIME
+} from '@flashcards/shared'
+import { GameHeader, CardQuestion, CardInputSubmit } from '@flashcards/shared/components'
+import { shuffleArray } from '@flashcards/shared/utils'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import FlashCard from '../components/FlashCard.vue'
 import { useGameStore } from '../composables/useGameStore'
-import type { AnswerData } from '../types'
+import { calculatePointsBreakdown } from '../services/pointsCalculation'
+import type { AnswerData, PointsBreakdown } from '../types'
+import { validateTypingAnswer } from '../utils/helpers'
 
 const router = useRouter()
 const {
@@ -21,25 +30,190 @@ const {
   discardGame
 } = useGameStore()
 
+// GamePage component state
+const showAnswer = ref(false)
+const answerStatus = ref<AnswerResult | null>(null)
+const userAnswer = ref('')
+const options = ref<string[]>([])
+const feedbackData = ref<{
+  type: 'simple' | 'close' | 'typing-incorrect'
+  message?: string
+  userInput?: string
+  correctText?: string
+  highlightedText?: string
+}>({ type: 'simple' })
+const showProceedButton = ref(false)
+const startTime = ref<number>(0)
+const earnedPoints = ref<number>(0)
+const pointsBreakdown = ref<PointsBreakdown | null>(null)
+
+// Use shared timer composable
+const {
+  isButtonDisabled: isProceedDisabled,
+  buttonDisableCountdown,
+  startAutoCloseTimer,
+  startButtonDisableTimer
+} = useFeedbackTimers()
+
+// Compute question and answer based on language direction
+const question = computed(() => {
+  if (!gameSettings.value || !currentCard.value) return ''
+  return gameSettings.value.language === 'voc-de' ? currentCard.value.voc : currentCard.value.de
+})
+
+const correctAnswer = computed(() => {
+  if (!gameSettings.value || !currentCard.value) return ''
+  return gameSettings.value.language === 'voc-de' ? currentCard.value.de : currentCard.value.voc
+})
+
+const targetLang = computed(() => {
+  return gameSettings.value?.language === 'voc-de' ? 'de' : 'voc'
+})
+
+// Determine which time to display based on mode
+const displayTime = computed(() => {
+  const settings = gameSettings.value
+  const card = currentCard.value
+  if (!settings || !card) return MAX_TIME
+
+  if (settings.mode === 'blind') {
+    return card.time_blind
+  } else if (settings.mode === 'typing') {
+    return card.time_typing
+  }
+  return MAX_TIME // Don't show time for multiple-choice
+})
+
+// Generate options for multiple choice
+watch(
+  () => [currentCard.value, gameSettings.value?.mode],
+  () => {
+    if (gameSettings.value?.mode === 'multiple-choice') {
+      const otherAnswers = allCards.value
+        .filter(c => c.voc !== currentCard.value?.voc)
+        .map(c => c[targetLang.value])
+
+      const shuffledOthers = shuffleArray(otherAnswers)
+      const incorrectOptions = [...new Set(shuffledOthers)].slice(0, 3)
+
+      options.value = shuffleArray([...incorrectOptions, correctAnswer.value])
+    }
+  },
+  { immediate: true }
+)
+
+// Reset state when card changes and start timer
+watch(
+  () => currentCard.value,
+  () => {
+    showAnswer.value = false
+    answerStatus.value = null
+    userAnswer.value = ''
+    feedbackData.value = { type: 'simple' }
+    showProceedButton.value = false
+    startTime.value = Date.now()
+  },
+  { immediate: true }
+)
+
+function processAnswer(result: AnswerResult) {
+  if (answerStatus.value) return
+
+  // Calculate answer time in seconds
+  const answerTime = (Date.now() - startTime.value) / 1000
+
+  // Calculate points breakdown
+  if (currentCard.value && gameSettings.value) {
+    pointsBreakdown.value = calculatePointsBreakdown(
+      result,
+      currentCard.value,
+      gameSettings.value,
+      answerTime
+    )
+    earnedPoints.value = pointsBreakdown.value.totalPoints
+
+    // Emit complete answer data to parent
+    handleAnswer({
+      result,
+      answerTime,
+      earnedPoints: earnedPoints.value,
+      pointsBreakdown: pointsBreakdown.value
+    })
+  }
+
+  answerStatus.value = result
+  showAnswer.value = true
+
+  // Always show proceed button for all answer types
+  showProceedButton.value = true
+
+  if (result === 'correct') {
+    // For correct answers: auto-advance after 3 seconds, but allow manual continue
+    startAutoCloseTimer(handleNextCard)
+  } else {
+    // For incorrect/close answers: disable button for 3 seconds
+    startButtonDisableTimer()
+
+    if (result === 'close') {
+      const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
+      feedbackData.value = {
+        type: 'close',
+        userInput: userAnswer.value,
+        correctText: mainCorrectAnswer
+      }
+    } else if (gameSettings.value?.mode === 'typing') {
+      feedbackData.value = {
+        type: 'typing-incorrect',
+        userInput: userAnswer.value,
+        correctText: correctAnswer.value
+      }
+    }
+  }
+}
+
+function handleMultipleChoiceSubmit(option: string) {
+  processAnswer(option === correctAnswer.value ? 'correct' : 'incorrect')
+}
+
+function handleBlindSubmit(correct: boolean) {
+  if (correct) {
+    processAnswer('correct')
+  } else {
+    processAnswer('incorrect')
+  }
+}
+
+function handleTypingSubmit() {
+  if (answerStatus.value || !gameSettings.value) return
+
+  const result = validateTypingAnswer(
+    userAnswer.value,
+    correctAnswer.value,
+    gameSettings.value.language
+  )
+  processAnswer(result)
+}
+
 // Use shared timer logic with maxTime
-const { stopTimer } = useGameTimer(currentCard, MAX_TIME)
+// Note: Component manages its own timing with startTime for answer calculation
 
 function handleAnswer(data: AnswerData) {
-  stopTimer()
   storeHandleAnswer(data.result, data.answerTime)
 }
 
 function handleNextCard() {
   const isGameOver = nextCard()
   if (isGameOver) {
-    stopTimer()
     finishGame()
     router.push({ name: '/game-over' })
   }
 }
 
+// Use shared keyboard continue composable
+const canProceed = computed(() => showProceedButton.value && !isProceedDisabled.value)
+useKeyboardContinue(canProceed, handleNextCard)
+
 function handleGoHome() {
-  stopTimer()
   discardGame()
   router.push({ name: '/' })
 }
@@ -66,44 +240,205 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <q-page
-    class="q-pa-md"
-    style="max-width: 600px; margin: 0 auto"
-  >
-    <!-- Header with Back Button and Game Progress -->
-    <div class="row items-center justify-between q-mb-md">
-      <q-btn
-        flat
-        round
-        icon="arrow_back"
-        size="md"
-        data-cy="back-button"
-        @click="handleGoHome"
+  <q-page class="q-pa-md">
+    <div style="max-width: 600px; margin: 0 auto">
+      <GameHeader
+        :current-index="currentCardIndex"
+        :total-cards="gameCards.length"
+        :points="points"
+        @back="handleGoHome"
       />
-      <div class="text-h6 text-weight-bold">
-        <q-icon
-          name="emoji_events"
-          color="amber"
-          size="24px"
+
+      <div v-if="currentCard">
+        <CardQuestion
+          :current-card="{ level: currentCard.level, time: displayTime, answer: correctAnswer }"
+          :display-question="question"
+          :show-correct-answer="showAnswer"
         />
-        {{ points }}
-      </div>
-      <div
-        class="text-h6 text-weight-bold"
-        data-cy="card-counter"
-      >
-        {{ currentCardIndex + 1 }} / {{ gameCards.length }}
+
+        <!-- Input Section -->
+        <div class="q-mt-md">
+          <!-- Feedback Details (without big colored card) -->
+          <q-card
+            v-if="answerStatus && answerStatus !== 'correct' && feedbackData.type !== 'simple'"
+            class="q-mb-md"
+          >
+            <q-card-section class="text-center q-pa-md">
+              <!-- Close answer feedback -->
+              <div v-if="feedbackData.type === 'close'">
+                <div class="row items-center justify-center text-h6">
+                  <span
+                    class="text-warning text-weight-bold"
+                    style="text-decoration: line-through; text-decoration-thickness: 2px"
+                    >{{ feedbackData.userInput }}</span
+                  >
+                  <q-icon
+                    name="arrow_forward"
+                    size="sm"
+                    class="q-mx-sm"
+                  />
+                  <span class="text-positive text-weight-bold">{{ feedbackData.correctText }}</span>
+                </div>
+              </div>
+
+              <!-- Typing mode incorrect feedback -->
+              <div v-else-if="feedbackData.type === 'typing-incorrect'">
+                <div class="row items-center justify-center text-h6">
+                  <span
+                    class="text-negative text-weight-bold"
+                    style="text-decoration: line-through; text-decoration-thickness: 2px"
+                    >{{ feedbackData.userInput }}</span
+                  >
+                  <q-icon
+                    name="arrow_forward"
+                    size="sm"
+                    class="q-mx-sm"
+                  />
+                  <span class="text-positive text-weight-bold">{{ feedbackData.correctText }}</span>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Points display on correct and close answers -->
+          <q-card
+            v-if="(answerStatus === 'correct' || answerStatus === 'close') && pointsBreakdown"
+            class="q-mb-md"
+            :class="[answerStatus === 'correct' ? 'bg-positive-1' : 'bg-warning-1']"
+          >
+            <q-card-section class="text-center q-pa-md">
+              <div
+                class="text-h5 text-weight-bold"
+                :class="[answerStatus === 'correct' ? 'text-positive' : 'text-warning']"
+              >
+                +{{ pointsBreakdown.totalPoints }} {{ TEXT_DE.shared.words.points }}
+              </div>
+              <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
+                <span>
+                  {{ pointsBreakdown.basePoints }} × {{ pointsBreakdown.modeMultiplier }}
+                  <span v-if="answerStatus === 'close'">
+                    {{ pointsBreakdown.closeAdjustment }}
+                  </span>
+                  <span v-if="pointsBreakdown.languageBonus > 0">
+                    + {{ pointsBreakdown.languageBonus }}
+                  </span>
+                  <span v-if="pointsBreakdown.timeBonus > 0">
+                    + {{ pointsBreakdown.timeBonus }}
+                  </span>
+                  = {{ pointsBreakdown.totalPoints }}
+                </span>
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Continue Button with icon when feedback is shown -->
+          <q-btn
+            v-if="answerStatus && showProceedButton"
+            size="lg"
+            class="full-width q-mb-md"
+            :color="
+              answerStatus === 'correct'
+                ? 'positive'
+                : answerStatus === 'close'
+                  ? 'warning'
+                  : 'negative'
+            "
+            :disable="isProceedDisabled"
+            :label="
+              isProceedDisabled
+                ? `${TEXT_DE.shared.common.wait} ${buttonDisableCountdown}`
+                : TEXT_DE.shared.common.continue
+            "
+            data-cy="continue-button"
+            :icon="
+              answerStatus === 'correct'
+                ? 'check_circle'
+                : answerStatus === 'close'
+                  ? 'warning'
+                  : 'cancel'
+            "
+            @click="handleNextCard"
+          />
+
+          <!-- Multiple Choice -->
+          <div
+            v-else-if="gameSettings?.mode === 'multiple-choice'"
+            class="row q-col-gutter-sm"
+          >
+            <div
+              v-for="option in options"
+              :key="option"
+              class="col-6"
+            >
+              <q-btn
+                :disable="!!answerStatus"
+                outline
+                color="grey-8"
+                :label="option"
+                no-caps
+                class="full-width"
+                data-cy="multiple-choice-option"
+                @click="handleMultipleChoiceSubmit(option)"
+              />
+            </div>
+          </div>
+
+          <!-- Blind Mode -->
+          <div v-else-if="gameSettings?.mode === 'blind'">
+            <q-btn
+              v-if="!showAnswer"
+              color="primary"
+              :label="TEXT_DE.voc.game.revealAnswer"
+              no-caps
+              class="full-width"
+              data-cy="reveal-answer-button"
+              @click="showAnswer = true"
+            />
+            <div
+              v-else
+              class="q-gutter-sm"
+            >
+              <p class="text-center text-grey-7 q-mb-sm">
+                {{ TEXT_DE.voc.game.wasYourAnswerCorrect }}
+              </p>
+              <div class="row q-col-gutter-sm">
+                <div class="col-6">
+                  <q-btn
+                    :disable="!!answerStatus"
+                    color="negative"
+                    :label="TEXT_DE.shared.common.no"
+                    no-caps
+                    class="full-width"
+                    data-cy="blind-no-button"
+                    @click="handleBlindSubmit(false)"
+                  />
+                </div>
+                <div class="col-6">
+                  <q-btn
+                    :disable="!!answerStatus"
+                    color="positive"
+                    :label="TEXT_DE.shared.common.yes"
+                    no-caps
+                    class="full-width"
+                    data-cy="blind-yes-button"
+                    @click="handleBlindSubmit(true)"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typing Mode -->
+          <div v-else-if="gameSettings?.mode === 'typing' && !answerStatus">
+            <CardInputSubmit
+              v-model="userAnswer"
+              :button-disabled="false"
+              :on-submit="handleTypingSubmit"
+              input-type="text"
+            />
+          </div>
+        </div>
       </div>
     </div>
-
-    <FlashCard
-      v-if="currentCard"
-      :key="currentCard.voc"
-      :card="currentCard"
-      :all-cards="allCards"
-      :settings="gameSettings!"
-      @answer="handleAnswer"
-      @next="handleNextCard"
-    />
   </q-page>
 </template>

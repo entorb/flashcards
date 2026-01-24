@@ -4,11 +4,12 @@ import {
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
-  MIN_TIME
+  MIN_TIME,
+  initializeGameFlow
 } from '@flashcards/shared'
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 
-import { INITIAL_CARDS } from '../constants'
+import { INITIAL_CARDS, GAME_STATE_FLOW_CONFIG } from '../constants'
 import { selectCardsForRound } from '../services/cardSelector'
 import { calculatePoints } from '../services/pointsCalculation'
 import {
@@ -83,10 +84,11 @@ export function useGameStore() {
   baseStore.initializeStore()
 
   // Restore game state and settings if page was reloaded during a game
+  // Only restore if there was an active game saved
   const savedGameState = storageLoadGameState()
   const savedGameSettings = storageLoadGameSettings()
 
-  if (savedGameState && savedGameSettings) {
+  if (savedGameState && savedGameSettings && savedGameState.gameCards.length > 0) {
     // Restore game settings
     baseStore.gameSettings.value = savedGameSettings
     // Restore game state
@@ -96,8 +98,8 @@ export function useGameStore() {
     baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
   }
 
-  // Save game state whenever it changes for reload recovery
-  const saveGameStateDebounced = () => {
+  // Helper function to save current game state to sessionStorage
+  function saveCurrentGameState() {
     storageSaveGameState({
       gameCards: baseStore.gameCards.value,
       currentCardIndex: baseStore.currentCardIndex.value,
@@ -106,15 +108,15 @@ export function useGameStore() {
     })
   }
 
-  watch(
-    () => [
-      baseStore.gameCards.value.length,
-      baseStore.currentCardIndex.value,
-      baseStore.points.value,
-      baseStore.correctAnswersCount.value
-    ],
-    saveGameStateDebounced
-  )
+  // Wrap nextCard to save state on card progression
+  const baseNextCard = baseStore.nextCard
+  function nextCard(): boolean {
+    const isGameOver = baseNextCard()
+    if (!isGameOver) {
+      saveCurrentGameState()
+    }
+    return isGameOver
+  }
 
   // App-specific actions
   function startGame(settings: GameSettings) {
@@ -132,12 +134,20 @@ export function useGameStore() {
     saveLastSettings(settings)
     storageSaveGameSettings(settings)
     baseStore.gameSettings.value = settings
-    baseStore.gameCards.value = selectCardsForRound(
+    const selectedCards = selectCardsForRound(
       baseStore.allCards.value,
       settings.focus,
       settings.mode
     )
+
+    // Use centralized game state flow to store settings + selected cards
+    initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
+
+    baseStore.gameCards.value = selectedCards
     baseStore.resetGameState()
+
+    // Save initial game state to sessionStorage for page reload persistence
+    saveCurrentGameState()
   }
 
   function handleAnswer(result: AnswerResult, answerTime?: number) {
@@ -188,6 +198,9 @@ export function useGameStore() {
     // Explicitly save cards on every answer because the watcher in the base store
     // doesn't seem to fire consistently. This is a workaround to ensure data is saved.
     saveCards(baseStore.allCards.value)
+
+    // Save game state to sessionStorage for page reload persistence
+    saveCurrentGameState()
   }
 
   function finishGame() {
@@ -304,7 +317,7 @@ export function useGameStore() {
     // Actions
     startGame,
     handleAnswer,
-    nextCard: baseStore.nextCard,
+    nextCard,
     finishGame,
     discardGame,
     resetCards: resetCardsToDefaultSet,
