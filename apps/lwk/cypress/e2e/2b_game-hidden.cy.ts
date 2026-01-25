@@ -43,7 +43,9 @@ describe('Hidden Mode Game', () => {
         .invoke('text')
         .then(text => {
           const word = text.trim()
-
+          // TODO: makes problems on prod build, so wait timer added
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
+          cy.wait(200) // Wait for countdown button to appear
           cy.get('[data-cy="start-countdown-button"]').click()
 
           cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
