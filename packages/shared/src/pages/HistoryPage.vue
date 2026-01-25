@@ -49,7 +49,7 @@ onUnmounted(() => {
 })
 
 function goHome() {
-  router.push({ name: '/' })
+  router.push('/')
 }
 </script>
 

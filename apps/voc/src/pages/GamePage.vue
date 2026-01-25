@@ -220,7 +220,7 @@ onMounted(() => {
   // Redirect home if there's no game in progress and no settings
   // This handles the case where user accessed /game directly without starting a game
   if (gameCards.value.length === 0 && !gameSettings.value) {
-    router.push({ name: '/' })
+    router.push('/')
   }
   globalThis.addEventListener('keydown', handleKeyDown)
 })

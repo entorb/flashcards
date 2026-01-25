@@ -144,7 +144,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 onMounted(() => {
   if (!currentCard.value) {
-    router.push({ name: '/' })
+    router.push('/')
     return
   }
 

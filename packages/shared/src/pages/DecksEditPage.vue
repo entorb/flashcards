@@ -29,7 +29,7 @@ function refreshDecks() {
 }
 
 function handleGoBack() {
-  router.push('/cards')
+  router.push('/')
 }
 
 function handleKeyDown(event: KeyboardEvent) {
