@@ -20,15 +20,11 @@ export const TEXT_DE = {
     common: {
       start: 'Starten',
       continue: 'Weiter',
-      reset: 'Zurücksetzen', // in LevelDistribution
       check: 'Prüfen',
       wait: 'Merken...',
       yes: 'Ja',
       no: 'Nein',
-      cancel: 'Abbrechen',
-      correct: 'Richtig',
-      incorrect: 'Falsch',
-      closeMatch: 'Fast richtig!'
+      reset: 'Zurücksetzen'
     },
     nav: {
       history: 'Verlauf',
@@ -51,15 +47,14 @@ export const TEXT_DE = {
       focus: 'Fokus',
       mode: 'Modus',
       direction: 'Richtung',
-      points: 'Punkte',
       bonusPoints: 'Bonus',
       firstGameBonus: 'Erstes Spiel heute',
       streakGameBonus: 'Spiel des Tages',
       vocable: 'Vokabel',
       german: 'Deutsch',
-      actions: 'Aktionen',
       delete: 'Löschen',
-      deck: 'Deck'
+      deck: 'Deck',
+      points: 'Punkte'
     },
     focusOptions: {
       weak: 'Schwache',
@@ -69,24 +64,27 @@ export const TEXT_DE = {
     },
     scoring: {
       title: 'Scoring-Regeln',
-      basePointsTitle: '1. Basispunkte',
-      basePointsDescription:
-        'Die Grundlage für die Punktzahl ist das Level der Karte. Aufgaben, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
+      basePointsTitle: 'Levelpunkte',
       basePointsLevel1: 'Level 1: 5 Punkte',
       basePointsLevel2: 'Level 2: 4 Punkte',
       basePointsLevel3: 'Level 3: 3 Punkte',
       basePointsLevel4: 'Level 4: 2 Punkte',
       basePointsLevel5: 'Level 5: 1 Punkt',
-      dailyBonusesTitle: '2. Tages-Boni',
-      dailyBonusFirstGame: 'Erstes Spiel des Tages: +5 Bonuspunkte',
-      dailyBonusStreak: 'Alle 5 Spiele des Tages: +5 Bonuspunkte',
-      speedBonusTitle: '3. Geschwindigkeits-Bonus',
-      speedBonusDescription:
-        'Wenn du eine Aufgabe schneller als beim letzten Mal richtig beantwortest: +5 Bonuspunkte'
+      difficultyTitle: 'Schwierigkeit',
+      bonusTitle: 'Bonuspunkte',
+      speedBonusDescription: 'Schneller als Rekord: +{points} Punkte',
+      dailyBonusFirstGame: 'Erstes Spiel des Tages: +{points} Punkte',
+      dailyBonusStreak: 'Alle {interval} Spiele des Tages: +{points} Punkte',
+      breakdown: {
+        levelPoints: 'Level',
+        difficultyPoints: 'Schwierigkeit',
+        closeAdjustment: 'Knapp daneben',
+        languageBonus: 'Sprachrichtung',
+        timeBonus: 'Zeitbonus'
+      }
     },
     cardActions: {
       moveAll: 'Verschieben',
-      moveDescription: 'Setze alle Elemente auf ein bestimmtes Level',
       dangerZoneTitle: 'Gefahrenzone',
       confirmMoveTitle: 'Verschieben bestätigen',
       confirmMoveMessage: 'Alle {count} Karten auf Level {level} setzen?',
@@ -97,10 +95,7 @@ export const TEXT_DE = {
       copied: 'Kopiert!',
       emptyTextError: 'Das Textfeld ist leer.',
       clipboardError: 'Zugriff auf Zwischenablage fehlgeschlagen.',
-      invalidLevelError: 'Bitte gib ein Level zwischen {min} und {max} ein.',
-      save: 'Speichern',
-      unsavedChangesTitle: 'Ungespeicherte Änderungen',
-      unsavedChangesMessage: 'Du hast ungespeicherte Änderungen. Möchtest du die Seite verlassen?'
+      invalidLevelError: 'Bitte gib ein Level zwischen {min} und {max} ein.'
     },
     pwa: {
       install: {
@@ -130,8 +125,7 @@ export const TEXT_DE = {
       feature1x20: '1x20'
     },
     info: {
-      description:
-        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Aufgaben zu schaffen.'
+      difficulty: 'Das 1x1: 4x8 -> 4'
     }
   },
 
@@ -158,8 +152,6 @@ export const TEXT_DE = {
       export: 'Raus kopieren',
       import: 'Rein kopieren',
       copied: 'Kopiert!',
-      reset: 'Alle Karten löschen',
-      moveAllTitle: 'Alle Karten verschieben',
       importDialogTitle: 'Karten importieren',
       importDialogMessage: 'Füge deine Karten aus Excel (oder so) ein (Format: Voc | De | Level)',
       importHintExcel:
@@ -169,45 +161,37 @@ export const TEXT_DE = {
         'Keine gültigen Karten gefunden. Format: Voc{delimiter}De{delimiter}LEVEL (optional)',
       importSuccess: '{count} Karten erfolgreich importiert!',
       editCardsTitle: 'Karten Bearbeiten',
-      editCardsButton: 'Bearbeiten',
       addNewCard: 'Neue Karte',
       vocPlaceholder: 'Vocable',
       dePlaceholder: 'Deutsch',
       validationEnEmpty: 'Das englische Wort darf nicht leer sein.',
-      validationDeEmpty: 'Das deutsche Wort darf nicht leer sein.'
+      validationDeEmpty: 'Das deutsche Wort darf nicht leer sein.',
+      moveAllTitle: 'Alle verschieben',
+      reset: 'Zurücksetzen'
     },
     decks: {
       title: 'Deck',
-      editDecksTitle: 'Decks Bearbeiten',
-      addDeck: 'Neues Deck',
-      deckNamePlaceholder: 'Deck Name',
-      confirmRemoveTitle: 'Deck entfernen?',
-      confirmRemoveMessage: 'Möchtest du das Deck "{name}" wirklich löschen?',
-      lastDeckError: 'Das letzte Deck kann nicht gelöscht werden.',
       duplicateNameError: 'Ein Deck mit diesem Namen existiert bereits.',
-      emptyNameError: 'Der Deck-Name darf nicht leer sein.'
+      lastDeckError: 'Das letzte Deck kann nicht entfernt werden.',
+      confirmRemoveTitle: 'Deck entfernen',
+      confirmRemoveMessage:
+        'Möchtest du das Deck "{name}" wirklich entfernen? Alle Karten darin gehen verloren.',
+      emptyNameError: 'Der Deck-Name darf nicht leer sein.',
+      editDecksTitle: 'Decks bearbeiten',
+      addDeck: 'Deck hinzufügen',
+      deckNamePlaceholder: 'Deck-Name'
     },
     info: {
-      basePointsDescription:
-        'Die Grundlage für die Punktzahl ist das Level der Karte. Wörter, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
-      description:
-        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Wörter und die Verwendung anspruchsvollerer Spielmodi zu schaffen.',
-      modeMultiplierTitle: '2. Modus-Multiplikator',
-      modeMultiplierDescription: 'Die Basispunkte werden mit einem Multiplikator versehen:',
-      modeMultiplierChoice: 'Multiple Choice: x1 (Standard)',
-      modeMultiplierBlind: 'Blind: x2',
-      modeMultiplierTyping: 'Schreiben: x4',
-      additionalRulesTitle: '3. Zusätzliche Regeln',
-      additionalRuleFastCorrect:
-        '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern (ein Buchstabe falsch) 75% der möglichen Punkte.',
-      additionalRuleLanguageBonus:
-        'Sprachrichtung: Für eine richtige Antwort in der Richtung Deutsch → Englisch erhältst du +1 Zusatzpunkt.',
-      additionalRuleWrong: 'Falsche Antworten geben immer 0 Punkte.',
-      dailyBonusesTitle: '4. Tages-Boni',
-      speedBonusTitle: '5. Geschwindigkeits-Bonus'
+      modeChoice: 'Multiple Choice: 1 Punkt',
+      modeBlind: 'Blind: {points} Punkte',
+      modeTyping: 'Schreiben: {points} Punkte',
+      additionalRulesTitle: 'Zusätzliche Regeln',
+      closeMatchDescription:
+        '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern 75% der Punkte.',
+      additionalRuleLangDirection:
+        'Sprachrichtung: Für die Richtung Deutsch → Voc +{points} Punkte.'
     }
   },
-
   // LWK app specific
   lwk: {
     mode: {
@@ -216,24 +200,13 @@ export const TEXT_DE = {
       tooGoodForCopy: 'Dafür bist du zu gut'
     },
     game: {
-      showWord: 'Wort zeigen',
-      hideWord: 'Wort verbergen',
-      wordHiddenIn: 'Wort wird verdeckt in',
-      correct: 'Richtig!',
-      incorrect: 'Leider falsch',
-      timeBonus: 'Geschwindigkeits-Bonus!',
-      newRecord: 'Neue Bestzeit!'
+      timeBonus: 'Geschwindigkeits-Bonus!'
     },
-    home: {
-      selectDeck: 'Wähle eine Kiste',
-      selectMode: 'Wähle einen Modus',
-      noCardsForMode: 'Keine Karten für diesen Modus verfügbar'
-    },
+    home: {},
     cards: {
       header:
         'Du kannst mehrere Lernwort-<strong>Kisten</strong> anlegen. Eine Kiste enthält mehrere <strong>Karten</strong>. Jede Karte ist ein Lernwort und hat ein <strong>Level</strong> (1=unbekannt bis 5=sicher). Richtige Antworten im Spiel erhöhen das Level, falsche verringern es.',
       reset: 'Alle Wörter löschen',
-      moveAllTitle: 'Alle Wörter verschieben',
       importDialogMessage: 'Füge deine Wörter ein (eines pro Zeile)',
       importDialogTitle: 'Wörter importieren',
       importHintExcel:
@@ -241,54 +214,35 @@ export const TEXT_DE = {
       noDelimiterError:
         'Keine Trennzeichen gefunden. Bitte verwende Tab, Semikolon, Komma oder Schrägstrich.',
       noCardsFoundError: 'Keine gültigen Karten mit Trennzeichen "{delimiter}" gefunden.',
-      noWordsFoundError: 'Keine gültigen Wörter gefunden.',
       importSuccess: '{count} Wörter erfolgreich importiert!',
       editCardsTitle: 'Wörter Bearbeiten',
-      editCardsButton: 'Bearbeiten',
       addNewCard: 'Neues Wort',
       wordPlaceholder: 'Wort',
-      saveSuccess: 'Änderungen gespeichert!',
       validationWordEmpty: 'Das Wort darf nicht leer sein.',
-      noCardsYet: 'Noch keine Wörter vorhanden'
+      noCardsYet: 'Noch keine Wörter vorhanden',
+      moveAllTitle: 'Alle verschieben'
     },
     decks: {
       title: 'Kiste',
-      selectDeck: 'Wähle eine Kiste',
-      editDecksTitle: 'Kisten Bearbeiten',
-      addDeck: 'Neue Kiste',
-      deckNamePlaceholder: 'Kisten Name',
-      confirmRemoveTitle: 'Kiste entfernen?',
-      confirmRemoveMessage: 'Möchtest du die Kiste "{name}" wirklich löschen?',
-      lastDeckError: 'Die letzte Kiste kann nicht gelöscht werden.',
       duplicateNameError: 'Eine Kiste mit diesem Namen existiert bereits.',
+      lastDeckError: 'Die letzte Kiste kann nicht entfernt werden.',
+      confirmRemoveTitle: 'Kiste entfernen',
+      confirmRemoveMessage:
+        'Möchtest du die Kiste "{name}" wirklich entfernen? Alle Wörter darin gehen verloren.',
       emptyNameError: 'Der Kisten-Name darf nicht leer sein.',
-      deckAdded: 'Kiste "{name}" wurde hinzugefügt',
-      deckRemoved: 'Kiste "{name}" wurde gelöscht',
-      deckRenamed: 'Kiste wurde umbenannt'
+      editDecksTitle: 'Kisten bearbeiten',
+      addDeck: 'Kiste hinzufügen',
+      deckNamePlaceholder: 'Kisten-Name'
     },
     gameOver: {
-      superMade: 'Super gemacht!',
-      wellDone: 'Gut gemacht!',
-      results: 'Ergebnis',
-      points: 'Punkte:',
-      correctAnswers: 'Richtige Antworten:'
+      points: 'Punkte:'
     },
     info: {
-      basePointsDescription:
-        'Die Grundlage für die Punktzahl ist das Level der Karte. Wörter, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
-      description:
-        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Wörter zu schaffen.',
-      modeTitle: '2. Modus',
-      modeCopy: 'Abschreiben: Für Karten mit Level 1 oder 2 (zum Üben)',
-      modeHidden: 'Verdeckt: Wort wird 3 Sekunden gezeigt, dann verdeckt (schwieriger)',
-      closeMatchTitle: '3. Fast richtig (nur Verdeckt)',
+      modeCopy: 'Abschreiben: Nur für Karten mit Level 1 oder 2 (zum Üben). 1 Punkt',
+      modeHidden: 'Verdeckt: Wort wird 3 Sekunden gezeigt, dann verdeckt. {points} Punkte',
+      additionalRulesTitle: 'Zusätzliche Regeln',
       closeMatchDescription:
-        'Wenn du nur einen Buchstaben falsch hast, bekommst du 75% der Punkte. Das Level wird aber nicht erhöht.',
-      speedBonusTitle: '4. Geschwindigkeits-Bonus (nur Verdeckt)',
-      dailyBonusesTitle: '5. Tages-Boni',
-      mascotTitle: 'Eisi der Eisbär',
-      mascotDescription:
-        'Eisi begleitet dich beim Lernen und freut sich über deine Fortschritte! Je besser du spielst, desto glücklicher ist Eisi.'
+        'Wenn du nur einen Buchstaben falsch hast, bekommst du 75% der Punkte. Das Level wird aber nicht erhöht.'
     }
   }
 } as const

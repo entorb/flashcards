@@ -26,8 +26,8 @@ describe('GamePage Component', () => {
       'voc-game-state',
       JSON.stringify({
         gameCards: [
-          { voc: 'hello', de: 'hallo', level: 1, time_blind: 60, time_typing: 60 },
-          { voc: 'world', de: 'welt', level: 1, time_blind: 60, time_typing: 60 }
+          { voc: 'hello', de: 'hallo', level: 1, time: 60 },
+          { voc: 'world', de: 'welt', level: 1, time: 60 }
         ],
         currentCardIndex: 0,
         points: 0,

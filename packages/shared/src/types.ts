@@ -19,18 +19,19 @@ export interface BaseGameHistory {
  */
 export interface BaseCard {
   level: number // 1-5
+  time: number // Seconds for last correct answer (0.1-60s, default 60)
 }
 
 /**
- * Common FocusType for both apps
+ * Common FocusType for all apps
  * Represents learning focus strategy
  */
 export type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
 
 /**
- * Common AnswerResult for both apps
+ * Common AnswerStatus for all apps
  */
-export type AnswerResult = 'correct' | 'incorrect' | 'close'
+export type AnswerStatus = 'correct' | 'incorrect' | 'close'
 
 /**
  * Game statistics interface
@@ -52,7 +53,7 @@ export interface GameResult {
 }
 
 /**
- * Game state during gameplay (shared across both apps)
+ * Game state during gameplay (shared across all apps)
  * Runtime state tracking
  */
 export interface GameState<T = BaseCard> {

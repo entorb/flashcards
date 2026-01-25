@@ -1,7 +1,17 @@
-import { createBaseGameStore, MAX_LEVEL, MIN_LEVEL } from '@flashcards/shared'
-import { computed, watch } from 'vue'
+import {
+  createBaseGameStore,
+  MAX_LEVEL,
+  MIN_LEVEL,
+  initializeGameFlow,
+  roundTime,
+  MIN_TIME,
+  MAX_TIME,
+  type AnswerStatus,
+  calculatePointsBreakdown
+} from '@flashcards/shared'
+import { computed } from 'vue'
 
-import { MAX_CARDS_PER_GAME } from '@/constants'
+import { MAX_CARDS_PER_GAME, GAME_STATE_FLOW_CONFIG } from '@/constants'
 import {
   filterCardsAll,
   filterCardsBySelection,
@@ -27,16 +37,6 @@ import {
 } from '@/services/storage'
 import type { Card, GameHistory, GameSettings } from '@/types'
 
-export interface AnswerData {
-  isCorrect: boolean
-  userAnswer: number
-  basePoints: number
-  levelBonus: number
-  speedBonus: number
-  totalPoints: number
-  timeTaken: number
-}
-
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
   loadCards: storageLoadCards,
@@ -58,17 +58,17 @@ export function useGameStore() {
   }
 
   // Restore game state if page was reloaded during a game
+  // Only restore if there was an active game saved
   const savedGameState = storageLoadGameState()
-
-  if (savedGameState) {
+  if (savedGameState && savedGameState.gameCards.length > 0) {
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
     baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
   }
 
-  // Save game state whenever it changes for reload recovery
-  const saveGameStateDebounced = () => {
+  // Helper function to save current game state to sessionStorage
+  function saveCurrentGameState() {
     storageSaveGameState({
       gameCards: baseStore.gameCards.value,
       currentCardIndex: baseStore.currentCardIndex.value,
@@ -76,16 +76,6 @@ export function useGameStore() {
       correctAnswersCount: baseStore.correctAnswersCount.value
     })
   }
-
-  watch(
-    () => [
-      baseStore.gameCards.value.length,
-      baseStore.currentCardIndex.value,
-      baseStore.points.value,
-      baseStore.correctAnswersCount.value
-    ],
-    saveGameStateDebounced
-  )
 
   // App-specific actions
   function startGame(settings: GameSettings, forceReset = false) {
@@ -123,32 +113,62 @@ export function useGameStore() {
       filteredCards = filterCardsBySelection(allAvailableCards, selectArray, rangeSet)
     }
 
-    baseStore.gameCards.value = selectCardsForRound(
-      filteredCards,
-      settings.focus,
-      MAX_CARDS_PER_GAME
-    )
+    const selectedCards = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
+
+    // Use centralized game state flow to store settings + selected cards
+    initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
+
+    baseStore.gameCards.value = selectedCards
+
+    // Save initial game state for reload recovery
+    storageSaveGameState({
+      gameCards: baseStore.gameCards.value,
+      currentCardIndex: 0,
+      points: 0,
+      correctAnswersCount: 0
+    })
   }
 
-  function handleAnswer(data: AnswerData) {
+  function handleAnswer(result: AnswerStatus, answerTime: number) {
     const card = currentCard.value
     if (!card || !baseStore.gameSettings.value) return
 
-    if (data.isCorrect) {
-      baseStore.points.value += data.totalPoints
-      baseStore.correctAnswersCount.value++
+    const pointsBreakdown = calculatePointsBreakdown({
+      difficultyPoints: 1,
+      level: card.level,
+      timeBonus: answerTime < card.time,
+      closeAdjustment: result === 'close'
+    })
 
+    baseStore.handleAnswerBase(result, pointsBreakdown)
+
+    if (result === 'correct' || result === 'close') {
       const newLevel = Math.min(card.level + 1, MAX_LEVEL)
+      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
       storageUpdateCard(card.question, {
         level: newLevel,
-        time: data.timeTaken
+        time: roundTime(clampedTime)
       })
-    } else {
+    } else if (result === 'incorrect') {
       const newLevel = Math.max(card.level - 1, MIN_LEVEL)
       storageUpdateCard(card.question, {
         level: newLevel
       })
     }
+
+    // Save game state after answer
+    saveCurrentGameState()
+  }
+
+  // Wrap nextCard to save state
+  const baseNextCard = baseStore.nextCard
+  function nextCard() {
+    const isGameOver = baseNextCard()
+    if (!isGameOver) {
+      // Save state after moving to next card (unless game is over)
+      saveCurrentGameState()
+    }
+    return isGameOver
   }
 
   function finishGame() {
@@ -201,6 +221,10 @@ export function useGameStore() {
     baseStore.discardGame()
   }
 
+  function resetCards() {
+    baseStore.resetAllCards()
+  }
+
   // Computed
   const currentCard = computed(() => {
     return baseStore.gameCards.value[baseStore.currentCardIndex.value] || null
@@ -217,12 +241,15 @@ export function useGameStore() {
     history: baseStore.history,
     gameStats: baseStore.gameStats,
     currentCard,
+    lastPointsBreakdown: baseStore.lastPointsBreakdown,
 
     // Actions
     startGame,
     handleAnswer,
-    nextCard: baseStore.nextCard,
+    nextCard,
     finishGame,
-    discardGame
+    discardGame,
+    resetCards,
+    moveAllCards: baseStore.moveAllCards
   }
 }

@@ -41,7 +41,7 @@ export const router = createRouter({
     {
       path: '/info',
       name: '/info',
-      component: () => import('./pages/InfoPage.vue')
+      component: () => import('./pages/ScoringRules.vue')
     }
   ]
 })

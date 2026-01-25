@@ -83,8 +83,7 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
         voc: parts[0].trim(),
         de: parts[1].trim(),
         level: Number.parseInt(parts[2], 10) || 1,
-        time_blind: DEFAULT_TIME,
-        time_typing: DEFAULT_TIME
+        time: DEFAULT_TIME
       })
     }
   }

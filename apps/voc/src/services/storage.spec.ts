@@ -29,11 +29,11 @@ describe('Deck Storage', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ]
       localStorage.setItem('voc-cards', JSON.stringify(testDecks))
@@ -69,11 +69,11 @@ describe('Deck Storage', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ]
 
@@ -114,11 +114,11 @@ describe('Deck Storage', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ]
       saveDecks(testDecks)
@@ -133,7 +133,7 @@ describe('Deck Storage', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ]
       saveDecks(testDecks)
@@ -155,11 +155,11 @@ describe('Deck Storage', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ]
       saveDecks(testDecks)
@@ -167,7 +167,7 @@ describe('Deck Storage', () => {
 
       const newCards: Card[] = [
         // cspell:disable-next-line
-        { voc: 'merci', de: 'danke', level: 2, time_blind: 10, time_typing: 10 }
+        { voc: 'merci', de: 'danke', level: 2, time: 10 }
       ]
       saveCards(newCards)
 
@@ -182,7 +182,7 @@ describe('Deck Storage', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ]
       saveDecks(testDecks)
@@ -193,9 +193,7 @@ describe('Deck Storage', () => {
         deck: 'nonexistent'
       })
 
-      const newCards: Card[] = [
-        { voc: 'test', de: 'Test', level: 1, time_blind: 5, time_typing: 5 }
-      ]
+      const newCards: Card[] = [{ voc: 'test', de: 'Test', level: 1, time: 5 }]
       saveCards(newCards)
 
       // Verify original deck unchanged
@@ -206,7 +204,7 @@ describe('Deck Storage', () => {
 
   describe('Migration edge cases', () => {
     it('should handle cards with new structure (voc field)', () => {
-      const newCards = [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+      const newCards = [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
       localStorage.setItem('voc-cards', JSON.stringify(newCards))
 
       const decks = loadDecks()

@@ -9,11 +9,11 @@ vi.mock('../services/storage', () => ({
   loadDecks: vi.fn(() => [
     {
       name: 'en',
-      cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+      cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
     }
   ]),
   saveDecks: vi.fn(),
-  loadCards: vi.fn(() => [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]),
+  loadCards: vi.fn(() => [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]),
   saveCards: vi.fn(),
   loadLastSettings: vi.fn(() => ({
     mode: 'multiple-choice',
@@ -63,7 +63,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
 
@@ -83,7 +83,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
 
@@ -101,11 +101,11 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ])
       vi.mocked(loadLastSettings).mockReturnValueOnce({
@@ -121,7 +121,7 @@ describe('useGameStore - Deck Operations', () => {
       expect(saveDecks).toHaveBeenCalledWith([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
     })
@@ -132,7 +132,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
 
@@ -149,11 +149,11 @@ describe('useGameStore - Deck Operations', () => {
       const testDecks: CardDeck[] = [
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ]
       vi.mocked(loadDecks).mockReturnValue(testDecks)
@@ -163,9 +163,7 @@ describe('useGameStore - Deck Operations', () => {
         language: 'voc-de',
         deck: 'fr'
       })
-      vi.mocked(loadCards).mockReturnValue([
-        { voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }
-      ])
+      vi.mocked(loadCards).mockReturnValue([{ voc: 'hello', de: 'hallo', level: 1, time: 5 }])
 
       const success = store.removeDeck('fr')
 
@@ -184,7 +182,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
 
@@ -202,7 +200,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
       vi.mocked(loadLastSettings).mockReturnValueOnce({
@@ -218,7 +216,7 @@ describe('useGameStore - Deck Operations', () => {
       expect(saveDecks).toHaveBeenCalledWith([
         {
           name: 'english',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
     })
@@ -229,11 +227,11 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ])
 
@@ -249,7 +247,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
       vi.mocked(loadLastSettings).mockReturnValueOnce({
@@ -276,7 +274,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
 
@@ -294,11 +292,11 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         {
           name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ])
 
@@ -317,7 +315,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
 
@@ -336,7 +334,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
       const addResult = store.addDeck('fr')
@@ -346,7 +344,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         { name: 'fr', cards: [] }
       ])
@@ -363,7 +361,7 @@ describe('useGameStore - Deck Operations', () => {
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
           name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time_blind: 5, time_typing: 5 }]
+          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         },
         { name: 'french', cards: [] }
       ])
