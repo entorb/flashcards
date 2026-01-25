@@ -61,8 +61,8 @@ export interface GameState extends SharedGameState {
  * Detailed breakdown of points calculation for feedback display
  */
 export interface PointsBreakdown {
-  basePoints: number
-  modeMultiplier: number
+  levelPoints: number
+  difficultyPoints: number
   pointsBeforeBonus: number
   closeAdjustment: number
   languageBonus: number

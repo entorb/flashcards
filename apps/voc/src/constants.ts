@@ -31,19 +31,14 @@ export const MAX_CARDS_PER_GAME = 10
 // ============================================================================
 
 /**
- * Point multiplier for blind mode (medium difficulty)
+ * Points for blind mode (medium difficulty)
  */
-export const MODE_MULTIPLIER_BLIND = 2
+export const POINTS_MODE_BLIND = 4
 
 /**
- * Point multiplier for typing mode (high difficulty)
+ * Points for typing mode (high difficulty)
  */
-export const MODE_MULTIPLIER_TYPING = 4
-
-/**
- * Points earned for closing answer with typos in typing mode (75% of base)
- */
-export const CLOSE_MATCH_SCORE_PERCENTAGE = 0.75
+export const POINTS_MODE_TYPING = 8
 
 /**
  * Bonus points for answering in DE→Voc direction (increased difficulty)

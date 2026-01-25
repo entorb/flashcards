@@ -4,9 +4,15 @@ import {
   TEXT_DE,
   useFeedbackTimers,
   useKeyboardContinue,
-  MAX_TIME
+  MAX_TIME,
+  calculatePointsBreakdown
 } from '@flashcards/shared'
-import { GameHeader, CardQuestion, CardInputSubmit } from '@flashcards/shared/components'
+import {
+  GameHeader,
+  CardQuestion,
+  CardInputSubmit,
+  CardPointsBreakdown
+} from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -33,6 +39,18 @@ const { elapsedTime, stopTimer } = useGameTimer(currentCard)
 const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
 const answerData = ref<AnswerData | null>(null)
+
+const pointsBreakdown = computed(() => {
+  if (!answerData.value || !answerData.value.isCorrect) return null
+
+  const data = answerData.value
+  return calculatePointsBreakdown({
+    difficultyPoints: data.basePoints,
+    level: currentCard.value.level,
+    timeBonus: data.isRecordTime,
+    closeAdjustment: false
+  })
+})
 
 // Use shared timer composable
 const {
@@ -116,30 +134,35 @@ function submitAnswer() {
   const isCorrect = userAnswerNum === currentCard.value.answer
   const timeTaken = elapsedTime.value
 
-  let basePoints = 0
-  let levelBonus = 0
-  let speedBonus = 0
+  let multiplier = 0
+  let speedBonus = false
 
   if (isCorrect) {
     // Calculate points for correct answer
     const [x, y] = currentCard.value.question.split('x').map(s => Number.parseInt(s, 10))
-    basePoints = Math.min(x, y)
-    levelBonus = 6 - currentCard.value.level
+    // multiplier is the smaller of the two factors
+    multiplier = Math.min(x, y)
 
     // Add speed bonus if last time < MAX_TIME and current time <= last time
     if (currentCard.value.time < MAX_TIME && timeTaken <= currentCard.value.time) {
-      speedBonus = 1
+      speedBonus = true
     }
   }
 
-  const totalPoints = basePoints + levelBonus + speedBonus
+  const totalPoints = isCorrect
+    ? calculatePointsBreakdown({
+        difficultyPoints: multiplier,
+        level: currentCard.value.level,
+        timeBonus: speedBonus,
+        closeAdjustment: false
+      }).totalPoints
+    : 0
 
   answerData.value = {
     isCorrect,
     userAnswer: userAnswerNum,
-    basePoints,
-    levelBonus,
-    speedBonus,
+    basePoints: multiplier,
+    isRecordTime: speedBonus,
     totalPoints,
     timeTaken
   }
@@ -236,28 +259,10 @@ onUnmounted(() => {
             </q-card-section>
           </q-card>
 
-          <!-- Points display on correct answers -->
-          <q-card
-            v-else
-            class="q-mb-md bg-positive-1"
-            data-cy="correct-answer-feedback"
-          >
-            <q-card-section class="text-center q-pa-md">
-              <div class="text-h5 text-weight-bold text-positive">
-                {{ answerData.totalPoints }} {{ TEXT_DE.shared.words.points }}
-              </div>
-              <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
-                <span v-if="answerData.speedBonus > 0">
-                  {{ answerData.levelBonus }} + {{ answerData.basePoints }} +
-                  {{ answerData.speedBonus }} = {{ answerData.totalPoints }}
-                </span>
-                <span v-else>
-                  {{ answerData.levelBonus }} + {{ answerData.basePoints }} =
-                  {{ answerData.totalPoints }}
-                </span>
-              </div>
-            </q-card-section>
-          </q-card>
+          <CardPointsBreakdown
+            :answer-status="answerData.isCorrect ? 'correct' : null"
+            :points-breakdown="pointsBreakdown"
+          />
 
           <!-- Continue Button with icon -->
           <q-btn

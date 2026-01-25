@@ -3,39 +3,88 @@
  * Common patterns for points calculation across apps
  */
 
-import { LEVEL_BONUS_NUMERATOR } from '../constants'
+import { CLOSE_MATCH_SCORE_PERCENTAGE, MAX_LEVEL, SPEED_BONUS_POINTS } from '../constants'
+
+/**
+ * Calculate base points from card level
+ * Higher levels get fewer base points (Level 1 = 5pts, Level 5 = 1pt)
+ *
+ * @param level - Card difficulty level (1-5)
+ * @returns Base points for the level
+ *
+ * @example
+ * calculateBasePoints(1) // Returns 5
+ * calculateBasePoints(5) // Returns 1
+ */
+export function calculateLevelPoints(level: number): number {
+  return MAX_LEVEL + 1 - level
+}
 
 /**
  * Generic points calculation configuration
  */
 export interface PointsConfig {
+  difficultyPoints: number
   level: number
-  timeBonus?: number
-  modeMultiplier?: number
-  closeAdjustment?: number
-  basePoints: number
+  timeBonus: boolean
+  closeAdjustment: boolean
 }
 
 /**
- * Calculate total points from component scores
- * Supports: base points + level bonus + time bonus + mode multiplier + close match adjustment
- *
- * @example
- * // 1x1: base=3, level=2, speedBonus=1
- * calculatePoints({ basePoints: 3, level: 2, timeBonus: 1 })
- * // Returns: 3 + (6-2) + 1 = 8
- *
- * @example
- * // voc: base=3, level=2, modeMultiplier=2, closeAdjustment=0.75
- * calculatePoints({ basePoints: 3, level: 2, modeMultiplier: 2, closeAdjustment: 0.75 })
- * // Returns: 3 * 2 * 0.75 + (6-2) = 4.5 + 4 = 8.5
+ * Points breakdown interface for detailed scoring display
  */
-export function calculatePoints(config: PointsConfig): number {
-  const { basePoints, level, timeBonus = 0, modeMultiplier = 1, closeAdjustment = 1 } = config
+export interface PointsBreakdown {
+  levelPoints: number
+  difficultyPoints: number
+  pointsBeforeBonus: number
+  closeAdjustment: number
+  languageBonus: number
+  timeBonus: number
+  totalPoints: number
+}
 
-  const levelBonus = LEVEL_BONUS_NUMERATOR - level
-  const pointsBeforeBonus = basePoints * modeMultiplier * closeAdjustment
-  const totalPoints = pointsBeforeBonus + levelBonus + timeBonus
+/**
+ * Calculate detailed points breakdown for display
+ * @param config - Configuration for points breakdown calculation
+ * @returns PointsBreakdown object with detailed scoring information
+ */
+export function calculatePointsBreakdown(config: {
+  difficultyPoints: number
+  level: number
+  timeBonus: boolean
+  closeAdjustment: boolean
+  languageBonus?: number
+}): PointsBreakdown {
+  const {
+    difficultyPoints,
+    level,
+    timeBonus = false,
+    closeAdjustment = false,
+    languageBonus = 0
+  } = config
 
-  return totalPoints
+  const levelPoints = calculateLevelPoints(level)
+  const pointsBeforeBonus = difficultyPoints + levelPoints
+  let totalPoints = pointsBeforeBonus
+  let penalty = 0
+
+  if (!closeAdjustment && timeBonus) {
+    totalPoints += SPEED_BONUS_POINTS
+  }
+  if (closeAdjustment) {
+    // penalty is a positive number representing points deducted
+    penalty = totalPoints - Math.round(totalPoints * CLOSE_MATCH_SCORE_PERCENTAGE)
+    totalPoints -= penalty
+  }
+  totalPoints += languageBonus
+
+  return {
+    levelPoints,
+    difficultyPoints,
+    pointsBeforeBonus,
+    closeAdjustment: penalty,
+    languageBonus,
+    timeBonus: !closeAdjustment && timeBonus ? SPEED_BONUS_POINTS : 0,
+    totalPoints
+  }
 }

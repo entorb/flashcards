@@ -3,7 +3,7 @@
  * Common patterns used by both 1x1 and voc apps
  */
 
-import { LEVEL_BONUS_NUMERATOR } from '../constants'
+import { MAX_LEVEL } from '../constants'
 import type { DailyStats } from '../types'
 import { weightedRandomSelection } from '../utils'
 
@@ -315,7 +315,7 @@ export function selectCardsByFocus<T extends { level: number }>(
 
     if (focus === 'weak') {
       // Level 1 = 5x weight, Level 5 = 1x weight
-      weight = LEVEL_BONUS_NUMERATOR - card.level
+      weight = MAX_LEVEL + 1 - card.level
     } else if (focus === 'strong') {
       // Level 1 = 1x weight, Level 5 = 5x weight
       weight = card.level

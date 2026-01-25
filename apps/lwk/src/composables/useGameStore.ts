@@ -11,12 +11,12 @@ import {
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
-  SPEED_BONUS_POINTS,
+  calculatePointsBreakdown,
   initializeGameFlow
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
-import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG } from '../constants'
+import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from '../constants'
 import { selectCards } from '../services/cardSelector'
 import {
   clearGameState,
@@ -37,7 +37,6 @@ import {
   setGameResult
 } from '../services/storage'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
-import { calculateSpellingPoints } from '../utils/helpers'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -183,27 +182,34 @@ export function useGameStore() {
     })
   }
 
-  function handleAnswer(result: AnswerResult, isCloseMatch: boolean = false, answerTime?: number) {
+  function handleAnswer(result: AnswerResult, answerTime: number) {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
     let pointsEarned = 0
-    let speedBonus = 0
+    let speedBonus = false
 
-    if (result === 'correct') {
-      baseStore.correctAnswersCount.value++
-      pointsEarned = calculateSpellingPoints(true, false, currentCard.level)
+    if (result === 'correct' || result === 'close') {
+      if (result === 'correct') {
+        baseStore.correctAnswersCount.value++
+      }
 
-      // Speed bonus only in hidden mode
-      if (baseStore.gameSettings.value.mode === 'hidden' && answerTime !== undefined) {
-        if (answerTime < currentCard.time) {
-          speedBonus = SPEED_BONUS_POINTS
-          pointsEarned += speedBonus
+      // Speed bonus only in hidden mode and only for correct answers
+      if (result === 'correct' && baseStore.gameSettings.value.mode === 'hidden') {
+        if (answerTime < currentCard.time && currentCard.time < MAX_TIME) {
+          speedBonus = true
         }
       }
-    } else if (isCloseMatch) {
-      // Close match: 75% points, no level change
-      pointsEarned = calculateSpellingPoints(false, true, currentCard.level)
+
+      // Determine mode multiplier
+      const modePoints = baseStore.gameSettings.value.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1
+
+      pointsEarned = calculatePointsBreakdown({
+        difficultyPoints: modePoints,
+        level: currentCard.level,
+        timeBonus: speedBonus,
+        closeAdjustment: result === 'close'
+      }).totalPoints
     }
 
     baseStore.points.value += pointsEarned
@@ -216,16 +222,12 @@ export function useGameStore() {
         // Update level (not for close matches)
         if (result === 'correct') {
           updates.level = Math.min(MAX_LEVEL, card.level + 1)
-        } else if (result === 'incorrect' && !isCloseMatch) {
+        } else if (result === 'incorrect') {
           updates.level = Math.max(MIN_LEVEL, card.level - 1)
         }
 
         // Update time (only on correct answers in hidden mode)
-        if (
-          result === 'correct' &&
-          answerTime !== undefined &&
-          baseStore.gameSettings.value?.mode === 'hidden'
-        ) {
+        if (result === 'correct' && baseStore.gameSettings.value?.mode === 'hidden') {
           const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
           updates.time = roundTime(clampedTime)
         }

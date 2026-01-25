@@ -6,14 +6,19 @@ import {
   useKeyboardContinue,
   MAX_TIME
 } from '@flashcards/shared'
-import { GameHeader, CardQuestion, CardInputSubmit } from '@flashcards/shared/components'
-import { shuffleArray } from '@flashcards/shared/utils'
+import { shuffleArray, calculatePointsBreakdown } from '@flashcards/shared'
+import {
+  GameHeader,
+  CardQuestion,
+  CardInputSubmit,
+  CardPointsBreakdown
+} from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
-import { calculatePointsBreakdown } from '../services/pointsCalculation'
-import type { AnswerData, PointsBreakdown } from '../types'
+import { LANGUAGE_BONUS_DE_VOC, POINTS_MODE_BLIND, POINTS_MODE_TYPING } from '../constants'
+import type { AnswerData, Card, GameSettings, PointsBreakdown } from '../types'
 import { validateTypingAnswer } from '../utils/helpers'
 
 const router = useRouter()
@@ -116,6 +121,43 @@ watch(
   { immediate: true }
 )
 
+function calculatePointsForAnswer(
+  result: AnswerResult,
+  currentCard: Card,
+  gameSettings: GameSettings,
+  answerTime: number
+): PointsBreakdown {
+  const mode = gameSettings.mode
+  let cardTime: number
+  if (mode === 'blind') {
+    cardTime = currentCard.time_blind
+  } else if (mode === 'typing') {
+    cardTime = currentCard.time_typing
+  } else {
+    cardTime = MAX_TIME
+  }
+  let difficultyPoints: number
+  if (mode === 'blind') {
+    difficultyPoints = POINTS_MODE_BLIND
+  } else if (mode === 'typing') {
+    difficultyPoints = POINTS_MODE_TYPING
+  } else {
+    difficultyPoints = 1
+  }
+  const timeBonus =
+    result === 'correct' && answerTime !== undefined && cardTime < MAX_TIME && answerTime < cardTime
+  const languageBonus =
+    result === 'correct' && gameSettings.language === 'de-voc' ? LANGUAGE_BONUS_DE_VOC : 0
+
+  return calculatePointsBreakdown({
+    difficultyPoints,
+    level: currentCard.level,
+    timeBonus,
+    closeAdjustment: result === 'close',
+    languageBonus
+  })
+}
+
 function processAnswer(result: AnswerResult) {
   if (answerStatus.value) return
 
@@ -124,7 +166,7 @@ function processAnswer(result: AnswerResult) {
 
   // Calculate points breakdown
   if (currentCard.value && gameSettings.value) {
-    pointsBreakdown.value = calculatePointsBreakdown(
+    pointsBreakdown.value = calculatePointsForAnswer(
       result,
       currentCard.value,
       gameSettings.value,
@@ -300,36 +342,10 @@ onUnmounted(() => {
             </q-card-section>
           </q-card>
 
-          <!-- Points display on correct and close answers -->
-          <q-card
-            v-if="(answerStatus === 'correct' || answerStatus === 'close') && pointsBreakdown"
-            class="q-mb-md"
-            :class="[answerStatus === 'correct' ? 'bg-positive-1' : 'bg-warning-1']"
-          >
-            <q-card-section class="text-center q-pa-md">
-              <div
-                class="text-h5 text-weight-bold"
-                :class="[answerStatus === 'correct' ? 'text-positive' : 'text-warning']"
-              >
-                +{{ pointsBreakdown.totalPoints }} {{ TEXT_DE.shared.words.points }}
-              </div>
-              <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
-                <span>
-                  {{ pointsBreakdown.basePoints }} × {{ pointsBreakdown.modeMultiplier }}
-                  <span v-if="answerStatus === 'close'">
-                    {{ pointsBreakdown.closeAdjustment }}
-                  </span>
-                  <span v-if="pointsBreakdown.languageBonus > 0">
-                    + {{ pointsBreakdown.languageBonus }}
-                  </span>
-                  <span v-if="pointsBreakdown.timeBonus > 0">
-                    + {{ pointsBreakdown.timeBonus }}
-                  </span>
-                  = {{ pointsBreakdown.totalPoints }}
-                </span>
-              </div>
-            </q-card-section>
-          </q-card>
+          <CardPointsBreakdown
+            :answer-status="answerStatus"
+            :points-breakdown="pointsBreakdown"
+          />
 
           <!-- Continue Button with icon when feedback is shown -->
           <q-btn

@@ -224,7 +224,7 @@ export default [
       'vue/multi-word-component-names': [
         'error',
         {
-          ignores: ['default', 'index', 'App', 'Flashcard', 'Scoreboard']
+          ignores: ['default', 'index', 'App']
         }
       ],
       'vue/no-duplicate-attr-inheritance': 'error',

@@ -69,20 +69,24 @@ export const TEXT_DE = {
     },
     scoring: {
       title: 'Scoring-Regeln',
-      basePointsTitle: '1. Basispunkte',
-      basePointsDescription:
-        'Die Grundlage für die Punktzahl ist das Level der Karte. Aufgaben, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
+      basePointsTitle: 'Levelpunkte',
       basePointsLevel1: 'Level 1: 5 Punkte',
       basePointsLevel2: 'Level 2: 4 Punkte',
       basePointsLevel3: 'Level 3: 3 Punkte',
       basePointsLevel4: 'Level 4: 2 Punkte',
       basePointsLevel5: 'Level 5: 1 Punkt',
-      dailyBonusesTitle: '2. Tages-Boni',
-      dailyBonusFirstGame: 'Erstes Spiel des Tages: +5 Bonuspunkte',
-      dailyBonusStreak: 'Alle 5 Spiele des Tages: +5 Bonuspunkte',
-      speedBonusTitle: '3. Geschwindigkeits-Bonus',
-      speedBonusDescription:
-        'Wenn du eine Aufgabe schneller als beim letzten Mal richtig beantwortest: +5 Bonuspunkte'
+      difficultyTitle: 'Schwierigkeit',
+      bonusTitle: 'Bonuspunkte',
+      speedBonusDescription: 'Schneller als Rekord: +{points} Punkte',
+      dailyBonusFirstGame: 'Erstes Spiel des Tages: +{points} Punkte',
+      dailyBonusStreak: 'Alle {interval} Spiele des Tages: +{points} Punkte',
+      breakdown: {
+        levelPoints: 'Level',
+        difficultyPoints: 'Schwierigkeit',
+        closeAdjustment: 'Knapp daneben',
+        languageBonus: 'Sprachrichtung',
+        timeBonus: 'Geschwindigkeits'
+      }
     },
     cardActions: {
       moveAll: 'Verschieben',
@@ -130,8 +134,7 @@ export const TEXT_DE = {
       feature1x20: '1x20'
     },
     info: {
-      description:
-        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Aufgaben zu schaffen.'
+      difficulty: 'Das 1x1: 4x8 -> 4'
     }
   },
 
@@ -190,21 +193,16 @@ export const TEXT_DE = {
     info: {
       basePointsDescription:
         'Die Grundlage für die Punktzahl ist das Level der Karte. Wörter, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
-      description:
-        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Wörter und die Verwendung anspruchsvollerer Spielmodi zu schaffen.',
-      modeMultiplierTitle: '2. Modus-Multiplikator',
-      modeMultiplierDescription: 'Die Basispunkte werden mit einem Multiplikator versehen:',
-      modeMultiplierChoice: 'Multiple Choice: x1 (Standard)',
-      modeMultiplierBlind: 'Blind: x2',
-      modeMultiplierTyping: 'Schreiben: x4',
-      additionalRulesTitle: '3. Zusätzliche Regeln',
-      additionalRuleFastCorrect:
-        '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern (ein Buchstabe falsch) 75% der möglichen Punkte.',
-      additionalRuleLanguageBonus:
-        'Sprachrichtung: Für eine richtige Antwort in der Richtung Deutsch → Englisch erhältst du +1 Zusatzpunkt.',
-      additionalRuleWrong: 'Falsche Antworten geben immer 0 Punkte.',
+      modeChoice: 'Multiple Choice: 1 Punkt',
+      modeBlind: 'Blind: {points} Punkte',
+      modeTyping: 'Schreiben: {points} Punkte',
+      additionalRulesTitle: 'Zusätzliche Regeln',
+      closeMatchDescription:
+        '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern 75% der Punkte.',
+      additionalRuleLangDirection:
+        'Sprachrichtung: Für die Richtung Deutsch → Voc +{points} Punkte.',
       dailyBonusesTitle: '4. Tages-Boni',
-      speedBonusTitle: '5. Geschwindigkeits-Bonus'
+      speedBonusTitle: '5. Geschwindigkeits-Bonus (nur Schreiben)'
     }
   },
 
@@ -274,18 +272,12 @@ export const TEXT_DE = {
       correctAnswers: 'Richtige Antworten:'
     },
     info: {
-      basePointsDescription:
-        'Die Grundlage für die Punktzahl ist das Level der Karte. Wörter, die du weniger gut kennst (niedrigeres Level), geben mehr Punkte.',
-      description:
-        'Dein Punktestand (Score) wird basierend auf mehreren Faktoren berechnet, um einen Anreiz für das Lernen schwierigerer Wörter zu schaffen.',
-      modeTitle: '2. Modus',
-      modeCopy: 'Abschreiben: Für Karten mit Level 1 oder 2 (zum Üben)',
-      modeHidden: 'Verdeckt: Wort wird 3 Sekunden gezeigt, dann verdeckt (schwieriger)',
-      closeMatchTitle: '3. Fast richtig (nur Verdeckt)',
+      modeCopy: 'Abschreiben: Nur für Karten mit Level 1 oder 2 (zum Üben). 1 Punkt',
+      modeHidden: 'Verdeckt: Wort wird 3 Sekunden gezeigt, dann verdeckt. {points} Punkte',
+      additionalRulesTitle: 'Zusätzliche Regeln',
       closeMatchDescription:
         'Wenn du nur einen Buchstaben falsch hast, bekommst du 75% der Punkte. Das Level wird aber nicht erhöht.',
-      speedBonusTitle: '4. Geschwindigkeits-Bonus (nur Verdeckt)',
-      dailyBonusesTitle: '5. Tages-Boni',
+      dailyBonusesTitle: 'Tages-Bonus',
       mascotTitle: 'Eisi der Eisbär',
       mascotDescription:
         'Eisi begleitet dich beim Lernen und freut sich über deine Fortschritte! Je besser du spielst, desto glücklicher ist Eisi.'

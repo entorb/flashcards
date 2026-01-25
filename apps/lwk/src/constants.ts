@@ -36,9 +36,9 @@ export const MAX_CARDS_PER_GAME = 10
 export const WORD_DISPLAY_DURATION = 3
 
 /**
- * Close match scoring percentage (for 1 character difference)
+ * Points for hidden mode
  */
-export const CLOSE_MATCH_SCORE_PERCENTAGE = 0.75
+export const POINTS_MODE_HIDDEN = 4
 
 /**
  * Levenshtein distance threshold for close match detection

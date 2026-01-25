@@ -70,9 +70,3 @@ export const STORAGE_KEYS = {
 // ============================================================================
 // Utility Types
 // ============================================================================
-
-export type SpellingCheck = {
-  isCorrect: boolean
-  isCloseMatch: boolean // Only one character different
-  distance: number // Levenshtein distance
-}

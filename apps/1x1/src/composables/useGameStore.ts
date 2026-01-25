@@ -31,8 +31,7 @@ export interface AnswerData {
   isCorrect: boolean
   userAnswer: number
   basePoints: number
-  levelBonus: number
-  speedBonus: number
+  isRecordTime: boolean
   totalPoints: number
   timeTaken: number
 }
@@ -65,6 +64,16 @@ export function useGameStore() {
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
     baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
+  }
+
+  // Helper function to save current game state to sessionStorage
+  function saveCurrentGameState() {
+    storageSaveGameState({
+      gameCards: baseStore.gameCards.value,
+      currentCardIndex: baseStore.currentCardIndex.value,
+      points: baseStore.points.value,
+      correctAnswersCount: baseStore.correctAnswersCount.value
+    })
   }
 
   // App-specific actions
@@ -140,12 +149,7 @@ export function useGameStore() {
     }
 
     // Save game state after answer
-    storageSaveGameState({
-      gameCards: baseStore.gameCards.value,
-      currentCardIndex: baseStore.currentCardIndex.value,
-      points: baseStore.points.value,
-      correctAnswersCount: baseStore.correctAnswersCount.value
-    })
+    saveCurrentGameState()
   }
 
   // Wrap nextCard to save state
@@ -154,12 +158,7 @@ export function useGameStore() {
     const isGameOver = baseNextCard()
     if (!isGameOver) {
       // Save state after moving to next card (unless game is over)
-      storageSaveGameState({
-        gameCards: baseStore.gameCards.value,
-        currentCardIndex: baseStore.currentCardIndex.value,
-        points: baseStore.points.value,
-        correctAnswersCount: baseStore.correctAnswersCount.value
-      })
+      saveCurrentGameState()
     }
     return isGameOver
   }

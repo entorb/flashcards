@@ -5,13 +5,13 @@ import {
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
-  initializeGameFlow
+  initializeGameFlow,
+  calculatePointsBreakdown
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
 import { INITIAL_CARDS, GAME_STATE_FLOW_CONFIG } from '../constants'
 import { selectCardsForRound } from '../services/cardSelector'
-import { calculatePoints } from '../services/pointsCalculation'
 import {
   loadCards,
   loadGameStats,
@@ -158,14 +158,43 @@ export function useGameStore() {
       baseStore.correctAnswersCount.value++
     }
 
-    // Calculate and apply points
-    const pointsEarned = calculatePoints(
-      result,
-      currentCard,
-      baseStore.gameSettings.value,
-      answerTime
-    )
-    baseStore.points.value += pointsEarned
+    // Calculate points using shared scoring logic
+    // Determine mode multiplier
+    const difficultyPoints = (() => {
+      switch (baseStore.gameSettings.value.mode) {
+        case 'blind':
+          return 4 // POINTS_MODE_BLIND
+        case 'typing':
+          return 8 // POINTS_MODE_TYPING
+        default:
+          return 1
+      }
+    })()
+
+    // Calculate language bonus
+    const languageBonus =
+      result === 'correct' && baseStore.gameSettings.value.language === 'de-voc' ? 1 : 0
+
+    // Determine time bonus
+    const isBeatTime =
+      result === 'correct' &&
+      answerTime !== undefined &&
+      answerTime < MAX_TIME &&
+      ((baseStore.gameSettings.value.mode === 'blind' && answerTime < currentCard.time_blind) ||
+        (baseStore.gameSettings.value.mode === 'typing' && answerTime < currentCard.time_typing))
+
+    const timeBonus = isBeatTime
+    const closeAdjustment = result === 'close'
+
+    const pointsBreakdown = calculatePointsBreakdown({
+      difficultyPoints,
+      level: currentCard.level,
+      timeBonus,
+      closeAdjustment,
+      languageBonus
+    })
+
+    baseStore.points.value += pointsBreakdown.totalPoints
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {
