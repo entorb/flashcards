@@ -54,9 +54,9 @@ describe('Hidden Mode Game', () => {
           cy.get('[data-cy="submit-answer-button"]').click()
         })
 
-      cy.get('[data-cy="proceed-button"]', { timeout: 10000 }).should('be.visible')
-      cy.get('[data-cy="proceed-button"]').should('not.be.disabled')
-      cy.get('[data-cy="proceed-button"]').click()
+      cy.get('[data-cy="continue-button"]', { timeout: 10000 }).should('be.visible')
+      cy.get('[data-cy="continue-button"]').should('not.be.disabled')
+      cy.get('[data-cy="continue-button"]').click()
     }
 
     cy.then(() => {

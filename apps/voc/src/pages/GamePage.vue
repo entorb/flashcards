@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import {
   type AnswerStatus,
+  MAX_TIME,
   TEXT_DE,
   useFeedbackTimers,
-  useKeyboardContinue,
-  MAX_TIME
+  useGameNavigation,
+  useGameTimer,
+  useKeyboardContinue
 } from '@flashcards/shared'
 import { shuffleArray } from '@flashcards/shared'
 import {
-  GameHeader,
-  CardQuestion,
   CardInputSubmit,
+  CardNextCardButton,
   CardPointsBreakdown,
-  CardNextCardButton
+  CardQuestion,
+  GameHeader
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -48,9 +50,20 @@ const feedbackData = ref<{
   highlightedText?: string
 }>({ type: 'simple' })
 const showProceedButton = ref(false)
-const startTime = ref<number>(0)
 
-// Use shared timer composable
+// Use shared timer logic
+const { elapsedTime, stopTimer } = useGameTimer(currentCard)
+
+// Use shared navigation logic
+const { handleNextCard, handleGoHome } = useGameNavigation({
+  stopTimer,
+  nextCard,
+  finishGame,
+  discardGame,
+  router
+})
+
+// Use shared feedback timers for blocking proceed on wrong/close answers
 const {
   isButtonDisabled: isProceedDisabled,
   buttonDisableCountdown,
@@ -112,16 +125,15 @@ watch(
     userAnswer.value = ''
     feedbackData.value = { type: 'simple' }
     showProceedButton.value = false
-    startTime.value = Date.now()
   },
   { immediate: true }
 )
 
-function processAnswer(result: AnswerStatus) {
+function submitAnswer(result: AnswerStatus) {
   if (answerStatus.value) return
 
   // Calculate answer time in seconds
-  const answerTime = (Date.now() - startTime.value) / 1000
+  const answerTime = elapsedTime.value
 
   // Handle the answer in the store
   storeHandleAnswer(result, answerTime)
@@ -157,14 +169,14 @@ function processAnswer(result: AnswerStatus) {
 }
 
 function handleMultipleChoiceSubmit(option: string) {
-  processAnswer(option === correctAnswer.value ? 'correct' : 'incorrect')
+  submitAnswer(option === correctAnswer.value ? 'correct' : 'incorrect')
 }
 
 function handleBlindSubmit(correct: boolean) {
   if (correct) {
-    processAnswer('correct')
+    submitAnswer('correct')
   } else {
-    processAnswer('incorrect')
+    submitAnswer('incorrect')
   }
 }
 
@@ -176,11 +188,10 @@ function handleTypingSubmit() {
     correctAnswer.value,
     gameSettings.value.language
   )
-  processAnswer(result)
+  submitAnswer(result)
 }
 
-// Use shared timer logic with maxTime
-// Note: Component manages its own timing with startTime for answer calculation
+// Use shared timer logic
 
 const buttonColor = computed(() => {
   if (answerStatus.value === 'correct') return 'positive'
@@ -194,22 +205,9 @@ const buttonIcon = computed(() => {
   return 'cancel'
 })
 
-function handleNextCard() {
-  const isGameOver = nextCard()
-  if (isGameOver) {
-    finishGame()
-    router.push({ name: '/game-over' })
-  }
-}
-
 // Use shared keyboard continue composable
 const canProceed = computed(() => showProceedButton.value && !isProceedDisabled.value)
 useKeyboardContinue(canProceed, handleNextCard)
-
-function handleGoHome() {
-  discardGame()
-  router.push({ name: '/' })
-}
 
 // Handle Escape key
 function handleKeyDown(event: KeyboardEvent) {

@@ -33,7 +33,7 @@ export interface CardDeck {
 
 export interface GameSettings {
   mode: GameMode
-  focus: FocusType // 'weak', 'strong', or 'slow'
+  focus: FocusType // 'weak', 'medium', 'strong', or 'slow'
   language: Direction
   deck?: string // Optional deck name (for future compatibility)
 }
@@ -49,21 +49,4 @@ export interface GameHistory extends BaseGameHistory {
 
 export interface GameState extends SharedGameState {
   cards: Card[] // Strongly typed with app-specific Card
-}
-
-// ============================================================================
-// Points Breakdown
-// ============================================================================
-
-/**
- * Detailed breakdown of points calculation for feedback display
- */
-export interface PointsBreakdown {
-  levelPoints: number
-  difficultyPoints: number
-  pointsBeforeBonus: number
-  closeAdjustment: number
-  languageBonus: number
-  timeBonus: number
-  totalPoints: number
 }

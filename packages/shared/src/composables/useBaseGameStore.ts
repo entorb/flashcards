@@ -6,8 +6,8 @@
 import { type Ref, ref } from 'vue'
 
 import { MAX_LEVEL, MIN_LEVEL, MAX_TIME } from '../constants'
-import type { PointsBreakdown } from '../services/scoring'
-import type { BaseCard, BaseGameHistory, GameStats } from '../types'
+import { type PointsBreakdown } from '../services/scoring'
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats } from '../types'
 
 /**
  * Configuration for creating a base game store
@@ -129,6 +129,17 @@ export function createBaseGameStore<
     config.saveCards?.(allCards.value)
   }
 
+  /**
+   * Handle answer result - common logic for points and stats
+   */
+  function handleAnswerBase(result: AnswerStatus, pointsBreakdown: PointsBreakdown) {
+    if (result === 'correct') {
+      correctAnswersCount.value++
+    }
+    lastPointsBreakdown.value = pointsBreakdown
+    points.value += pointsBreakdown.totalPoints
+  }
+
   return {
     // State
     allCards,
@@ -148,6 +159,7 @@ export function createBaseGameStore<
     saveGameResults,
     discardGame,
     moveAllCards,
-    resetAllCards
+    resetAllCards,
+    handleAnswerBase
   }
 }

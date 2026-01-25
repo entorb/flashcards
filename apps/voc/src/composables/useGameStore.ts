@@ -156,10 +156,6 @@ export function useGameStore() {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
-    if (result === 'correct') {
-      baseStore.correctAnswersCount.value++
-    }
-
     // Calculate points using shared scoring logic
     // Determine mode multiplier
     const difficultyPoints = (() => {
@@ -195,9 +191,7 @@ export function useGameStore() {
       languageBonus
     })
 
-    baseStore.lastPointsBreakdown.value = pointsBreakdown
-
-    baseStore.points.value += pointsBreakdown.totalPoints
+    baseStore.handleAnswerBase(result, pointsBreakdown)
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {

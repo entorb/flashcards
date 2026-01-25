@@ -1,13 +1,10 @@
-Abbrechen
 Abschreiben
 accesscounts
 accessoires
 adaptivem
 Adaptives
 Aktion
-aktuellen
 anderen
-Änderungen
 anlegen
 Antwort
 Antworten
@@ -17,8 +14,6 @@ Auswahl
 beherrscht
 bekleidet
 Belohnungen
-bestimmtes
-gamified
 Bildschirm
 Bonuspunkte
 Bonuspunkten
@@ -40,7 +35,6 @@ Eisi
 Eisi's
 enthält
 entorb
-Ergebnis
 erhöhen
 erstellen
 Erstes
@@ -52,7 +46,6 @@ gassi
 gefüttert
 gehen
 gekauft
-gemacht
 gesammelt
 gespeichert
 gespielt
@@ -97,7 +90,7 @@ Lernwortkiste
 Lernwortkisten
 löscht
 Mathe
-Matomo
+matomo
 mehrere
 minuten
 Murmeltier
@@ -117,7 +110,6 @@ Rechtschreibung
 Regeln
 Richtig
 Richtige
-Runden
 Sachen
 schnell
 Schreiben
@@ -132,11 +124,9 @@ Spiele
 Spielmodi
 Spielverlauf
 Sprachen
-Stapel
 Startbildschirm
 starten
 Startseite
-strikethrough
 Stufe
 Stufen
 stufigem
@@ -178,11 +168,8 @@ Wohin
 Wörter
 Wortspiel
 wurden
-Xone
 Yivit
-Ziel
 Zurück
-zurückgesetzt
 zurücksetzen
 zwei
 zwischen

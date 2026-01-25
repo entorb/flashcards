@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import {
   type AnswerStatus,
-  useFeedbackTimers,
-  useKeyboardContinue,
   calculatePointsBreakdown,
-  MAX_TIME
+  MAX_TIME,
+  useFeedbackTimers,
+  useGameNavigation,
+  useGameTimer,
+  useKeyboardContinue
 } from '@flashcards/shared'
 import {
-  GameHeader,
-  CardQuestion,
+  CardFeedbackNegative,
   CardInputSubmit,
-  CardPointsBreakdown,
   CardNextCardButton,
-  CardFeedbackNegative
+  CardPointsBreakdown,
+  CardQuestion,
+  GameHeader
 } from '@flashcards/shared/components'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
@@ -37,7 +39,6 @@ const {
 const userInput = ref('')
 const showWord = ref(false)
 const countdown = ref(0)
-const startTime = ref(0)
 const isSubmitting = ref(false)
 const answerStatus = ref<AnswerStatus | null>(null)
 const timeTaken = ref(0)
@@ -48,6 +49,18 @@ const showProceedButton = ref(false)
 const totalCards = ref(0)
 
 let countdownInterval: number | null = null
+
+// Use shared timer logic
+const { elapsedTime, stopTimer } = useGameTimer(currentCard)
+
+// Use shared navigation logic
+const { handleNextCard, handleGoHome } = useGameNavigation({
+  stopTimer,
+  nextCard,
+  finishGame,
+  discardGame,
+  router
+})
 
 // Use shared feedback timers for blocking proceed on wrong/close answers
 const {
@@ -89,11 +102,38 @@ const pointsBreakdown = computed(() => {
 const canProceed = computed(
   () => showFeedback.value && showProceedButton.value && !isProceedDisabled.value
 )
-useKeyboardContinue(canProceed, proceedToNext)
+useKeyboardContinue(canProceed, handleNextCard)
 
 // Enable Enter key to start hidden mode
 const canStart = computed(() => readyToStart.value && !showFeedback.value)
 useKeyboardContinue(canStart, startHiddenMode)
+
+// Reset state when card changes
+watch(
+  () => currentCard.value,
+  () => {
+    showFeedback.value = false
+    showProceedButton.value = false
+    answerStatus.value = null
+    timeTaken.value = 0
+    userInput.value = ''
+    isSubmitting.value = false
+    isHiddenModeActive.value = false
+
+    // Prepare for next word based on mode
+    if (gameSettings.value?.mode === 'copy') {
+      showWord.value = true
+    } else {
+      // Hidden mode: show word and wait for user to click GO again
+      showWord.value = true
+      // Delay setting readyToStart to avoid Enter key triggering startHiddenMode
+      setTimeout(() => {
+        readyToStart.value = true
+      }, 150)
+    }
+  },
+  { immediate: true }
+)
 
 // Handle Escape key
 function handleKeyDown(event: KeyboardEvent) {
@@ -114,7 +154,6 @@ onMounted(() => {
   if (gameSettings.value?.mode === 'copy') {
     // Copy mode: word always visible, start timer immediately
     showWord.value = true
-    startTime.value = Date.now()
   } else {
     // Hidden mode: show word first, wait for user to click GO button
     showWord.value = true
@@ -148,7 +187,6 @@ function showWordForDuration() {
     countdown.value--
     if (countdown.value <= 0) {
       if (countdownInterval !== null) globalThis.clearInterval(countdownInterval)
-      startTime.value = Date.now()
     }
   }, 1000) as unknown as number
 }
@@ -158,7 +196,7 @@ function submitAnswer() {
     return
 
   isSubmitting.value = true
-  const answerTime = (Date.now() - startTime.value) / 1000
+  const answerTime = elapsedTime.value
 
   const result = validateTypingAnswer(userInput.value, currentCard.value.word)
 
@@ -188,42 +226,6 @@ function submitAnswer() {
     // For incorrect/close answers: disable button for 3 seconds
     startButtonDisableTimer()
   }
-}
-
-function proceedToNext() {
-  showFeedback.value = false
-  showProceedButton.value = false
-  answerStatus.value = null
-  timeTaken.value = 0
-  userInput.value = ''
-  isSubmitting.value = false
-
-  if (currentCardIndex.value + 1 >= totalCards.value) {
-    finishGame()
-    router.push({ name: '/game-over' })
-    return
-  }
-
-  nextCard()
-  isHiddenModeActive.value = false
-
-  // Prepare for next word based on mode
-  if (gameSettings.value?.mode === 'copy') {
-    showWord.value = true
-    startTime.value = Date.now()
-  } else {
-    // Hidden mode: show word and wait for user to click GO again
-    showWord.value = true
-    // Delay setting readyToStart to avoid Enter key triggering startHiddenMode
-    setTimeout(() => {
-      readyToStart.value = true
-    }, 150)
-  }
-}
-
-function handleGoHome() {
-  discardGame()
-  router.push({ name: '/' })
 }
 </script>
 
@@ -305,7 +307,7 @@ function handleGoHome() {
           :is-button-disabled="isProceedDisabled"
           :is-enter-disabled="false"
           :button-disable-countdown="buttonDisableCountdown"
-          @click="proceedToNext"
+          @click="handleNextCard"
         />
       </div>
     </div>

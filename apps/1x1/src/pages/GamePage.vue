@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import {
-  useGameTimer,
-  useFeedbackTimers,
-  useKeyboardContinue,
-  MAX_TIME,
+  type AnswerStatus,
   calculatePointsBreakdown,
-  type AnswerStatus
+  MAX_TIME,
+  useFeedbackTimers,
+  useGameNavigation,
+  useGameTimer,
+  useKeyboardContinue
 } from '@flashcards/shared'
 import {
-  GameHeader,
-  CardQuestion,
-  CardInputSubmit,
-  CardPointsBreakdown,
   CardFeedbackNegative,
-  CardNextCardButton
+  CardInputSubmit,
+  CardNextCardButton,
+  CardPointsBreakdown,
+  CardQuestion,
+  GameHeader
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -34,9 +35,6 @@ const {
   discardGame
 } = useGameStore()
 
-// Use shared timer logic
-const { elapsedTime, stopTimer } = useGameTimer(currentCard)
-
 // GamePage component state
 const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
@@ -55,6 +53,18 @@ const pointsBreakdown = computed(() => {
     timeBonus: isRecordTime.value,
     closeAdjustment: false
   })
+})
+
+// Use shared timer logic
+const { elapsedTime, stopTimer } = useGameTimer(currentCard)
+
+// Use shared navigation logic
+const { handleNextCard, handleGoHome } = useGameNavigation({
+  stopTimer,
+  nextCard,
+  finishGame: storeFinishGame,
+  discardGame,
+  router
 })
 
 // Use shared timer composable
@@ -157,21 +167,6 @@ function handleContinue() {
   clearAllTimers()
   showFeedback.value = false
   handleNextCard()
-}
-
-function handleNextCard() {
-  const isGameOver = nextCard()
-  if (isGameOver) {
-    stopTimer()
-    storeFinishGame()
-    router.push({ name: '/game-over' })
-  }
-}
-
-function handleGoHome() {
-  stopTimer()
-  discardGame()
-  router.push({ name: '/' })
 }
 
 // Handle Escape key

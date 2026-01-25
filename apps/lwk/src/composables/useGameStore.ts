@@ -186,14 +186,9 @@ export function useGameStore() {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
-    let pointsEarned = 0
     let speedBonus = false
 
     if (result === 'correct' || result === 'close') {
-      if (result === 'correct') {
-        baseStore.correctAnswersCount.value++
-      }
-
       // Speed bonus only in hidden mode and only for correct answers
       if (result === 'correct' && baseStore.gameSettings.value.mode === 'hidden') {
         if (answerTime < currentCard.time && currentCard.time < MAX_TIME) {
@@ -204,22 +199,15 @@ export function useGameStore() {
       // Determine mode multiplier
       const modePoints = baseStore.gameSettings.value.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1
 
-      pointsEarned = calculatePointsBreakdown({
-        difficultyPoints: modePoints,
-        level: currentCard.level,
-        timeBonus: speedBonus,
-        closeAdjustment: result === 'close'
-      }).totalPoints
-
-      baseStore.lastPointsBreakdown.value = calculatePointsBreakdown({
+      const pointsBreakdown = calculatePointsBreakdown({
         difficultyPoints: modePoints,
         level: currentCard.level,
         timeBonus: speedBonus,
         closeAdjustment: result === 'close'
       })
-    }
 
-    baseStore.points.value += pointsEarned
+      baseStore.handleAnswerBase(result, pointsBreakdown)
+    }
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {

@@ -133,24 +133,16 @@ export function useGameStore() {
     const card = currentCard.value
     if (!card || !baseStore.gameSettings.value) return
 
-    let pointsEarned = 0
+    const pointsBreakdown = calculatePointsBreakdown({
+      difficultyPoints: 1,
+      level: card.level,
+      timeBonus: answerTime < card.time,
+      closeAdjustment: result === 'close'
+    })
+
+    baseStore.handleAnswerBase(result, pointsBreakdown)
 
     if (result === 'correct' || result === 'close') {
-      if (result === 'correct') {
-        baseStore.correctAnswersCount.value++
-      }
-
-      const pointsBreakdown = calculatePointsBreakdown({
-        difficultyPoints: 1,
-        level: card.level,
-        timeBonus: answerTime < card.time,
-        closeAdjustment: result === 'close'
-      })
-
-      baseStore.lastPointsBreakdown.value = pointsBreakdown
-      pointsEarned = pointsBreakdown.totalPoints
-      baseStore.points.value += pointsEarned
-
       const newLevel = Math.min(card.level + 1, MAX_LEVEL)
       const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
       storageUpdateCard(card.question, {
