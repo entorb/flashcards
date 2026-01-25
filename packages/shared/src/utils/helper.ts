@@ -47,7 +47,7 @@ export const helperStatsDataRead = async (basePath: string): Promise<number> => 
 
 /**
  * Write app stats to database
- * @param basePath - The app identifier (e.g., '1x1', 'voc')
+ * @param basePath - The app identifier (1x1, voc, lwk)
  */
 export const helperStatsDataWrite = async (basePath: string): Promise<void> => {
   try {
