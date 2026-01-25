@@ -38,7 +38,7 @@ describe('LWK Navigation Smoke Tests', () => {
     cy.get('[data-cy="app-title"]').should('be.visible')
   })
 
-  it('navigate Home to Cards, Decks, and Cards Edit and back', () => {
+  it('navigate Home to Cards, Decks, and Cards Edit and back to Home', () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should('be.visible')
 
@@ -56,8 +56,14 @@ describe('LWK Navigation Smoke Tests', () => {
     cy.url().should('include', '/decks')
     cy.get('[data-cy="add-deck-button"]').should('be.visible')
 
-    // Back to Cards
+    // Back directly to Home
     cy.get('[data-cy="back-button"]').click()
+    cy.url().should('not.include', '/decks')
+    cy.url().should('not.include', '/cards')
+    cy.get('[data-cy="app-title"]').should('be.visible')
+
+    // Navigate to Cards again
+    cy.get('[data-cy="cards-button"]').click()
     cy.url().should('include', '/cards')
 
     // Navigate to Cards edit
@@ -65,12 +71,9 @@ describe('LWK Navigation Smoke Tests', () => {
     cy.url().should('include', '/cards-edit')
     cy.get('[data-cy="add-card-button"]').should('be.visible')
 
-    // Back to Cards
+    // Back directly to Home
     cy.get('[data-cy="back-button"]').click()
-    cy.url().should('include', '/cards')
-
-    // Back to Home
-    cy.get('[data-cy="back-button"]').click()
+    cy.url().should('not.include', '/cards-edit')
     cy.url().should('not.include', '/cards')
     cy.get('[data-cy="app-title"]').should('be.visible')
   })
