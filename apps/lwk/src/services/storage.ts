@@ -8,7 +8,7 @@ import {
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
-  incrementDailyGames as sharedIncrementDailyGames,
+  createAppGameStorage,
   saveJSON
 } from '@flashcards/shared'
 
@@ -158,28 +158,31 @@ export const loadGameConfig = gamePersistence.loadSettings
 export const clearGameConfig = gamePersistence.clearSettings
 export const saveGameState = gamePersistence.saveState
 export const loadGameState = gamePersistence.loadState
-export const clearGameState = gamePersistence.clearState
+
+// Game Storage Factory - Consolidates result/state/daily operations
+
+const gameStorage = createAppGameStorage(
+  STORAGE_KEYS.GAME_RESULT,
+  STORAGE_KEYS.GAME_STATE,
+  STORAGE_KEYS.DAILY_STATS
+)
+
+export const clearGameState = gameStorage.clearGameState
 
 // ============================================================================
 // Game Result (sessionStorage)
 // ============================================================================
 
 export function setGameResult(result: GameResult): void {
-  sessionStorage.setItem(STORAGE_KEYS.GAME_RESULT, JSON.stringify(result))
+  gameStorage.setGameResult(result)
 }
 
 export function getGameResult(): GameResult | null {
-  const stored = sessionStorage.getItem(STORAGE_KEYS.GAME_RESULT)
-  if (!stored) return null
-  try {
-    return JSON.parse(stored) as GameResult
-  } catch {
-    return null
-  }
+  return gameStorage.getGameResult()
 }
 
 export function clearGameResult(): void {
-  sessionStorage.removeItem(STORAGE_KEYS.GAME_RESULT)
+  gameStorage.clearGameResult()
 }
 
 // ============================================================================
@@ -187,9 +190,5 @@ export function clearGameResult(): void {
 // ============================================================================
 
 export function incrementDailyGames(): { isFirstGame: boolean; gamesPlayedToday: number } {
-  const result = sharedIncrementDailyGames(STORAGE_KEYS.DAILY_STATS)
-  return {
-    isFirstGame: result.isFirstGame,
-    gamesPlayedToday: result.gamesPlayedToday
-  }
+  return gameStorage.incrementDailyGames()
 }

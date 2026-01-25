@@ -14,6 +14,7 @@ export const MIN_LEVEL = 1
 /**
  * Maximum difficulty level for cards
  */
+
 export const MAX_LEVEL = 5
 
 // ============================================================================
@@ -34,15 +35,6 @@ export const MAX_TIME = 60
  * Default response time for new cards in seconds
  */
 export const DEFAULT_TIME = 60
-
-/**
- * Base numerator for level-based point calculations
- * Used in both apps:
- * - 1x1: levelBonus = LEVEL_BONUS_NUMERATOR - level
- * - voc: basePoints = LEVEL_BONUS_NUMERATOR - level (before multipliers)
- * Level 1 = 5 points, Level 5 = 1 point
- */
-export const LEVEL_BONUS_NUMERATOR = 6
 
 // ============================================================================
 // FEEDBACK TIMING
@@ -87,6 +79,11 @@ export const STREAK_GAME_INTERVAL = 5
  * Speed bonus points when beating previous time
  */
 export const SPEED_BONUS_POINTS = 5
+
+/**
+ * Close match scoring percentage (for 1 character difference)
+ */
+export const CLOSE_MATCH_SCORE_PERCENTAGE = 0.75
 
 // ============================================================================
 // COLOR PALETTE

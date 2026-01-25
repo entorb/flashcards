@@ -23,3 +23,5 @@ ignorePaths:
   - 'package*.json'
   - 'scripts/**'
   - 'src/assets/'
+  - 'TODO.md'
+  - 'www/index.html'

@@ -29,11 +29,9 @@ interface Card {
 
 ### Scoring
 
-`points = min(x, y) + (6 - level) + time_bonus`
-
-- Base: `min(x,y)`
-- Level bonus: `6 - level` (1-5 points)
-- Time bonus: +points if beating record
+- Difficulty: `min(x,y)`
+- Level: `6 - level` (1-5 points)
+- Time: + `5` points if beating record
 
 Card updates:
 

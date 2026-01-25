@@ -14,8 +14,7 @@ interface Card {
   voc: string
   de: string
   level: number // 1-5
-  time_blind: number // 0.1-60s
-  time_typing: number // 0.1-60s
+  time: number // 0.1-60s
 }
 
 interface CardDeck {
@@ -33,18 +32,12 @@ interface GameSettings {
 
 ## Game Mechanics
 
-### Modes & Scoring
+### Scoring
 
-- `multiple-choice` (×1): 4 options
-- `blind` (×2): Self-assess after reveal
-- `typing` (×4): Fuzzy matching (Levenshtein ≤2)
-
-Points: `basePoints × modeMultiplier × closeAdjustment + languageBonus + timeBonus`
-
-- Base: `6 - level` (1-5 points)
-- Close (typing): 75% points
-- Language bonus: +1 for DE→EN
-- Time bonus: +5 if beating record
+- Correct: `6 - level` points, level +1
+- Incorrect: 0 points, level -1
+- Close match (hidden): 75% points, level unchanged
+- Time bonus (hidden): +5 if beating record
 
 ### Card Selection
 
@@ -77,7 +70,7 @@ Weighted by focus:
 ## Critical Rules
 
 - Multiple decks: `CardDeck[]` with unique names
-- Time tracking: Mode-specific (`time_blind` vs `time_typing`)
+- Time tracking: only for typing (`time`)
 - Fuzzy matching: Levenshtein ≤2 for close answers
 - Level adjustment: +1 correct, -1 incorrect, 0 close
 - No parallel sessions: One game at a time

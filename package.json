@@ -30,7 +30,7 @@
     "format": "prettier --cache --cache-location .cache/prettiercache --write --ignore-path .prettierignore \"**/*.{html,ts,json,md,vue,js,tsx,jsx}\" --log-level silent",
     "lint": "eslint . --cache --cache-location .cache/eslintcache --fix",
     "preview:1x1": "pnpm --filter 1x1 preview",
-    "preview:all": "pnpm --filter \"./apps/*\" --parallel preview",
+    "preview": "pnpm --filter \"./apps/*\" --parallel preview",
     "preview:lwk": "pnpm --filter lwk preview",
     "preview:voc": "pnpm --filter voc preview",
     "spell": "cspell --cache --quiet \"**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",

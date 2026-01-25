@@ -44,7 +44,7 @@ interface GameState<T = BaseCard> {
 }
 
 type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
-type AnswerResult = 'correct' | 'incorrect' | 'close'
+type AnswerStatus = 'correct' | 'incorrect' | 'close'
 ```
 
 ## Key Functions
