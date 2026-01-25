@@ -5,9 +5,6 @@ PWA for spelling practice with adaptive difficulty and custom word decks.
 ## Quick Facts
 
 - `BASE_PATH = 'fc-lwk'`
-- `MAX_CARDS_PER_GAME: 10`
-- `WORD_DISPLAY_DURATION = 3` seconds
-- `CLOSE_MATCH_SCORE_PERCENTAGE = 0.75`
 
 ## Data Model
 

@@ -6,9 +6,16 @@
 
 ## 1x1
 
+## lwk
+
 ## voc
 
-## lwk
+## Code Review
+
+One high-level point to consider is the adoption of the new useGameStateFlow.ts. While initializeGameFlow is used to start a game, the other functions in that file for managing the game session (like getGameCards, updateGameStats, etc.) are not yet used. The apps still rely on their own mechanisms for state management during the game. This might be intentional for a phased rollout, but it's worth noting that the new game state flow pattern is not fully implemented yet.
+
+apps/1x1/src/composables/useGameStore.ts
+The logic for calculating points is re-implemented here. This PR introduces a shared calculatePoints function in packages/shared/src/services/scoring.ts. To promote code reuse and consistency, consider using it here. You would need to import it first.
 
 ---
 

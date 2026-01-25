@@ -33,18 +33,12 @@ interface GameSettings {
 
 ## Game Mechanics
 
-### Modes & Scoring
+### Scoring
 
-- `multiple-choice` (×1): 4 options
-- `blind` (×2): Self-assess after reveal
-- `typing` (×4): Fuzzy matching (Levenshtein ≤2)
-
-Points: `basePoints × modeMultiplier × closeAdjustment + languageBonus + timeBonus`
-
-- Base: `6 - level` (1-5 points)
-- Close (typing): 75% points
-- Language bonus: +1 for DE→EN
-- Time bonus: +5 if beating record
+- Correct: `6 - level` points, level +1
+- Incorrect: 0 points, level -1
+- Close match (hidden): 75% points, level unchanged
+- Time bonus (hidden): +5 if beating record
 
 ### Card Selection
 
