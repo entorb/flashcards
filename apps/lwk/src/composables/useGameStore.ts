@@ -4,7 +4,7 @@
  */
 
 import {
-  type AnswerResult,
+  type AnswerStatus,
   createBaseGameStore,
   roundTime,
   MAX_LEVEL,
@@ -182,7 +182,7 @@ export function useGameStore() {
     })
   }
 
-  function handleAnswer(result: AnswerResult, answerTime: number) {
+  function handleAnswer(result: AnswerStatus, answerTime: number) {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
@@ -210,6 +210,13 @@ export function useGameStore() {
         timeBonus: speedBonus,
         closeAdjustment: result === 'close'
       }).totalPoints
+
+      baseStore.lastPointsBreakdown.value = calculatePointsBreakdown({
+        difficultyPoints: modePoints,
+        level: currentCard.level,
+        timeBonus: speedBonus,
+        closeAdjustment: result === 'close'
+      })
     }
 
     baseStore.points.value += pointsEarned
@@ -304,12 +311,6 @@ export function useGameStore() {
     saveCards(newCards)
   }
 
-  function moveAllCards(level: number) {
-    if (level < MIN_LEVEL || level > MAX_LEVEL) return
-    baseStore.allCards.value = baseStore.allCards.value.map(card => ({ ...card, level }))
-    saveCards(baseStore.allCards.value)
-  }
-
   // Wrap nextCard to save state after moving to next card
   function nextCard() {
     const isGameOver = baseStore.nextCard()
@@ -340,6 +341,7 @@ export function useGameStore() {
     gameStats: baseStore.gameStats,
     currentCard,
     isEisiHappy,
+    lastPointsBreakdown: baseStore.lastPointsBreakdown,
 
     // Actions
     startGame,
@@ -349,7 +351,7 @@ export function useGameStore() {
     discardGame,
     resetCards: resetCardsToDefault,
     importCards,
-    moveAllCards,
+    moveAllCards: baseStore.moveAllCards,
 
     // Deck management
     getDecks,

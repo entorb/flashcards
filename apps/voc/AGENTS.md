@@ -14,8 +14,7 @@ interface Card {
   voc: string
   de: string
   level: number // 1-5
-  time_blind: number // 0.1-60s
-  time_typing: number // 0.1-60s
+  time: number // 0.1-60s
 }
 
 interface CardDeck {
@@ -71,7 +70,7 @@ Weighted by focus:
 ## Critical Rules
 
 - Multiple decks: `CardDeck[]` with unique names
-- Time tracking: Mode-specific (`time_blind` vs `time_typing`)
+- Time tracking: only for typing (`time`)
 - Fuzzy matching: Levenshtein ≤2 for close answers
 - Level adjustment: +1 correct, -1 incorrect, 0 close
 - No parallel sessions: One game at a time

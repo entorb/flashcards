@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
-  type AnswerResult,
-  TEXT_DE,
+  type AnswerStatus,
   useFeedbackTimers,
   useKeyboardContinue,
   calculatePointsBreakdown,
@@ -11,7 +10,9 @@ import {
   GameHeader,
   CardQuestion,
   CardInputSubmit,
-  CardPointsBreakdown
+  CardPointsBreakdown,
+  CardNextCardButton,
+  CardFeedbackNegative
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -38,7 +39,7 @@ const showWord = ref(false)
 const countdown = ref(0)
 const startTime = ref(0)
 const isSubmitting = ref(false)
-const answerStatus = ref<AnswerResult | null>(null)
+const answerStatus = ref<AnswerStatus | null>(null)
 const timeTaken = ref(0)
 const showFeedback = ref(false)
 const readyToStart = ref(false) // For hidden mode: waiting for user to click GO
@@ -65,12 +66,6 @@ const feedbackIcon = computed(() => {
   if (answerStatus.value === 'correct') return 'check_circle'
   if (answerStatus.value === 'close') return 'check_circle_outline'
   return 'cancel'
-})
-
-const feedbackMessage = computed(() => {
-  if (answerStatus.value === 'correct') return TEXT_DE.shared.common.correct
-  if (answerStatus.value === 'close') return TEXT_DE.shared.common.closeMatch
-  return TEXT_DE.shared.common.incorrect
 })
 
 const pointsBreakdown = computed(() => {
@@ -167,7 +162,7 @@ function submitAnswer() {
 
   const result = validateTypingAnswer(userInput.value, currentCard.value.word)
 
-  let resultType: AnswerResult
+  let resultType: AnswerStatus
   if (result === 'correct') {
     resultType = 'correct'
     handleAnswer('correct', answerTime)
@@ -289,102 +284,29 @@ function handleGoHome() {
           @click="startHiddenMode"
         />
 
-        <!-- Feedback Card - Show result after submission -->
-        <q-card
-          v-if="showFeedback && answerStatus"
-          class="full-width q-mb-md"
-          :class="[
-            answerStatus === 'correct'
-              ? 'bg-positive-1'
-              : answerStatus === 'close'
-                ? 'bg-warning-1'
-                : 'bg-negative-1'
-          ]"
-        >
-          <q-card-section class="text-center q-pa-md">
-            <div class="row items-center justify-center q-mb-sm">
-              <q-icon
-                :name="feedbackIcon"
-                :color="feedbackColor"
-                size="48px"
-              />
-            </div>
-            <div
-              class="text-h5 text-weight-bold q-mb-xs"
-              :class="`text-${feedbackColor}`"
-            >
-              {{ feedbackMessage }}
-            </div>
-          </q-card-section>
-        </q-card>
+        <!-- Feedback Details - Show user input vs correct answer for wrong/close -->
+        <CardFeedbackNegative
+          v-if="showFeedback && (answerStatus === 'close' || answerStatus === 'incorrect')"
+          :status="answerStatus === 'close' ? 'close' : 'incorrect'"
+          :user-answer="userInput"
+          :correct-answer="currentCard?.word"
+        />
 
         <CardPointsBreakdown
           :answer-status="answerStatus"
           :points-breakdown="pointsBreakdown"
         />
 
-        <!-- Feedback Details - Show user input vs correct answer for wrong/close -->
-        <q-card
-          v-if="showFeedback && answerStatus !== 'correct'"
-          class="full-width q-mb-md"
-        >
-          <q-card-section class="text-center q-pa-md">
-            <!-- Close answer feedback -->
-            <div v-if="answerStatus === 'close'">
-              <div class="row items-center justify-center text-h6">
-                <span
-                  class="text-warning text-weight-bold"
-                  style="text-decoration: line-through; text-decoration-thickness: 2px"
-                  >{{ userInput }}</span
-                >
-                <q-icon
-                  name="arrow_forward"
-                  size="sm"
-                  class="q-mx-sm"
-                />
-                <span class="text-positive text-weight-bold">{{ currentCard?.word }}</span>
-              </div>
-            </div>
-
-            <!-- Incorrect answer feedback -->
-            <div v-else-if="answerStatus === 'incorrect'">
-              <div class="row items-center justify-center text-h6">
-                <span
-                  class="text-negative text-weight-bold"
-                  style="text-decoration: line-through; text-decoration-thickness: 2px"
-                  >{{ userInput }}</span
-                >
-                <q-icon
-                  name="arrow_forward"
-                  size="sm"
-                  class="q-mx-sm"
-                />
-                <span class="text-positive text-weight-bold">{{ currentCard?.word }}</span>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-
-        <!-- Input field - Hidden when feedback is shown or waiting/counting -->
-
         <!-- Proceed Button - Shown after feedback -->
-        <q-btn
+        <CardNextCardButton
           v-if="showFeedback && showProceedButton"
-          size="lg"
-          class="full-width"
           :color="feedbackColor"
-          :disable="isProceedDisabled"
           :icon="feedbackIcon"
-          data-cy="proceed-button"
+          :is-button-disabled="isProceedDisabled"
+          :is-enter-disabled="false"
+          :button-disable-countdown="buttonDisableCountdown"
           @click="proceedToNext"
-        >
-          <span v-if="isProceedDisabled">
-            {{ TEXT_DE.shared.common.wait }} {{ buttonDisableCountdown }}
-          </span>
-          <span v-else>
-            {{ TEXT_DE.shared.common.continue }}
-          </span>
-        </q-btn>
+        />
       </div>
     </div>
   </q-page>

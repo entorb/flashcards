@@ -1,10 +1,12 @@
 /**
  * Shared Base Game Store Composable
- * Provides common state management patterns used across both apps
+ * Provides common state management patterns used across all apps
  */
 
 import { type Ref, ref } from 'vue'
 
+import { MAX_LEVEL, MIN_LEVEL, MAX_TIME } from '../constants'
+import type { PointsBreakdown } from '../services/scoring'
 import type { BaseCard, BaseGameHistory, GameStats } from '../types'
 
 /**
@@ -48,6 +50,9 @@ export function createBaseGameStore<
     correctAnswers: 0
   })
 
+  // Last points breakdown for display
+  const lastPointsBreakdown = ref<PointsBreakdown | null>(null)
+
   // Initialize state from storage
   let initialized = false
 
@@ -85,7 +90,7 @@ export function createBaseGameStore<
 
   /**
    * Add game to history and update statistics
-   * This is the shared pattern across both apps
+   * This is the shared pattern across all apps
    */
   function saveGameResults(historyEntry: THistory) {
     // Create a new array to ensure watchers detect the change
@@ -107,6 +112,23 @@ export function createBaseGameStore<
     gameSettings.value = null as unknown as TSettings
   }
 
+  /**
+   * Move all cards to a specific level
+   */
+  function moveAllCards(level: number) {
+    if (level < MIN_LEVEL || level > MAX_LEVEL) return
+    allCards.value = allCards.value.map(card => ({ ...card, level }))
+    config.saveCards?.(allCards.value)
+  }
+
+  /**
+   * Reset all cards to initial state (level 1, time 60s)
+   */
+  function resetAllCards() {
+    allCards.value = allCards.value.map(card => ({ ...card, level: MIN_LEVEL, time: MAX_TIME }))
+    config.saveCards?.(allCards.value)
+  }
+
   return {
     // State
     allCards,
@@ -117,12 +139,15 @@ export function createBaseGameStore<
     correctAnswersCount,
     history,
     gameStats,
+    lastPointsBreakdown,
 
     // Actions
     initializeStore,
     resetGameState,
     nextCard,
     saveGameResults,
-    discardGame
+    discardGame,
+    moveAllCards,
+    resetAllCards
   }
 }

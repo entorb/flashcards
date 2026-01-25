@@ -46,16 +46,16 @@ export const POINTS_MODE_TYPING = 8
 export const LANGUAGE_BONUS_DE_VOC = 1
 
 export const INITIAL_CARDS: Card[] = [
-  { voc: 'Where', de: 'Wo', level: 1, time_blind: 60, time_typing: 60 },
-  { voc: 'Who', de: 'Wer', level: 1, time_blind: 60, time_typing: 60 },
-  { voc: 'What', de: 'Was', level: 2, time_blind: 60, time_typing: 60 },
-  { voc: 'Why', de: 'Warum', level: 2, time_blind: 60, time_typing: 60 },
-  { voc: 'When', de: 'Wann', level: 3, time_blind: 60, time_typing: 60 },
-  { voc: 'How', de: 'Wie', level: 3, time_blind: 60, time_typing: 60 },
-  { voc: 'Which', de: 'Welche/Welcher/Welches', level: 4, time_blind: 60, time_typing: 60 },
-  { voc: 'From where', de: 'Woher', level: 4, time_blind: 60, time_typing: 60 },
-  { voc: 'Where to', de: 'Wohin', level: 5, time_blind: 60, time_typing: 60 },
-  { voc: 'How much', de: 'Wie viel', level: 5, time_blind: 60, time_typing: 60 }
+  { voc: 'Where', de: 'Wo', level: 1, time: 60 },
+  { voc: 'Who', de: 'Wer', level: 1, time: 60 },
+  { voc: 'What', de: 'Was', level: 2, time: 60 },
+  { voc: 'Why', de: 'Warum', level: 2, time: 60 },
+  { voc: 'When', de: 'Wann', level: 3, time: 60 },
+  { voc: 'How', de: 'Wie', level: 3, time: 60 },
+  { voc: 'Which', de: 'Welche/Welcher/Welches', level: 4, time: 60 },
+  { voc: 'From where', de: 'Woher', level: 4, time: 60 },
+  { voc: 'Where to', de: 'Wohin', level: 5, time: 60 },
+  { voc: 'How much', de: 'Wie viel', level: 5, time: 60 }
 ]
 
 /**

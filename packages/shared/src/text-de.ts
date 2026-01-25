@@ -25,10 +25,7 @@ export const TEXT_DE = {
       wait: 'Merken...',
       yes: 'Ja',
       no: 'Nein',
-      cancel: 'Abbrechen',
-      correct: 'Richtig',
-      incorrect: 'Falsch',
-      closeMatch: 'Fast richtig!'
+      cancel: 'Abbrechen'
     },
     nav: {
       history: 'Verlauf',

@@ -1,4 +1,14 @@
-import { createBaseGameStore, MAX_LEVEL, MIN_LEVEL, initializeGameFlow } from '@flashcards/shared'
+import {
+  createBaseGameStore,
+  MAX_LEVEL,
+  MIN_LEVEL,
+  initializeGameFlow,
+  roundTime,
+  MIN_TIME,
+  MAX_TIME,
+  type AnswerStatus,
+  calculatePointsBreakdown
+} from '@flashcards/shared'
 import { computed } from 'vue'
 
 import { MAX_CARDS_PER_GAME, GAME_STATE_FLOW_CONFIG } from '@/constants'
@@ -26,15 +36,6 @@ import {
   updateCard as storageUpdateCard
 } from '@/services/storage'
 import type { Card, GameHistory, GameSettings } from '@/types'
-
-export interface AnswerData {
-  isCorrect: boolean
-  userAnswer: number
-  basePoints: number
-  isRecordTime: boolean
-  totalPoints: number
-  timeTaken: number
-}
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -128,20 +129,35 @@ export function useGameStore() {
     })
   }
 
-  function handleAnswer(data: AnswerData) {
+  function handleAnswer(result: AnswerStatus, answerTime: number) {
     const card = currentCard.value
     if (!card || !baseStore.gameSettings.value) return
 
-    if (data.isCorrect) {
-      baseStore.points.value += data.totalPoints
-      baseStore.correctAnswersCount.value++
+    let pointsEarned = 0
+
+    if (result === 'correct' || result === 'close') {
+      if (result === 'correct') {
+        baseStore.correctAnswersCount.value++
+      }
+
+      const pointsBreakdown = calculatePointsBreakdown({
+        difficultyPoints: 1,
+        level: card.level,
+        timeBonus: answerTime < card.time,
+        closeAdjustment: result === 'close'
+      })
+
+      baseStore.lastPointsBreakdown.value = pointsBreakdown
+      pointsEarned = pointsBreakdown.totalPoints
+      baseStore.points.value += pointsEarned
 
       const newLevel = Math.min(card.level + 1, MAX_LEVEL)
+      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
       storageUpdateCard(card.question, {
         level: newLevel,
-        time: data.timeTaken
+        time: roundTime(clampedTime)
       })
-    } else {
+    } else if (result === 'incorrect') {
       const newLevel = Math.max(card.level - 1, MIN_LEVEL)
       storageUpdateCard(card.question, {
         level: newLevel
@@ -213,6 +229,10 @@ export function useGameStore() {
     baseStore.discardGame()
   }
 
+  function resetCards() {
+    baseStore.resetAllCards()
+  }
+
   // Computed
   const currentCard = computed(() => {
     return baseStore.gameCards.value[baseStore.currentCardIndex.value] || null
@@ -229,12 +249,15 @@ export function useGameStore() {
     history: baseStore.history,
     gameStats: baseStore.gameStats,
     currentCard,
+    lastPointsBreakdown: baseStore.lastPointsBreakdown,
 
     // Actions
     startGame,
     handleAnswer,
     nextCard,
     finishGame,
-    discardGame
+    discardGame,
+    resetCards,
+    moveAllCards: baseStore.moveAllCards
   }
 }

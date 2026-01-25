@@ -10,6 +10,7 @@ import {
   createHistoryOperations,
   createStatsOperations,
   loadJSON,
+  MAX_TIME,
   saveJSON
 } from '@flashcards/shared'
 
@@ -50,11 +51,45 @@ function migrateToDecks(data: unknown): CardDeck[] {
   // Check if it's already deck structure
   const firstItem = data[0] as Record<string, unknown>
   if ('name' in firstItem && 'cards' in firstItem) {
-    return data as CardDeck[]
+    // Migrate cards within decks
+    const decks = (data as CardDeck[]).map(deck => ({
+      ...deck,
+      cards: deck.cards.map(card => migrateCardTimeFields(card))
+    }))
+    return decks
   }
 
   // Otherwise treat as new card structure
-  return [{ name: 'en', cards: data as Card[] }]
+  const cards = (data as Card[]).map(card => migrateCardTimeFields(card))
+  return [{ name: 'en', cards }]
+}
+
+// TODO: Remove this migration function 28.02.2026
+function migrateCardTimeFields(card: unknown): Card {
+  const cardRecord = card as Record<string, unknown>
+
+  // If card already has time field, remove old fields
+  if ('time' in cardRecord && typeof cardRecord.time === 'number') {
+    const cleanCard = { ...cardRecord }
+    delete cleanCard.time_blind
+    delete cleanCard.time_typing
+    return cleanCard as unknown as Card
+  }
+
+  // Use time_typing if it exists (typing mode was more advanced), otherwise time_blind, otherwise default
+  let timeValue: number
+  if (typeof cardRecord.time_typing === 'number') {
+    timeValue = cardRecord.time_typing
+  } else if (typeof cardRecord.time_blind === 'number') {
+    timeValue = cardRecord.time_blind
+  } else {
+    timeValue = MAX_TIME
+  }
+
+  const cleanCard = { ...cardRecord }
+  delete cleanCard.time_blind
+  delete cleanCard.time_typing
+  return { ...cleanCard, time: timeValue } as unknown as Card
 }
 
 /**

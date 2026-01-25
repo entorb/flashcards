@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { TEXT_DE } from '../text-de'
-import type { AnswerResult } from '../types'
+import type { AnswerStatus } from '../types'
 
 interface Props {
-  answerStatus: AnswerResult | null
+  answerStatus: AnswerStatus | null
   pointsBreakdown: {
     levelPoints: number
     difficultyPoints: number
@@ -35,22 +35,22 @@ defineProps<Props>()
       </div>
       <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
         <div>
-          {{ pointsBreakdown.difficultyPoints }}
+          +{{ pointsBreakdown.difficultyPoints }}
           {{ TEXT_DE.shared.scoring.breakdown.difficultyPoints }}
         </div>
         <div>
-          {{ pointsBreakdown.levelPoints }} {{ TEXT_DE.shared.scoring.breakdown.levelPoints }}
+          +{{ pointsBreakdown.levelPoints }} {{ TEXT_DE.shared.scoring.breakdown.levelPoints }}
         </div>
         <div v-if="answerStatus === 'close'">
           -{{ pointsBreakdown.closeAdjustment }}
           {{ TEXT_DE.shared.scoring.breakdown.closeAdjustment }}
         </div>
         <div v-if="pointsBreakdown.languageBonus > 0">
-          {{ pointsBreakdown.languageBonus }}
+          +{{ pointsBreakdown.languageBonus }}
           {{ TEXT_DE.shared.scoring.breakdown.languageBonus }}
         </div>
         <div v-if="pointsBreakdown.timeBonus > 0">
-          {{ pointsBreakdown.timeBonus }} {{ TEXT_DE.shared.scoring.breakdown.timeBonus }}
+          +{{ pointsBreakdown.timeBonus }} {{ TEXT_DE.shared.scoring.breakdown.timeBonus }}
         </div>
       </div>
     </q-card-section>

@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import {
-  type AnswerResult,
+  type AnswerStatus,
   TEXT_DE,
   useFeedbackTimers,
   useKeyboardContinue,
   MAX_TIME
 } from '@flashcards/shared'
-import { shuffleArray, calculatePointsBreakdown } from '@flashcards/shared'
+import { shuffleArray } from '@flashcards/shared'
 import {
   GameHeader,
   CardQuestion,
   CardInputSubmit,
-  CardPointsBreakdown
+  CardPointsBreakdown,
+  CardNextCardButton
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
-import { LANGUAGE_BONUS_DE_VOC, POINTS_MODE_BLIND, POINTS_MODE_TYPING } from '../constants'
-import type { AnswerData, Card, GameSettings, PointsBreakdown } from '../types'
 import { validateTypingAnswer } from '../utils/helpers'
 
 const router = useRouter()
@@ -29,6 +28,7 @@ const {
   currentCardIndex,
   points,
   currentCard,
+  lastPointsBreakdown,
   handleAnswer: storeHandleAnswer,
   nextCard,
   finishGame,
@@ -37,7 +37,7 @@ const {
 
 // GamePage component state
 const showAnswer = ref(false)
-const answerStatus = ref<AnswerResult | null>(null)
+const answerStatus = ref<AnswerStatus | null>(null)
 const userAnswer = ref('')
 const options = ref<string[]>([])
 const feedbackData = ref<{
@@ -49,8 +49,6 @@ const feedbackData = ref<{
 }>({ type: 'simple' })
 const showProceedButton = ref(false)
 const startTime = ref<number>(0)
-const earnedPoints = ref<number>(0)
-const pointsBreakdown = ref<PointsBreakdown | null>(null)
 
 // Use shared timer composable
 const {
@@ -81,12 +79,10 @@ const displayTime = computed(() => {
   const card = currentCard.value
   if (!settings || !card) return MAX_TIME
 
-  if (settings.mode === 'blind') {
-    return card.time_blind
-  } else if (settings.mode === 'typing') {
-    return card.time_typing
+  if (settings.mode === 'multiple-choice') {
+    return MAX_TIME // Don't show time for multiple-choice
   }
-  return MAX_TIME // Don't show time for multiple-choice
+  return card.time
 })
 
 // Generate options for multiple choice
@@ -121,67 +117,14 @@ watch(
   { immediate: true }
 )
 
-function calculatePointsForAnswer(
-  result: AnswerResult,
-  currentCard: Card,
-  gameSettings: GameSettings,
-  answerTime: number
-): PointsBreakdown {
-  const mode = gameSettings.mode
-  let cardTime: number
-  if (mode === 'blind') {
-    cardTime = currentCard.time_blind
-  } else if (mode === 'typing') {
-    cardTime = currentCard.time_typing
-  } else {
-    cardTime = MAX_TIME
-  }
-  let difficultyPoints: number
-  if (mode === 'blind') {
-    difficultyPoints = POINTS_MODE_BLIND
-  } else if (mode === 'typing') {
-    difficultyPoints = POINTS_MODE_TYPING
-  } else {
-    difficultyPoints = 1
-  }
-  const timeBonus =
-    result === 'correct' && answerTime !== undefined && cardTime < MAX_TIME && answerTime < cardTime
-  const languageBonus =
-    result === 'correct' && gameSettings.language === 'de-voc' ? LANGUAGE_BONUS_DE_VOC : 0
-
-  return calculatePointsBreakdown({
-    difficultyPoints,
-    level: currentCard.level,
-    timeBonus,
-    closeAdjustment: result === 'close',
-    languageBonus
-  })
-}
-
-function processAnswer(result: AnswerResult) {
+function processAnswer(result: AnswerStatus) {
   if (answerStatus.value) return
 
   // Calculate answer time in seconds
   const answerTime = (Date.now() - startTime.value) / 1000
 
-  // Calculate points breakdown
-  if (currentCard.value && gameSettings.value) {
-    pointsBreakdown.value = calculatePointsForAnswer(
-      result,
-      currentCard.value,
-      gameSettings.value,
-      answerTime
-    )
-    earnedPoints.value = pointsBreakdown.value.totalPoints
-
-    // Emit complete answer data to parent
-    handleAnswer({
-      result,
-      answerTime,
-      earnedPoints: earnedPoints.value,
-      pointsBreakdown: pointsBreakdown.value
-    })
-  }
+  // Handle the answer in the store
+  storeHandleAnswer(result, answerTime)
 
   answerStatus.value = result
   showAnswer.value = true
@@ -239,9 +182,17 @@ function handleTypingSubmit() {
 // Use shared timer logic with maxTime
 // Note: Component manages its own timing with startTime for answer calculation
 
-function handleAnswer(data: AnswerData) {
-  storeHandleAnswer(data.result, data.answerTime)
-}
+const buttonColor = computed(() => {
+  if (answerStatus.value === 'correct') return 'positive'
+  if (answerStatus.value === 'close') return 'warning'
+  return 'negative'
+})
+
+const buttonIcon = computed(() => {
+  if (answerStatus.value === 'correct') return 'check_circle'
+  if (answerStatus.value === 'close') return 'warning'
+  return 'cancel'
+})
 
 function handleNextCard() {
   const isGameOver = nextCard()
@@ -344,35 +295,17 @@ onUnmounted(() => {
 
           <CardPointsBreakdown
             :answer-status="answerStatus"
-            :points-breakdown="pointsBreakdown"
+            :points-breakdown="lastPointsBreakdown"
           />
 
           <!-- Continue Button with icon when feedback is shown -->
-          <q-btn
+          <CardNextCardButton
             v-if="answerStatus && showProceedButton"
-            size="lg"
-            class="full-width q-mb-md"
-            :color="
-              answerStatus === 'correct'
-                ? 'positive'
-                : answerStatus === 'close'
-                  ? 'warning'
-                  : 'negative'
-            "
-            :disable="isProceedDisabled"
-            :label="
-              isProceedDisabled
-                ? `${TEXT_DE.shared.common.wait} ${buttonDisableCountdown}`
-                : TEXT_DE.shared.common.continue
-            "
-            data-cy="continue-button"
-            :icon="
-              answerStatus === 'correct'
-                ? 'check_circle'
-                : answerStatus === 'close'
-                  ? 'warning'
-                  : 'cancel'
-            "
+            :color="buttonColor"
+            :icon="buttonIcon"
+            :is-button-disabled="isProceedDisabled"
+            :is-enter-disabled="false"
+            :button-disable-countdown="buttonDisableCountdown"
             @click="handleNextCard"
           />
 

@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import {
   useGameTimer,
-  TEXT_DE,
   useFeedbackTimers,
   useKeyboardContinue,
   MAX_TIME,
-  calculatePointsBreakdown
+  calculatePointsBreakdown,
+  type AnswerStatus
 } from '@flashcards/shared'
 import {
   GameHeader,
   CardQuestion,
   CardInputSubmit,
-  CardPointsBreakdown
+  CardPointsBreakdown,
+  CardFeedbackNegative,
+  CardNextCardButton
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { type AnswerData, useGameStore } from '@/composables/useGameStore'
+import { useGameStore } from '@/composables/useGameStore'
 import { formatDisplayQuestion } from '@/utils/questionFormatter'
 
 const router = useRouter()
@@ -26,7 +28,7 @@ const {
   points,
   currentCard,
   gameSettings,
-  handleAnswer: storeHandleAnswer,
+  handleAnswer,
   nextCard,
   finishGame: storeFinishGame,
   discardGame
@@ -38,16 +40,19 @@ const { elapsedTime, stopTimer } = useGameTimer(currentCard)
 // GamePage component state
 const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
-const answerData = ref<AnswerData | null>(null)
+const answerStatus = ref<AnswerStatus | null>(null)
+const timeTaken = ref(0)
+const userAnswerNum = ref<number | null>(null)
+const basePoints = ref(0)
+const isRecordTime = ref(false)
 
 const pointsBreakdown = computed(() => {
-  if (!answerData.value || !answerData.value.isCorrect) return null
+  if (!answerStatus.value || answerStatus.value === 'incorrect') return null
 
-  const data = answerData.value
   return calculatePointsBreakdown({
-    difficultyPoints: data.basePoints,
+    difficultyPoints: basePoints.value,
     level: currentCard.value.level,
-    timeBonus: data.isRecordTime,
+    timeBonus: isRecordTime.value,
     closeAdjustment: false
   })
 })
@@ -94,15 +99,64 @@ watch(
   () => {
     userAnswer.value = null
     showFeedback.value = false
-    answerData.value = null
+    answerStatus.value = null
+    timeTaken.value = 0
+    userAnswerNum.value = null
+    basePoints.value = 0
+    isRecordTime.value = false
     clearAllTimers()
   },
   { immediate: true }
 )
 
-function handleAnswer(data: AnswerData) {
+function submitAnswer() {
+  if (userAnswer.value === null || userAnswer.value === undefined || !currentCard.value) return
+
+  const parsedUserAnswer = Number.parseInt(String(userAnswer.value), 10)
+  const isCorrect = parsedUserAnswer === currentCard.value.answer
+  const answerTime = elapsedTime.value
+
+  let multiplier = 0
+  let speedBonus = false
+
+  if (isCorrect) {
+    // Calculate points for correct answer
+    const [x, y] = currentCard.value.question.split('x').map(s => Number.parseInt(s, 10))
+    // multiplier is the smaller of the two factors
+    multiplier = Math.min(x, y)
+
+    // Add speed bonus if last time < MAX_TIME and current time <= last time
+    if (currentCard.value.time < MAX_TIME && answerTime <= currentCard.value.time) {
+      speedBonus = true
+    }
+  }
+
+  // Set individual reactive refs
+  answerStatus.value = isCorrect ? 'correct' : 'incorrect'
+  timeTaken.value = answerTime
+  userAnswerNum.value = parsedUserAnswer
+  basePoints.value = multiplier
+  isRecordTime.value = speedBonus
+
+  showFeedback.value = true
+
+  // Call handleAnswer directly
   stopTimer()
-  storeHandleAnswer(data)
+  handleAnswer(answerStatus.value, answerTime)
+
+  if (isCorrect) {
+    // Auto-close after configured duration for correct answers
+    startAutoCloseTimer(handleContinue)
+  } else {
+    // Wrong answer: disable button and Enter key
+    startButtonDisableTimer()
+  }
+}
+
+function handleContinue() {
+  clearAllTimers()
+  showFeedback.value = false
+  handleNextCard()
 }
 
 function handleNextCard() {
@@ -125,66 +179,6 @@ function handleKeyDown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
     handleGoHome()
   }
-}
-
-function submitAnswer() {
-  if (userAnswer.value === null || userAnswer.value === undefined || !currentCard.value) return
-
-  const userAnswerNum = Number.parseInt(String(userAnswer.value), 10)
-  const isCorrect = userAnswerNum === currentCard.value.answer
-  const timeTaken = elapsedTime.value
-
-  let multiplier = 0
-  let speedBonus = false
-
-  if (isCorrect) {
-    // Calculate points for correct answer
-    const [x, y] = currentCard.value.question.split('x').map(s => Number.parseInt(s, 10))
-    // multiplier is the smaller of the two factors
-    multiplier = Math.min(x, y)
-
-    // Add speed bonus if last time < MAX_TIME and current time <= last time
-    if (currentCard.value.time < MAX_TIME && timeTaken <= currentCard.value.time) {
-      speedBonus = true
-    }
-  }
-
-  const totalPoints = isCorrect
-    ? calculatePointsBreakdown({
-        difficultyPoints: multiplier,
-        level: currentCard.value.level,
-        timeBonus: speedBonus,
-        closeAdjustment: false
-      }).totalPoints
-    : 0
-
-  answerData.value = {
-    isCorrect,
-    userAnswer: userAnswerNum,
-    basePoints: multiplier,
-    isRecordTime: speedBonus,
-    totalPoints,
-    timeTaken
-  }
-
-  showFeedback.value = true
-
-  // Emit answer data to parent (now handled internally)
-  handleAnswer(answerData.value)
-
-  if (isCorrect) {
-    // Auto-close after configured duration for correct answers
-    startAutoCloseTimer(handleContinue)
-  } else {
-    // Wrong answer: disable button and Enter key
-    startButtonDisableTimer()
-  }
-}
-
-function handleContinue() {
-  clearAllTimers()
-  showFeedback.value = false
-  handleNextCard()
 }
 
 onMounted(() => {
@@ -219,7 +213,7 @@ onUnmounted(() => {
             answer: String(currentCard.answer)
           }"
           :display-question="displayQuestion"
-          :show-correct-answer="showFeedback && !!answerData"
+          :show-correct-answer="showFeedback && !!answerStatus"
         />
 
         <!-- Answer Input Section -->
@@ -232,51 +226,27 @@ onUnmounted(() => {
           />
         </div>
 
-        <!-- Feedback Button Section (without large colored card) -->
-        <div v-else-if="answerData">
+        <!-- Feedback Button Section -->
+        <div v-else-if="showFeedback">
           <!-- Show user answer vs correct answer comparison on wrong answers -->
-          <q-card
-            v-if="!answerData.isCorrect"
-            class="q-mb-md"
-            data-cy="wrong-answer-feedback"
-          >
-            <q-card-section class="text-center q-pa-md">
-              <div class="row items-center justify-center text-h5">
-                <span
-                  class="text-negative text-weight-bold"
-                  style="text-decoration: line-through; text-decoration-thickness: 3px"
-                  >{{ answerData.userAnswer }}</span
-                >
-                <q-icon
-                  name="arrow_forward"
-                  size="sm"
-                  class="q-mx-sm"
-                />
-                <span class="text-positive text-weight-bold text-h4">{{
-                  currentCard?.answer
-                }}</span>
-              </div>
-            </q-card-section>
-          </q-card>
+          <CardFeedbackNegative
+            v-if="answerStatus === 'incorrect'"
+            status="incorrect"
+            :user-answer="String(userAnswerNum)"
+            :correct-answer="String(currentCard?.answer)"
+          />
 
           <CardPointsBreakdown
-            :answer-status="answerData.isCorrect ? 'correct' : null"
+            :answer-status="answerStatus"
             :points-breakdown="pointsBreakdown"
           />
 
-          <!-- Continue Button with icon -->
-          <q-btn
-            size="lg"
-            class="full-width"
-            :color="answerData.isCorrect ? 'positive' : 'negative'"
-            :disable="isButtonDisabled || isEnterDisabled"
-            :label="
-              isButtonDisabled || isEnterDisabled
-                ? `${TEXT_DE.shared.common.wait} ${buttonDisableCountdown}`
-                : TEXT_DE.shared.common.continue
-            "
-            data-cy="continue-button"
-            :icon="answerData.isCorrect ? 'check_circle' : 'cancel'"
+          <!-- Continue Button -->
+          <CardNextCardButton
+            :answer-data="{ isCorrect: answerStatus === 'correct' }"
+            :is-button-disabled="isButtonDisabled"
+            :is-enter-disabled="isEnterDisabled"
+            :button-disable-countdown="buttonDisableCountdown"
             @click="handleContinue"
           />
         </div>

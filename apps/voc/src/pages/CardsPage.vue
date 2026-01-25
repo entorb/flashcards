@@ -5,7 +5,8 @@ import {
   useCardFiltering,
   useResetCards,
   MAX_LEVEL,
-  MIN_LEVEL
+  MIN_LEVEL,
+  MAX_TIME
 } from '@flashcards/shared'
 import {
   LevelDistribution,
@@ -88,6 +89,9 @@ function handleMoveClick() {
 function handleResetCards() {
   showResetDialog(() => {
     moveAllCards(1)
+    allCards.value.forEach(card => {
+      card.time = MAX_TIME
+    })
   })
 }
 
@@ -238,6 +242,7 @@ function getLevelColor(level: number): string {
                     :label="`Level ${card.level}`"
                     :style="{ backgroundColor: getLevelColor(card.level) }"
                   />
+                  <div class="text-caption text-grey-7 q-mt-xs">{{ card.time }}s</div>
                 </q-item-section>
               </q-item>
             </q-list>

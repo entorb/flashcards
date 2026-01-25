@@ -1,16 +1,22 @@
 import {
-  type AnswerResult,
+  type AnswerStatus,
   createBaseGameStore,
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
   initializeGameFlow,
-  calculatePointsBreakdown
+  calculatePointsBreakdown,
+  roundTime
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
-import { INITIAL_CARDS, GAME_STATE_FLOW_CONFIG } from '../constants'
+import {
+  INITIAL_CARDS,
+  GAME_STATE_FLOW_CONFIG,
+  POINTS_MODE_BLIND,
+  POINTS_MODE_TYPING
+} from '../constants'
 import { selectCardsForRound } from '../services/cardSelector'
 import {
   loadCards,
@@ -134,11 +140,7 @@ export function useGameStore() {
     saveLastSettings(settings)
     storageSaveGameSettings(settings)
     baseStore.gameSettings.value = settings
-    const selectedCards = selectCardsForRound(
-      baseStore.allCards.value,
-      settings.focus,
-      settings.mode
-    )
+    const selectedCards = selectCardsForRound(baseStore.allCards.value, settings.focus)
 
     // Use centralized game state flow to store settings + selected cards
     initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
@@ -150,7 +152,7 @@ export function useGameStore() {
     saveCurrentGameState()
   }
 
-  function handleAnswer(result: AnswerResult, answerTime?: number) {
+  function handleAnswer(result: AnswerStatus, answerTime?: number) {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
@@ -163,9 +165,9 @@ export function useGameStore() {
     const difficultyPoints = (() => {
       switch (baseStore.gameSettings.value.mode) {
         case 'blind':
-          return 4 // POINTS_MODE_BLIND
+          return POINTS_MODE_BLIND
         case 'typing':
-          return 8 // POINTS_MODE_TYPING
+          return POINTS_MODE_TYPING
         default:
           return 1
       }
@@ -180,8 +182,7 @@ export function useGameStore() {
       result === 'correct' &&
       answerTime !== undefined &&
       answerTime < MAX_TIME &&
-      ((baseStore.gameSettings.value.mode === 'blind' && answerTime < currentCard.time_blind) ||
-        (baseStore.gameSettings.value.mode === 'typing' && answerTime < currentCard.time_typing))
+      answerTime < currentCard.time
 
     const timeBonus = isBeatTime
     const closeAdjustment = result === 'close'
@@ -193,6 +194,8 @@ export function useGameStore() {
       closeAdjustment,
       languageBonus
     })
+
+    baseStore.lastPointsBreakdown.value = pointsBreakdown
 
     baseStore.points.value += pointsBreakdown.totalPoints
 
@@ -208,15 +211,10 @@ export function useGameStore() {
           updates.level = Math.max(MIN_LEVEL, card.level - 1)
         }
 
-        // Update time (only on correct answers for blind/typing modes)
+        // Update time (only on correct answers)
         if (result === 'correct' && answerTime !== undefined) {
           const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-          const settings = baseStore.gameSettings.value
-          if (settings?.mode === 'blind') {
-            updates.time_blind = clampedTime
-          } else if (settings?.mode === 'typing') {
-            updates.time_typing = clampedTime
-          }
+          updates.time = roundTime(clampedTime)
         }
 
         return { ...card, ...updates }
@@ -274,11 +272,6 @@ export function useGameStore() {
     baseStore.allCards.value = newCards
     // Explicitly save to ensure cards are persisted immediately
     saveCards(newCards)
-  }
-
-  function moveAllCards(level: number) {
-    if (level < MIN_LEVEL || level > MAX_LEVEL) return
-    baseStore.allCards.value = baseStore.allCards.value.map(card => ({ ...card, level }))
   }
 
   function discardGame() {
@@ -342,6 +335,7 @@ export function useGameStore() {
     gameStats: baseStore.gameStats,
     currentCard,
     isFoxHappy,
+    lastPointsBreakdown: baseStore.lastPointsBreakdown,
 
     // Actions
     startGame,
@@ -351,7 +345,7 @@ export function useGameStore() {
     discardGame,
     resetCards: resetCardsToDefaultSet,
     importCards,
-    moveAllCards,
+    moveAllCards: baseStore.moveAllCards,
 
     // Deck management
     getDecks,

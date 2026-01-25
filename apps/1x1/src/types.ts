@@ -24,7 +24,6 @@ export type SelectionType = number[] | 'all' | 'x²'
 export interface Card extends BaseCard {
   question: string // Format: "XxY" e.g. "3x4"
   answer: number // e.g. 12
-  time: number // seconds for last correct answer, default 60
 }
 
 // ============================================================================
