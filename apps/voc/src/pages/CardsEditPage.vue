@@ -146,8 +146,7 @@ function addNewCard() {
     voc: '',
     de: '',
     level: 1,
-    time_blind: 60,
-    time_typing: 60
+    time: 60
   })
 }
 

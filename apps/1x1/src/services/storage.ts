@@ -10,8 +10,8 @@ import {
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
+  createAppGameStorage,
   saveJSON,
-  incrementDailyGames as sharedIncrementDailyGames,
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME
@@ -281,6 +281,14 @@ export function updateStatistics(points: number, correctAnswers: number): void {
   statsOps.update(points, correctAnswers)
 }
 
+// Game Storage Factory - Consolidates result/state/daily operations
+
+const gameStorage = createAppGameStorage(
+  STORAGE_KEYS.GAME_RESULT,
+  STORAGE_KEYS.GAME_STATE,
+  STORAGE_KEYS.DAILY_STATS
+)
+
 // Game Configuration (Session Storage)
 
 /**
@@ -303,22 +311,21 @@ export function getGameConfig(): GameSettings | null {
  * Save game result to session storage
  */
 export function setGameResult(result: GameResult): void {
-  sessionStorage.setItem(STORAGE_KEYS.GAME_RESULT, JSON.stringify(result))
+  gameStorage.setGameResult(result)
 }
 
 /**
  * Load game result from session storage
  */
 export function getGameResult(): GameResult | null {
-  const stored = sessionStorage.getItem(STORAGE_KEYS.GAME_RESULT)
-  return stored ? JSON.parse(stored) : null
+  return gameStorage.getGameResult()
 }
 
 /**
  * Clear game result from session storage
  */
 export function clearGameResult(): void {
-  sessionStorage.removeItem(STORAGE_KEYS.GAME_RESULT)
+  gameStorage.clearGameResult()
 }
 
 // Daily Stats
@@ -328,7 +335,7 @@ export function clearGameResult(): void {
  * Used for bonus points
  */
 export function incrementDailyGames(): { isFirstGame: boolean; gamesPlayedToday: number } {
-  return sharedIncrementDailyGames(STORAGE_KEYS.DAILY_STATS)
+  return gameStorage.incrementDailyGames()
 }
 
 // Game State (for reload recovery)
@@ -351,7 +358,7 @@ export function loadGameState(): GameState | null {
  * Clear game state from session storage
  */
 export function clearGameState(): void {
-  gamePersistence.clearState()
+  gameStorage.clearGameState()
 }
 
 // Range Configuration (for extended cards 1x2, 1x12, 1x20)

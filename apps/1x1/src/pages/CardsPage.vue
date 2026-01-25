@@ -12,12 +12,12 @@ import { LevelDistribution } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { useGameStore } from '@/composables/useGameStore'
 import { DEFAULT_RANGE, TIME_COLOR_THRESHOLDS, TIME_COLORS } from '@/constants'
 import {
   createDefaultCard,
   loadCards,
   loadRange,
-  resetCards,
   saveRange,
   toggleFeature
 } from '@/services/storage'
@@ -25,6 +25,7 @@ import type { Card } from '@/types'
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
+const { resetCards } = useGameStore()
 const cards = ref<Card[]>([])
 const range = ref<number[]>([...DEFAULT_RANGE])
 
@@ -221,6 +222,7 @@ function goHome() {
                         LEVEL_COLORS[card.level as keyof typeof LEVEL_COLORS] || BG_COLORS.disabled
                     }"
                   />
+                  <div class="text-caption text-grey-7 q-mt-xs">{{ card.time }}s</div>
                 </q-item-section>
               </q-item>
             </q-list>

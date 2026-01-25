@@ -21,8 +21,6 @@ export type Direction = 'voc-de' | 'de-voc'
 export interface Card extends BaseCard {
   voc: string // Used as unique key/identifier
   de: string
-  time_blind: number // Seconds for last correct answer in blind mode (0.1-60s, default 60)
-  time_typing: number // Seconds for last correct answer in typing mode (0.1-60s, default 60)
 }
 
 // Card Deck Definition
@@ -35,7 +33,7 @@ export interface CardDeck {
 
 export interface GameSettings {
   mode: GameMode
-  focus: FocusType // 'weak', 'strong', or 'slow'
+  focus: FocusType // 'weak', 'medium', 'strong', or 'slow'
   language: Direction
   deck?: string // Optional deck name (for future compatibility)
 }
@@ -51,36 +49,4 @@ export interface GameHistory extends BaseGameHistory {
 
 export interface GameState extends SharedGameState {
   cards: Card[] // Strongly typed with app-specific Card
-}
-
-// ============================================================================
-// Points Breakdown
-// ============================================================================
-
-/**
- * Detailed breakdown of points calculation for feedback display
- */
-export interface PointsBreakdown {
-  basePoints: number
-  modeMultiplier: number
-  pointsBeforeBonus: number
-  closeAdjustment: number
-  languageBonus: number
-  timeBonus: number
-  totalPoints: number
-}
-
-// ============================================================================
-// Answer Data (GamePage)
-// ============================================================================
-
-/**
- * Data used in GamePage after answer submission
- * Contains result, timing, and complete points breakdown
- */
-export interface AnswerData {
-  result: 'correct' | 'incorrect' | 'close'
-  answerTime: number
-  earnedPoints: number
-  pointsBreakdown: PointsBreakdown
 }

@@ -3,4 +3,3 @@
 
 export * from './helper.js'
 export * from './cardSelection.js'
-export * from './game.js'

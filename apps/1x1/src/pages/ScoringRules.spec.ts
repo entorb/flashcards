@@ -2,11 +2,11 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-import InfoPage from './InfoPage.vue'
+import { ScoringRules } from '@flashcards/shared/pages'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@/__tests__/testUtils'
 
-describe('InfoPage Component', () => {
+describe('ScoringRules Component', () => {
   beforeEach(() => {
     localStorage.clear()
   })
@@ -24,19 +24,22 @@ describe('InfoPage Component', () => {
       plugins: [router],
       provide: quasarProvide,
       stubs: quasarStubs
+    },
+    props: {
+      appName: '1x1' as const
     }
   })
 
   it('mounts without errors and renders content', async () => {
     const router = createMockRouter()
-    const wrapper = mount(InfoPage, createMountOptions(router))
+    const wrapper = mount(ScoringRules, createMountOptions(router))
     expect(wrapper.exists()).toBe(true)
     expect(wrapper.find('[data-cy="info-page-title"]').exists()).toBe(true)
   })
 
   it('renders back button', async () => {
     const router = createMockRouter()
-    const wrapper = mount(InfoPage, createMountOptions(router))
+    const wrapper = mount(ScoringRules, createMountOptions(router))
     expect(wrapper.find('[data-cy="back-button"]').exists()).toBe(true)
   })
 })

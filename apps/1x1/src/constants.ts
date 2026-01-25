@@ -3,7 +3,26 @@
  * All magic numbers and reusable constants are defined here
  */
 
+import type { GameStateFlowConfig } from '@flashcards/shared'
+
 export const BASE_PATH = 'fc-1x1'
+
+// ============================================================================
+// GAME STATE FLOW CONFIGURATION
+// ============================================================================
+
+/**
+ * Centralized game state flow configuration
+ * Keys for localStorage and sessionStorage used throughout the game lifecycle
+ */
+export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
+  settingsKey: '1x1-settings',
+  selectedCardsKey: '1x1-selected-cards',
+  gameResultKey: '1x1-game-result',
+  historyKey: '1x1-history',
+  statsKey: '1x1-stats',
+  dailyStatsKey: '1x1-daily-stats'
+}
 
 // ============================================================================
 // GAME LOGIC CONSTANTS

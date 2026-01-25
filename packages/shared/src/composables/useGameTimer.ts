@@ -1,6 +1,6 @@
 /**
  * Shared Game Timer Composable
- * Provides timer logic used in GamePage components across both apps
+ * Provides timer logic used in GamePage components across all apps
  */
 
 import { onUnmounted, type Ref, ref, watch } from 'vue'

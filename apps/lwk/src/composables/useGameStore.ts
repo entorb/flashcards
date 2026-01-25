@@ -4,18 +4,19 @@
  */
 
 import {
-  type AnswerResult,
+  type AnswerStatus,
   createBaseGameStore,
   roundTime,
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
-  SPEED_BONUS_POINTS
+  calculatePointsBreakdown,
+  initializeGameFlow
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
-import { DEFAULT_DECKS } from '../constants'
+import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from '../constants'
 import { selectCards } from '../services/cardSelector'
 import {
   clearGameState,
@@ -36,7 +37,6 @@ import {
   setGameResult
 } from '../services/storage'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
-import { calculateSpellingPoints } from '../utils/helpers'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -130,18 +130,14 @@ export function useGameStore() {
   baseStore.initializeStore()
 
   // Restore game state and settings if page was reloaded during a game
+  // Only restore if there was an active game saved
   const savedGameState = loadGameState()
   const savedGameSettings = loadGameConfig()
 
-  if (savedGameSettings) {
-    // Always restore game settings
+  if (savedGameState && savedGameSettings && savedGameState.gameCards.length > 0) {
+    // Restore game settings
     baseStore.gameSettings.value = savedGameSettings
-  }
-
-  // gameCards is only populated when a game is active in memory; an empty array
-  // means there is no current in-memory game, so it is safe to restore from storage.
-  if (savedGameState && savedGameSettings && baseStore.gameCards.value.length === 0) {
-    // Restore game state only when no in-memory game is active
+    // Restore game state
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
@@ -167,7 +163,12 @@ export function useGameStore() {
     saveLastSettings(settings)
     saveGameConfig(settings)
     baseStore.gameSettings.value = settings
-    baseStore.gameCards.value = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
+    const selectedCards = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
+
+    // Use centralized game state flow to store settings + selected cards
+    initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
+
+    baseStore.gameCards.value = selectedCards
     baseStore.resetGameState()
 
     // Save initial game state so GamePage can load it
@@ -181,30 +182,32 @@ export function useGameStore() {
     })
   }
 
-  function handleAnswer(result: AnswerResult, isCloseMatch: boolean = false, answerTime?: number) {
+  function handleAnswer(result: AnswerStatus, answerTime: number) {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
-    let pointsEarned = 0
-    let speedBonus = 0
+    let speedBonus = false
 
-    if (result === 'correct') {
-      baseStore.correctAnswersCount.value++
-      pointsEarned = calculateSpellingPoints(true, false, currentCard.level)
-
-      // Speed bonus only in hidden mode
-      if (baseStore.gameSettings.value.mode === 'hidden' && answerTime !== undefined) {
-        if (answerTime < currentCard.time) {
-          speedBonus = SPEED_BONUS_POINTS
-          pointsEarned += speedBonus
+    if (result === 'correct' || result === 'close') {
+      // Speed bonus only in hidden mode and only for correct answers
+      if (result === 'correct' && baseStore.gameSettings.value.mode === 'hidden') {
+        if (answerTime < currentCard.time && currentCard.time < MAX_TIME) {
+          speedBonus = true
         }
       }
-    } else if (isCloseMatch) {
-      // Close match: 75% points, no level change
-      pointsEarned = calculateSpellingPoints(false, true, currentCard.level)
-    }
 
-    baseStore.points.value += pointsEarned
+      // Determine mode multiplier
+      const modePoints = baseStore.gameSettings.value.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1
+
+      const pointsBreakdown = calculatePointsBreakdown({
+        difficultyPoints: modePoints,
+        level: currentCard.level,
+        timeBonus: speedBonus,
+        closeAdjustment: result === 'close'
+      })
+
+      baseStore.handleAnswerBase(result, pointsBreakdown)
+    }
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {
@@ -214,16 +217,12 @@ export function useGameStore() {
         // Update level (not for close matches)
         if (result === 'correct') {
           updates.level = Math.min(MAX_LEVEL, card.level + 1)
-        } else if (result === 'incorrect' && !isCloseMatch) {
+        } else if (result === 'incorrect') {
           updates.level = Math.max(MIN_LEVEL, card.level - 1)
         }
 
         // Update time (only on correct answers in hidden mode)
-        if (
-          result === 'correct' &&
-          answerTime !== undefined &&
-          baseStore.gameSettings.value?.mode === 'hidden'
-        ) {
+        if (result === 'correct' && baseStore.gameSettings.value?.mode === 'hidden') {
           const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
           updates.time = roundTime(clampedTime)
         }
@@ -300,12 +299,6 @@ export function useGameStore() {
     saveCards(newCards)
   }
 
-  function moveAllCards(level: number) {
-    if (level < MIN_LEVEL || level > MAX_LEVEL) return
-    baseStore.allCards.value = baseStore.allCards.value.map(card => ({ ...card, level }))
-    saveCards(baseStore.allCards.value)
-  }
-
   // Wrap nextCard to save state after moving to next card
   function nextCard() {
     const isGameOver = baseStore.nextCard()
@@ -336,6 +329,7 @@ export function useGameStore() {
     gameStats: baseStore.gameStats,
     currentCard,
     isEisiHappy,
+    lastPointsBreakdown: baseStore.lastPointsBreakdown,
 
     // Actions
     startGame,
@@ -345,7 +339,7 @@ export function useGameStore() {
     discardGame,
     resetCards: resetCardsToDefault,
     importCards,
-    moveAllCards,
+    moveAllCards: baseStore.moveAllCards,
 
     // Deck management
     getDecks,

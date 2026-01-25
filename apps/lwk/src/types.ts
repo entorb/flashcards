@@ -19,7 +19,6 @@ export type GameMode = 'copy' | 'hidden'
 // Card Definition (extends BaseCard)
 export interface Card extends BaseCard {
   word: string // The spelling word - used as unique key/identifier
-  time: number // Seconds for best time in hidden mode (1-60s, default 60)
 }
 
 // Card Deck Definition
@@ -70,9 +69,3 @@ export const STORAGE_KEYS = {
 // ============================================================================
 // Utility Types
 // ============================================================================
-
-export type SpellingCheck = {
-  isCorrect: boolean
-  isCloseMatch: boolean // Only one character different
-  distance: number // Levenshtein distance
-}

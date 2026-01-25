@@ -205,8 +205,7 @@ describe('helpers - Card Text Parsing', () => {
         voc: 'apple',
         de: 'Apfel',
         level: 2,
-        time_blind: DEFAULT_TIME,
-        time_typing: DEFAULT_TIME
+        time: DEFAULT_TIME
       })
     })
 
@@ -228,8 +227,7 @@ describe('helpers - Card Text Parsing', () => {
         voc: 'apple',
         de: 'Apfel',
         level: 2,
-        time_blind: DEFAULT_TIME,
-        time_typing: DEFAULT_TIME
+        time: DEFAULT_TIME
       })
     })
   })
@@ -304,8 +302,7 @@ describe('helpers - Card Text Parsing', () => {
         voc: 'Müller',
         de: 'müller@example.com',
         level: 1,
-        time_blind: DEFAULT_TIME,
-        time_typing: DEFAULT_TIME
+        time: DEFAULT_TIME
       })
     })
 
@@ -393,8 +390,7 @@ describe('helpers - Card Text Parsing', () => {
 
     it('should include DEFAULT_TIME in parsed cards', () => {
       const result = parseCardsFromText('apple\tApfel')
-      expect(result?.cards[0].time_blind).toBe(DEFAULT_TIME)
-      expect(result?.cards[0].time_typing).toBe(DEFAULT_TIME)
+      expect(result?.cards[0].time).toBe(DEFAULT_TIME)
     })
   })
 
