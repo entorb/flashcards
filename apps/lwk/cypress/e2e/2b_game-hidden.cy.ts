@@ -43,7 +43,9 @@ describe('Hidden Mode Game', () => {
         .invoke('text')
         .then(text => {
           const word = text.trim()
-
+          // TODO: makes problems on prod build, so wait timer added
+          // eslint-disable-next-line cypress/no-unnecessary-waiting
+          cy.wait(200) // Wait for countdown button to appear
           cy.get('[data-cy="start-countdown-button"]').click()
 
           cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
@@ -54,9 +56,9 @@ describe('Hidden Mode Game', () => {
           cy.get('[data-cy="submit-answer-button"]').click()
         })
 
-      cy.get('[data-cy="proceed-button"]', { timeout: 10000 }).should('be.visible')
-      cy.get('[data-cy="proceed-button"]').should('not.be.disabled')
-      cy.get('[data-cy="proceed-button"]').click()
+      cy.get('[data-cy="continue-button"]', { timeout: 10000 }).should('be.visible')
+      cy.get('[data-cy="continue-button"]').should('not.be.disabled')
+      cy.get('[data-cy="continue-button"]').click()
     }
 
     cy.then(() => {

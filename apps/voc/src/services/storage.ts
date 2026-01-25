@@ -5,12 +5,13 @@
 
 import type { GameResult, GameStats } from '@flashcards/shared'
 import {
+  createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
   loadJSON,
-  saveJSON,
-  incrementDailyGames as sharedIncrementDailyGames
+  MAX_TIME,
+  saveJSON
 } from '@flashcards/shared'
 
 import { INITIAL_CARDS } from '../constants'
@@ -50,11 +51,45 @@ function migrateToDecks(data: unknown): CardDeck[] {
   // Check if it's already deck structure
   const firstItem = data[0] as Record<string, unknown>
   if ('name' in firstItem && 'cards' in firstItem) {
-    return data as CardDeck[]
+    // Migrate cards within decks
+    const decks = (data as CardDeck[]).map(deck => ({
+      ...deck,
+      cards: deck.cards.map(card => migrateCardTimeFields(card))
+    }))
+    return decks
   }
 
   // Otherwise treat as new card structure
-  return [{ name: 'en', cards: data as Card[] }]
+  const cards = (data as Card[]).map(card => migrateCardTimeFields(card))
+  return [{ name: 'en', cards }]
+}
+
+// TODO: Remove this migration function 28.02.2026
+function migrateCardTimeFields(card: unknown): Card {
+  const cardRecord = card as Record<string, unknown>
+
+  // If card already has time field, remove old fields
+  if ('time' in cardRecord && typeof cardRecord.time === 'number') {
+    const cleanCard = { ...cardRecord }
+    delete cleanCard.time_blind
+    delete cleanCard.time_typing
+    return cleanCard as unknown as Card
+  }
+
+  // Use time_typing if it exists (typing mode was more advanced), otherwise time_blind, otherwise default
+  let timeValue: number
+  if (typeof cardRecord.time_typing === 'number') {
+    timeValue = cardRecord.time_typing
+  } else if (typeof cardRecord.time_blind === 'number') {
+    timeValue = cardRecord.time_blind
+  } else {
+    timeValue = MAX_TIME
+  }
+
+  const cleanCard = { ...cardRecord }
+  delete cleanCard.time_blind
+  delete cleanCard.time_typing
+  return { ...cleanCard, time: timeValue } as unknown as Card
 }
 
 /**
@@ -196,6 +231,14 @@ export function updateStatistics(points: number, correctAnswers: number): void {
   statsOps.update(points, correctAnswers)
 }
 
+// Game Storage Factory - Consolidates result/state/daily operations
+
+const gameStorage = createAppGameStorage(
+  STORAGE_KEYS.GAME_RESULT,
+  STORAGE_KEYS.GAME_STATE,
+  STORAGE_KEYS.DAILY_STATS
+)
+
 // Daily Stats
 
 /**
@@ -203,7 +246,7 @@ export function updateStatistics(points: number, correctAnswers: number): void {
  * Used for bonus points
  */
 export function incrementDailyGames(): { isFirstGame: boolean; gamesPlayedToday: number } {
-  return sharedIncrementDailyGames(STORAGE_KEYS.DAILY_STATS)
+  return gameStorage.incrementDailyGames()
 }
 
 // Game Settings (for reload recovery)
@@ -242,7 +285,7 @@ export function loadGameState(): GameState | null {
  * Clear game state from session storage
  */
 export function clearGameState(): void {
-  gamePersistence.clearAll()
+  gameStorage.clearGameState()
 }
 
 // Game Result (Session Storage)
@@ -251,22 +294,21 @@ export function clearGameState(): void {
  * Save game result to session storage
  */
 export function setGameResult(result: GameResult): void {
-  sessionStorage.setItem(STORAGE_KEYS.GAME_RESULT, JSON.stringify(result))
+  gameStorage.setGameResult(result)
 }
 
 /**
  * Load game result from session storage
  */
 export function getGameResult(): GameResult | null {
-  const stored = sessionStorage.getItem(STORAGE_KEYS.GAME_RESULT)
-  return stored ? JSON.parse(stored) : null
+  return gameStorage.getGameResult()
 }
 
 /**
  * Clear game result from session storage
  */
 export function clearGameResult(): void {
-  sessionStorage.removeItem(STORAGE_KEYS.GAME_RESULT)
+  gameStorage.clearGameResult()
 }
 
 // Reset All
