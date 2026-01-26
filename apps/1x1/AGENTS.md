@@ -64,7 +64,7 @@ Weighted by focus:
 - `1x1-history`: `GameHistory[]`
 - `1x1-stats`: `GameStats`
 - `1x1-range`: number[]
-- `1x1-last-settings`: `GameSettings`
+- `1x1-settings`: `GameSettings`
 
 ## Critical Rules
 

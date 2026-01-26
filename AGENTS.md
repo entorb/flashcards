@@ -14,6 +14,7 @@
 - All text in `@flashcards/shared/src/text-de.ts`
 - Unit tests: `.spec.ts` suffix, import functions (don't copy)
 - E2E tests: `data-cy` locators (not text/ids)
+- Check for code duplication and ensure common code is moved to shared package before committing
 - Commit after implementing new features, Only after `pnpm run check` and `pnpm run cy:run` pass. Only commit header, no body.
 
 ## Critical Code Rules
@@ -33,6 +34,16 @@
 - `items.sort((a, b) => a.localeCompare(b))` for strings
 - Cognitive complexity < 15 → extract functions
 - No duplicate strings (3+) → use `TEXT_DE` or constants
+
+**DRY Principles:**
+
+- Strictly adhere to Don't Repeat Yourself: Prevent code duplication across the monorepo.
+- Use the shared package (`packages/shared/`) for any common code, components, composables, services, utilities, or types.
+- Before implementing new features, search for existing implementations in `packages/shared/` or other apps.
+- Extract duplicated code into shared modules immediately to maintain a single source of truth.
+- All UI text must be centralized in `TEXT_DE` from `@flashcards/shared` to avoid string duplication.
+- Use shared constants, types, and patterns consistently across all apps.
+- Regularly refactor to move app-specific code to shared when it becomes reusable.
 
 **Suppressing warnings (rare):**
 
