@@ -6,18 +6,13 @@ import {
   PwaInstallInfo,
   StatisticsCard
 } from '@flashcards/shared/components'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import EisiMascot from '../components/EisiMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH } from '../constants'
-import {
-  clearGameConfig,
-  clearGameState,
-  loadLastSettings,
-  saveLastSettings
-} from '../services/storage'
+import { clearGameConfig, clearGameState, loadSettings, saveSettings } from '../services/storage'
 import type { GameSettings } from '../types'
 
 const router = useRouter()
@@ -49,6 +44,12 @@ const modeOptions = computed(() => [
 ])
 
 onMounted(() => {
+  // Load last settings if available
+  const lastSettings = loadSettings()
+  if (lastSettings) {
+    settings.value = { ...settings.value, ...lastSettings }
+  }
+
   // Refresh deck list and options
   const loadedDecks = getDecks()
   deckOptions.value = loadedDecks.map(deck => ({
@@ -56,15 +57,9 @@ onMounted(() => {
     value: deck.name
   }))
 
-  const lastSettings = loadLastSettings()
-  if (lastSettings && loadedDecks.some(d => d.name === lastSettings.deck)) {
-    settings.value = { ...settings.value, ...lastSettings }
-  } else {
-    // Default to first deck if no valid saved settings
-    if (loadedDecks.length > 0) {
-      settings.value.deck = loadedDecks[0].name
-    }
-    saveLastSettings(settings.value)
+  // Default to first deck if no deck set
+  if (!settings.value.deck && loadedDecks.length > 0) {
+    settings.value.deck = loadedDecks[0].name
   }
 
   // Set active deck in store
@@ -76,18 +71,10 @@ onMounted(() => {
   ensureValidMode()
 })
 
-watch(
-  () => ({ ...settings.value }),
-  () => {
-    saveLastSettings(settings.value)
-  },
-  { deep: true }
-)
-
 function handleDeckChange(deckName: string) {
   settings.value.deck = deckName
   switchDeck(deckName)
-  saveLastSettings(settings.value)
+  saveSettings(settings.value)
   checkLevel1Or2Cards()
   ensureValidMode()
 }

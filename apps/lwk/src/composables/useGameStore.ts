@@ -25,14 +25,12 @@ import {
   loadGameConfig,
   loadGameState,
   loadHistory,
-  loadLastSettings,
   loadStats,
   saveCards,
   saveDecks,
   saveGameConfig,
   saveGameState,
   saveHistory,
-  saveLastSettings,
   saveStats,
   setGameResult
 } from '../services/storage'
@@ -79,12 +77,6 @@ function renameDeck(oldName: string, newName: string): boolean {
   }
   deck.name = newName
   saveDecks(decks)
-  // Update settings if current deck was renamed
-  const settings = loadLastSettings()
-  if (settings?.deck === oldName) {
-    settings.deck = newName
-    saveLastSettings(settings)
-  }
   return true
 }
 
@@ -99,14 +91,14 @@ function removeDeck(name: string): boolean {
     return false // Deck not found
   }
   saveDecks(filtered)
-  // If current deck was removed, update settings and switch to a new default
-  const settings = loadLastSettings()
-  if (settings?.deck === name) {
-    const newDeck = filtered[0]
-    settings.deck = newDeck.name
-    saveLastSettings(settings)
+  // If current deck was removed, switch to a new default (if any deck remains)
+  const newDeck = filtered[0]
+  if (newDeck) {
     // Load cards directly from the deck we already have in memory
     baseStore.allCards.value = newDeck.cards
+  } else {
+    // No decks remain; clear current cards to avoid inconsistent state
+    baseStore.allCards.value = []
   }
   return true
 }
@@ -160,7 +152,6 @@ export function useGameStore() {
       switchDeck(settings.deck)
     }
 
-    saveLastSettings(settings)
     saveGameConfig(settings)
     baseStore.gameSettings.value = settings
     const selectedCards = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
@@ -237,7 +228,7 @@ export function useGameStore() {
   }
 
   function finishGame() {
-    const resolvedSettings = baseStore.gameSettings.value ?? loadLastSettings()
+    const resolvedSettings = baseStore.gameSettings.value
     if (!resolvedSettings) return
 
     const historyEntry: GameHistory = {
@@ -280,7 +271,7 @@ export function useGameStore() {
   function resetCardsToDefault() {
     // Reset current deck to default cards
     const decks = loadDecks()
-    const currentDeckName = loadLastSettings()?.deck || DEFAULT_DECKS[0].name
+    const currentDeckName = DEFAULT_DECKS[0].name
     const defaultDeck = DEFAULT_DECKS.find(d => d.name === currentDeckName)
 
     if (defaultDeck) {
