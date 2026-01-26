@@ -1,89 +1,160 @@
 <!doctype html>
 <html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Flashcards - Lern-Apps für Kinder</title>
+    <link
+      rel="stylesheet"
+      href="styles.css"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flashcards - Lern-Apps für Kinder</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <div class="container">
-
-    <h1>Flashcards - Lern-Apps für Kinder</h1>
-    <table>
-      <colgroup>
-        <col style="width: 33%" />
-        <col style="width: 34%" />
-        <col style="width: 33%" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="app-header">
-            <a href="../fc-1x1/" target="_blank" rel="noopener">1×1</a>
-          </th>
-          <th class="app-header">
-            <a href="../fc-voc/" target="_blank" rel="noopener">Vokabeln</a>
-          </th>
-          <th class="app-header">
-            <a href="../fc-lwk/" target="_blank" rel="noopener">Rechtschreibung</a>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="mascot">
-            <a href="../fc-1x1/" target="_blank" rel="noopener">
-              <img src="../fc-1x1/icon.svg" alt="Murmeltier-Icon" />
-            </a>
-          </td>
-          <td class="mascot">
-            <a href="../fc-voc/" target="_blank" rel="noopener">
-              <img src="../fc-voc/icon.svg" alt="Fuchs-Icon" />
-            </a>
-          </td>
-          <td class="mascot">
-            <a href="../fc-lwk/" target="_blank" rel="noopener">
-              <img src="../fc-lwk/icon.svg" alt="Eisbär-Icon" />
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-            <strong>Lernmethode</strong> <br /> Karteikarten-System mit 5 Stufen: (Stufe 1 = unbekannt → Stufe 5 = sicher beherrscht)<br />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-            <strong>Features</strong><br /> Adaptives Lernen • Gewichtete Kartenauswahl <br /> (Fokus auf unsichere, sichere oder langsame)
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-            <strong>Gamification</strong><br /> Punkte Sammeln • Maskotchen freut sich • Tagesstatistik mit Bonuspunkten • Spielverlauf-Historie
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-            <strong>Technologie</strong><br /> Web • offline nutzbar • PWA App<br /> (kann auf Android oder Apple als App installiert werden)
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-            <strong>Privatsphäre</strong><br />
-            <a href="https://github.com/entorb/flashcards" target="_blank" rel="noopener">Open Source</a> • Keine Kosten • Keine Werbung • Kein Login • Keine Datenspeicherung auf dem Server
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <footer>
-
-      <p>
-        <a href="https://entorb.net" target="_blank" rel="noopener">Home</a> • <a href="https://entorb.net/contact.php?origin=Flashcards" target="_blank" rel="noopener">Kontakt</a> • <a href="https://github.com/entorb/flashcards" target="_blank" rel="noopener">GitHub</a>
-      </p>
-    </footer>
-  </div>
-</body>
-
+  <body>
+    <div class="container">
+      <h1>Flashcards - Lern-Apps für Kinder</h1>
+      <table>
+        <colgroup>
+          <col style="width: 33%" />
+          <col style="width: 34%" />
+          <col style="width: 33%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="app-header">
+              <a
+                href="../fc-1x1/"
+                target="_blank"
+                rel="noopener"
+                >1×1</a
+              >
+            </th>
+            <th class="app-header">
+              <a
+                href="../fc-voc/"
+                target="_blank"
+                rel="noopener"
+                >Vokabeln</a
+              >
+            </th>
+            <th class="app-header">
+              <a
+                href="../fc-lwk/"
+                target="_blank"
+                rel="noopener"
+                >Rechtschreibung</a
+              >
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mascot">
+              <a
+                href="../fc-1x1/"
+                target="_blank"
+                rel="noopener"
+              >
+                <img
+                  src="../fc-1x1/icon.svg"
+                  alt="Murmeltier-Icon"
+                />
+              </a>
+            </td>
+            <td class="mascot">
+              <a
+                href="../fc-voc/"
+                target="_blank"
+                rel="noopener"
+              >
+                <img
+                  src="../fc-voc/icon.svg"
+                  alt="Fuchs-Icon"
+                />
+              </a>
+            </td>
+            <td class="mascot">
+              <a
+                href="../fc-lwk/"
+                target="_blank"
+                rel="noopener"
+              >
+                <img
+                  src="../fc-lwk/icon.svg"
+                  alt="Eisbär-Icon"
+                />
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <strong>Lernmethode</strong> <br />
+              Karteikarten-System mit 5 Stufen: (Stufe 1 = unbekannt → Stufe 5 = sicher
+              beherrscht)<br />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <strong>Features</strong><br />
+              Adaptives Lernen • Gewichtete Kartenauswahl <br />
+              (Fokus auf unsichere, sichere oder langsame)
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <strong>Gamification</strong><br />
+              Punkte Sammeln • Maskotchen freut sich • Tagesstatistik mit Bonuspunkten •
+              Spielverlauf-Historie
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <strong>Technologie</strong><br />
+              Web • offline nutzbar • PWA App<br />
+              (kann auf Android oder Apple als App installiert werden)
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <strong>Privatsphäre</strong><br />
+              <a
+                href="https://github.com/entorb/flashcards"
+                target="_blank"
+                rel="noopener"
+                >Open Source</a
+              >
+              • Keine Kosten • Keine Werbung • Kein Login • Keine Datenspeicherung auf dem Server
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <footer>
+        <p>
+          <a
+            href="https://entorb.net"
+            target="_blank"
+            rel="noopener"
+            >Home</a
+          >
+          •
+          <a
+            href="https://entorb.net/contact.php?origin=Flashcards"
+            target="_blank"
+            rel="noopener"
+            >Kontakt</a
+          >
+          •
+          <a
+            href="https://github.com/entorb/flashcards"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </p>
+      </footer>
+    </div>
+  </body>
 </html>
