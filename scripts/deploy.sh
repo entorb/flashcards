@@ -9,14 +9,14 @@ set -e
 rm -f .DS_Store
 rm -f */.DS_Store
 
-rsync -rhv --delete --no-perms --ignore-times www/* entorb@entorb.net:html/flashcards/
+rsync -rhv --delete --no-perms --ignore-times www/index.* entorb@entorb.net:html/flashcards/
 
 pnpm run check
 pnpm run cy:run
 
-# migration
-rsync -rhv --delete --no-perms --ignore-times www/1x1/index.html entorb@entorb.net:html/1x1/
-rsync -rhv --delete --no-perms --ignore-times www/voc/index.html entorb@entorb.net:html/voc/
+# # migration
+# rsync -rhv --delete --no-perms --ignore-times www/1x1/index.html entorb@entorb.net:html/1x1/
+# rsync -rhv --delete --no-perms --ignore-times www/voc/index.html entorb@entorb.net:html/voc/
 
 for app in 1x1 voc lwk; do
   pnpm run build:$app
