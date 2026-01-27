@@ -7,13 +7,13 @@ import {
   PwaInstallInfo,
   StatisticsCard
 } from '@flashcards/shared/components'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import GroundhogMascot from '@/components/GroundhogMascot.vue'
 import { useGameStore } from '@/composables/useGameStore'
 import { BASE_PATH, DEFAULT_RANGE } from '@/constants'
-import { loadGameStats, loadRange } from '@/services/storage'
+import { loadGameStats, loadRange, loadSettings, saveSettings } from '@/services/storage'
 import type { SelectionType } from '@/types'
 
 const router = useRouter()
@@ -40,20 +40,19 @@ onMounted(() => {
   // Load range configuration
   range.value = loadRange()
 
-  // Set default select to all values in current range
-  select.value = [...range.value]
+  // Load saved settings
+  const savedSettings = loadSettings()
+  if (savedSettings) {
+    select.value = savedSettings.select
+    focus.value = savedSettings.focus
+  } else {
+    // Set default select to all values in current range
+    select.value = [...range.value]
+  }
 
-  // Restore select and focus from gameSettings in store
+  // Restore select and focus from gameSettings in store if available (overrides saved)
   if (gameSettings.value) {
-    // Validate select against current range
-    if (gameSettings.value.select === 'x²' || gameSettings.value.select === 'all') {
-      select.value = gameSettings.value.select
-    } else if (Array.isArray(gameSettings.value.select)) {
-      // Filter out numbers not in current range
-      const validSelect = gameSettings.value.select.filter(num => range.value.includes(num))
-      // If no valid selections remain, use all from range
-      select.value = validSelect.length > 0 ? validSelect : [...range.value]
-    }
+    select.value = gameSettings.value.select
     focus.value = gameSettings.value.focus
   }
 
@@ -61,28 +60,15 @@ onMounted(() => {
   gameStats.value = loadGameStats()
 })
 
-// Watch for changes and save to gameSettings in store
-watch(
-  [select, focus],
-  () => {
-    if (gameSettings.value) {
-      gameSettings.value.select = select.value
-      gameSettings.value.focus = focus.value
-    }
-  },
-  { deep: true }
-)
-
 function startGame() {
   // Save game config to store and navigate
   // Pass true as second parameter to force a fresh game start
-  storeStartGame(
-    {
-      select: select.value,
-      focus: focus.value
-    },
-    true
-  )
+  const gameConfig = {
+    select: select.value,
+    focus: focus.value
+  }
+  saveSettings(gameConfig)
+  storeStartGame(gameConfig, true)
 
   // Navigate to game page without query parameters
   router.push({ name: '/game' })
