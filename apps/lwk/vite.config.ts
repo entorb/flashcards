@@ -44,7 +44,7 @@ export default mergeConfig(
         manifest: {
           name: APP_TITLE,
           short_name: APP_TITLE,
-          description: 'Rechtschreibung üben mit Eisi dem Eisbären',
+          description: 'Rechtschreibung üben mit Rabat dem Fuchs und seinem Lernkastensystem',
           theme_color: '#00bcd4',
           background_color: '#ffffff',
           display: 'standalone',

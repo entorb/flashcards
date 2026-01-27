@@ -44,8 +44,7 @@ export default mergeConfig(
         manifest: {
           name: APP_TITLE,
           short_name: APP_TITLE,
-          description:
-            'Einmaleins lernen mit 5-stufigem adaptivem System, Tagesstatistik und Spielverlauf',
+          description: '1x1 üben mit Vyvit dem Murmeltier und seinem Lernkastensystem',
           theme_color: '#1976d2',
           background_color: '#ffffff',
           display: 'standalone',
