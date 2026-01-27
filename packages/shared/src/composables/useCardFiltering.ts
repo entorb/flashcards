@@ -10,7 +10,7 @@ interface UseCardFilteringReturn<T extends BaseCard> {
 }
 
 export function useCardFiltering<T extends BaseCard = BaseCard>(
-  cards: Ref<T[]>
+  getCards: () => T[]
 ): UseCardFilteringReturn<T> {
   const selectedLevel = ref<number | null>(null)
 
@@ -26,7 +26,7 @@ export function useCardFiltering<T extends BaseCard = BaseCard>(
     if (selectedLevel.value === null) {
       return []
     }
-    return cards.value.filter(card => card.level === selectedLevel.value)
+    return getCards().filter(card => card.level === selectedLevel.value)
   })
 
   return {

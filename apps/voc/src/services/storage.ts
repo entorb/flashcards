@@ -17,6 +17,22 @@ import {
 import { INITIAL_CARDS } from '../constants'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 
+// Legacy types for migration
+interface LegacyCard extends Omit<Card, 'time'> {
+  time_blind?: number
+  time_typing?: number
+  time?: number
+  [key: string]: unknown
+}
+
+interface LegacyCardDeck {
+  name: string
+  cards: LegacyCard[]
+  [key: string]: unknown
+}
+
+type LegacyStorageData = LegacyCard[] | LegacyCardDeck[]
+
 const STORAGE_KEYS = {
   CARDS: 'voc-cards',
   HISTORY: 'voc-history',
@@ -43,7 +59,7 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
 
 // Decks
 
-function migrateToDecks(data: unknown): CardDeck[] {
+function migrateToDecks(data: LegacyStorageData): CardDeck[] {
   if (!Array.isArray(data) || data.length === 0) {
     return [{ name: 'en', cards: INITIAL_CARDS }]
   }
@@ -52,7 +68,7 @@ function migrateToDecks(data: unknown): CardDeck[] {
   const firstItem = data[0] as Record<string, unknown>
   if ('name' in firstItem && 'cards' in firstItem) {
     // Migrate cards within decks
-    const decks = (data as CardDeck[]).map(deck => ({
+    const decks = (data as LegacyCardDeck[]).map(deck => ({
       ...deck,
       cards: deck.cards.map(card => migrateCardTimeFields(card))
     }))
@@ -60,12 +76,12 @@ function migrateToDecks(data: unknown): CardDeck[] {
   }
 
   // Otherwise treat as new card structure
-  const cards = (data as Card[]).map(card => migrateCardTimeFields(card))
+  const cards = (data as LegacyCard[]).map(card => migrateCardTimeFields(card))
   return [{ name: 'en', cards }]
 }
 
 // TODO: Remove this migration function 28.02.2026
-function migrateCardTimeFields(card: unknown): Card {
+function migrateCardTimeFields(card: LegacyCard): Card {
   const cardRecord = card as Record<string, unknown>
 
   // If card already has time field, remove old fields
@@ -103,7 +119,7 @@ export function loadDecks(): CardDeck[] {
     return defaultDecks
   }
   try {
-    const parsed = JSON.parse(stored)
+    const parsed = JSON.parse(stored) as LegacyStorageData
     const decks = migrateToDecks(parsed)
     // Save migrated data back to storage
     if (stored !== JSON.stringify(decks)) {

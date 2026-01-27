@@ -31,11 +31,6 @@ export const MIN_TIME = 0.1
  */
 export const MAX_TIME = 60
 
-/**
- * Default response time for new cards in seconds
- */
-export const DEFAULT_TIME = 60
-
 // ============================================================================
 // FEEDBACK TIMING
 // ============================================================================
