@@ -25,12 +25,14 @@ import {
   loadGameConfig,
   loadGameState,
   loadHistory,
+  loadSettings,
   loadStats,
   saveCards,
   saveDecks,
   saveGameConfig,
   saveGameState,
   saveHistory,
+  saveSettings,
   saveStats,
   setGameResult
 } from '../services/storage'
@@ -77,6 +79,12 @@ function renameDeck(oldName: string, newName: string): boolean {
   }
   deck.name = newName
   saveDecks(decks)
+  // Update settings if current deck was renamed
+  const settings = loadSettings()
+  if (settings?.deck === oldName) {
+    settings.deck = newName
+    saveSettings(settings)
+  }
   return true
 }
 
@@ -91,14 +99,16 @@ function removeDeck(name: string): boolean {
     return false // Deck not found
   }
   saveDecks(filtered)
-  // If current deck was removed, switch to a new default (if any deck remains)
-  const newDeck = filtered[0]
-  if (newDeck) {
-    // Load cards directly from the deck we already have in memory
-    baseStore.allCards.value = newDeck.cards
-  } else {
-    // No decks remain; clear current cards to avoid inconsistent state
-    baseStore.allCards.value = []
+  // If current deck was removed, update settings and switch to a new default
+  const settings = loadSettings()
+  if (settings?.deck === name) {
+    const newDeck = filtered[0]
+    if (newDeck) {
+      settings.deck = newDeck.name
+      saveSettings(settings)
+      // Load cards directly from the deck we already have in memory
+      baseStore.allCards.value = newDeck.cards
+    }
   }
   return true
 }
@@ -271,7 +281,7 @@ export function useGameStore() {
   function resetCardsToDefault() {
     // Reset current deck to default cards
     const decks = loadDecks()
-    const currentDeckName = DEFAULT_DECKS[0].name
+    const currentDeckName = loadSettings()?.deck || DEFAULT_DECKS[0].name
     const defaultDeck = DEFAULT_DECKS.find(d => d.name === currentDeckName)
 
     if (defaultDeck) {

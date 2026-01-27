@@ -6,7 +6,7 @@ import {
   PwaInstallInfo,
   StatisticsCard
 } from '@flashcards/shared/components'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import EisiMascot from '../components/EisiMascot.vue'
@@ -43,13 +43,15 @@ const modeOptions = computed(() => [
   }
 ])
 
-onMounted(() => {
-  // Load last settings if available
-  const lastSettings = loadSettings()
-  if (lastSettings) {
-    settings.value = { ...settings.value, ...lastSettings }
-  }
+watch(
+  () => settings.value,
+  newSettings => {
+    saveSettings(newSettings)
+  },
+  { deep: true }
+)
 
+onMounted(() => {
   // Refresh deck list and options
   const loadedDecks = getDecks()
   deckOptions.value = loadedDecks.map(deck => ({
@@ -57,8 +59,12 @@ onMounted(() => {
     value: deck.name
   }))
 
-  // Default to first deck if no deck set
-  if (!settings.value.deck && loadedDecks.length > 0) {
+  // Load last settings if available and validate deck
+  const lastSettings = loadSettings()
+  if (lastSettings && loadedDecks.some(d => d.name === lastSettings.deck)) {
+    settings.value = { ...settings.value, ...lastSettings }
+  } else if (loadedDecks.length > 0) {
+    // Default to first deck if no valid saved settings or deck is invalid
     settings.value.deck = loadedDecks[0].name
   }
 
