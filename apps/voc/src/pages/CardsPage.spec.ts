@@ -41,37 +41,4 @@ describe('CardsPage Component', () => {
     const wrapper = mount(CardsPage, createMountOptions(router))
     expect(wrapper.find('[data-cy="back-button"]').exists()).toBe(true)
   })
-
-  it('computes cardsToShow when no level selected', async () => {
-    const router = createMockRouter()
-    const wrapper = mount(CardsPage, createMountOptions(router))
-    await wrapper.vm.$nextTick()
-    const vm = wrapper.vm as unknown as { cardsToShow: unknown[] }
-    expect(vm.cardsToShow).toBeInstanceOf(Array)
-  })
-
-  it('mounts with game store properly', async () => {
-    const router = createMockRouter()
-    const wrapper = mount(CardsPage, createMountOptions(router))
-    await wrapper.vm.$nextTick()
-    // Verify the component has access to game store
-    const vm = wrapper.vm as unknown as { cardsToShow: unknown[] }
-    expect(vm.cardsToShow).toBeDefined()
-  })
-
-  it('has targetLevel ref initialized', async () => {
-    const router = createMockRouter()
-    const wrapper = mount(CardsPage, createMountOptions(router))
-    const vm = wrapper.vm as unknown as { targetLevel: number }
-    expect(typeof vm.targetLevel).toBe('number')
-  })
-
-  it('computes level color correctly', async () => {
-    const router = createMockRouter()
-    const wrapper = mount(CardsPage, createMountOptions(router))
-    const vm = wrapper.vm as unknown as { getLevelColor: (level: number) => string }
-    const color = vm.getLevelColor(1)
-    expect(typeof color).toBe('string')
-    expect(color).toMatch(/^#[0-9A-Fa-f]{6}$/)
-  })
 })

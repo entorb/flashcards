@@ -99,6 +99,7 @@ nach
 neue
 niedrige
 Noch
+NOSONAR
 nutzbar
 Privatsphäre
 prüfen
