@@ -1,12 +1,14 @@
 <script
   setup
   lang="ts"
-  generic="T extends { name: string; cards: unknown[] }, S extends { deck?: string }"
+  generic="T extends { name: string; cards: BaseCard[] }, S extends { deck?: string }"
 >
 import { onMounted, ref } from 'vue'
 
+import type { BaseCard } from '../types'
+
 export interface DeckSelectorProps<
-  T extends { name: string; cards: unknown[] },
+  T extends { name: string; cards: BaseCard[] },
   S extends { deck?: string }
 > {
   getDecks: () => T[]

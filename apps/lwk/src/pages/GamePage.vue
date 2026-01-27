@@ -183,6 +183,7 @@ function startHiddenMode() {
 function showWordForDuration() {
   countdown.value = WORD_DISPLAY_DURATION
 
+  // Cast needed due to type mismatch between Node.js (Timeout) and browser (number) environments
   countdownInterval = globalThis.setInterval(() => {
     countdown.value--
     if (countdown.value <= 0) {

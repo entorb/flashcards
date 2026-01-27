@@ -1,7 +1,7 @@
 // cspell:disable
 import { describe, expect, it } from 'vitest'
 
-import { levenshteinDistance, DEFAULT_TIME } from '@flashcards/shared'
+import { levenshteinDistance, MAX_TIME } from '@flashcards/shared'
 
 import { normalizeString, parseCardsFromText, validateTypingAnswer } from './helpers'
 
@@ -205,7 +205,7 @@ describe('helpers - Card Text Parsing', () => {
         voc: 'apple',
         de: 'Apfel',
         level: 2,
-        time: DEFAULT_TIME
+        time: MAX_TIME
       })
     })
 
@@ -227,7 +227,7 @@ describe('helpers - Card Text Parsing', () => {
         voc: 'apple',
         de: 'Apfel',
         level: 2,
-        time: DEFAULT_TIME
+        time: MAX_TIME
       })
     })
   })
@@ -302,7 +302,7 @@ describe('helpers - Card Text Parsing', () => {
         voc: 'Müller',
         de: 'müller@example.com',
         level: 1,
-        time: DEFAULT_TIME
+        time: MAX_TIME
       })
     })
 
@@ -388,9 +388,9 @@ describe('helpers - Card Text Parsing', () => {
       expect(result?.cards).toHaveLength(1)
     })
 
-    it('should include DEFAULT_TIME in parsed cards', () => {
+    it('should include MAX_TIME in parsed cards', () => {
       const result = parseCardsFromText('apple\tApfel')
-      expect(result?.cards[0].time).toBe(DEFAULT_TIME)
+      expect(result?.cards[0].time).toBe(MAX_TIME)
     })
   })
 

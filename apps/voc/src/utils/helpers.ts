@@ -1,4 +1,4 @@
-import { levenshteinDistance, DEFAULT_TIME } from '@flashcards/shared'
+import { levenshteinDistance, MAX_TIME } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '../constants'
 import type { Card } from '../types'
@@ -83,7 +83,7 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
         voc: parts[0].trim(),
         de: parts[1].trim(),
         level: Number.parseInt(parts[2], 10) || 1,
-        time: DEFAULT_TIME
+        time: MAX_TIME
       })
     }
   }
