@@ -12,7 +12,7 @@ import { useRouter } from 'vue-router'
 import FoxMascot from '../components/FoxMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH } from '../constants'
-import { loadLastSettings, saveLastSettings } from '../services/storage'
+import { loadSettings } from '../services/storage'
 import type { GameSettings } from '../types'
 
 const router = useRouter()
@@ -54,14 +54,12 @@ const languageOptions = [
 ]
 
 onMounted(async () => {
-  const lastSettings = loadLastSettings()
+  // Load last settings if available
+  const lastSettings = loadSettings()
   if (lastSettings) {
-    // Merge loaded settings with defaults to ensure all properties exist
     settings.value = { ...settings.value, ...lastSettings }
-  } else {
-    // Save default settings to localStorage on first run
-    saveLastSettings(settings.value)
   }
+
   // Refresh deck list and options
   const loadedDecks = getDecks()
   deckOptions.value = loadedDecks.map(deck => ({
@@ -84,7 +82,6 @@ watch(
 function handleDeckChange(deckName: string) {
   settings.value.deck = deckName
   switchDeck(deckName)
-  saveLastSettings(settings.value)
   checkLevel1Cards()
   // ensureValidMode is called within checkLevel1Cards
 }

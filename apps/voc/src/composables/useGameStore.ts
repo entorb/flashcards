@@ -25,8 +25,6 @@ import {
   saveCards,
   saveGameStats,
   saveHistory,
-  saveLastSettings,
-  loadLastSettings,
   clearGameState as storageClearGameState,
   loadGameSettings as storageLoadGameSettings,
   loadGameState as storageLoadGameState,
@@ -34,7 +32,9 @@ import {
   saveGameState as storageSaveGameState,
   setGameResult as storageSetGameResult,
   loadDecks,
-  saveDecks
+  saveDecks,
+  loadSettings,
+  saveSettings
 } from '../services/storage'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 
@@ -77,10 +77,10 @@ function renameDeck(oldName: string, newName: string): boolean {
   deck.name = newName
   saveDecks(decks)
   // Update settings if current deck was renamed
-  const settings = loadLastSettings()
+  const settings = loadSettings()
   if (settings?.deck === oldName) {
     settings.deck = newName
-    saveLastSettings(settings)
+    saveSettings(settings)
   }
   return true
 }
@@ -137,7 +137,7 @@ export function useGameStore() {
       switchDeck(settings.deck)
     }
 
-    saveLastSettings(settings)
+    saveSettings(settings)
     storageSaveGameSettings(settings)
     baseStore.gameSettings.value = settings
     const selectedCards = selectCardsForRound(baseStore.allCards.value, settings.focus)
@@ -287,11 +287,11 @@ export function useGameStore() {
     }
     saveDecks(filtered)
     // If current deck was removed, update settings and switch to a new default
-    const settings = loadLastSettings()
+    const settings = loadSettings()
     if (settings?.deck === name) {
       const newDeck = filtered[0]
       settings.deck = newDeck.name
-      saveLastSettings(settings)
+      saveSettings(settings)
       // Load cards directly from the deck we already have in memory
       baseStore.allCards.value = newDeck.cards
     }

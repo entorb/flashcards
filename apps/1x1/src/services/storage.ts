@@ -11,6 +11,7 @@ import {
   createHistoryOperations,
   createStatsOperations,
   createAppGameStorage,
+  loadJSON,
   saveJSON,
   MAX_TIME,
   MIN_LEVEL,
@@ -24,6 +25,7 @@ const STORAGE_KEYS = {
   CARDS: '1x1-cards',
   HISTORY: '1x1-history',
   STATS: '1x1-stats',
+  SETTINGS: '1x1-settings',
   GAME_CONFIG: '1x1-game-config',
   GAME_RESULT: '1x1-game-result',
   DAILY_STATS: '1x1-daily-stats',
@@ -391,6 +393,20 @@ export function saveRange(range: number[]): void {
 }
 
 /**
+ * Load game settings
+ */
+export function loadSettings(): GameSettings | null {
+  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
+}
+
+/**
+ * Save game settings
+ */
+export function saveSettings(settings: GameSettings): void {
+  saveJSON(STORAGE_KEYS.SETTINGS, settings)
+}
+
+/**
  * Toggle a feature by updating the range array
  * Returns the new range
  */
@@ -443,6 +459,7 @@ export function resetAll(): void {
   localStorage.removeItem(STORAGE_KEYS.CARDS)
   localStorage.removeItem(STORAGE_KEYS.HISTORY)
   localStorage.removeItem(STORAGE_KEYS.STATS)
+  localStorage.removeItem(STORAGE_KEYS.SETTINGS)
   localStorage.removeItem(STORAGE_KEYS.DAILY_STATS)
   localStorage.removeItem(STORAGE_KEYS.RANGE)
   sessionStorage.removeItem(STORAGE_KEYS.GAME_RESULT)

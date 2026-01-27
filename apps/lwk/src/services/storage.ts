@@ -9,12 +9,27 @@ import {
   createHistoryOperations,
   createStatsOperations,
   createAppGameStorage,
-  saveJSON
+  saveJSON,
+  loadJSON
 } from '@flashcards/shared'
 
 import { DEFAULT_DECKS } from '../constants'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
-import { STORAGE_KEYS } from '../types'
+
+// ============================================================================
+// Storage Keys (prefixed with 'lwk-')
+// ============================================================================
+
+export const STORAGE_KEYS = {
+  DECKS: 'lwk-decks',
+  HISTORY: 'lwk-history',
+  STATS: 'lwk-stats',
+  GAME_CONFIG: 'lwk-game-config', // sessionStorage
+  GAME_STATE: 'lwk-game-state', // sessionStorage
+  GAME_RESULT: 'lwk-game-result', // sessionStorage
+  GAME_SETTINGS: 'lwk-settings',
+  DAILY_STATS: 'lwk-daily-stats'
+} as const
 
 // Game persistence factory for session storage
 interface GameState {
@@ -76,7 +91,7 @@ export function saveDecks(decks: CardDeck[]): void {
  */
 export function loadCards(): Card[] {
   const decks = loadDecks()
-  const settings = loadLastSettings()
+  const settings = loadSettings()
   const currentDeckName = settings?.deck || DEFAULT_DECKS[0].name
   const deck = decks.find(d => d.name === currentDeckName)
   return deck?.cards || []
@@ -87,7 +102,7 @@ export function loadCards(): Card[] {
  */
 export function saveCards(cards: Card[]): void {
   const decks = loadDecks()
-  const settings = loadLastSettings()
+  const settings = loadSettings()
   const currentDeckName = settings?.deck || DEFAULT_DECKS[0].name
   const deckIndex = decks.findIndex(d => d.name === currentDeckName)
   if (deckIndex !== -1) {
@@ -128,25 +143,17 @@ export const updateStats = statsOps.update
 // ============================================================================
 
 /**
- * Load last game settings
+ * Load game settings
  */
-export function loadLastSettings(): GameSettings | null {
-  const stored = localStorage.getItem(STORAGE_KEYS.LAST_SETTINGS)
-  if (!stored) {
-    return null
-  }
-  try {
-    return JSON.parse(stored) as GameSettings
-  } catch {
-    return null
-  }
+export function loadSettings(): GameSettings | null {
+  return loadJSON<GameSettings | null>(STORAGE_KEYS.GAME_SETTINGS, null)
 }
 
 /**
  * Save game settings
  */
-export function saveLastSettings(settings: GameSettings): void {
-  saveJSON(STORAGE_KEYS.LAST_SETTINGS, settings)
+export function saveSettings(settings: GameSettings): void {
+  saveJSON(STORAGE_KEYS.GAME_SETTINGS, settings)
 }
 
 // ============================================================================
