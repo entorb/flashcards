@@ -6,7 +6,7 @@ import {
   PwaInstallInfo,
   StatisticsCard
 } from '@flashcards/shared/components'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import EisiMascot from '../components/EisiMascot.vue'
@@ -42,14 +42,6 @@ const modeOptions = computed(() => [
     icon: 'visibility_off'
   }
 ])
-
-watch(
-  () => settings.value,
-  newSettings => {
-    saveSettings(newSettings)
-  },
-  { deep: true }
-)
 
 onMounted(() => {
   // Refresh deck list and options
@@ -100,6 +92,7 @@ function startGame() {
   // Clear any previous game state before starting new game
   clearGameState()
   clearGameConfig()
+  saveSettings(settings.value)
   startGameStore(settings.value)
   router.push({ name: '/game' })
 }
