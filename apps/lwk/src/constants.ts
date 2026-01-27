@@ -48,14 +48,19 @@ export const LEVENSHTEIN_THRESHOLD = 1
 export const DEFAULT_DECKS = [
   {
     name: 'Lernwörter_1',
+    //cspell:disable
     cards: [
-      { word: 'Haus', level: 1, time: 60 },
-      { word: 'Schule', level: 1, time: 60 },
-      { word: 'Wald', level: 1, time: 60 },
-      { word: 'Mathe', level: 1, time: 60 },
-      { word: 'Deutsch', level: 1, time: 60 },
-      { word: 'Sport', level: 1, time: 60 },
-      { word: 'Musik', level: 1, time: 60 }
+      { word: 'Dienstag', level: 1, time: 60 },
+      { word: 'Donnerstag', level: 1, time: 60 },
+      { word: 'fahren', level: 1, time: 60 },
+      { word: 'frieren', level: 1, time: 60 },
+      { word: 'Frühling', level: 1, time: 60 },
+      { word: 'Mittwoch', level: 1, time: 60 },
+      { word: 'Sommer', level: 1, time: 60 },
+      { word: 'Sonntag', level: 1, time: 60 },
+      { word: 'spielen', level: 1, time: 60 },
+      { word: 'Winter', level: 1, time: 60 }
+      //cspell:enable
     ] as Card[]
   }
 ]
