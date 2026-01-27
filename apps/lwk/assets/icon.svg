@@ -1,0 +1,73 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="20 20 60 55"
+  width="512"
+  height="512"
+  aria-labelledby="eisi-title"
+>
+  <title id="eisi-title">Eisi the Ice Bear - Smiling</title>
+  <g>
+    <!-- Head -->
+    <circle
+      cx="50"
+      cy="45"
+      r="22"
+      fill="#F0F8FF"
+    />
+    <!-- Ears -->
+    <circle
+      cx="35"
+      cy="30"
+      r="8"
+      fill="#E0F2F7"
+    />
+    <circle
+      cx="65"
+      cy="30"
+      r="8"
+      fill="#E0F2F7"
+    />
+    <!-- Inner ears -->
+    <circle
+      cx="35"
+      cy="32"
+      r="4"
+      fill="#B0E0E6"
+    />
+    <circle
+      cx="65"
+      cy="32"
+      r="4"
+      fill="#B0E0E6"
+    />
+    <!-- Eyes -->
+    <circle
+      cx="42"
+      cy="42"
+      r="3"
+      fill="#000000"
+    />
+    <circle
+      cx="58"
+      cy="42"
+      r="3"
+      fill="#000000"
+    />
+    <!-- Nose -->
+    <ellipse
+      cx="50"
+      cy="50"
+      rx="4"
+      ry="3"
+      fill="#000000"
+    />
+    <!-- Smile -->
+    <path
+      d="M 40,56 Q 50,62 60,56"
+      stroke="#4FC3F7"
+      stroke-width="2.5"
+      fill="none"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>
