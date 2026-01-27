@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { BaseCard } from '@flashcards/shared'
 import {
   TEXT_DE,
   useCardFiltering,
@@ -8,7 +9,7 @@ import {
   MAX_TIME,
   MIN_TIME
 } from '@flashcards/shared'
-import { LevelDistribution } from '@flashcards/shared/components'
+import { LevelDistribution, CardsListOfCards } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -52,7 +53,9 @@ const cardsInRange = computed(() => {
   return virtualCards
 })
 
-const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(cardsInRange)
+const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(
+  () => cardsInRange.value
+)
 
 const sortedFilteredCards = computed(() => {
   const cards = [...filteredCards.value]
@@ -67,6 +70,16 @@ const sortedFilteredCards = computed(() => {
   })
   return cards
 })
+
+function getCardLabel(card: BaseCard): string {
+  const c = card as unknown as { question: string; answer: number }
+  return `${c.question} = ${c.answer}`
+}
+
+function getCardKey(card: BaseCard): string {
+  const c = card as unknown as { question: string }
+  return c.question
+}
 
 const minTime = computed(() => {
   if (cardsInRange.value.length === 0) return MIN_TIME
@@ -127,7 +140,7 @@ function getTimeTextColor(time: number): string {
 }
 
 function getCellStyle(y: number, x: number): Record<string, string> {
-  // For y < x, use the card from x, y (symmetric)
+  // NOSONAR: Intentional symmetric access pattern for multiplication table (swap indices by design)
   const card = y < x ? getCard(x, y) : getCard(y, x)
 
   return {
@@ -190,45 +203,14 @@ function goHome() {
       />
 
       <!-- Filtered Cards List -->
-      <q-card
+      <CardsListOfCards
         v-if="selectedLevel !== null"
-        class="q-mb-md"
-      >
-        <q-card-section>
-          <div class="row items-center justify-between q-mb-md">
-            <div class="text-h6">
-              {{ TEXT_DE.shared.words.level }} {{ selectedLevel }} ({{
-                sortedFilteredCards.length
-              }})
-            </div>
-          </div>
-          <div style="overflow-y: auto">
-            <q-list
-              bordered
-              separator
-            >
-              <q-item
-                v-for="card in sortedFilteredCards"
-                :key="card.question"
-              >
-                <q-item-section>
-                  <q-item-label>{{ card.question }} = {{ card.answer }}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-badge
-                    :label="`Level ${card.level}`"
-                    :style="{
-                      backgroundColor:
-                        LEVEL_COLORS[card.level as keyof typeof LEVEL_COLORS] || BG_COLORS.disabled
-                    }"
-                  />
-                  <div class="text-caption text-grey-7 q-mt-xs">{{ card.time }}s</div>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
-        </q-card-section>
-      </q-card>
+        :all-cards="cardsInRange"
+        :cards-to-show="sortedFilteredCards"
+        :selected-level="selectedLevel"
+        :get-label="getCardLabel"
+        :get-key="getCardKey"
+      />
 
       <!-- Cards Grid/Matrix -->
       <q-card class="grid-card">
