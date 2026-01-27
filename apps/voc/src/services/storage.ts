@@ -20,7 +20,7 @@ import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 const STORAGE_KEYS = {
   CARDS: 'voc-cards',
   HISTORY: 'voc-history',
-  SETTINGS: 'voc-last-settings',
+  SETTINGS: 'voc-settings',
   STATS: 'voc-stats',
   DAILY_STATS: 'voc-daily-stats',
   GAME_STATE: 'voc-game-state',
@@ -128,7 +128,7 @@ export function saveDecks(decks: CardDeck[]): void {
  * Get current deck name from settings
  */
 export function getCurrentDeckName(): string {
-  const settings = loadLastSettings()
+  const settings = loadSettings()
   return settings?.deck || 'en'
 }
 
@@ -189,16 +189,16 @@ export function addHistory(history: GameHistory): void {
 // Settings
 
 /**
- * Load last game settings
+ * Load game settings
  */
-export function loadLastSettings(): GameSettings | null {
+export function loadSettings(): GameSettings | null {
   return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
 }
 
 /**
- * Save last game settings
+ * Save game settings
  */
-export function saveLastSettings(settings: GameSettings): void {
+export function saveSettings(settings: GameSettings): void {
   saveJSON(STORAGE_KEYS.SETTINGS, settings)
 }
 
