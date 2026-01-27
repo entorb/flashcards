@@ -1,0 +1,30 @@
+.cache/
+.vite/
+apps/*/cypress/screenshots/
+coverage/
+dist/
+example/
+node_modules/
+
+# TypeScript compiled output in src directories
+apps/*/src/**/*.js
+apps/*/src/**/*.d.ts
+!apps/*/src/**/*.spec.js
+!apps/*/src/**/*.test.js
+packages/shared/src/**/*.js
+packages/shared/src/**/*.d.ts
+!packages/shared/src/**/*.spec.js
+!packages/shared/src/**/*.test.js
+# Base config build outputs
+*.config.base.js
+*.config.base.d.ts
+
+.cspellcache
+.DS_Store
+.env
+.github/copilot-instructions.md
+*.tsbuildinfo
+CLAUDE.md
+GEMINI.md
+sonar-report.xml
+
