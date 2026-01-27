@@ -11,8 +11,8 @@ export interface DeckSelectorProps<
 > {
   getDecks: () => T[]
   switchDeck: (deckName: string) => void
-  loadLastSettings: () => S | null
-  saveLastSettings: (settings: S) => void
+  loadSettings?: () => S | null
+  saveSettings?: (settings: S) => void
 }
 
 const props = defineProps<DeckSelectorProps<T, S>>()
@@ -25,10 +25,12 @@ onMounted(() => {
 })
 
 function loadDecksAndSettings() {
-  // Load current deck from settings
-  const settings = props.loadLastSettings()
-  if (settings?.deck) {
-    currentDeck.value = settings.deck
+  // Load current deck from settings if available
+  if (props.loadSettings) {
+    const settings = props.loadSettings()
+    if (settings?.deck) {
+      currentDeck.value = settings.deck
+    }
   }
 
   // Load deck options
@@ -49,11 +51,13 @@ function handleDeckChange(deckName: string) {
   currentDeck.value = deckName
   props.switchDeck(deckName)
 
-  // Update settings
-  const settings = props.loadLastSettings()
-  if (settings) {
-    const updatedSettings = { ...settings, deck: deckName }
-    props.saveLastSettings(updatedSettings)
+  // Update settings if available
+  if (props.loadSettings && props.saveSettings) {
+    const settings = props.loadSettings()
+    if (settings) {
+      const updatedSettings = { ...settings, deck: deckName }
+      props.saveSettings(updatedSettings)
+    }
   }
 }
 

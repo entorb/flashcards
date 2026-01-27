@@ -18,7 +18,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '@/composables/useGameStore'
-import { loadLastSettings, saveLastSettings } from '@/services/storage'
+import { loadSettings, saveSettings } from '@/services/storage'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -159,8 +159,8 @@ function getLevelColor(level: number): string {
               <DeckSelector
                 :get-decks="() => store.getDecks()"
                 :switch-deck="name => store.switchDeck(name)"
-                :load-last-settings="loadLastSettings"
-                :save-last-settings="saveLastSettings"
+                :load-settings="loadSettings"
+                :save-settings="saveSettings"
               />
             </div>
             <q-btn

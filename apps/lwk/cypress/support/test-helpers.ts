@@ -1,6 +1,6 @@
 // Shared test utilities for LWK Cypress tests
 
-import { STORAGE_KEYS } from '../../src/types'
+import { STORAGE_KEYS } from '../../src/services/storage'
 
 export type SpellCard = {
   word: string
@@ -36,7 +36,7 @@ export const saveDecks = (win: Cypress.AUTWindow, decks: SpellDeck[]): void => {
 }
 
 export const getCurrentDeckName = (win: Cypress.AUTWindow): string => {
-  const stored = win.localStorage.getItem(STORAGE_KEYS.LAST_SETTINGS)
+  const stored = win.localStorage.getItem(STORAGE_KEYS.GAME_SETTINGS)
   if (!stored) return ''
   try {
     const parsed = JSON.parse(stored) as SpellLastSettings

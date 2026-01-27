@@ -15,13 +15,13 @@ vi.mock('../services/storage', () => ({
   saveDecks: vi.fn(),
   loadCards: vi.fn(() => [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]),
   saveCards: vi.fn(),
-  loadLastSettings: vi.fn(() => ({
+  loadSettings: vi.fn(() => ({
     mode: 'multiple-choice',
     focus: 'weak',
     language: 'voc-de',
     deck: 'en'
   })),
-  saveLastSettings: vi.fn(),
+  saveSettings: vi.fn(),
   loadGameStats: vi.fn(() => ({ points: 0, correctAnswers: 0, gamesPlayed: 0 })),
   saveGameStats: vi.fn(),
   updateStatistics: vi.fn(),
@@ -96,7 +96,7 @@ describe('useGameStore - Deck Operations', () => {
 
   describe('removeDeck', () => {
     it('should remove a deck', async () => {
-      const { loadDecks, saveDecks, loadLastSettings } = await import('../services/storage')
+      const { loadDecks, saveDecks, loadSettings } = await import('../services/storage')
 
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
@@ -108,7 +108,7 @@ describe('useGameStore - Deck Operations', () => {
           cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ])
-      vi.mocked(loadLastSettings).mockReturnValueOnce({
+      vi.mocked(loadSettings).mockReturnValueOnce({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -143,7 +143,7 @@ describe('useGameStore - Deck Operations', () => {
     })
 
     it('should update settings when current deck is removed', async () => {
-      const { loadDecks, loadLastSettings, saveLastSettings, loadCards } =
+      const { loadDecks, loadSettings, saveSettings, loadCards } =
         await import('../services/storage')
 
       const testDecks: CardDeck[] = [
@@ -157,7 +157,7 @@ describe('useGameStore - Deck Operations', () => {
         }
       ]
       vi.mocked(loadDecks).mockReturnValue(testDecks)
-      vi.mocked(loadLastSettings).mockReturnValue({
+      vi.mocked(loadSettings).mockReturnValue({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -168,7 +168,7 @@ describe('useGameStore - Deck Operations', () => {
       const success = store.removeDeck('fr')
 
       expect(success).toBe(true)
-      expect(saveLastSettings).toHaveBeenCalledWith({
+      expect(saveSettings).toHaveBeenCalledWith({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -195,7 +195,7 @@ describe('useGameStore - Deck Operations', () => {
 
   describe('renameDeck', () => {
     it('should rename a deck', async () => {
-      const { loadDecks, saveDecks, loadLastSettings } = await import('../services/storage')
+      const { loadDecks, saveDecks, loadSettings } = await import('../services/storage')
 
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
@@ -203,7 +203,7 @@ describe('useGameStore - Deck Operations', () => {
           cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
-      vi.mocked(loadLastSettings).mockReturnValueOnce({
+      vi.mocked(loadSettings).mockReturnValueOnce({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -242,7 +242,7 @@ describe('useGameStore - Deck Operations', () => {
     })
 
     it('should update settings when current deck is renamed', async () => {
-      const { loadDecks, loadLastSettings, saveLastSettings } = await import('../services/storage')
+      const { loadDecks, loadSettings, saveSettings } = await import('../services/storage')
 
       vi.mocked(loadDecks).mockReturnValueOnce([
         {
@@ -250,7 +250,7 @@ describe('useGameStore - Deck Operations', () => {
           cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
         }
       ])
-      vi.mocked(loadLastSettings).mockReturnValueOnce({
+      vi.mocked(loadSettings).mockReturnValueOnce({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -260,7 +260,7 @@ describe('useGameStore - Deck Operations', () => {
       const success = store.renameDeck('en', 'english')
 
       expect(success).toBe(true)
-      expect(saveLastSettings).toHaveBeenCalledWith({
+      expect(saveSettings).toHaveBeenCalledWith({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -328,7 +328,7 @@ describe('useGameStore - Deck Operations', () => {
 
   describe('Deck operations integration', () => {
     it('should handle full deck lifecycle', async () => {
-      const { loadDecks, saveDecks, loadLastSettings } = await import('../services/storage')
+      const { loadDecks, saveDecks, loadSettings } = await import('../services/storage')
 
       // Add new deck
       vi.mocked(loadDecks).mockReturnValueOnce([
@@ -348,7 +348,7 @@ describe('useGameStore - Deck Operations', () => {
         },
         { name: 'fr', cards: [] }
       ])
-      vi.mocked(loadLastSettings).mockReturnValueOnce({
+      vi.mocked(loadSettings).mockReturnValueOnce({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
@@ -365,7 +365,7 @@ describe('useGameStore - Deck Operations', () => {
         },
         { name: 'french', cards: [] }
       ])
-      vi.mocked(loadLastSettings).mockReturnValueOnce({
+      vi.mocked(loadSettings).mockReturnValueOnce({
         mode: 'multiple-choice',
         focus: 'weak',
         language: 'voc-de',
