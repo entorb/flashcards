@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CardsPage from './pages/CardsPage.vue'
+import CardsManPage from './pages/CardsManPage.vue'
 import GameOverPage from './pages/GameOverPage.vue'
 import GamePage from './pages/GamePage.vue'
 import HistoryPage from './pages/HistoryPage.vue'
 import HomePage from './pages/HomePage.vue'
-import ScoringRules from './pages/ScoringRules.vue'
+import ScoringRulesPage from './pages/ScoringRulesPage.vue'
 
 export const router = createRouter({
   history: createWebHistory('/fc-1x1/'),
@@ -33,12 +33,12 @@ export const router = createRouter({
     {
       path: '/cards',
       name: '/cards',
-      component: CardsPage
+      component: CardsManPage
     },
     {
       path: '/info',
       name: '/info',
-      component: ScoringRules
+      component: ScoringRulesPage
     }
   ]
 })
