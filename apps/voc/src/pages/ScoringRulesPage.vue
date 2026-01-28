@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ScoringRules } from '@flashcards/shared/pages'
+import { ScoringRulesPage } from '@flashcards/shared/pages'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -27,7 +27,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ScoringRules
+  <ScoringRulesPage
     app-name="voc"
     :points-mode-blind="POINTS_MODE_BLIND"
     :points-mode-typing="POINTS_MODE_TYPING"

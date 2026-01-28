@@ -1,5 +1,7 @@
 // Vitest setup file
 
+import { vi } from 'vitest'
+
 // Suppress Vue warnings about unresolved Quasar components
 const originalWarn = console.warn
 console.warn = (...args) => {
@@ -39,3 +41,18 @@ class LocalStorageMock implements Storage {
 
 globalThis.localStorage = new LocalStorageMock()
 globalThis.sessionStorage = new LocalStorageMock()
+
+// Mock matchMedia
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn()
+  }))
+})

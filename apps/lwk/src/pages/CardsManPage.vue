@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
 import type { BaseCard } from '@flashcards/shared'
-import { CardsManagementPage } from '@flashcards/shared/components'
+import { TEXT_DE } from '@flashcards/shared'
+import { CardsManPage } from '@flashcards/shared/components'
 
-import { useGameStore } from '../composables/useGameStore'
-import { loadSettings, saveSettings } from '../services/storage'
+import { useGameStore } from '@/composables/useGameStore'
+import { loadSettings, saveSettings } from '@/services/storage'
 
 const store = useGameStore()
 
 function getCardLabel(card: BaseCard): string {
-  const c = card as unknown as { voc: string; de: string }
-  return `${c.voc} → ${c.de}`
+  const c = card as unknown as { word: string }
+  return c.word
 }
 
 function getCardKey(card: BaseCard): string {
-  const c = card as unknown as { voc: string }
-  return c.voc
+  const c = card as unknown as { word: string }
+  return c.word
 }
 </script>
 
 <template>
-  <CardsManagementPage
-    app-prefix="voc"
+  <CardsManPage
+    app-prefix="lwk"
     :title="TEXT_DE.voc.cards.editCardsTitle"
-    :banner-html="TEXT_DE.voc.cards.header"
+    :banner-html="TEXT_DE.lwk.cards.header"
     :decks-title="TEXT_DE.voc.decks.title"
     edit-cards-route="/cards-edit"
-    edit-decks-route="/decks-edit"
+    edit-decks-route="/decks"
     :get-decks="() => store.getDecks()"
     :switch-deck="name => store.switchDeck(name)"
     :load-settings="loadSettings"
