@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ScoringRules } from '@flashcards/shared/pages'
+import { ScoringRulesPage } from '@flashcards/shared/pages'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-
-import { POINTS_MODE_HIDDEN } from '../constants'
 
 const router = useRouter()
 
@@ -27,9 +25,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ScoringRules
-    app-name="lwk"
-    :points-mode-hidden="POINTS_MODE_HIDDEN"
+  <ScoringRulesPage
+    app-name="1x1"
     @back="handleBack"
   />
 </template>
