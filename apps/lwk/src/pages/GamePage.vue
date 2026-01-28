@@ -108,6 +108,9 @@ useKeyboardContinue(canProceed, handleNextCard)
 const canStart = computed(() => readyToStart.value && !showFeedback.value)
 useKeyboardContinue(canStart, startHiddenMode)
 
+const shouldFocusInput = computed(
+  () => !showFeedback.value && !readyToStart.value && countdown.value === 0
+)
 // Reset state when card changes
 watch(
   () => currentCard.value,
@@ -272,6 +275,7 @@ function submitAnswer() {
             :button-disabled="isSubmitting"
             :on-submit="submitAnswer"
             input-type="text"
+            :should-focus="shouldFocusInput"
           />
         </div>
 

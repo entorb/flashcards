@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
 import { TEXT_DE } from '../text-de'
 
@@ -8,13 +8,18 @@ interface Props {
   buttonDisabled: boolean
   onSubmit: () => void
   inputType: 'text' | 'numeric'
+  shouldFocus?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  shouldFocus: false
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: string | number | null]
 }>()
+
+const inputRef = ref<HTMLInputElement | null>(null)
 
 const pattern = computed(() => (props.inputType === 'numeric' ? '[0-9]*' : undefined))
 const inputRules = computed(() =>
@@ -30,6 +35,18 @@ const canSubmit = computed(
   () =>
     model.value !== null && model.value !== undefined && model.value !== '' && !props.buttonDisabled
 )
+
+// Watch for shouldFocus prop to programmatically focus
+watch(
+  () => props.shouldFocus,
+  newVal => {
+    if (newVal) {
+      nextTick(() => {
+        inputRef.value?.focus()
+      })
+    }
+  }
+)
 </script>
 
 <template>
@@ -37,6 +54,7 @@ const canSubmit = computed(
   <div>
     <!-- eslint-disable vuejs-accessibility/no-autofocus -->
     <q-input
+      ref="inputRef"
       v-model="model"
       type="text"
       :inputmode="props.inputType"
