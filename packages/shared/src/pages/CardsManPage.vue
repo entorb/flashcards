@@ -3,13 +3,17 @@ import { useQuasar } from 'quasar'
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import {
+  LevelDistribution,
+  DeckSelector,
+  CardManActions,
+  CardsListOfCards
+} from '../components/index'
 import { useCardFiltering } from '../composables/useCardFiltering'
 import { useResetCards } from '../composables/useResetCards'
 import { MAX_LEVEL, MIN_LEVEL, MAX_TIME } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { BaseCard } from '../types'
-
-import { LevelDistribution, DeckSelector, CardManagementActions, CardsListOfCards } from './index'
 
 interface Props {
   appPrefix: 'voc' | 'lwk'
@@ -229,7 +233,7 @@ function handleResetCardsToDefaultSet() {
         :get-key="getCardKey"
       />
 
-      <CardManagementActions
+      <CardManActions
         :app-prefix="appPrefix"
         :target-level="targetLevel"
         @update:target-level="targetLevel = $event"
