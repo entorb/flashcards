@@ -2,11 +2,11 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-import { ScoringRules } from '@flashcards/shared/pages'
+import CardsPage from './CardsManPage.vue'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@/__tests__/testUtils'
 
-describe('ScoringRules Component', () => {
+describe('CardsPage Component', () => {
   beforeEach(() => {
     localStorage.clear()
   })
@@ -14,7 +14,10 @@ describe('ScoringRules Component', () => {
   const createMockRouter = () => {
     return createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/', name: '/', component: { template: '<div>Home</div>' } }]
+      routes: [
+        { path: '/', name: '/', component: { template: '<div>Home</div>' } },
+        { path: '/cards-edit', name: '/cards-edit', component: { template: '<div>Edit</div>' } }
+      ]
     })
   }
 
@@ -23,23 +26,19 @@ describe('ScoringRules Component', () => {
       mocks: quasarMocks,
       plugins: [router],
       provide: quasarProvide,
-      stubs: quasarStubs
-    },
-    props: {
-      appName: '1x1' as const
+      stubs: { ...quasarStubs, LevelDistribution: { template: '<div />' } }
     }
   })
 
-  it('mounts without errors and renders content', async () => {
+  it('mounts without errors', async () => {
     const router = createMockRouter()
-    const wrapper = mount(ScoringRules, createMountOptions(router))
+    const wrapper = mount(CardsPage, createMountOptions(router))
     expect(wrapper.exists()).toBe(true)
-    expect(wrapper.find('[data-cy="info-page-title"]').exists()).toBe(true)
   })
 
   it('renders back button', async () => {
     const router = createMockRouter()
-    const wrapper = mount(ScoringRules, createMountOptions(router))
+    const wrapper = mount(CardsPage, createMountOptions(router))
     expect(wrapper.find('[data-cy="back-button"]').exists()).toBe(true)
   })
 })

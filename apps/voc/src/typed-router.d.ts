@@ -30,9 +30,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/CardsPage': RouteRecordInfo<
-      '/CardsPage',
-      '/CardsPage',
+    '/CardsManPage': RouteRecordInfo<
+      '/CardsManPage',
+      '/CardsManPage',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -72,9 +72,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/ScoringRules': RouteRecordInfo<
-      '/ScoringRules',
-      '/ScoringRules',
+    '/ScoringRulesPage': RouteRecordInfo<
+      '/ScoringRulesPage',
+      '/ScoringRulesPage',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -98,9 +98,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/CardsPage.vue': {
+    'src/pages/CardsManPage.vue': {
       routes:
-        | '/CardsPage'
+        | '/CardsManPage'
       views:
         | never
     }
@@ -134,9 +134,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/ScoringRules.vue': {
+    'src/pages/ScoringRulesPage.vue': {
       routes:
-        | '/ScoringRules'
+        | '/ScoringRulesPage'
       views:
         | never
     }

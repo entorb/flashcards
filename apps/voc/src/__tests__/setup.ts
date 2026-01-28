@@ -11,18 +11,20 @@ console.warn = (...args) => {
 // Setup global test environment for jsdom
 globalThis.CSS = { supports: () => false } as any
 
-globalThis.matchMedia =
-  globalThis.matchMedia ||
-  ((query: string) => ({
+// Mock matchMedia
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn()
   }))
+})
 
 globalThis.localStorage = new LocalStorageMock()
 globalThis.sessionStorage = new LocalStorageMock()

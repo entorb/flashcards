@@ -21,7 +21,7 @@ export const router = createRouter({
     {
       path: '/cards',
       name: '/cards',
-      component: () => import('./pages/CardsPage.vue')
+      component: () => import('./pages/CardsManPage.vue')
     },
     {
       path: '/cards-edit',
@@ -41,7 +41,7 @@ export const router = createRouter({
     {
       path: '/info',
       name: '/info',
-      component: () => import('./pages/ScoringRules.vue')
+      component: () => import('./pages/ScoringRulesPage.vue')
     }
   ]
 })

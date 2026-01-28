@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-import CardsPage from './CardsPage.vue'
+import CardsPage from './CardsManPage.vue'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@/__tests__/testUtils'
 import { initializeCards } from '@/services/storage'
