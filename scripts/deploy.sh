@@ -18,7 +18,7 @@ pnpm run cy:run
 # rsync -rhv --delete --no-perms --ignore-times www/1x1/index.html entorb@entorb.net:html/1x1/
 # rsync -rhv --delete --no-perms --ignore-times www/voc/index.html entorb@entorb.net:html/voc/
 
-for app in 1x1 voc lwk; do
+for app in 1x1 lwk voc; do
   pnpm run build:$app
   rsync -rhv --delete --no-perms --ignore-times apps/$app/dist/ entorb@entorb.net:html/fc-$app/
   rsync -rhv --delete --no-perms --ignore-times apps/$app/assets/icon.svg entorb@entorb.net:html/fc-$app/icon.svg
