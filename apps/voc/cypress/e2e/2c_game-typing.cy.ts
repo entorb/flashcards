@@ -66,40 +66,134 @@ describe('Typing Mode Game - DE to Voc', () => {
               }
             }
 
-            // Wait for input to be ready, clear and type
+            // Wait for input to be ready
             cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
-            cy.get('[data-cy="answer-input"]').clear()
 
-            // Capture question text before typing
+            // Capture question text BEFORE clearing input
             let initialQuestionText = ''
             cy.get('[data-cy="question-display"]')
               .invoke('text')
               .then(text => {
                 initialQuestionText = text.trim()
+                cy.log(`Card ${cardIndex}: Question = "${initialQuestionText}"`)
               })
 
-            // Type the answer
-            cy.get('[data-cy="answer-input"]').type(answerToType)
+            // Clear the input
+            cy.get('[data-cy="answer-input"]').clear()
 
-            // Verify question text hasn't changed before submitting
-            cy.get('[data-cy="question-display"]').invoke('text').should('eq', initialQuestionText)
+            // CRITICAL: Verify question hasn't changed after clearing
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                const textAfterClear = text.trim()
+                expect(textAfterClear, 'Question should not change after clearing input').to.equal(
+                  initialQuestionText
+                )
+              })
+
+            // Type the answer character by character with verification
+            cy.get('[data-cy="answer-input"]').type(answerToType, { delay: 50 })
+
+            // CRITICAL: Verify question hasn't changed while typing
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                const textAfterTyping = text.trim()
+                expect(textAfterTyping, 'Question should not change while typing').to.equal(
+                  initialQuestionText
+                )
+              })
+
+            // Wait a moment to ensure no unexpected card changes
+            cy.wait(200)
+
+            // CRITICAL: Final verification before submitting
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                const textBeforeSubmit = text.trim()
+                expect(textBeforeSubmit, 'Question should not change before submit').to.equal(
+                  initialQuestionText
+                )
+              })
 
             // Click Check button
             cy.get('[data-cy="submit-answer-button"]').click()
 
+            // CRITICAL: Verify question still matches after clicking submit but before feedback appears
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                const textAfterSubmit = text.trim()
+                expect(
+                  textAfterSubmit,
+                  'Question should not change immediately after submit'
+                ).to.equal(initialQuestionText)
+              })
+
             // Wait for feedback and continue button
             cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
+
+            // CRITICAL: Verify question STILL matches while feedback is shown
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                const textDuringFeedback = text.trim()
+                expect(textDuringFeedback, 'Question should not change during feedback').to.equal(
+                  initialQuestionText
+                )
+              })
 
             // Check if wrong or close answer (wait for button to enable)
             cy.get('body').then($body => {
               if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
                 // Wait for button to be enabled
                 cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
+
+                // CRITICAL: Verify question hasn't changed while waiting
+                cy.get('[data-cy="question-display"]')
+                  .invoke('text')
+                  .then(text => {
+                    const textWhileWaiting = text.trim()
+                    expect(
+                      textWhileWaiting,
+                      'Question should not change while waiting for button'
+                    ).to.equal(initialQuestionText)
+                  })
               }
             })
 
+            // CRITICAL: Final check before clicking continue
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                const textBeforeContinue = text.trim()
+                expect(
+                  textBeforeContinue,
+                  'Question should not change before continue click'
+                ).to.equal(initialQuestionText)
+              })
+
             // Click continue button
             cy.get('[data-cy="continue-button"]').click()
+
+            // After clicking continue, we expect the card to change (if not last card)
+            // So we verify the next card has loaded by checking input exists for next card
+            if (cardIndex < 9) {
+              cy.get('[data-cy="answer-input"]', { timeout: 5000 }).should('be.visible')
+
+              // Verify the question has NOW changed to a different card
+              cy.get('[data-cy="question-display"]')
+                .invoke('text')
+                .then(text => {
+                  const nextQuestionText = text.trim()
+                  cy.log(`Next card question = "${nextQuestionText}"`)
+                  // The question should be different from the previous one
+                  expect(nextQuestionText, 'Should move to next card after continue').to.not.equal(
+                    initialQuestionText
+                  )
+                })
+            }
           })
       })
     }
@@ -149,7 +243,7 @@ describe('Typing Mode Game - DE to Voc', () => {
 
     // Verify we're back on home page
     cy.url().should('not.include', '/game-over')
-    cy.get('[data-cy="app-title"]').should('be.visible')
+    cy.get('[data-cy="app-title"]').should('be.visible()')
 
     // Verify exact points and correct answers match on HomePage
     cy.get('[data-cy="stats-total-points"]')
