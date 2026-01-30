@@ -2,9 +2,9 @@
 import { TEXT_DE } from '@flashcards/shared'
 import {
   AppFooter,
-  FocusSelector,
-  PwaInstallInfo,
-  StatisticsCard
+  HomeFocusSelector,
+  HomePwaInstallInfo,
+  HomeStatisticsCard
 } from '@flashcards/shared/components'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -157,7 +157,7 @@ function goToInfo() {
         class="col-12 col-sm"
         :class="$q.screen.gt.xs ? 'q-ml-md' : ''"
       >
-        <StatisticsCard :statistics="gameStats" />
+        <HomeStatisticsCard :statistics="gameStats" />
       </div>
     </div>
 
@@ -242,7 +242,7 @@ function goToInfo() {
               <div class="text-subtitle2">{{ TEXT_DE.shared.words.focus }}</div>
             </q-item-section>
             <q-item-section>
-              <FocusSelector
+              <HomeFocusSelector
                 v-model="settings.focus"
                 hide-label
               />
@@ -288,7 +288,7 @@ function goToInfo() {
       />
     </div>
 
-    <PwaInstallInfo class="q-mt-md" />
+    <HomePwaInstallInfo class="q-mt-md" />
 
     <AppFooter :base-path="BASE_PATH" />
   </q-page>
