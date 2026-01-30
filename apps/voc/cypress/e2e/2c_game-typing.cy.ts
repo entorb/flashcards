@@ -69,7 +69,20 @@ describe('Typing Mode Game - DE to Voc', () => {
             // Wait for input to be ready, clear and type
             cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
             cy.get('[data-cy="answer-input"]').clear()
+
+            // Capture question text before typing
+            let initialQuestionText = ''
+            cy.get('[data-cy="question-display"]')
+              .invoke('text')
+              .then(text => {
+                initialQuestionText = text.trim()
+              })
+
+            // Type the answer
             cy.get('[data-cy="answer-input"]').type(answerToType)
+
+            // Verify question text hasn't changed before submitting
+            cy.get('[data-cy="question-display"]').invoke('text').should('eq', initialQuestionText)
 
             // Click Check button
             cy.get('[data-cy="submit-answer-button"]').click()
