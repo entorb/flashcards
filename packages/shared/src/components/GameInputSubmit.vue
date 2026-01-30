@@ -59,6 +59,7 @@ const canSubmit = computed(
     <!-- eslint-enable vuejs-accessibility/no-autofocus -->
 
     <q-btn
+      type="button"
       color="primary"
       size="lg"
       class="full-width q-mb-md"
