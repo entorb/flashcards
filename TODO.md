@@ -1,5 +1,17 @@
 # TODO
 
+Hallo zusammen, falls ihr mal versuchen wollt, eure Kinder zuhause zum Üben für die Schule zu überreden, probiert gerne die Karteikarten-Apps, die ich jüngst für meine Zwerge geschrieben habe. Klappt bei uns bisher ganz gut.
+
+- 1x1
+- Lernwortkiste (Rechtschreibung)
+- Vokabeln
+
+Ist ein kleines Hobby Projekt, kostenlos, OpenSource, offline lauffähig und ohne Werbung.
+
+<https://entorb.net/flashcards/>
+
+Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-Seite in der App.
+
 ## Tech
 
 ## all
@@ -7,6 +19,8 @@
 ## 1x1
 
 ## lwk
+
+in Hidden mode, after countdown, the CardInputSubmit is shown and has focus. Bug: on iOS the virtual keyboard is not opened
 
 ## voc
 
