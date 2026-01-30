@@ -4,10 +4,10 @@ import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import {
-  LevelDistribution,
-  DeckSelector,
   CardManActions,
-  CardsListOfCards
+  CardsListOfCards,
+  CardsManLevelDistribution,
+  HomeDeckSelector
 } from '../components/index'
 import { useCardFiltering } from '../composables/useCardFiltering'
 import { useResetCards } from '../composables/useResetCards'
@@ -173,7 +173,7 @@ function handleResetCardsToDefaultSet() {
           </div>
           <div class="row items-center q-gutter-md">
             <div class="col">
-              <DeckSelector
+              <HomeDeckSelector
                 :get-decks="getDecks"
                 :switch-deck="switchDeck"
                 :load-settings="loadSettings"
@@ -217,7 +217,7 @@ function handleResetCardsToDefaultSet() {
       </q-card>
 
       <!-- Level Distribution -->
-      <LevelDistribution
+      <CardsManLevelDistribution
         :cards="props.store.allCards.value"
         :selected-level="selectedLevel"
         @reset="handleResetCards"

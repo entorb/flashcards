@@ -10,11 +10,11 @@ import {
 } from '@flashcards/shared'
 import { shuffleArray } from '@flashcards/shared'
 import {
-  CardInputSubmit,
-  CardNextCardButton,
-  CardPointsBreakdown,
-  CardQuestion,
-  GameHeader
+  GameHeader,
+  GameInputSubmit,
+  GameNextCardButton,
+  GamePointsBreakdown,
+  GameShowCardQuestion
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -55,7 +55,7 @@ const showProceedButton = ref(false)
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
 
 // Use shared navigation logic
-const { handleNextCard, handleGoHome } = useGameNavigation({
+const { handleNextCard: handleGoHome } = useGameNavigation({
   stopTimer,
   nextCard,
   finishGame,
@@ -241,7 +241,7 @@ onUnmounted(() => {
       />
 
       <div v-if="currentCard">
-        <CardQuestion
+        <GameShowCardQuestion
           :current-card="{ level: currentCard.level, time: displayTime, answer: correctAnswer }"
           :display-question="question"
           :show-correct-answer="showAnswer"
@@ -291,13 +291,13 @@ onUnmounted(() => {
             </q-card-section>
           </q-card>
 
-          <CardPointsBreakdown
+          <GamePointsBreakdown
             :answer-status="answerStatus"
             :points-breakdown="lastPointsBreakdown"
           />
 
           <!-- Continue Button with icon when feedback is shown -->
-          <CardNextCardButton
+          <GameNextCardButton
             v-if="answerStatus && showProceedButton"
             :color="buttonColor"
             :icon="buttonIcon"
@@ -377,7 +377,7 @@ onUnmounted(() => {
 
           <!-- Typing Mode -->
           <div v-else-if="gameSettings?.mode === 'typing' && !answerStatus">
-            <CardInputSubmit
+            <GameInputSubmit
               v-model="userAnswer"
               :button-disabled="false"
               :on-submit="handleTypingSubmit"
