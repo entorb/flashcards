@@ -55,21 +55,27 @@ const showProceedButton = ref(false)
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
 
 // Use shared navigation logic
-const { handleNextCard: handleGoHome } = useGameNavigation({
+const { handleNextCard: navigateToNextCard, handleGoHome } = useGameNavigation({
   stopTimer,
   nextCard,
   finishGame,
   discardGame,
   router
 })
-
 // Use shared feedback timers for blocking proceed on wrong/close answers
 const {
   isButtonDisabled: isProceedDisabled,
   buttonDisableCountdown,
   startAutoCloseTimer,
-  startButtonDisableTimer
+  startButtonDisableTimer,
+  clearAutoCloseTimers
 } = useFeedbackTimers()
+
+// Wrapper function to cancel auto-close timer before proceeding
+function handleNextCard() {
+  clearAutoCloseTimers() // Cancel the auto-advance timer
+  navigateToNextCard()
+}
 
 // Compute question and answer based on language direction
 const question = computed(() => {
@@ -190,8 +196,6 @@ function handleTypingSubmit() {
   )
   submitAnswer(result)
 }
-
-// Use shared timer logic
 
 const buttonColor = computed(() => {
   if (answerStatus.value === 'correct') return 'positive'
