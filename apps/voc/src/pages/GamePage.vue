@@ -139,7 +139,6 @@ function submitAnswer(result: AnswerStatus) {
   storeHandleAnswer(result, answerTime)
 
   answerStatus.value = result
-  showAnswer.value = true
 
   // Always show proceed button for all answer types
   showProceedButton.value = true
@@ -165,6 +164,11 @@ function submitAnswer(result: AnswerStatus) {
         correctText: correctAnswer.value
       }
     }
+  }
+
+  // Show correct answer after submission (except in typing mode where user already typed it)
+  if (gameSettings.value?.mode !== 'typing') {
+    showAnswer.value = true
   }
 }
 
