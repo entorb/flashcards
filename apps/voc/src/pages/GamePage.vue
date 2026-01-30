@@ -184,8 +184,13 @@ function handleBlindSubmit(correct: boolean) {
   }
 }
 
+// Add a small delay flag
+const justSubmitted = ref(false)
+
 function handleTypingSubmit() {
   if (answerStatus.value || !gameSettings.value) return
+
+  justSubmitted.value = true
 
   const result = validateTypingAnswer(
     userAnswer.value,
@@ -193,7 +198,26 @@ function handleTypingSubmit() {
     gameSettings.value.language
   )
   submitAnswer(result)
+
+  // Reset the flag after a short delay
+  setTimeout(() => {
+    justSubmitted.value = false
+  }, 200)
 }
+
+// Reset justSubmitted when card changes
+watch(
+  () => currentCard.value,
+  () => {
+    showAnswer.value = false
+    answerStatus.value = null
+    userAnswer.value = ''
+    feedbackData.value = { type: 'simple' }
+    showProceedButton.value = false
+    justSubmitted.value = false // Add this line
+  },
+  { immediate: true }
+)
 
 // Use shared timer logic
 
@@ -210,7 +234,9 @@ const buttonIcon = computed(() => {
 })
 
 // Use shared keyboard continue composable
-const canProceed = computed(() => showProceedButton.value && !isProceedDisabled.value)
+const canProceed = computed(
+  () => showProceedButton.value && !isProceedDisabled.value && !justSubmitted.value
+)
 useKeyboardContinue(canProceed, handleNextCard)
 
 // Handle Escape key
