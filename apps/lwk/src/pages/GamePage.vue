@@ -9,12 +9,12 @@ import {
   useKeyboardContinue
 } from '@flashcards/shared'
 import {
-  CardFeedbackNegative,
-  CardInputSubmit,
-  CardNextCardButton,
-  CardPointsBreakdown,
-  CardQuestion,
-  GameHeader
+  GameFeedbackNegative,
+  GameHeader,
+  GameInputSubmit,
+  GameNextCardButton,
+  GamePointsBreakdown,
+  GameShowCardQuestion
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -241,7 +241,7 @@ function submitAnswer() {
       />
 
       <div v-if="currentCard">
-        <CardQuestion
+        <GameShowCardQuestion
           v-if="(showFeedback || !isHiddenModeActive) && currentCard"
           :current-card="{
             level: currentCard.level,
@@ -267,7 +267,7 @@ function submitAnswer() {
 
         <!-- Input field - shown when ready to type (both modes) -->
         <div v-if="!showFeedback && !readyToStart && countdown === 0">
-          <CardInputSubmit
+          <GameInputSubmit
             v-model="userInput"
             :button-disabled="isSubmitting"
             :on-submit="submitAnswer"
@@ -288,20 +288,20 @@ function submitAnswer() {
         />
 
         <!-- Feedback Details - Show user input vs correct answer for wrong/close -->
-        <CardFeedbackNegative
+        <GameFeedbackNegative
           v-if="showFeedback && (answerStatus === 'close' || answerStatus === 'incorrect')"
           :status="answerStatus === 'close' ? 'close' : 'incorrect'"
           :user-answer="userInput"
           :correct-answer="currentCard?.word"
         />
 
-        <CardPointsBreakdown
+        <GamePointsBreakdown
           :answer-status="answerStatus"
           :points-breakdown="pointsBreakdown"
         />
 
         <!-- Proceed Button - Shown after feedback -->
-        <CardNextCardButton
+        <GameNextCardButton
           v-if="showFeedback && showProceedButton"
           :color="feedbackColor"
           :icon="feedbackIcon"

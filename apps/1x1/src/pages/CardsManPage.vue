@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import type { BaseCard } from '@flashcards/shared'
 import {
+  BG_COLORS,
+  LEVEL_COLORS,
+  MAX_TIME,
+  MIN_TIME,
   TEXT_DE,
   useCardFiltering,
-  useResetCards,
-  LEVEL_COLORS,
-  BG_COLORS,
-  MAX_TIME,
-  MIN_TIME
+  useResetCards
 } from '@flashcards/shared'
-import { LevelDistribution, CardsListOfCards } from '@flashcards/shared/components'
+import { CardsManLevelDistribution, CardsListOfCards } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -194,7 +194,7 @@ function goHome() {
     <!-- Content -->
     <div>
       <!-- Level Distribution -->
-      <LevelDistribution
+      <CardsManLevelDistribution
         :cards="cardsInRange"
         :selected-level="selectedLevel"
         class="q-mb-md"

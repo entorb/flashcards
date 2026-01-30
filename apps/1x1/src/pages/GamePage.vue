@@ -9,12 +9,12 @@ import {
   useKeyboardContinue
 } from '@flashcards/shared'
 import {
-  CardFeedbackNegative,
-  CardInputSubmit,
-  CardNextCardButton,
-  CardPointsBreakdown,
-  CardQuestion,
-  GameHeader
+  GameFeedbackNegative,
+  GameHeader,
+  GameInputSubmit,
+  GameNextCardButton,
+  GamePointsBreakdown,
+  GameShowCardQuestion
 } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -201,7 +201,7 @@ onUnmounted(() => {
       />
 
       <div v-if="currentCard">
-        <CardQuestion
+        <GameShowCardQuestion
           :current-card="{
             level: currentCard.level,
             time: currentCard.time,
@@ -213,7 +213,7 @@ onUnmounted(() => {
 
         <!-- Answer Input Section -->
         <div v-if="!showFeedback">
-          <CardInputSubmit
+          <GameInputSubmit
             v-model="userAnswer"
             :button-disabled="isButtonDisabled"
             :on-submit="submitAnswer"
@@ -224,20 +224,20 @@ onUnmounted(() => {
         <!-- Feedback Button Section -->
         <div v-else-if="showFeedback">
           <!-- Show user answer vs correct answer comparison on wrong answers -->
-          <CardFeedbackNegative
+          <GameFeedbackNegative
             v-if="answerStatus === 'incorrect'"
             status="incorrect"
             :user-answer="String(userAnswerNum)"
             :correct-answer="String(currentCard?.answer)"
           />
 
-          <CardPointsBreakdown
+          <GamePointsBreakdown
             :answer-status="answerStatus"
             :points-breakdown="pointsBreakdown"
           />
 
           <!-- Continue Button -->
-          <CardNextCardButton
+          <GameNextCardButton
             :answer-data="{ isCorrect: answerStatus === 'correct' }"
             :is-button-disabled="isButtonDisabled"
             :is-enter-disabled="isEnterDisabled"

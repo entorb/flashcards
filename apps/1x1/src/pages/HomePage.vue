@@ -3,9 +3,9 @@ import type { FocusType } from '@flashcards/shared'
 import { TEXT_DE } from '@flashcards/shared'
 import {
   AppFooter,
-  FocusSelector,
-  PwaInstallInfo,
-  StatisticsCard
+  HomeFocusSelector,
+  HomePwaInstallInfo,
+  HomeStatisticsCard
 } from '@flashcards/shared/components'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -157,7 +157,7 @@ function toggleSquares() {
         class="col-12 col-sm"
         :class="$q.screen.gt.xs ? 'q-ml-md' : ''"
       >
-        <StatisticsCard
+        <HomeStatisticsCard
           :statistics="gameStats"
           data-cy="statistics-card"
         />
@@ -199,7 +199,7 @@ function toggleSquares() {
         </div>
 
         <!-- Focus Selection -->
-        <FocusSelector v-model="focus" />
+        <HomeFocusSelector v-model="focus" />
       </q-card-section>
     </q-card>
 
@@ -239,7 +239,7 @@ function toggleSquares() {
       />
     </div>
 
-    <PwaInstallInfo class="q-mt-md" />
+    <HomePwaInstallInfo class="q-mt-md" />
 
     <AppFooter :base-path="BASE_PATH" />
   </q-page>
