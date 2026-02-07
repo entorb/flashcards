@@ -4,9 +4,9 @@
 
 import { levenshteinDistance, MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '@flashcards/shared'
 
-import type { Card } from '../types'
-
 import { LEVENSHTEIN_THRESHOLD } from '@/constants'
+
+import type { Card } from '../types'
 
 /**
  * Check if user's spelling is correct or close match

@@ -15,6 +15,7 @@ onMounted(() => {
 })
 </script>
 
+<!-- eslint-disable vue/no-root-v-if -->
 <template>
   <q-card
     v-if="!isPwaInstalled"
@@ -46,3 +47,4 @@ onMounted(() => {
     </q-card-section>
   </q-card>
 </template>
+<!-- eslint-enable vue/no-root-v-if -->

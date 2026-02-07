@@ -10,7 +10,6 @@ interface Props {
 defineProps<Props>()
 
 const emit = defineEmits<{
-  // eslint-disable-next-line sonarjs/no-duplicate-string
   'update:targetLevel': [value: number]
   moveClick: []
   resetClick: []
