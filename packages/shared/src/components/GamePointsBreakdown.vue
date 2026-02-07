@@ -18,6 +18,7 @@ interface Props {
 defineProps<Props>()
 </script>
 
+<!-- eslint-disable vue/no-root-v-if -->
 <template>
   <!-- Points display on correct and close answers -->
   <q-card
@@ -56,3 +57,4 @@ defineProps<Props>()
     </q-card-section>
   </q-card>
 </template>
+<!-- eslint-enable vue/no-root-v-if -->

@@ -8,19 +8,17 @@ interface Props {
   iconSize?: string
   showContinueButton?: boolean
   isButtonDisabled?: boolean
-  buttonDisableCountdown?: number
-  autoCloseCountdown?: number
 }
 
 type Emits = (e: 'continue') => void
 
+/* eslint-disable vue/no-boolean-default */
 withDefaults(defineProps<Props>(), {
   iconSize: '80px',
   showContinueButton: true,
-  isButtonDisabled: false,
-  buttonDisableCountdown: 0,
-  autoCloseCountdown: 0
+  isButtonDisabled: false
 })
+/* eslint-enable vue/no-boolean-default */
 
 const emit = defineEmits<Emits>()
 
@@ -97,6 +95,7 @@ function getColor(status: FeedbackStatus): string {
       />
 
       <!-- Header slot for status text or points -->
+      <!-- eslint-disable-next-line vue/require-explicit-slots -->
       <slot name="header" />
     </q-card-section>
 
@@ -105,6 +104,7 @@ function getColor(status: FeedbackStatus): string {
       v-if="$slots.details"
       class="text-center q-pa-lg"
     >
+      <!-- eslint-disable-next-line vue/require-explicit-slots -->
       <slot name="details" />
     </q-card-section>
 

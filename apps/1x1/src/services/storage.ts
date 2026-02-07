@@ -421,30 +421,29 @@ export function toggleFeature(
     if (currentSet.has(2)) {
       // Deactivate: remove 2
       return current.filter(n => n !== 2)
-    } else {
-      // Activate: add 2 at beginning
-      return [2, ...current]
     }
-  } else if (feature === 'feature1x12') {
+    // Activate: add 2 at beginning
+    return [2, ...current]
+  }
+  if (feature === 'feature1x12') {
     // Toggle 11, 12 in range
     if (currentSet.has(11) || currentSet.has(12)) {
       // Deactivate: remove 11, 12, and also remove 13-20 if present (1x20 depends on 1x12)
       return current.filter(n => n < 11)
-    } else {
-      // Activate: add 11, 12
-      const base = current.filter(n => n < 11)
-      return [...base, 11, 12]
     }
-  } else if (feature === 'feature1x20') {
+    // Activate: add 11, 12
+    const base = current.filter(n => n < 11)
+    return [...base, 11, 12]
+  }
+  if (feature === 'feature1x20') {
     // Toggle 13-20 in range (and auto-enable 1x12)
     if (currentSet.has(13)) {
       // Deactivate: remove 13-20
       return current.filter(n => n < 13)
-    } else {
-      // Activate: add 11-20 (auto-enables 1x12)
-      const base = current.filter(n => n < 11)
-      return [...base, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     }
+    // Activate: add 11-20 (auto-enables 1x12)
+    const base = current.filter(n => n < 11)
+    return [...base, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
   }
 
   return current
