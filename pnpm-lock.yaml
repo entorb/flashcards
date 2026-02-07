@@ -26,6 +26,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.0.18(vitest@4.0.18(@types/node@24.10.11)(jiti@2.6.1)(jsdom@27.4.0)(sass@1.97.3)(terser@5.46.0)(yaml@2.8.2))
+      '@vue/compiler-dom':
+        specifier: ^3.5.27
+        version: 3.5.27
       '@vue/eslint-config-prettier':
         specifier: ^10.2.0
         version: 10.2.0(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)
