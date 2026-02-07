@@ -143,6 +143,7 @@ function goHome() {
 }
 </script>
 
+<!-- eslint-disable vue/no-root-v-if -->
 <template>
   <q-page
     v-if="result"
@@ -152,6 +153,7 @@ function goHome() {
     <div class="full-width text-center">
       <!-- Mascot -->
       <div class="flex flex-center q-mb-md">
+        <!-- eslint-disable-next-line vue/require-explicit-slots -->
         <slot
           name="mascot"
           :is-happy="isMascotHappy"
@@ -240,3 +242,4 @@ function goHome() {
     </div>
   </q-page>
 </template>
+<!-- eslint-enable vue/no-root-v-if -->

@@ -174,7 +174,7 @@ const gameStorage = createAppGameStorage(
   STORAGE_KEYS.DAILY_STATS
 )
 
-export const clearGameState = gameStorage.clearGameState
+export const { clearGameState } = gameStorage
 
 // ============================================================================
 // Game Result (sessionStorage)

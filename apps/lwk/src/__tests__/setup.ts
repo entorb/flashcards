@@ -1,7 +1,7 @@
 // Vitest setup file
 
-import { vi } from 'vitest'
 import { LocalStorageMock } from '@flashcards/shared'
+import { vi } from 'vitest'
 
 globalThis.localStorage = new LocalStorageMock()
 globalThis.sessionStorage = new LocalStorageMock()
