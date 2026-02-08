@@ -94,3 +94,14 @@ export const INITIAL_CARDS: Card[] = [
  * Distance of 2 means up to 2 character changes are tolerated
  */
 export const LEVENSHTEIN_THRESHOLD = 2
+
+/**
+ * Default decks configuration
+ * Used for initializing new decks and as the source of truth for default deck names
+ */
+export const DEFAULT_DECKS = [
+  {
+    name: 'en',
+    cards: INITIAL_CARDS
+  }
+]
