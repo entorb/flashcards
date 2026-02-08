@@ -1,6 +1,6 @@
 // Shared test utilities for LWK Cypress tests
 
-import { STORAGE_KEYS } from '../../src/services/storage'
+import { STORAGE_KEYS } from '../../src/constants'
 
 export type SpellCard = {
   word: string

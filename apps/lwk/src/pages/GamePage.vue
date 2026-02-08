@@ -47,8 +47,8 @@ const readyToStart = ref(false) // For hidden mode: waiting for user to click GO
 const isHiddenModeActive = ref(false) // For hidden mode: word stays hidden after GO until next card
 const showProceedButton = ref(false)
 const totalCards = ref(0)
-
-let countdownInterval: number | null = null
+const startHiddenTimeout = ref<number | null>(null)
+const countdownInterval = ref<number | null>(null)
 
 // Use shared timer logic
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
@@ -70,15 +70,25 @@ const {
 } = useFeedbackTimers()
 
 const feedbackColor = computed(() => {
-  if (answerStatus.value === 'correct') return 'positive'
-  if (answerStatus.value === 'close') return 'warning'
-  return 'negative'
+  // During countdown, show answer result state (red/yellow/green)
+  if (isProceedDisabled.value) {
+    if (answerStatus.value === 'correct') return 'positive'
+    if (answerStatus.value === 'close') return 'warning'
+    return 'negative'
+  }
+  // After countdown expires, show primary (blue) color
+  return 'primary'
 })
 
 const feedbackIcon = computed(() => {
-  if (answerStatus.value === 'correct') return 'check_circle'
-  if (answerStatus.value === 'close') return 'check_circle_outline'
-  return 'cancel'
+  // During countdown, show answer result state
+  if (isProceedDisabled.value) {
+    if (answerStatus.value === 'correct') return 'check_circle'
+    if (answerStatus.value === 'close') return 'check_circle_outline'
+    return 'cancel'
+  }
+  // After countdown expires, show check_circle icon
+  return 'play_arrow'
 })
 
 const pointsBreakdown = computed(() => {
@@ -110,8 +120,10 @@ useKeyboardContinue(canStart, startHiddenMode)
 
 // Reset state when card changes
 watch(
-  () => currentCard.value,
+  [() => currentCard.value, () => gameSettings.value],
   () => {
+    if (!gameSettings.value) return
+
     showFeedback.value = false
     showProceedButton.value = false
     answerStatus.value = null
@@ -121,14 +133,20 @@ watch(
     isHiddenModeActive.value = false
 
     // Prepare for next word based on mode
-    if (gameSettings.value?.mode === 'copy') {
+    if (startHiddenTimeout.value) {
+      clearTimeout(startHiddenTimeout.value)
+      startHiddenTimeout.value = null
+    }
+    if (gameSettings.value.mode === 'copy') {
       showWord.value = true
+      readyToStart.value = false
     } else {
       // Hidden mode: show word and wait for user to click GO again
       showWord.value = true
       // Delay setting readyToStart to avoid Enter key triggering startHiddenMode
-      setTimeout(() => {
+      startHiddenTimeout.value = window.setTimeout(() => {
         readyToStart.value = true
+        startHiddenTimeout.value = null
       }, 150)
     }
   },
@@ -164,12 +182,13 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  // Clean up intervals
-  if (countdownInterval !== null) {
-    globalThis.clearInterval(countdownInterval)
-  }
   // Clean up keyboard listener
   globalThis.removeEventListener('keydown', handleKeyDown)
+  // Clean up countdown interval if still running
+  if (countdownInterval.value !== null) {
+    clearInterval(countdownInterval.value)
+    countdownInterval.value = null
+  }
 })
 
 function startHiddenMode() {
@@ -183,13 +202,21 @@ function startHiddenMode() {
 function showWordForDuration() {
   countdown.value = WORD_DISPLAY_DURATION
 
-  // Cast needed due to type mismatch between Node.js (Timeout) and browser (number) environments
-  countdownInterval = globalThis.setInterval(() => {
+  // Clear any existing countdown interval
+  if (countdownInterval.value !== null) {
+    clearInterval(countdownInterval.value)
+  }
+
+  // Decrement countdown every second
+  countdownInterval.value = window.setInterval(() => {
     countdown.value--
     if (countdown.value <= 0) {
-      if (countdownInterval !== null) globalThis.clearInterval(countdownInterval)
+      if (countdownInterval.value !== null) {
+        clearInterval(countdownInterval.value)
+        countdownInterval.value = null
+      }
     }
-  }, 1000) as unknown as number
+  }, 1000)
 }
 
 function submitAnswer() {
