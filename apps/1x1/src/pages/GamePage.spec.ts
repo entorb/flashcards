@@ -5,6 +5,7 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import GamePage from './GamePage.vue'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@/__tests__/testUtils'
+import { STORAGE_KEYS } from '@/constants'
 import { initializeCards } from '@/services/storage'
 
 describe('GamePage Component', () => {
@@ -14,14 +15,14 @@ describe('GamePage Component', () => {
     initializeCards()
     // Set up minimal game state to prevent redirect
     sessionStorage.setItem(
-      '1x1-game-settings',
+      STORAGE_KEYS.GAME_CONFIG,
       JSON.stringify({
         select: [3, 4, 5],
         focus: 'weak'
       })
     )
     sessionStorage.setItem(
-      '1x1-game-state',
+      STORAGE_KEYS.GAME_STATE,
       JSON.stringify({
         gameCards: [
           { question: '3 × 3', answer: 9, level: 1, time: 60 },

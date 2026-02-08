@@ -13,23 +13,8 @@ import {
   loadJSON
 } from '@flashcards/shared'
 
-import { DEFAULT_DECKS } from '../constants'
+import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
-
-// ============================================================================
-// Storage Keys (prefixed with 'lwk-')
-// ============================================================================
-
-export const STORAGE_KEYS = {
-  DECKS: 'lwk-decks',
-  HISTORY: 'lwk-history',
-  STATS: 'lwk-stats',
-  GAME_CONFIG: 'lwk-game-config', // sessionStorage
-  GAME_STATE: 'lwk-game-state', // sessionStorage
-  GAME_RESULT: 'lwk-game-result', // sessionStorage
-  GAME_SETTINGS: 'lwk-settings',
-  DAILY_STATS: 'lwk-daily-stats'
-} as const
 
 // Game persistence factory for session storage
 interface GameState {

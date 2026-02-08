@@ -5,6 +5,7 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import GamePage from './GamePage.vue'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@/__tests__/testUtils'
+import { STORAGE_KEYS } from '@/constants'
 import { loadDecks } from '@/services/storage'
 
 describe('GamePage Component', () => {
@@ -14,7 +15,7 @@ describe('GamePage Component', () => {
     loadDecks() // Initialize default decks
     // Set up minimal game state to prevent redirect
     sessionStorage.setItem(
-      'voc-game-settings',
+      STORAGE_KEYS.GAME_SETTINGS,
       JSON.stringify({
         mode: 'multiple-choice',
         focus: 'weak',
@@ -23,7 +24,7 @@ describe('GamePage Component', () => {
       })
     )
     sessionStorage.setItem(
-      'voc-game-state',
+      STORAGE_KEYS.GAME_STATE,
       JSON.stringify({
         gameCards: [
           { voc: 'hello', de: 'hallo', level: 1, time: 60 },
