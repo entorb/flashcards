@@ -4,6 +4,7 @@
     "../../packages/shared/src/**/*.ts",
     "../../packages/shared/src/**/*.vue",
     "../../vite.config.base.ts",
+    "../../vite.config.factory.ts",
     "cypress.config.ts",
     "src/constants.ts",
     "src/types.ts",
