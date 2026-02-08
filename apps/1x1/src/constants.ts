@@ -21,6 +21,7 @@ export const STORAGE_KEYS = {
   STATS: 'fc-1x1-stats',
   SETTINGS: 'fc-1x1-settings',
   GAME_CONFIG: 'fc-1x1-game-config',
+  SELECTED_CARDS: 'fc-1x1-selected-cards',
   GAME_RESULT: 'fc-1x1-game-result',
   DAILY_STATS: 'fc-1x1-daily-stats',
   GAME_STATE: 'fc-1x1-game-state',
@@ -37,7 +38,7 @@ export const STORAGE_KEYS = {
  */
 export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   settingsKey: STORAGE_KEYS.SETTINGS,
-  selectedCardsKey: STORAGE_KEYS.GAME_CONFIG,
+  selectedCardsKey: STORAGE_KEYS.SELECTED_CARDS,
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,
@@ -63,6 +64,14 @@ export const MAX_CARDS_PER_GAME = 10
 // ============================================================================
 // COLOR SCHEMES
 // ============================================================================
+
+/**
+ * Theme color for PWA and browser chrome
+ * CRITICAL: Must also be updated in:
+ * - vite.config.ts (themeColor property)
+ * - index.html (meta name="theme-color" content)
+ */
+export const THEME_COLOR = '#1976d2'
 
 /**
  * CardsPage: Time colors (from green=fast to red=slow)
