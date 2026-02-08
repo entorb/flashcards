@@ -67,15 +67,11 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
   router
 })
 
-// Use shared timer composable
-const {
-  isButtonDisabled,
-  isEnterDisabled,
-  buttonDisableCountdown,
-  startAutoCloseTimer,
-  startButtonDisableTimer,
-  clearAllTimers
-} = useFeedbackTimers()
+// Use shared timer composable for auto-close on correct answers
+const { startAutoCloseTimer, clearAutoCloseTimers } = useFeedbackTimers()
+
+// Track button disabled state for keyboard control
+const isButtonDisabled = ref(false)
 
 const displayQuestion = computed(() => {
   return formatDisplayQuestion(currentCard.value?.question || '', gameSettings.value?.select)
@@ -97,10 +93,8 @@ watch(userAnswer, newValue => {
   }
 })
 
-// Use shared keyboard continue composable
-const canProceed = computed(
-  () => showFeedback.value && !isEnterDisabled.value && !isButtonDisabled.value
-)
+// Use shared keyboard continue composable - check button disabled state
+const canProceed = computed(() => showFeedback.value && !isButtonDisabled.value)
 useKeyboardContinue(canProceed, handleContinue)
 
 // Reset state when card changes
@@ -114,7 +108,7 @@ watch(
     userAnswerNum.value = null
     basePoints.value = 0
     isRecordTime.value = false
-    clearAllTimers()
+    clearAutoCloseTimers()
   },
   { immediate: true }
 )
@@ -157,14 +151,11 @@ function submitAnswer() {
   if (isCorrect) {
     // Auto-close after configured duration for correct answers
     startAutoCloseTimer(handleContinue)
-  } else {
-    // Wrong answer: disable button and Enter key
-    startButtonDisableTimer()
   }
 }
 
 function handleContinue() {
-  clearAllTimers()
+  clearAutoCloseTimers()
   showFeedback.value = false
   handleNextCard()
 }
@@ -215,14 +206,14 @@ onUnmounted(() => {
         <div v-if="!showFeedback">
           <GameInputSubmit
             v-model="userAnswer"
-            :button-disabled="isButtonDisabled"
+            :button-disabled="false"
             :on-submit="submitAnswer"
             input-type="numeric"
           />
         </div>
 
         <!-- Feedback Button Section -->
-        <div v-else-if="showFeedback">
+        <div v-else-if="answerStatus && showFeedback">
           <!-- Show user answer vs correct answer comparison on wrong answers -->
           <GameFeedbackNegative
             v-if="answerStatus === 'incorrect'"
@@ -238,11 +229,9 @@ onUnmounted(() => {
 
           <!-- Continue Button -->
           <GameNextCardButton
-            :answer-data="{ isCorrect: answerStatus === 'correct' }"
-            :is-button-disabled="isButtonDisabled"
-            :is-enter-disabled="isEnterDisabled"
-            :button-disable-countdown="buttonDisableCountdown"
+            :answer-status="answerStatus"
             @click="handleContinue"
+            @disabled-change="isButtonDisabled = $event"
           />
         </div>
       </div>
