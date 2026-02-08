@@ -30,6 +30,7 @@ export type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
 
 /**
  * Common AnswerStatus for all apps
+ * Result of evaluating a user's answer
  */
 export type AnswerStatus = 'correct' | 'incorrect' | 'close'
 
