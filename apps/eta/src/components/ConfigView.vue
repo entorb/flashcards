@@ -90,9 +90,7 @@ function handleReset() {
 
     <!-- Footer with Stats -->
     <div class="text-center q-mt-lg q-pa-md text-caption text-grey-7">
-      <div
-        class="q-mt-sm text-grey-6"
-      >
+      <div class="q-mt-sm text-grey-6">
         {{ numTotalUsage.toLocaleString('de-DE') }}
         {{ TEXT_DE.shared.footer.gamesPlayedByAll }}
         {{ TEXT_DE.shared.footer.noDataStored }}

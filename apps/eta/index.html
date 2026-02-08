@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <link
+      rel="apple-touch-icon"
+      href="/fc-eta/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/fc-eta/favicon.ico"
+    />
+    <meta charset="UTF-8" />
+    <meta
+      name="apple-mobile-web-app-capable"
+      content="yes"
+    />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="default"
+    />
+    <meta
+      name="theme-color"
+      content="#8B4513"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta
+      name="author"
+      content="Dr. Torben Menke"
+    />
+    <meta
+      name="description"
+      content="Schätze die Restzeit für deine Hausaufgaben mit dem Eichhörnchen"
+    />
+    <title>Hausaufgaben Zeit-Schätzer</title>
+    <!-- Matomo -->
+    <script>
+      var _paq = (window._paq = window._paq || [])
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['trackPageView'])
+      _paq.push(['enableLinkTracking'])
+      ;(function () {
+        var u = 'https://entorb.net/stats/matomo/'
+        _paq.push(['setTrackerUrl', u + 'matomo.php'])
+        _paq.push(['setSiteId', '15'])
+        var d = document,
+          g = d.createElement('script'),
+          s = d.getElementsByTagName('script')[0]
+        async = true
+        g.src = u + 'matomo.js'
+        s.parentNode.insertBefore(g, s)
+      })()
+    </script>
+    <!-- End Matomo Code -->
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script
+      type="module"
+      src="/src/main.ts"
+    ></script>
+  </body>
+</html>
