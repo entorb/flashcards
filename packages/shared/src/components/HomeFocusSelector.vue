@@ -3,14 +3,11 @@ import { TEXT_DE } from '../text-de'
 import type { FocusType } from '../types'
 
 interface Props {
-  modelValue: FocusType
   hideLabel?: boolean
 }
 
 defineProps<Props>()
-const emit = defineEmits<{
-  'update:modelValue': [value: FocusType]
-}>()
+const focus = defineModel<FocusType>({ required: true })
 
 const focusOptions = [
   { label: TEXT_DE.shared.focusOptions.weak, value: 'weak' as const, icon: 'trending_down' },
@@ -20,7 +17,7 @@ const focusOptions = [
 ]
 
 function handleFocusChange(value: FocusType) {
-  emit('update:modelValue', value)
+  focus.value = value
 }
 </script>
 
@@ -39,8 +36,8 @@ function handleFocusChange(value: FocusType) {
         class="col-6 col-sm-3"
       >
         <q-btn
-          :outline="modelValue !== option.value"
-          :color="modelValue === option.value ? 'primary' : 'grey-8'"
+          :outline="focus !== option.value"
+          :color="focus === option.value ? 'primary' : 'grey-8'"
           :icon="option.icon"
           :label="option.label"
           no-caps
