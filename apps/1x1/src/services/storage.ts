@@ -16,20 +16,8 @@ import {
   MIN_TIME
 } from '@flashcards/shared'
 
-import { DEFAULT_RANGE } from '@/constants'
+import { DEFAULT_RANGE, STORAGE_KEYS } from '@/constants'
 import type { Card, GameHistory, GameSettings } from '@/types'
-
-const STORAGE_KEYS = {
-  CARDS: '1x1-cards',
-  HISTORY: '1x1-history',
-  STATS: '1x1-stats',
-  SETTINGS: '1x1-settings',
-  GAME_CONFIG: '1x1-game-config',
-  GAME_RESULT: '1x1-game-result',
-  DAILY_STATS: '1x1-daily-stats',
-  GAME_STATE: '1x1-game-state',
-  RANGE: '1x1-range'
-}
 
 // Game persistence factory for session storage
 interface GameState {

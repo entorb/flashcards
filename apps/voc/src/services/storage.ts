@@ -14,7 +14,7 @@ import {
   saveJSON
 } from '@flashcards/shared'
 
-import { INITIAL_CARDS } from '../constants'
+import { INITIAL_CARDS, STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 
 // Legacy types for migration
@@ -32,17 +32,6 @@ interface LegacyCardDeck {
 }
 
 type LegacyStorageData = LegacyCard[] | LegacyCardDeck[]
-
-const STORAGE_KEYS = {
-  CARDS: 'voc-cards',
-  HISTORY: 'voc-history',
-  SETTINGS: 'voc-settings',
-  STATS: 'voc-stats',
-  DAILY_STATS: 'voc-daily-stats',
-  GAME_STATE: 'voc-game-state',
-  GAME_SETTINGS: 'voc-game-settings',
-  GAME_RESULT: 'voc-game-result'
-}
 
 // Game persistence factory for session storage
 interface GameState {

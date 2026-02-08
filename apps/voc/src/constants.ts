@@ -8,20 +8,39 @@ import type { Card } from './types'
 export const BASE_PATH = 'fc-voc'
 
 // ============================================================================
+// STORAGE KEYS
+// ============================================================================
+
+/**
+ * All storage keys for localStorage and sessionStorage
+ * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
+ */
+export const STORAGE_KEYS = {
+  CARDS: 'fc-voc-cards',
+  HISTORY: 'fc-voc-history',
+  SETTINGS: 'fc-voc-settings',
+  STATS: 'fc-voc-stats',
+  DAILY_STATS: 'fc-voc-daily-stats',
+  GAME_STATE: 'fc-voc-game-state',
+  GAME_SETTINGS: 'fc-voc-game-settings',
+  GAME_RESULT: 'fc-voc-game-result'
+}
+
+// ============================================================================
 // GAME STATE FLOW CONFIGURATION
 // ============================================================================
 
 /**
- * Centralized game state flow configuration
- * Keys for localStorage and sessionStorage used throughout the game lifecycle
+ * Centralized game state flow configuration for shared game store
+ * References the STORAGE_KEYS for consistency
  */
 export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
-  settingsKey: 'voc-settings',
-  selectedCardsKey: 'voc-selected-cards',
-  gameResultKey: 'voc-game-result',
-  historyKey: 'voc-history',
-  statsKey: 'voc-stats',
-  dailyStatsKey: 'voc-daily-stats'
+  settingsKey: STORAGE_KEYS.SETTINGS,
+  selectedCardsKey: STORAGE_KEYS.GAME_SETTINGS,
+  gameResultKey: STORAGE_KEYS.GAME_RESULT,
+  historyKey: STORAGE_KEYS.HISTORY,
+  statsKey: STORAGE_KEYS.STATS,
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
 }
 
 export const MAX_CARDS_PER_GAME = 10
