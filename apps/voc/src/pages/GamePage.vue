@@ -62,14 +62,11 @@ const { handleNextCard: navigateToNextCard, handleGoHome } = useGameNavigation({
   discardGame,
   router
 })
-// Use shared feedback timers for blocking proceed on wrong/close answers
-const {
-  isButtonDisabled: isProceedDisabled,
-  buttonDisableCountdown,
-  startAutoCloseTimer,
-  startButtonDisableTimer,
-  clearAutoCloseTimers
-} = useFeedbackTimers()
+// Use shared feedback timers for auto-advance on correct answers
+const { startAutoCloseTimer, clearAutoCloseTimers } = useFeedbackTimers()
+
+// Track button disabled state for keyboard control
+const isProceedDisabled = ref(false)
 
 // Wrapper function to cancel auto-close timer before proceeding
 function handleNextCard() {
@@ -153,23 +150,20 @@ function submitAnswer(result: AnswerStatus) {
   if (result === 'correct') {
     // For correct answers: auto-advance after 3 seconds, but allow manual continue
     startAutoCloseTimer(handleNextCard)
-  } else {
-    // For incorrect/close answers: disable button for 3 seconds
-    startButtonDisableTimer()
+  }
 
-    if (result === 'close') {
-      const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
-      feedbackData.value = {
-        type: 'close',
-        userInput: userAnswer.value,
-        correctText: mainCorrectAnswer
-      }
-    } else if (gameSettings.value?.mode === 'typing') {
-      feedbackData.value = {
-        type: 'typing-incorrect',
-        userInput: userAnswer.value,
-        correctText: correctAnswer.value
-      }
+  if (result === 'close') {
+    const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
+    feedbackData.value = {
+      type: 'close',
+      userInput: userAnswer.value,
+      correctText: mainCorrectAnswer
+    }
+  } else if (gameSettings.value?.mode === 'typing') {
+    feedbackData.value = {
+      type: 'typing-incorrect',
+      userInput: userAnswer.value,
+      correctText: correctAnswer.value
     }
   }
 }
@@ -197,29 +191,7 @@ function handleTypingSubmit() {
   submitAnswer(result)
 }
 
-const buttonColor = computed(() => {
-  // During countdown, show answer result state (red/yellow)
-  if (isProceedDisabled.value) {
-    if (answerStatus.value === 'correct') return 'positive'
-    if (answerStatus.value === 'close') return 'warning'
-    return 'negative'
-  }
-  // After countdown expires, show primary (blue) color
-  return 'primary'
-})
-
-const buttonIcon = computed(() => {
-  // During countdown, show answer result state
-  if (isProceedDisabled.value) {
-    if (answerStatus.value === 'correct') return 'check_circle'
-    if (answerStatus.value === 'close') return 'warning'
-    return 'cancel'
-  }
-  // After countdown expires, show check_circle icon
-  return 'play_arrow'
-})
-
-// Use shared keyboard continue composable
+// Use shared keyboard continue composable - check button disabled state
 const canProceed = computed(() => showProceedButton.value && !isProceedDisabled.value)
 useKeyboardContinue(canProceed, handleNextCard)
 
@@ -313,12 +285,9 @@ onUnmounted(() => {
           <!-- Continue Button with icon when feedback is shown -->
           <GameNextCardButton
             v-if="answerStatus && showProceedButton"
-            :color="buttonColor"
-            :icon="buttonIcon"
-            :is-button-disabled="isProceedDisabled"
-            :is-enter-disabled="false"
-            :button-disable-countdown="buttonDisableCountdown"
+            :answer-status="answerStatus"
             @click="handleNextCard"
+            @disabled-change="isProceedDisabled = $event"
           />
 
           <!-- Multiple Choice -->
