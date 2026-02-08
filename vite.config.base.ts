@@ -60,7 +60,12 @@ export function getVueRouterPlugin(dtsPath: string) {
 export function getVitePwaPlugin(config: AppConfig) {
   return VitePWA({
     registerType: 'prompt',
-    includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-192x192.png', 'android-chrome-512x512.png'],
+    includeAssets: [
+      'favicon.ico',
+      'apple-touch-icon.png',
+      'android-chrome-192x192.png',
+      'android-chrome-512x512.png'
+    ],
     manifest: {
       name: config.appTitle,
       short_name: config.appTitle,
