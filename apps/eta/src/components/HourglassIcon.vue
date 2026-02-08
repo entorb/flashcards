@@ -28,11 +28,13 @@ const isActive = computed(() => props.progress > 0 && props.progress < 100)
 
 <template>
   <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 100 140"
     :width="size"
     :height="size * 1.4"
-    viewBox="0 0 100 140"
-    xmlns="http://www.w3.org/2000/svg"
+    aria-labelledby="hourglass-title"
   >
+    <title id="hourglass-title">Hourglass Progress Icon</title>
     <defs>
       <!-- Sand gradient -->
       <linearGradient

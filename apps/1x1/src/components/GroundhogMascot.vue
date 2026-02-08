@@ -21,7 +21,7 @@ withDefaults(defineProps<Props>(), {
     class="inline-block"
     aria-labelledby="groundhog-title"
   >
-    <title id="groundhog-title">Friendly Groundhog Mascot</title>
+    <title id="groundhog-title">Groundhog Yivit Mascot</title>
     <g>
       <!-- Body -->
       <path

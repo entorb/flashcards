@@ -21,7 +21,7 @@ withDefaults(defineProps<Props>(), {
     class="inline-block"
     aria-labelledby="eisi-title"
   >
-    <title id="eisi-title">Eisi the Ice Bear</title>
+    <title id="eisi-title">Ice Bear Eisi Mascot</title>
     <g>
       <!-- Head -->
       <circle
