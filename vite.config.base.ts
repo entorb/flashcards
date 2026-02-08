@@ -48,6 +48,11 @@ export function getVuePlugin() {
 }
 
 export function getQuasarPlugin(sassVariablesPath: string) {
+  // Quasar vite plugin tree-shaking optimization:
+  // - Only the Quasar CSS and SASS variables are globally imported
+  // - Components auto-imported by Vue based on actual template usage
+  // - Combined with explicit plugin imports (Dialog, Notify in main.ts),
+  //   only used components are bundled, significantly reducing bundle size
   return quasar({
     sassVariables: sassVariablesPath
   })
