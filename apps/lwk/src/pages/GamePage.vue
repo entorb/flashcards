@@ -3,7 +3,6 @@ import {
   type AnswerStatus,
   calculatePointsBreakdown,
   MAX_TIME,
-  useFeedbackTimers,
   useGameNavigation,
   useGameTimer,
   useKeyboardContinue
@@ -62,34 +61,13 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
   router
 })
 
-// Use shared feedback timers for blocking proceed on wrong/close answers
-const {
-  isButtonDisabled: isProceedDisabled,
-  buttonDisableCountdown,
-  startButtonDisableTimer
-} = useFeedbackTimers()
+// Track button disabled state for keyboard control
+const isProceedDisabled = ref(false)
 
-const feedbackColor = computed(() => {
-  // During countdown, show answer result state (red/yellow/green)
-  if (isProceedDisabled.value) {
-    if (answerStatus.value === 'correct') return 'positive'
-    if (answerStatus.value === 'close') return 'warning'
-    return 'negative'
-  }
-  // After countdown expires, show primary (blue) color
-  return 'primary'
-})
-
-const feedbackIcon = computed(() => {
-  // During countdown, show answer result state
-  if (isProceedDisabled.value) {
-    if (answerStatus.value === 'correct') return 'check_circle'
-    if (answerStatus.value === 'close') return 'check_circle_outline'
-    return 'cancel'
-  }
-  // After countdown expires, show check_circle icon
-  return 'play_arrow'
-})
+// Enable keyboard continue when feedback is shown and button is enabled
+const canProceed = computed(
+  () => showFeedback.value && showProceedButton.value && !isProceedDisabled.value
+)
 
 const pointsBreakdown = computed(() => {
   if (!answerStatus.value || answerStatus.value === 'incorrect') return null
@@ -109,9 +87,6 @@ const pointsBreakdown = computed(() => {
 })
 
 // Enable keyboard continue when feedback is shown and button is enabled
-const canProceed = computed(
-  () => showFeedback.value && showProceedButton.value && !isProceedDisabled.value
-)
 useKeyboardContinue(canProceed, handleNextCard)
 
 // Enable Enter key to start hidden mode
@@ -247,13 +222,6 @@ function submitAnswer() {
   showFeedback.value = true
   showWord.value = true // Always show correct word in feedback
   showProceedButton.value = true
-
-  if (resultType === 'correct') {
-    // For correct answers: just show feedback, no auto-advance
-  } else {
-    // For incorrect/close answers: disable button for 3 seconds
-    startButtonDisableTimer()
-  }
 }
 </script>
 
@@ -329,13 +297,10 @@ function submitAnswer() {
 
         <!-- Proceed Button - Shown after feedback -->
         <GameNextCardButton
-          v-if="showFeedback && showProceedButton"
-          :color="feedbackColor"
-          :icon="feedbackIcon"
-          :is-button-disabled="isProceedDisabled"
-          :is-enter-disabled="false"
-          :button-disable-countdown="buttonDisableCountdown"
+          v-if="answerStatus && showFeedback && showProceedButton"
+          :answer-status="answerStatus"
           @click="handleNextCard"
+          @disabled-change="isProceedDisabled = $event"
         />
       </div>
     </div>
