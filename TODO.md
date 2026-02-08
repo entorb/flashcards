@@ -14,6 +14,10 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 
 ## Tech
 
+## Git Hist cleanup
+
+- todo-lwk.md
+
 ## all
 
 ## 1x1
@@ -156,41 +160,11 @@ This monorepo is well-structured with good separation of concerns and effective 
 
 ## 1. Vue 3 & Composition API Best Practices
 
-### ✅ Already Following
-
-- Script setup syntax consistently used
-- Composition API throughout
-- Type-based defineProps/defineEmits
-- Proper reactive patterns with ref/computed
-
 ### 🔧 Improvements Needed
 
 #### 1.1 Use `defineModel()` for v-model (Vue 3.4+)
 
-**Current Pattern:**
-
-```vue
-<!-- HomeFocusSelector.vue -->
-<script setup lang="ts">
-const props = defineProps<{ modelValue: FocusType }>()
-const emit = defineEmits<{ 'update:modelValue': [value: FocusType] }>()
-</script>
-```
-
-**Modern Pattern:**
-
-```vue
-<script setup lang="ts">
-const focus = defineModel<FocusType>({ required: true })
-// Automatically handles props + emit
-</script>
-```
-
-**Files to update:**
-
-- `packages/shared/src/components/HomeFocusSelector.vue`
-- `packages/shared/src/components/HomeDeckSelector.vue`
-- Any other components with v-model
+DONE
 
 #### 1.2 Use `toValue()` for flexible ref/value handling
 
@@ -307,182 +281,11 @@ DONE
 
 ### 3.2 Consolidate Deck Management Logic
 
-**Current:** Deck management functions duplicated in `voc` and `lwk` stores
-
-**Solution:** Move to shared package:
-
-```typescript
-// packages/shared/src/composables/useDeckManagement.ts
-export function createDeckManagement<TCard extends BaseCard>(
-  loadDecks: () => CardDeck<TCard>[],
-  saveDecks: (decks: CardDeck<TCard>[]) => void,
-  loadSettings: () => { deck?: string } | null,
-  saveSettings: (settings: { deck?: string }) => void
-) {
-  function getDecks() {
-    return loadDecks()
-  }
-
-  function addDeck(name: string): boolean {
-    const decks = loadDecks()
-    if (decks.some(d => d.name === name)) return false
-    decks.push({ name, cards: [] })
-    saveDecks(decks)
-    return true
-  }
-
-  function renameDeck(oldName: string, newName: string): boolean {
-    const decks = loadDecks()
-    if (decks.some(d => d.name === newName)) return false
-    const deck = decks.find(d => d.name === oldName)
-    if (!deck) return false
-    deck.name = newName
-    saveDecks(decks)
-
-    const settings = loadSettings()
-    if (settings?.deck === oldName) {
-      settings.deck = newName
-      saveSettings(settings)
-    }
-    return true
-  }
-
-  function removeDeck(name: string): boolean {
-    const decks = loadDecks()
-    if (decks.length <= 1) return false
-    const filtered = decks.filter(d => d.name !== name)
-    if (filtered.length === decks.length) return false
-    saveDecks(filtered)
-
-    const settings = loadSettings()
-    if (settings?.deck === name && filtered[0]) {
-      settings.deck = filtered[0].name
-      saveSettings(settings)
-    }
-    return true
-  }
-
-  return { getDecks, addDeck, renameDeck, removeDeck }
-}
-```
-
-**Savings:** ~120 lines of duplicated code across 2 apps
+DONE
 
 ### 3.3 Simplify HomePage Structure
 
-All 3 HomePage components share 80% structure. Extract common layout:
-
-```vue
-<!-- packages/shared/src/pages/HomePageLayout.vue -->
-<script setup lang="ts" generic="TSettings">
-import { TEXT_DE } from '../text-de'
-import AppFooter from '../components/AppFooter.vue'
-import HomePwaInstallInfo from '../components/HomePwaInstallInfo.vue'
-import HomeStatisticsCard from '../components/HomeStatisticsCard.vue'
-
-defineProps<{
-  appTitle: string
-  basePath: string
-  statistics: GameStats
-}>()
-
-defineEmits<{
-  startGame: []
-  goToCards: []
-  goToHistory: []
-  goToInfo: []
-}>()
-</script>
-
-<template>
-  <q-page class="q-pa-md">
-    <!-- Header with Info Button -->
-    <div class="row items-center justify-between q-mb-md">
-      <div
-        class="text-h5"
-        data-cy="app-title"
-      >
-        {{ appTitle }}
-      </div>
-      <q-btn
-        flat
-        round
-        dense
-        icon="info_outline"
-        color="grey-6"
-        data-cy="info-button"
-        @click="$emit('goToInfo')"
-      >
-        <q-tooltip>{{ TEXT_DE.shared.nav.infoTooltip }}</q-tooltip>
-      </q-btn>
-    </div>
-
-    <!-- Mascot and Statistics -->
-    <div class="row items-center justify-center q-mb-md">
-      <div class="col-12 col-sm-auto text-center">
-        <slot name="mascot" />
-      </div>
-      <div
-        class="col-12 col-sm"
-        :class="$q.screen.gt.xs ? 'q-ml-md' : ''"
-      >
-        <HomeStatisticsCard
-          :statistics="statistics"
-          data-cy="statistics-card"
-        />
-      </div>
-    </div>
-
-    <!-- Game Configuration -->
-    <q-card class="q-mb-md">
-      <q-card-section class="q-pa-md">
-        <slot name="config" />
-      </q-card-section>
-    </q-card>
-
-    <!-- Start Button -->
-    <q-btn
-      color="positive"
-      size="lg"
-      class="full-width q-mb-sm"
-      icon="play_arrow"
-      data-cy="start-button"
-      @click="$emit('startGame')"
-    >
-      <span class="text-body1">{{ TEXT_DE.shared.common.start }}</span>
-    </q-btn>
-
-    <!-- Navigation Buttons -->
-    <div class="row q-gutter-sm">
-      <q-btn
-        unelevated
-        color="primary"
-        size="md"
-        class="col"
-        icon="layers"
-        :label="TEXT_DE.shared.nav.cards"
-        data-cy="cards-button"
-        @click="$emit('goToCards')"
-      />
-      <q-btn
-        unelevated
-        color="primary"
-        size="md"
-        class="col"
-        icon="history"
-        :label="TEXT_DE.shared.nav.history"
-        data-cy="history-button"
-        @click="$emit('goToHistory')"
-      />
-    </div>
-
-    <HomePwaInstallInfo class="q-mt-md" />
-    <AppFooter :base-path="basePath" />
-  </q-page>
-</template>
-```
-
-**Savings:** ~150 lines per app = 450 lines total
+DONE
 
 ---
 
@@ -603,39 +406,11 @@ registerSW({
 
 #### Tree-shake Quasar components
 
-```typescript
-// quasar.config.js - only import used components
-import { Quasar, Notify, Dialog } from 'quasar'
-
-app.use(Quasar, {
-  plugins: { Notify, Dialog }
-  // Don't import all components globally
-})
-```
+DONE
 
 #### Code splitting by route
 
-```typescript
-// router.ts
-const routes = [
-  {
-    path: '/cards',
-    component: () => import('./pages/CardsManPage.vue')
-  },
-  {
-    path: '/history',
-    component: () => import('./pages/HistoryPage.vue')
-  }
-]
-```
-
-**Current bundle sizes (estimate):**
-
-- 1x1: ~250KB gzipped
-- voc: ~280KB gzipped
-- lwk: ~270KB gzipped
-
-**Target:** <200KB gzipped per app
+DONE
 
 ---
 
