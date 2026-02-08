@@ -32,7 +32,13 @@ describe('GamePage Component', () => {
         ],
         currentCardIndex: 0,
         points: 0,
-        correctAnswersCount: 0
+        correctAnswersCount: 0,
+        gameSettings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'en',
+          deck: 'en'
+        }
       })
     )
   })

@@ -1,0 +1,39 @@
+<svg width="100" height="140" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Sand gradient -->
+    <linearGradient id="sandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f4a460"/>
+      <stop offset="100%" stop-color="#cd853f"/>
+    </linearGradient>
+
+    <!-- Glass gradient -->
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8d4b8" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#f5f5dc" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#e8d4b8" stop-opacity="0.4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Wooden base top -->
+  <rect x="10" y="5" width="80" height="8" rx="2" fill="#8b4513"/>
+
+  <!-- Top glass chamber (empty at 100%) -->
+  <path d="M 20 13 L 80 13 L 65 55 L 50 65 L 35 55 Z" fill="url(#glassGrad)" stroke="#8b4513" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Neck/center -->
+  <ellipse cx="50" cy="70" rx="6" ry="3" fill="#8b4513" opacity="0.6"/>
+
+  <!-- Bottom glass chamber -->
+  <path d="M 35 85 L 50 75 L 65 85 L 80 127 L 20 127 Z" fill="url(#glassGrad)" stroke="#8b4513" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Bottom sand (full at 100%) -->
+  <path d="M 35 85 L 65 85 L 80 127 L 20 127 Z" fill="url(#sandGrad)"/>
+
+  <!-- Wooden base bottom -->
+  <rect x="10" y="127" width="80" height="8" rx="2" fill="#8b4513"/>
+
+  <!-- Completion stars -->
+  <text x="50" y="25" text-anchor="middle" font-size="16">✨</text>
+  <text x="70" y="40" text-anchor="middle" font-size="12">⭐</text>
+  <text x="30" y="40" text-anchor="middle" font-size="12">⭐</text>
+</svg>
