@@ -30,7 +30,7 @@ onMounted(async () => {
     </div>
     <div class="q-gutter-x-md q-mt-sm">
       <a
-        :href="`https://entorb.net/contact.php?origin=${basePath}`"
+        :href="`https://entorb.net/contact.php?origin=${props.basePath}`"
         target="_blank"
         rel="noopener noreferrer"
         >by Torben</a
