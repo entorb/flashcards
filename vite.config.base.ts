@@ -99,7 +99,7 @@ export function getVitePwaPlugin(config: AppConfig) {
             cacheName: 'google-fonts-cache',
             expiration: {
               maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365
+              maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
             }
           }
         }
