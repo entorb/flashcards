@@ -40,13 +40,13 @@ defineProps<Props>()
         {{ displayQuestion }}
 
         <!-- Show correct answer after submission -->
-        <template v-if="showCorrectAnswer">
+        <template v-if="currentCard && showCorrectAnswer">
           =
           <output
             class="text-positive"
-            :aria-label="`Correct answer: ${currentCard?.answer}`"
+            :aria-label="`Correct answer: ${currentCard.answer}`"
           >
-            {{ currentCard?.answer }}
+            {{ currentCard.answer }}
           </output>
         </template>
       </div>

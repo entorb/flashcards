@@ -6,6 +6,8 @@
 
 import { ref } from 'vue'
 
+import type { AnswerStatus } from '../types'
+
 export interface UseAnswerFeedbackOptions {
   /** Duration in milliseconds to auto-close after correct answer */
   autoCloseDuration?: number
@@ -46,7 +48,7 @@ export function useAnswerFeedback(options: UseAnswerFeedbackOptions = {}) {
 
   // Reactive state
   const showFeedback = ref(false)
-  const answerStatus = ref<'correct' | 'incorrect' | 'close' | null>(null)
+  const answerStatus = ref<AnswerStatus | null>(null)
   const isButtonDisabled = ref(false)
   const feedbackCountdown = ref(0)
   const buttonDisableCountdown = ref(0)
