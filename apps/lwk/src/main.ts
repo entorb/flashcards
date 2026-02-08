@@ -36,8 +36,12 @@ const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     // Prompt user before reloading to avoid data loss
-    if (confirm(TEXT_DE.shared.pwa.update.confirmMessage)) {
+    Dialog.create({
+      message: TEXT_DE.shared.pwa.update.confirmMessage,
+      cancel: true,
+      persistent: true
+    }).onOk(() => {
       updateSW(true)
-    }
+    })
   }
 })
