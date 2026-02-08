@@ -49,7 +49,7 @@
         var d = document,
           g = d.createElement('script'),
           s = d.getElementsByTagName('script')[0]
-        async = true
+        g.async = true
         g.src = u + 'matomo.js'
         s.parentNode.insertBefore(g, s)
       })()
