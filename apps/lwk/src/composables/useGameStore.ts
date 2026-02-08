@@ -140,7 +140,7 @@ export function useGameStore() {
     if (savedGameState.gameSettings) {
       baseStore.gameSettings.value = savedGameState.gameSettings
     } else {
-      // Fallback to localStorage if gameSettings not in saved state (for backward compat)
+      // Fallback to sessionStorage if gameSettings not in saved state (for backward compat)
       const savedGameSettings = loadGameConfig()
       if (savedGameSettings) {
         baseStore.gameSettings.value = savedGameSettings
