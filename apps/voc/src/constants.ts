@@ -46,6 +46,18 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
 export const MAX_CARDS_PER_GAME = 10
 
 // ============================================================================
+// COLOR SCHEME
+// ============================================================================
+
+/**
+ * Theme color for PWA and browser chrome
+ * CRITICAL: Must also be updated in:
+ * - vite.config.ts (themeColor property)
+ * - index.html (meta name="theme-color" content)
+ */
+export const THEME_COLOR = '#1976d2'
+
+// ============================================================================
 // GAME SCORING
 // ============================================================================
 
