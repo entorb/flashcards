@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
-import { ref } from 'vue'
+import { TEXT_DE, helperStatsDataRead, helperStatsDataWrite } from '@flashcards/shared'
+import { onMounted, ref } from 'vue'
 
 import { useEtaStore } from '@/composables/useEtaStore'
+import { BASE_PATH } from '@/constants'
 
 import HourglassIcon from './HourglassIcon.vue'
 
 const store = useEtaStore()
 const totalTasks = ref<number | null>(null)
 const hasStarted = ref(false)
+const numTotalUsage = ref<number>(0)
 
-function handleStart() {
+onMounted(async () => {
+  numTotalUsage.value = await helperStatsDataRead(BASE_PATH)
+})
+
+async function handleStart() {
   if (!totalTasks.value || totalTasks.value <= 0) {
     return
   }
   store.startSession(totalTasks.value)
   hasStarted.value = true
+
+  // Write stats to database
+  await helperStatsDataWrite(BASE_PATH)
 }
 
 function handleReset() {
@@ -77,6 +86,43 @@ function handleReset() {
       >
         <q-tooltip>{{ TEXT_DE.shared.common.reset }}</q-tooltip>
       </q-btn>
+    </div>
+
+    <!-- Footer with Stats -->
+    <div class="text-center q-mt-lg q-pa-md text-caption text-grey-7">
+      <div
+        class="q-mt-sm text-grey-6"
+      >
+        {{ numTotalUsage.toLocaleString('de-DE') }}
+        {{ TEXT_DE.shared.footer.gamesPlayedByAll }}
+        {{ TEXT_DE.shared.footer.noDataStored }}
+      </div>
+      <div class="q-gutter-x-md q-mt-sm">
+        <a
+          :href="`https://entorb.net/contact.php?origin=${BASE_PATH}`"
+          target="_blank"
+          rel="noopener noreferrer"
+          >by Torben</a
+        >
+        <a
+          href="https://entorb.net/flashcards/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Home</a
+        >
+        <a
+          href="https://entorb.net/impressum.php"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Disclaimer</a
+        >
+        <a
+          href="https://github.com/entorb/flashcards"
+          target="_blank"
+          rel="noopener noreferrer"
+          >GitHub</a
+        >
+      </div>
     </div>
   </div>
 </template>

@@ -377,7 +377,11 @@ function getBarWidth(index: number): number {
         </template>
         <template #body-cell-speed="props">
           <q-td :props="props">
-            <template v-if="calculateTimePerTask(sessionData.measurements.length - 1 - props.rowIndex) !== null">
+            <template
+              v-if="
+                calculateTimePerTask(sessionData.measurements.length - 1 - props.rowIndex) !== null
+              "
+            >
               {{ calculateTimePerTask(sessionData.measurements.length - 1 - props.rowIndex) }} s
             </template>
             <template v-else> - </template>
