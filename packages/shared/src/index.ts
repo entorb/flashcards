@@ -16,6 +16,7 @@ export * from './composables/useCardFiltering.js'
 export * from './composables/useFeedbackTimers.js'
 export * from './composables/useGameNavigation.js'
 export * from './composables/useKeyboardContinue.js'
+export * from './composables/useDeckManagement.js'
 
 // Note: AppFooter is exported via package.json exports field at "./components"
 // Use: import { AppFooter } from '@flashcards/shared/components'
