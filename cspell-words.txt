@@ -21,6 +21,7 @@ Buches
 Daten
 Datenspeicherung
 Decks
+deine
 deines
 Deutsch
 Diese
@@ -54,7 +55,8 @@ gewaschen
 Gewichtete
 gibt
 Grün
-Haus
+Hausi
+Hausaufgaben
 heute
 Hintergrund
 hintergründen
@@ -114,11 +116,14 @@ Räume
 Rechtschreib
 Rechtschreibung
 Regeln
+Restzeit
 Richtig
 Richtige
 Sachen
 sammeln
 schnell
+Schätze
+Schätzer
 Schreiben
 Schriftfarbe
 Schule
