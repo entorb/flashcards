@@ -68,6 +68,13 @@ const { startAutoCloseTimer, clearAutoCloseTimers } = useFeedbackTimers()
 // Track button disabled state for keyboard control
 const isProceedDisabled = ref(false)
 
+// Determine feedback type based on answer status and game mode
+function getFeedbackType(status: AnswerStatus | null): 'simple' | 'close' | 'typing-incorrect' {
+  if (status === 'close') return 'close'
+  if (status === 'incorrect' && gameSettings.value?.mode === 'typing') return 'typing-incorrect'
+  return 'simple'
+}
+
 // Wrapper function to cancel auto-close timer before proceeding
 function handleNextCard() {
   clearAutoCloseTimers() // Cancel the auto-advance timer
@@ -147,6 +154,10 @@ function submitAnswer(result: AnswerStatus) {
   // Always show proceed button for all answer types
   showProceedButton.value = true
 
+  // Determine feedback type based on answer status
+  const feedbackType = getFeedbackType(result)
+  feedbackData.value.type = feedbackType
+
   if (result === 'correct') {
     // For correct answers: auto-advance after 3 seconds, but allow manual continue
     startAutoCloseTimer(handleNextCard)
@@ -155,13 +166,13 @@ function submitAnswer(result: AnswerStatus) {
   if (result === 'close') {
     const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
     feedbackData.value = {
-      type: 'close',
+      type: feedbackType,
       userInput: userAnswer.value,
       correctText: mainCorrectAnswer
     }
-  } else if (gameSettings.value?.mode === 'typing') {
+  } else if (feedbackType === 'typing-incorrect') {
     feedbackData.value = {
-      type: 'typing-incorrect',
+      type: feedbackType,
       userInput: userAnswer.value,
       correctText: correctAnswer.value
     }
