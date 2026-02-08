@@ -8,12 +8,12 @@
 
 /**
  * Helper function to get cards from localStorage
- * Extracts cards from the deck structure (voc-cards)
+ * Extracts cards from the deck structure (fc-voc-cards)
  * @param win - Window object
  * @returns Array of cards from the first deck
  */
 export function getCardsFromStorage(win: Window): any[] {
-  const stored = win.localStorage.getItem('voc-cards')
+  const stored = win.localStorage.getItem('fc-voc-cards')
   const decks = stored ? JSON.parse(stored) : []
   // Extract cards from the first deck (or current deck)
   const cards = Array.isArray(decks) && decks.length > 0 && decks[0].cards ? decks[0].cards : []

@@ -8,20 +8,40 @@ import type { GameStateFlowConfig } from '@flashcards/shared'
 export const BASE_PATH = 'fc-1x1'
 
 // ============================================================================
+// STORAGE KEYS
+// ============================================================================
+
+/**
+ * All storage keys for localStorage and sessionStorage
+ * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
+ */
+export const STORAGE_KEYS = {
+  CARDS: 'fc-1x1-cards',
+  HISTORY: 'fc-1x1-history',
+  STATS: 'fc-1x1-stats',
+  SETTINGS: 'fc-1x1-settings',
+  GAME_CONFIG: 'fc-1x1-game-config',
+  GAME_RESULT: 'fc-1x1-game-result',
+  DAILY_STATS: 'fc-1x1-daily-stats',
+  GAME_STATE: 'fc-1x1-game-state',
+  RANGE: 'fc-1x1-range'
+}
+
+// ============================================================================
 // GAME STATE FLOW CONFIGURATION
 // ============================================================================
 
 /**
- * Centralized game state flow configuration
- * Keys for localStorage and sessionStorage used throughout the game lifecycle
+ * Centralized game state flow configuration for shared game store
+ * References the STORAGE_KEYS for consistency
  */
 export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
-  settingsKey: '1x1-settings',
-  selectedCardsKey: '1x1-selected-cards',
-  gameResultKey: '1x1-game-result',
-  historyKey: '1x1-history',
-  statsKey: '1x1-stats',
-  dailyStatsKey: '1x1-daily-stats'
+  settingsKey: STORAGE_KEYS.SETTINGS,
+  selectedCardsKey: STORAGE_KEYS.GAME_CONFIG,
+  gameResultKey: STORAGE_KEYS.GAME_RESULT,
+  historyKey: STORAGE_KEYS.HISTORY,
+  statsKey: STORAGE_KEYS.STATS,
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
 }
 
 // ============================================================================
