@@ -9,10 +9,12 @@ node_modules/
 # TypeScript compiled output in src directories
 apps/*/src/**/*.js
 apps/*/src/**/*.d.ts
+!apps/*/src/vite-env.d.ts
 !apps/*/src/**/*.spec.js
 !apps/*/src/**/*.test.js
 packages/shared/src/**/*.js
 packages/shared/src/**/*.d.ts
+!packages/shared/src/vite-env.d.ts
 !packages/shared/src/**/*.spec.js
 !packages/shared/src/**/*.test.js
 # Base config build outputs
