@@ -13,6 +13,10 @@ import '@quasar/extras/material-icons/material-icons.css'
 
 const app = createApp(App)
 
+// Configure Quasar with tree-shaking optimization:
+// - Only essential plugins are imported (Dialog, Notify)
+// - Components are auto-imported by Vue based on template usage
+// - This significantly reduces bundle size through tree-shaking
 app.use(Quasar, {
   plugins: {
     Dialog,
