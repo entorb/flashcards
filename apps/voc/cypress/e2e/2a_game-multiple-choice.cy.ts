@@ -297,7 +297,7 @@ describe('Multiple Choice Game - Voc to DE', () => {
     cy.window().then(win => {
       const cards = getCardsFromStorage(win)
       const resetCards = cards.map((card: any) => ({ ...card, level: 1 }))
-      win.localStorage.setItem('voc-cards', JSON.stringify([{ name: 'en', cards: resetCards }]))
+      win.localStorage.setItem('fc-voc-cards', JSON.stringify([{ name: 'en', cards: resetCards }]))
     })
 
     // Reload page to apply reset and re-enable multiple choice mode

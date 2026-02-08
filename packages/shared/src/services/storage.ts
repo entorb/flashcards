@@ -332,3 +332,31 @@ export function selectCardsByFocus<T extends { level: number }>(
   const count = Math.min(maxCards, eligible.length)
   return weightedRandomSelection(weightedCards, count)
 }
+
+/**
+ * Migrate storage keys from old prefix to new prefix
+ * @param oldPrefix - Old key prefix (e.g., '1x1-')
+ * @param newPrefix - New key prefix (e.g., 'fc-1x1-')
+ */
+// TODO: Remove this migration script after 01.07.2026
+export function migrateStorageKeys(oldPrefix: string, newPrefix: string): void {
+  const keysToMigrate: string[] = []
+
+  // Collect all keys that start with oldPrefix
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key?.startsWith(oldPrefix)) {
+      keysToMigrate.push(key)
+    }
+  }
+
+  // Migrate each key
+  for (const oldKey of keysToMigrate) {
+    const value = localStorage.getItem(oldKey)
+    if (value !== null) {
+      const newKey = oldKey.replace(oldPrefix, newPrefix)
+      localStorage.setItem(newKey, value)
+      localStorage.removeItem(oldKey)
+    }
+  }
+}
