@@ -1,6 +1,5 @@
 import { TEXT_DE, migrateStorageKeys } from '@flashcards/shared'
 import { Dialog, Notify, Quasar } from 'quasar'
-// @ts-expect-error - virtual module from vite-plugin-pwa, only available at runtime
 import { registerSW } from 'virtual:pwa-register'
 import { createApp } from 'vue'
 
@@ -36,8 +35,12 @@ const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     // Prompt user before reloading to avoid data loss
-    if (confirm(TEXT_DE.shared.pwa.update.confirmMessage)) {
+    Dialog.create({
+      message: TEXT_DE.shared.pwa.update.confirmMessage,
+      cancel: true,
+      persistent: true
+    }).onOk(() => {
       updateSW(true)
-    }
+    })
   }
 })
