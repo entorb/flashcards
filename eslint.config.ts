@@ -13,20 +13,29 @@ export default [
   // Global ignores
   {
     ignores: [
-      '**/*.d.ts',
+      './apps/*/src/**/*.js',
+      './scripts/',
       '**/.cache',
+      '**/.cspellcache',
+      '**/.DS_Store',
+      '**/.env',
       '**/.pnpm',
       '**/.vite',
+      '**/*.config.base.d.ts',
+      '**/*.d.ts',
+      '**/*.tsbuildinfo',
+      '**/CLAUDE.md',
       '**/coverage',
       '**/cypress/downloads',
       '**/cypress/screenshots',
       '**/cypress/videos',
       '**/dist',
+      '**/GEMINI.md',
       '**/node_modules',
+      '**/packages/shared/src/**/*.js',
       '**/pnpm-lock.yaml',
       '**/public',
-      'scripts/**',
-      'vue_app/src/api/*'
+      '**/sonar-report.xml'
     ]
   },
 
