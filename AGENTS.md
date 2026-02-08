@@ -5,6 +5,7 @@
 - **[apps/1x1](apps/1x1/AGENTS.md)**
 - **[apps/voc](apps/voc/AGENTS.md)**
 - **[apps/lwk](apps/lwk/AGENTS.md)**
+- **[apps/eta](apps/eta/AGENTS.md)**
 - **[packages/shared](packages/shared/AGENTS.md)**
 
 ## Workflow Rules
