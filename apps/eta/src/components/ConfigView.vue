@@ -26,12 +26,6 @@ async function handleStart() {
   // Write stats to database
   await helperStatsDataWrite(BASE_PATH)
 }
-
-function handleReset() {
-  store.resetSession()
-  totalTasks.value = null
-  hasStarted.value = false
-}
 </script>
 
 <template>
@@ -73,18 +67,6 @@ function handleReset() {
         @click="handleStart"
       >
         <q-tooltip>{{ TEXT_DE.shared.common.start }}</q-tooltip>
-      </q-btn>
-      <q-btn
-        v-if="hasStarted"
-        icon="refresh"
-        color="negative"
-        outline
-        size="lg"
-        class="col-auto"
-        data-cy="btn-reset"
-        @click="handleReset"
-      >
-        <q-tooltip>{{ TEXT_DE.shared.common.reset }}</q-tooltip>
       </q-btn>
     </div>
 
