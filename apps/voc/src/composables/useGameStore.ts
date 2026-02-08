@@ -7,7 +7,8 @@ import {
   MIN_TIME,
   initializeGameFlow,
   calculatePointsBreakdown,
-  roundTime
+  roundTime,
+  useDeckManagement
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
@@ -34,7 +35,7 @@ import {
   loadSettings,
   saveSettings
 } from '../services/storage'
-import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
+import type { Card, GameHistory, GameSettings } from '../types'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -46,42 +47,13 @@ const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
   saveCards
 })
 
-// Deck management functions
-function getDecks(): CardDeck[] {
-  return loadDecks()
-}
-
-function addDeck(name: string): boolean {
-  const decks = loadDecks()
-  // Check for duplicate name
-  if (decks.some(d => d.name === name)) {
-    return false
-  }
-  decks.push({ name, cards: [...INITIAL_CARDS] })
-  saveDecks(decks)
-  return true
-}
-
-function renameDeck(oldName: string, newName: string): boolean {
-  const decks = loadDecks()
-  // Check for duplicate name
-  if (decks.some(d => d.name === newName)) {
-    return false
-  }
-  const deck = decks.find(d => d.name === oldName)
-  if (!deck) {
-    return false
-  }
-  deck.name = newName
-  saveDecks(decks)
-  // Update settings if current deck was renamed
-  const settings = loadSettings()
-  if (settings?.deck === oldName) {
-    settings.deck = newName
-    saveSettings(settings)
-  }
-  return true
-}
+// Deck management composable
+const deckManagement = useDeckManagement<Card, GameSettings>({
+  loadDecks,
+  saveDecks,
+  loadSettings,
+  saveSettings
+})
 
 export function useGameStore() {
   // Initialize store on first use
@@ -274,26 +246,15 @@ export function useGameStore() {
     baseStore.discardGame()
   }
 
-  function removeDeck(name: string): boolean {
+  // Wrapper for addDeck to initialize with INITIAL_CARDS
+  function addDeck(name: string): boolean {
     const decks = loadDecks()
-    // Cannot remove last deck
-    if (decks.length <= 1) {
+    // Check for duplicate name
+    if (decks.some(d => d.name === name)) {
       return false
     }
-    const filtered = decks.filter(d => d.name !== name)
-    if (filtered.length === decks.length) {
-      return false // Deck not found
-    }
-    saveDecks(filtered)
-    // If current deck was removed, update settings and switch to a new default
-    const settings = loadSettings()
-    if (settings?.deck === name) {
-      const newDeck = filtered[0]
-      settings.deck = newDeck.name
-      saveSettings(settings)
-      // Load cards directly from the deck we already have in memory
-      baseStore.allCards.value = newDeck.cards
-    }
+    decks.push({ name, cards: [...INITIAL_CARDS] })
+    saveDecks(decks)
     return true
   }
 
@@ -341,10 +302,10 @@ export function useGameStore() {
     moveAllCards: baseStore.moveAllCards,
 
     // Deck management
-    getDecks,
+    getDecks: deckManagement.getDecks,
     addDeck,
-    removeDeck,
-    renameDeck,
+    removeDeck: deckManagement.removeDeck,
+    renameDeck: deckManagement.renameDeck,
     switchDeck
   }
 }

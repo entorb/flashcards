@@ -4,27 +4,18 @@ import { computed } from 'vue'
 import { TEXT_DE } from '../text-de'
 
 interface Props {
-  modelValue: string | number | null
   buttonDisabled: boolean
   onSubmit: () => void
   inputType: 'text' | 'numeric'
 }
 
 const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  'update:modelValue': [value: string | number | null]
-}>()
+const model = defineModel<string | number | null>({ required: true })
 
 const pattern = computed(() => (props.inputType === 'numeric' ? '[0-9]*' : undefined))
 const inputRules = computed(() =>
   props.inputType === 'numeric' ? [(val: unknown) => val === null || Number.isInteger(val)] : []
 )
-
-const model = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value)
-})
 
 const canSubmit = computed(
   () =>
