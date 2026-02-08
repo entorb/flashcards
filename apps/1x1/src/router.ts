@@ -1,44 +1,37 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CardsManPage from './pages/CardsManPage.vue'
-import GameOverPage from './pages/GameOverPage.vue'
-import GamePage from './pages/GamePage.vue'
-import HistoryPage from './pages/HistoryPage.vue'
-import HomePage from './pages/HomePage.vue'
-import ScoringRulesPage from './pages/ScoringRulesPage.vue'
-
 export const router = createRouter({
   history: createWebHistory('/fc-1x1/'),
   routes: [
     {
       path: '/',
       name: '/',
-      component: HomePage
+      component: () => import('./pages/HomePage.vue')
     },
     {
       path: '/game',
       name: '/game',
-      component: GamePage
+      component: () => import('./pages/GamePage.vue')
     },
     {
       path: '/game-over',
       name: '/game-over',
-      component: GameOverPage
+      component: () => import('./pages/GameOverPage.vue')
     },
     {
       path: '/history',
       name: '/history',
-      component: HistoryPage
+      component: () => import('./pages/HistoryPage.vue')
     },
     {
       path: '/cards',
       name: '/cards',
-      component: CardsManPage
+      component: () => import('./pages/CardsManPage.vue')
     },
     {
       path: '/info',
       name: '/info',
-      component: ScoringRulesPage
+      component: () => import('./pages/ScoringRulesPage.vue')
     }
   ]
 })
