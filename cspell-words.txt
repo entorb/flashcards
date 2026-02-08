@@ -55,6 +55,7 @@ Gewichtete
 gibt
 Grün
 Haus
+Hausaufgaben
 heute
 Hintergrund
 hintergründen
@@ -114,11 +115,14 @@ Räume
 Rechtschreib
 Rechtschreibung
 Regeln
+Restzeit
 Richtig
 Richtige
 Sachen
 sammeln
 schnell
+Schätze
+Schätzer
 Schreiben
 Schriftfarbe
 Schule
