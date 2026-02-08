@@ -30,6 +30,7 @@ const selectOptions = computed<number[]>(() => range.value)
 // Check if a number is selected
 const isNumberSelected = computed(() => (num: number) => {
   if (typeof select.value === 'string') return false
+  if (!Array.isArray(select.value)) return false
   return select.value.includes(num)
 })
 
@@ -87,6 +88,12 @@ function goToInfo() {
 }
 
 function toggleSelect(option: number) {
+  // Handle undefined select (should not happen, but defensive)
+  if (!Array.isArray(select.value) && typeof select.value !== 'string') {
+    select.value = [option]
+    return
+  }
+
   // Convert string selections to array first
   if (typeof select.value === 'string') {
     select.value = [option]

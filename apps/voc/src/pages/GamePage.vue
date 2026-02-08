@@ -198,15 +198,25 @@ function handleTypingSubmit() {
 }
 
 const buttonColor = computed(() => {
-  if (answerStatus.value === 'correct') return 'positive'
-  if (answerStatus.value === 'close') return 'warning'
-  return 'negative'
+  // During countdown, show answer result state (red/yellow)
+  if (isProceedDisabled.value) {
+    if (answerStatus.value === 'correct') return 'positive'
+    if (answerStatus.value === 'close') return 'warning'
+    return 'negative'
+  }
+  // After countdown expires, show primary (blue) color
+  return 'primary'
 })
 
 const buttonIcon = computed(() => {
-  if (answerStatus.value === 'correct') return 'check_circle'
-  if (answerStatus.value === 'close') return 'warning'
-  return 'cancel'
+  // During countdown, show answer result state
+  if (isProceedDisabled.value) {
+    if (answerStatus.value === 'correct') return 'check_circle'
+    if (answerStatus.value === 'close') return 'warning'
+    return 'cancel'
+  }
+  // After countdown expires, show check_circle icon
+  return 'play_arrow'
 })
 
 // Use shared keyboard continue composable

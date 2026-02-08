@@ -92,11 +92,12 @@ export function useGameStore() {
   // Restore game state and settings if page was reloaded during a game
   // Only restore if there was an active game saved
   const savedGameState = storageLoadGameState()
-  const savedGameSettings = storageLoadGameSettings()
 
-  if (savedGameState && savedGameSettings && savedGameState.gameCards.length > 0) {
-    // Restore game settings
-    baseStore.gameSettings.value = savedGameSettings
+  if (savedGameState && savedGameState.gameCards.length > 0) {
+    // Restore game settings from saved state
+    if (savedGameState.gameSettings) {
+      baseStore.gameSettings.value = savedGameState.gameSettings
+    }
     // Restore game state
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
@@ -110,7 +111,8 @@ export function useGameStore() {
       gameCards: baseStore.gameCards.value,
       currentCardIndex: baseStore.currentCardIndex.value,
       points: baseStore.points.value,
-      correctAnswersCount: baseStore.correctAnswersCount.value
+      correctAnswersCount: baseStore.correctAnswersCount.value,
+      gameSettings: baseStore.gameSettings.value as GameSettings
     })
   }
 
@@ -138,7 +140,6 @@ export function useGameStore() {
     }
 
     saveSettings(settings)
-    storageSaveGameSettings(settings)
     baseStore.gameSettings.value = settings
     const selectedCards = selectCardsForRound(baseStore.allCards.value, settings.focus)
 

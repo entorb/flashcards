@@ -24,6 +24,7 @@ interface GameState {
   correctAnswersCount: number
   showWord: boolean
   countdown: number
+  gameSettings: GameSettings
 }
 
 const gamePersistence = createGamePersistence<GameSettings, GameState>(

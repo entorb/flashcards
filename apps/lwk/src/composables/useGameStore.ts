@@ -134,11 +134,18 @@ export function useGameStore() {
   // Restore game state and settings if page was reloaded during a game
   // Only restore if there was an active game saved
   const savedGameState = loadGameState()
-  const savedGameSettings = loadGameConfig()
 
-  if (savedGameState && savedGameSettings && savedGameState.gameCards.length > 0) {
-    // Restore game settings
-    baseStore.gameSettings.value = savedGameSettings
+  if (savedGameState && savedGameState.gameCards.length > 0) {
+    // Restore game settings from saved state (for page reload recovery)
+    if (savedGameState.gameSettings) {
+      baseStore.gameSettings.value = savedGameState.gameSettings
+    } else {
+      // Fallback to localStorage if gameSettings not in saved state (for backward compat)
+      const savedGameSettings = loadGameConfig()
+      if (savedGameSettings) {
+        baseStore.gameSettings.value = savedGameSettings
+      }
+    }
     // Restore game state
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
@@ -179,7 +186,8 @@ export function useGameStore() {
       points: 0,
       correctAnswersCount: 0,
       showWord: false,
-      countdown: 0
+      countdown: 0,
+      gameSettings: settings
     })
   }
 
