@@ -119,33 +119,24 @@ const tableData = computed(() => {
   const session = sessionData.value
 
   // Calculate tasks per minute for all measurements
-  const tasksPerMinuteData: number[] = []
-  for (const [i, current] of session.measurements.entries()) {
-    if (!current) {
-      tasksPerMinuteData.push(0)
-      continue
-    }
-
+  const tasksPerMinuteData: number[] = session.measurements.map((current, i) => {
     const previousTime = i === 0 ? session.startTime : session.measurements[i - 1]?.timestamp
     const previousTasks = i === 0 ? 0 : (session.measurements[i - 1]?.completedTasks ?? 0)
 
     if (!previousTime) {
-      tasksPerMinuteData.push(0)
-      continue
+      return 0
     }
 
     const timeDiffMs = current.timestamp.getTime() - previousTime.getTime()
     const taskDiff = current.completedTasks - previousTasks
 
     if (timeDiffMs <= 0 || taskDiff <= 0) {
-      tasksPerMinuteData.push(0)
-      continue
+      return 0
     }
 
     const timeDiffMinutes = timeDiffMs / (1000 * 60)
-    const tasksPerMinute = taskDiff / timeDiffMinutes
-    tasksPerMinuteData.push(tasksPerMinute)
-  }
+    return taskDiff / timeDiffMinutes
+  })
 
   const maxTasksPerMinute = Math.max(...tasksPerMinuteData, 1)
 

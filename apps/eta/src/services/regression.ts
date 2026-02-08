@@ -17,30 +17,25 @@ export function convertToXY(
 
 /**
  * Calculate linear regression using least squares method
+ * @returns RegressionResult or null if all X values are identical (division by zero)
  */
-export function calculateLinearRegression(X: number[], Y: number[]): RegressionResult {
+export function calculateLinearRegression(X: number[], Y: number[]): RegressionResult | null {
   const n = X.length
 
-  let sumX = 0
-  let sumY = 0
-  for (const [index, xVal] of X.entries()) {
-    const yVal = Y[index]
-    if (xVal !== undefined && yVal !== undefined) {
-      sumX += xVal
-      sumY += yVal
-    }
-  }
+  const sumX = X.reduce((a, b) => a + b, 0)
+  const sumY = Y.reduce((a, b) => a + b, 0)
   const avgX = sumX / n
   const avgY = sumY / n
 
-  const xDifferencesToAverage = X.map(value => avgX - value)
-  const yDifferencesToAverage = Y.map(value => avgY - value)
-  const xDifferencesToAverageSquared = xDifferencesToAverage.map(value => value ** 2)
-  const xAndYDifferencesMultiplied = xDifferencesToAverage.map(
-    (curr, index) => curr * (yDifferencesToAverage[index] ?? 0)
+  const numerator = X.map((x, i) => (x - avgX) * ((Y[i] ?? 0) - avgY)).reduce(
+    (prev, curr) => prev + curr,
+    0
   )
-  const denominator = xDifferencesToAverageSquared.reduce((prev, curr) => prev + curr, 0)
-  const numerator = xAndYDifferencesMultiplied.reduce((prev, curr) => prev + curr, 0)
+  const denominator = X.map(x => (x - avgX) ** 2).reduce((prev, curr) => prev + curr, 0)
+
+  if (denominator === 0) {
+    return null
+  }
 
   const slope = numerator / denominator
   const intercept = avgY - slope * avgX
@@ -74,6 +69,7 @@ export function calculateRegression(
     return { slope: dY / dX, intercept: Y[0] - (dY / dX) * X[0] }
   }
 
+  // For n >= 3, use linear regression (returns null if all X values are identical)
   return calculateLinearRegression(X, Y)
 }
 

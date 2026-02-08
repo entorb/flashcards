@@ -9,7 +9,6 @@ import HourglassIcon from './HourglassIcon.vue'
 
 const store = useEtaStore()
 const totalTasks = ref<number | null>(null)
-const hasStarted = ref(false)
 const numTotalUsage = ref<number>(0)
 
 onMounted(async () => {
@@ -21,7 +20,6 @@ async function handleStart() {
     return
   }
   store.startSession(totalTasks.value)
-  hasStarted.value = true
 
   // Write stats to database
   await helperStatsDataWrite(BASE_PATH)
