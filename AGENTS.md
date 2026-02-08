@@ -10,7 +10,9 @@
 
 ## Workflow Rules
 
-- Run `pnpm run check` after changes (format, lint, types, spell, tests)
+- Before running OS commands like `head`, `tail`, `grep`, etc., check your environment (Linux-like or Windows) and adjust accordingly (e.g., use PowerShell commands instead)
+- Run `pnpm run format` to automatically handle code formatting
+- Run `pnpm run lint` and `pnpm run test` after changes to validate linting and unit tests
 - Run `pnpm run cy:run:{app}` after phases
 - All text in `@flashcards/shared/src/text-de.ts`
 - Unit tests: `.spec.ts` suffix, import functions (don't copy)
@@ -19,6 +21,10 @@
 - Commit after implementing new features, Only after `pnpm run check` and `pnpm run cy:run` pass. Only commit header, no body.
 
 ## Critical Code Rules
+
+**Modern Code**
+
+- use best practice as of 2025 for vue and typescript
 
 **Type Safety:**
 
