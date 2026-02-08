@@ -1,7 +1,7 @@
 // cspell:ignore guten
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { INITIAL_CARDS } from '../constants'
+import { INITIAL_CARDS, STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck } from '../types'
 import {
   getCurrentDeckName,
@@ -36,7 +36,7 @@ describe('Deck Storage', () => {
           cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
         }
       ]
-      localStorage.setItem('voc-cards', JSON.stringify(testDecks))
+      localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(testDecks))
 
       const decks = loadDecks()
       expect(decks).toHaveLength(2)
@@ -46,7 +46,7 @@ describe('Deck Storage', () => {
     })
 
     it('should handle invalid storage data', () => {
-      localStorage.setItem('voc-cards', 'invalid json')
+      localStorage.setItem(STORAGE_KEYS.CARDS, 'invalid json')
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
@@ -55,7 +55,7 @@ describe('Deck Storage', () => {
     })
 
     it('should handle empty array in storage', () => {
-      localStorage.setItem('voc-cards', '[]')
+      localStorage.setItem(STORAGE_KEYS.CARDS, '[]')
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
@@ -79,7 +79,7 @@ describe('Deck Storage', () => {
 
       saveDecks(testDecks)
 
-      const stored = localStorage.getItem('voc-cards')
+      const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
       expect(stored).not.toBeNull()
       const parsed = JSON.parse(stored!)
       expect(parsed).toHaveLength(2)
@@ -205,7 +205,7 @@ describe('Deck Storage', () => {
   describe('Migration edge cases', () => {
     it('should handle cards with new structure (voc field)', () => {
       const newCards = [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
-      localStorage.setItem('voc-cards', JSON.stringify(newCards))
+      localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(newCards))
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)

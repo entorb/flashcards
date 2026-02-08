@@ -5,6 +5,7 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import GameOverPage from './GameOverPage.vue'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@/__tests__/testUtils'
+import { STORAGE_KEYS } from '@/constants'
 import { loadDecks } from '@/services/storage'
 
 describe('GameOverPage Component', () => {
@@ -14,7 +15,7 @@ describe('GameOverPage Component', () => {
     loadDecks() // Initialize default decks
     // Set up minimal game result in sessionStorage
     sessionStorage.setItem(
-      'voc-game-result',
+      STORAGE_KEYS.GAME_RESULT,
       JSON.stringify({
         points: 10,
         correctAnswers: 5,

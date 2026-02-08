@@ -1,4 +1,4 @@
-import { TEXT_DE } from '@flashcards/shared'
+import { TEXT_DE, migrateStorageKeys } from '@flashcards/shared'
 import { Dialog, Notify, Quasar } from 'quasar'
 import { registerSW } from 'virtual:pwa-register'
 import { createApp } from 'vue'
@@ -11,6 +11,10 @@ import 'quasar/src/css/index.sass'
 
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
+
+// Migrate storage keys from old prefix to new prefix
+// TODO: Remove this migration call after 01.07.2026
+migrateStorageKeys('1x1-', 'fc-1x1-')
 
 const app = createApp(App)
 
