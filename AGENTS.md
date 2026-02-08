@@ -47,11 +47,6 @@
 
 **Suppressing warnings (rare):**
 
-```typescript
-// eslint-disable-next-line sonarjs/todo-tag
-/** TODO: temporary migration code */
-```
-
 ```vue
 <!-- eslint-disable vuejs-accessibility/no-autofocus -->
 <q-input autofocus />
