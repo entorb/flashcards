@@ -64,6 +64,18 @@ export const POINTS_MODE_HIDDEN = 4
  */
 export const LEVENSHTEIN_THRESHOLD = 1
 
+// ============================================================================
+// COLOR SCHEME
+// ============================================================================
+
+/**
+ * Theme color for PWA and browser chrome
+ * CRITICAL: Must also be updated in:
+ * - vite.config.ts (themeColor property)
+ * - index.html (meta name="theme-color" content)
+ */
+export const THEME_COLOR = '#00bcd4'
+
 export const DEFAULT_DECKS = [
   {
     name: 'Lernwörter_1',
