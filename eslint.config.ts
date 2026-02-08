@@ -134,7 +134,8 @@ export default [
       'sonarjs/cognitive-complexity': ['warn', 20],
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
-      'sonarjs/pseudo-random': 'off'
+      'sonarjs/pseudo-random': 'off',
+      'sonarjs/todo-tag': 'off'
     }
   },
 
@@ -245,6 +246,7 @@ export default [
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
       'sonarjs/pseudo-random': 'off',
+      'sonarjs/todo-tag': 'off',
       // Vue 3 Composition API best practices
       'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
