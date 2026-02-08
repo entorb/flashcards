@@ -14,13 +14,14 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 60 60"
     :width="size"
     :height="size"
-    viewBox="0 0 60 60"
-    xmlns="http://www.w3.org/2000/svg"
     class="inline-block"
-    :aria-label="smile ? 'Happy fox icon' : 'Neutral fox icon'"
+    aria-labelledby="fox-title"
   >
+    <title id="fox-title">Fox Rabat Mascot</title>
     <g>
       <!-- Ears -->
       <path
