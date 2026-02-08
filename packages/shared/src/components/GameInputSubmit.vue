@@ -34,7 +34,7 @@ const canSubmit = computed(
 
 <template>
   <!-- Answer Input Section -->
-  <div>
+  <div data-cy="answer-input-container">
     <!-- eslint-disable vuejs-accessibility/no-autofocus -->
     <q-input
       v-model="model"
