@@ -14,6 +14,11 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 
 ## Tech
 
+TODO2.md
+
+Migrate the storage key prefix from 1x1 -> fc-1x1 (same for voc and lwk)
+(add a TODO comment to remove this migration script after 6 months)
+
 ## all
 
 ## 1x1
@@ -23,6 +28,50 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 in Hidden mode, after countdown, the CardInputSubmit is shown and has focus. Bug: on iOS the virtual keyboard is not opened
 
 ## voc
+
+## eta
+
+Erstelle eine weitere kleine App für Schulkinder, mit der sie die Restzeit, die sie für ihre Hausaufgaben brauchen, abschätzen können (durch Lineare Regression).
+
+App Kürzel: "eta"
+
+Icon/Logo/Mascotchen: Eichhörnchen
+
+### Konfiguration (vor dem Start)
+
+- Anzahl Aufgaben (auch nach dem Start veränderbar)
+- Start Button (Speichert Zeitstempel und Anzahl-erledigte-Aufgaben=0 in den Storage)
+- Reset Button (setzt Fortschritt und Ziel zurück, auch vom Local Storage)
+
+### Datenspeicherung
+
+im Browser local storage
+
+1. Anzahl der Aufgaben
+2. Liste der erledigten Aufgaben mit Zeitstempel + Anzahl erledigte Aufgaben
+
+### Inputs während des Laufens
+
+- erledigte Aufgaben (integer only)
+- Alternative: Umschalten zu "noch zu erledigende Aufgaben" Input
+- +1 Aufgabe erledigt Button
+
+### Anzeigen während des Laufens
+
+1. Prozent Aufgaben erledigt, prominent, soll motivieren (soll auch X/Y anzeigen, mit X = erledigte, Y = gesamt)
+2. Restzeit in mm:ss, geschätzt durch lineare Regression (soll auch geschätzte Ende-Uhrzeit anzeigen)
+3. Tabelle der Messwerte mit Zeit pro Aufgabe seit letzter Erfassung
+   - Button zum Löschen eines Messwerts in jeder Zeile
+4. Grafik der Geschwindigkeit mit Y: Aufgaben pro Min, X: Anzahl der erledigten Aufgaben
+
+### UI
+
+- Zielgruppe sind junge Schulkinder
+- so wenig Text wie möglich, besser Symbole verwenden
+- Optimiert für Smartphone
+- PWA, offline-fähig
+
+---
 
 ## Code Review
 
@@ -89,24 +138,22 @@ The logic for calculating points is re-implemented here. This PR introduces a sh
 - Multiplayer mode (local)
 - Practice mode for specific cards
 
-
 ---
 
-## Review this mono repo of 3 apps and 1 shared package.
+## Review this mono repo of 3 apps and 1 shared package
+
+**Date:** February 8, 2026
+**Scope:** Vue 3 + TypeScript + Quasar monorepo with 3 apps + 1 shared package
 
 - ensure that best practice as of 2025 for vue and typescript are followed
 - simplify code if possible
 - move redundant code to shared package
 - optimize for smartphone
 
-# Flashcards Monorepo - 2025 Best Practices Review
-
-**Date:** February 8, 2026
-**Scope:** Vue 3 + TypeScript + Quasar monorepo with 3 apps + 1 shared package
-
 ## Executive Summary
 
 This monorepo is well-structured with good separation of concerns and effective use of shared code. The review identifies opportunities for:
+
 - **Modern Vue 3 patterns** (Composition API improvements)
 - **Code simplification** (reduce duplication, improve readability)
 - **Mobile optimization** (performance, UX, PWA enhancements)
@@ -117,6 +164,7 @@ This monorepo is well-structured with good separation of concerns and effective 
 ## 1. Vue 3 & Composition API Best Practices
 
 ### ✅ Already Following
+
 - Script setup syntax consistently used
 - Composition API throughout
 - Type-based defineProps/defineEmits
@@ -125,7 +173,9 @@ This monorepo is well-structured with good separation of concerns and effective 
 ### 🔧 Improvements Needed
 
 #### 1.1 Use `defineModel()` for v-model (Vue 3.4+)
+
 **Current Pattern:**
+
 ```vue
 <!-- HomeFocusSelector.vue -->
 <script setup lang="ts">
@@ -135,6 +185,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: FocusType] }>()
 ```
 
 **Modern Pattern:**
+
 ```vue
 <script setup lang="ts">
 const focus = defineModel<FocusType>({ required: true })
@@ -143,11 +194,13 @@ const focus = defineModel<FocusType>({ required: true })
 ```
 
 **Files to update:**
+
 - `packages/shared/src/components/HomeFocusSelector.vue`
 - `packages/shared/src/components/HomeDeckSelector.vue`
 - Any other components with v-model
 
 #### 1.2 Use `toValue()` for flexible ref/value handling
+
 When functions accept both refs and raw values:
 
 ```typescript
@@ -160,7 +213,9 @@ function useCardFiltering(cards: MaybeRef<Card[]>) {
 ```
 
 #### 1.3 Simplify computed with arrow functions
+
 **Current:**
+
 ```typescript
 const currentCard = computed(() => {
   return baseStore.gameCards.value[baseStore.currentCardIndex.value] || null
@@ -168,9 +223,10 @@ const currentCard = computed(() => {
 ```
 
 **Simplified:**
+
 ```typescript
-const currentCard = computed(() =>
-  baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null
+const currentCard = computed(
+  () => baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null
 )
 ```
 
@@ -181,12 +237,14 @@ const currentCard = computed(() =>
 ### 2.1 Fix ESLint Config Type Errors
 
 **Issue in `eslint.config.ts`:**
+
 ```typescript
 // Line 62: sonarjs.configs is possibly undefined
 ...(sonarjs.configs.recommended.rules ?? {})
 ```
 
 **Fix:**
+
 ```typescript
 import sonarjs from 'eslint-plugin-sonarjs'
 
@@ -197,7 +255,7 @@ export default [
   {
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      ...sonarRules,
+      ...sonarRules
       // ...
     }
   }
@@ -207,12 +265,14 @@ export default [
 ### 2.2 Stricter Type Inference
 
 **Current storage functions return `any`:**
+
 ```typescript
 // vitest.config.base.ts line 6
 export const getVitestConfig = (rootDir: string): any => ({
 ```
 
 **Should be:**
+
 ```typescript
 import type { UserConfig } from 'vitest/config'
 
@@ -222,14 +282,16 @@ export const getVitestConfig = (rootDir: string): UserConfig => ({
 ### 2.3 Use `satisfies` operator for type safety
 
 **Current:**
+
 ```typescript
 export const LEVEL_COLORS: Record<number, string> = {
-  1: '#ffcdd2',
+  1: '#ffcdd2'
   // ...
 }
 ```
 
 **Better:**
+
 ```typescript
 export const LEVEL_COLORS = {
   1: '#ffcdd2',
@@ -353,6 +415,7 @@ export function createAppViteConfig(config: AppConfig) {
 ```
 
 **Then each app:**
+
 ```typescript
 // apps/1x1/vite.config.ts
 import { createAppViteConfig } from '../../vite.config.factory'
@@ -463,9 +526,16 @@ defineEmits<{
   <q-page class="q-pa-md">
     <!-- Header with Info Button -->
     <div class="row items-center justify-between q-mb-md">
-      <div class="text-h5" data-cy="app-title">{{ appTitle }}</div>
+      <div
+        class="text-h5"
+        data-cy="app-title"
+      >
+        {{ appTitle }}
+      </div>
       <q-btn
-        flat round dense
+        flat
+        round
+        dense
         icon="info_outline"
         color="grey-6"
         data-cy="info-button"
@@ -480,8 +550,14 @@ defineEmits<{
       <div class="col-12 col-sm-auto text-center">
         <slot name="mascot" />
       </div>
-      <div class="col-12 col-sm" :class="$q.screen.gt.xs ? 'q-ml-md' : ''">
-        <HomeStatisticsCard :statistics="statistics" data-cy="statistics-card" />
+      <div
+        class="col-12 col-sm"
+        :class="$q.screen.gt.xs ? 'q-ml-md' : ''"
+      >
+        <HomeStatisticsCard
+          :statistics="statistics"
+          data-cy="statistics-card"
+        />
       </div>
     </div>
 
@@ -494,7 +570,8 @@ defineEmits<{
 
     <!-- Start Button -->
     <q-btn
-      color="positive" size="lg"
+      color="positive"
+      size="lg"
       class="full-width q-mb-sm"
       icon="play_arrow"
       data-cy="start-button"
@@ -506,15 +583,21 @@ defineEmits<{
     <!-- Navigation Buttons -->
     <div class="row q-gutter-sm">
       <q-btn
-        unelevated color="primary" size="md"
-        class="col" icon="layers"
+        unelevated
+        color="primary"
+        size="md"
+        class="col"
+        icon="layers"
         :label="TEXT_DE.shared.nav.cards"
         data-cy="cards-button"
         @click="$emit('goToCards')"
       />
       <q-btn
-        unelevated color="primary" size="md"
-        class="col" icon="history"
+        unelevated
+        color="primary"
+        size="md"
+        class="col"
+        icon="history"
         :label="TEXT_DE.shared.nav.history"
         data-cy="history-button"
         @click="$emit('goToHistory')"
@@ -536,32 +619,26 @@ defineEmits<{
 ### 4.1 Performance Improvements
 
 #### Use `v-memo` for expensive list renders
+
 ```vue
 <!-- CardsManListOfCards.vue -->
-<div
-  v-for="card in cards"
-  :key="card.id"
-  v-memo="[card.level, card.time]"
->
+<div v-for="card in cards" :key="card.id" v-memo="[card.level, card.time]">
   <!-- Only re-render if level or time changes -->
 </div>
 ```
 
 #### Lazy load heavy components
+
 ```typescript
 // HomePage.vue
-const FoxMascot = defineAsyncComponent(() =>
-  import('../components/FoxMascot.vue')
-)
+const FoxMascot = defineAsyncComponent(() => import('../components/FoxMascot.vue'))
 ```
 
 #### Virtual scrolling for long lists
+
 ```vue
 <!-- For CardsManPage with 100+ cards -->
-<q-virtual-scroll
-  :items="cards"
-  virtual-scroll-item-size="60"
->
+<q-virtual-scroll :items="cards" virtual-scroll-item-size="60">
   <template #default="{ item }">
     <CardItem :card="item" />
   </template>
@@ -571,6 +648,7 @@ const FoxMascot = defineAsyncComponent(() =>
 ### 4.2 Touch & Gesture Improvements
 
 #### Add swipe gestures for navigation
+
 ```typescript
 // composables/useSwipeNavigation.ts
 import { useSwipe } from '@vueuse/core'
@@ -588,6 +666,7 @@ export function useSwipeNavigation(router: Router) {
 ```
 
 #### Improve button tap targets (minimum 44x44px)
+
 ```scss
 // All interactive elements should be at least 44x44px
 .q-btn {
@@ -599,6 +678,7 @@ export function useSwipeNavigation(router: Router) {
 ### 4.3 PWA Enhancements
 
 #### Add offline indicator
+
 ```vue
 <!-- App.vue -->
 <script setup lang="ts">
@@ -607,7 +687,10 @@ const isOnline = useOnline()
 </script>
 
 <template>
-  <q-banner v-if="!isOnline" class="bg-warning text-white">
+  <q-banner
+    v-if="!isOnline"
+    class="bg-warning text-white"
+  >
     <template #avatar>
       <q-icon name="cloud_off" />
     </template>
@@ -617,6 +700,7 @@ const isOnline = useOnline()
 ```
 
 #### Improve service worker update UX
+
 ```typescript
 // main.ts - current implementation is good, but add visual feedback
 registerSW({
@@ -646,17 +730,19 @@ registerSW({
 ### 4.4 Reduce Bundle Size
 
 #### Tree-shake Quasar components
+
 ```typescript
 // quasar.config.js - only import used components
 import { Quasar, Notify, Dialog } from 'quasar'
 
 app.use(Quasar, {
-  plugins: { Notify, Dialog },
+  plugins: { Notify, Dialog }
   // Don't import all components globally
 })
 ```
 
 #### Code splitting by route
+
 ```typescript
 // router.ts
 const routes = [
@@ -672,6 +758,7 @@ const routes = [
 ```
 
 **Current bundle sizes (estimate):**
+
 - 1x1: ~250KB gzipped
 - voc: ~280KB gzipped
 - lwk: ~270KB gzipped
@@ -685,6 +772,7 @@ const routes = [
 ### 5.1 Better Export Organization
 
 **Current:**
+
 ```typescript
 // index.ts exports everything
 export * from './utils/index.js'
@@ -693,6 +781,7 @@ export * from './types.js'
 ```
 
 **Better:**
+
 ```typescript
 // Explicit barrel exports with categories
 export {
@@ -730,12 +819,15 @@ export function groupBy<T, K extends string | number>(
   array: T[],
   keyFn: (item: T) => K
 ): Record<K, T[]> {
-  return array.reduce((acc, item) => {
-    const key = keyFn(item)
-    acc[key] = acc[key] ?? []
-    acc[key].push(item)
-    return acc
-  }, {} as Record<K, T[]>)
+  return array.reduce(
+    (acc, item) => {
+      const key = keyFn(item)
+      acc[key] = acc[key] ?? []
+      acc[key].push(item)
+      return acc
+    },
+    {} as Record<K, T[]>
+  )
 }
 ```
 
@@ -748,6 +840,7 @@ export function groupBy<T, K extends string | number>(
 **Current:** Only E2E tests, no component tests
 
 **Add:**
+
 ```typescript
 // apps/1x1/cypress/component/HomePage.cy.ts
 import HomePage from '../../src/pages/HomePage.vue'
@@ -771,6 +864,7 @@ describe('HomePage', () => {
 ### 6.2 Improve Test Coverage
 
 **Current coverage (estimate):**
+
 - 1x1: ~60%
 - voc: ~75%
 - lwk: ~40%
@@ -778,6 +872,7 @@ describe('HomePage', () => {
 **Target:** >80% for all apps
 
 **Focus areas:**
+
 - Storage service edge cases
 - Card selection algorithms
 - Game state transitions
@@ -790,17 +885,9 @@ describe('HomePage', () => {
 
 ```vue
 <!-- GamePage.vue -->
-<q-btn
-  icon="play_arrow"
-  aria-label="Start game"
-  @click="startGame"
-/>
+<q-btn icon="play_arrow" aria-label="Start game" @click="startGame" />
 
-<div
-  role="status"
-  aria-live="polite"
-  aria-atomic="true"
->
+<div role="status" aria-live="polite" aria-atomic="true">
   {{ TEXT_DE.game.currentScore }}: {{ points }}
 </div>
 ```
@@ -816,17 +903,17 @@ export function useKeyboardShortcuts(actions: {
   onEscape?: () => void
   onSpace?: () => void
 }) {
-  onKeyStroke('Enter', (e) => {
+  onKeyStroke('Enter', e => {
     e.preventDefault()
     actions.onEnter?.()
   })
 
-  onKeyStroke('Escape', (e) => {
+  onKeyStroke('Escape', e => {
     e.preventDefault()
     actions.onEscape?.()
   })
 
-  onKeyStroke(' ', (e) => {
+  onKeyStroke(' ', e => {
     e.preventDefault()
     actions.onSpace?.()
   })
@@ -909,18 +996,21 @@ export function findByTestId<T extends ComponentPublicInstance>(
 ## 9. Priority Implementation Plan
 
 ### Phase 1: Quick Wins (1-2 days)
+
 1. Fix ESLint type errors
 2. Add `defineModel()` to v-model components
 3. Simplify computed properties
 4. Add `satisfies` to constants
 
 ### Phase 2: Code Consolidation (3-5 days)
+
 1. Create Vite config factory
 2. Extract deck management to shared
 3. Create HomePage layout component
 4. Move common utilities to shared
 
 ### Phase 3: Mobile Optimization (3-5 days)
+
 1. Add v-memo to lists
 2. Implement virtual scrolling
 3. Add swipe navigation
@@ -928,6 +1018,7 @@ export function findByTestId<T extends ComponentPublicInstance>(
 5. Optimize bundle sizes
 
 ### Phase 4: Testing & Accessibility (5-7 days)
+
 1. Add component tests
 2. Improve test coverage to 80%
 3. Add ARIA labels
@@ -939,24 +1030,28 @@ export function findByTestId<T extends ComponentPublicInstance>(
 ## 10. Metrics & Success Criteria
 
 ### Performance
+
 - [ ] Lighthouse score >90 on mobile
 - [ ] First Contentful Paint <1.5s
 - [ ] Time to Interactive <3s
 - [ ] Bundle size <200KB gzipped per app
 
 ### Code Quality
+
 - [ ] Test coverage >80%
 - [ ] Zero ESLint errors
 - [ ] Zero TypeScript errors
 - [ ] <500 lines duplicated code
 
 ### Accessibility
+
 - [ ] WCAG 2.1 AA compliance
 - [ ] Keyboard navigation for all features
 - [ ] Screen reader compatible
 - [ ] Touch targets ≥44x44px
 
 ### Developer Experience
+
 - [ ] Build time <30s
 - [ ] Hot reload <1s
 - [ ] Type checking <10s
@@ -975,7 +1070,3 @@ This monorepo is well-architected with excellent separation of concerns. The mai
 
 Estimated effort: **15-20 days** for full implementation
 Estimated impact: **30% less code, 20% faster, better UX**
-
-
-
-
