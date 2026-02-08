@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 import { TEXT_DE } from '../text-de'
 import type { BaseCard } from '../types'
@@ -16,8 +15,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits<{ back: [] }>()
 
-const router = useRouter()
 const $q = useQuasar()
 
 const decks = ref<Array<{ name: string; cards: Array<BaseCard> }>>([])
@@ -29,7 +28,7 @@ function refreshDecks() {
 }
 
 function handleGoBack() {
-  router.push('/')
+  emit('back')
 }
 
 function handleKeyDown(event: KeyboardEvent) {
