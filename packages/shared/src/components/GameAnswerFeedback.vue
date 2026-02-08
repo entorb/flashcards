@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { TEXT_DE } from '../text-de'
-
-type FeedbackStatus = 'correct' | 'close' | 'incorrect'
+import type { AnswerStatus } from '../types'
 
 interface Props {
-  status: FeedbackStatus
+  status: AnswerStatus
   iconSize?: string
   showContinueButton?: boolean
   isButtonDisabled?: boolean
@@ -26,7 +25,7 @@ function handleContinue() {
   emit('continue')
 }
 
-function getIcon(status: FeedbackStatus): string {
+function getIcon(status: AnswerStatus): string {
   switch (status) {
     case 'correct':
       return 'check_circle'
@@ -37,7 +36,7 @@ function getIcon(status: FeedbackStatus): string {
   }
 }
 
-function getBackgroundClass(status: FeedbackStatus): string {
+function getBackgroundClass(status: AnswerStatus): string {
   switch (status) {
     case 'correct':
       return 'bg-positive'
@@ -48,7 +47,7 @@ function getBackgroundClass(status: FeedbackStatus): string {
   }
 }
 
-function getButtonBackgroundClass(status: FeedbackStatus): string {
+function getButtonBackgroundClass(status: AnswerStatus): string {
   switch (status) {
     case 'correct':
       return 'bg-positive-1'
@@ -59,7 +58,7 @@ function getButtonBackgroundClass(status: FeedbackStatus): string {
   }
 }
 
-function getColor(status: FeedbackStatus): string {
+function getColor(status: AnswerStatus): string {
   switch (status) {
     case 'correct':
       return 'positive'

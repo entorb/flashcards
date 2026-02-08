@@ -2,7 +2,13 @@
  * LWK App - Helper Utilities
  */
 
-import { levenshteinDistance, MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '@flashcards/shared'
+import {
+  levenshteinDistance,
+  MAX_LEVEL,
+  MAX_TIME,
+  MIN_LEVEL,
+  type AnswerStatus
+} from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '@/constants'
 
@@ -13,10 +19,7 @@ import type { Card } from '../types'
  * Case-sensitive comparison
  * Returns 'correct', 'close', or 'incorrect'
  */
-export function validateTypingAnswer(
-  userInput: string,
-  correctWord: string
-): 'correct' | 'close' | 'incorrect' {
+export function validateTypingAnswer(userInput: string, correctWord: string): AnswerStatus {
   const normalized = userInput.trim()
   const correct = correctWord.trim()
 

@@ -1,4 +1,4 @@
-import { levenshteinDistance, MAX_TIME } from '@flashcards/shared'
+import { levenshteinDistance, MAX_TIME, type AnswerStatus } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '../constants'
 import type { Card } from '../types'
@@ -20,7 +20,7 @@ export function validateTypingAnswer(
   userInput: string,
   correctAnswer: string,
   language: 'voc-de' | 'de-voc'
-): 'correct' | 'close' | 'incorrect' {
+): AnswerStatus {
   const normalizedUserAnswer = normalizeString(userInput)
   const possibleAnswers = correctAnswer.split('/').map(normalizeString)
 
