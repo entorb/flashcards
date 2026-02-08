@@ -39,6 +39,7 @@ interface GameState {
   currentCardIndex: number
   points: number
   correctAnswersCount: number
+  gameSettings: GameSettings
 }
 
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
