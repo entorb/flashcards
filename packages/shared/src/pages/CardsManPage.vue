@@ -234,9 +234,8 @@ function handleResetCardsToDefaultSet() {
       />
 
       <CardManActions
+        v-model="targetLevel"
         :app-prefix="appPrefix"
-        :target-level="targetLevel"
-        @update:target-level="targetLevel = $event"
         @move-click="handleMoveClick"
         @reset-click="handleResetCardsToDefaultSet"
       />

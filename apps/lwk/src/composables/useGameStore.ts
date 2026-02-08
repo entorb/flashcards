@@ -12,7 +12,8 @@ import {
   MIN_LEVEL,
   MIN_TIME,
   calculatePointsBreakdown,
-  initializeGameFlow
+  initializeGameFlow,
+  useDeckManagement
 } from '@flashcards/shared'
 import { computed } from 'vue'
 
@@ -36,7 +37,7 @@ import {
   saveStats,
   setGameResult
 } from '../services/storage'
-import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
+import type { Card, GameHistory, GameSettings } from '../types'
 
 // Create base store with shared state and logic
 const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
@@ -48,80 +49,13 @@ const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
   saveCards
 })
 
-// ============================================================================
-// Deck Management
-// ============================================================================
-
-function getDecks(): CardDeck[] {
-  return loadDecks()
-}
-
-function addDeck(name: string): boolean {
-  const decks = loadDecks()
-  // Check for duplicate name
-  if (decks.some(d => d.name === name)) {
-    return false
-  }
-  decks.push({ name, cards: [] })
-  saveDecks(decks)
-  return true
-}
-
-function renameDeck(oldName: string, newName: string): boolean {
-  const decks = loadDecks()
-  // Check for duplicate name
-  if (decks.some(d => d.name === newName)) {
-    return false
-  }
-  const deck = decks.find(d => d.name === oldName)
-  if (!deck) {
-    return false
-  }
-  deck.name = newName
-  saveDecks(decks)
-  // Update settings if current deck was renamed
-  const settings = loadSettings()
-  if (settings?.deck === oldName) {
-    settings.deck = newName
-    saveSettings(settings)
-  }
-  return true
-}
-
-function removeDeck(name: string): boolean {
-  const decks = loadDecks()
-  // Cannot remove last deck
-  if (decks.length <= 1) {
-    return false
-  }
-  const filtered = decks.filter(d => d.name !== name)
-  if (filtered.length === decks.length) {
-    return false // Deck not found
-  }
-  saveDecks(filtered)
-  // If current deck was removed, update settings and switch to a new default
-  const settings = loadSettings()
-  if (settings?.deck === name) {
-    const newDeck = filtered[0]
-    if (newDeck) {
-      settings.deck = newDeck.name
-      saveSettings(settings)
-      // Load cards directly from the deck we already have in memory
-      baseStore.allCards.value = newDeck.cards
-    }
-  }
-  return true
-}
-
-function switchDeck(deckName: string) {
-  const decks = loadDecks()
-  const deck = decks.find(d => d.name === deckName)
-  if (!deck) {
-    return
-  }
-  // Update all cards to the new deck's cards
-  baseStore.allCards.value = deck.cards
-}
+// Deck management composable
+const deckManagement = useDeckManagement<Card, GameSettings>({
+  loadDecks,
+  saveDecks,
+  loadSettings,
+  saveSettings
+})
 
 // ============================================================================
 // Main Game Store
@@ -314,6 +248,33 @@ export function useGameStore() {
     return isGameOver
   }
 
+  function switchDeck(deckName: string) {
+    const decks = loadDecks()
+    const deck = decks.find(d => d.name === deckName)
+    if (!deck) {
+      return
+    }
+    // Update all cards to the new deck's cards
+    baseStore.allCards.value = deck.cards
+  }
+
+  function removeDeckAndSwitch(name: string): boolean {
+    const settings = loadSettings()
+    const isCurrentDeck =
+      settings?.deck === name || (!settings?.deck && name === DEFAULT_DECKS[0].name)
+
+    const success = deckManagement.removeDeck(name)
+
+    if (success && isCurrentDeck) {
+      // Active deck was removed, switch to the new default deck
+      const newSettings = loadSettings()
+      if (newSettings?.deck) {
+        switchDeck(newSettings.deck)
+      }
+    }
+    return success
+  }
+
   // ============================================================================
   // Computed Properties
   // ============================================================================
@@ -351,10 +312,10 @@ export function useGameStore() {
     moveAllCards: baseStore.moveAllCards,
 
     // Deck management
-    getDecks,
-    addDeck,
-    removeDeck,
-    renameDeck,
+    getDecks: deckManagement.getDecks,
+    addDeck: deckManagement.addDeck,
+    removeDeck: removeDeckAndSwitch,
+    renameDeck: deckManagement.renameDeck,
     switchDeck
   }
 }

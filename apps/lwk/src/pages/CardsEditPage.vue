@@ -39,7 +39,7 @@ function handleGoBack() {
 
   // Auto-save
   importCards(editingCards.value)
-  router.push('/')
+  router.push('/cards')
 }
 
 function handleKeyDown(event: KeyboardEvent) {
