@@ -244,5 +244,17 @@ export const TEXT_DE = {
       closeMatchDescription:
         'Wenn du nur einen Buchstaben falsch hast, bekommst du 75% der Punkte. Das Level wird aber nicht erhöht.'
     }
+  },
+
+  // ETA App specific
+  eta: {
+    config: {
+      title: 'Hausi Zeit-Schätzer',
+      totalTasksPlaceholder: 'Aufgaben'
+    },
+    tracking: {
+      inputPlaceholderCompleted: '# fertig',
+      inputPlaceholderRemaining: '# noch'
+    }
   }
 } as const
