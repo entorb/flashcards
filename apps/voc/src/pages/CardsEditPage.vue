@@ -55,7 +55,7 @@ function handleGoBack() {
   }
 
   importCards(editingCards.value)
-  router.push('/')
+  router.push('/cards')
 }
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -242,6 +242,7 @@ function onCardChange() {
           <q-item
             v-for="(card, index) in editingCards"
             :key="index"
+            data-cy="card-edit-item"
           >
             <q-item-section style="flex: 0 0 40%">
               <q-input
@@ -249,7 +250,7 @@ function onCardChange() {
                 outlined
                 dense
                 :placeholder="TEXT_DE.voc.cards.vocPlaceholder"
-                data-cy="`card-voc-${index}`"
+                :data-cy="`card-voc-${index}`"
                 @update:model-value="onCardChange"
               />
             </q-item-section>
@@ -259,7 +260,7 @@ function onCardChange() {
                 outlined
                 dense
                 :placeholder="TEXT_DE.voc.cards.dePlaceholder"
-                data-cy="`card-de-${index}`"
+                :data-cy="`card-de-${index}`"
                 @update:model-value="onCardChange"
               />
             </q-item-section>
@@ -273,7 +274,7 @@ function onCardChange() {
                   :min="MIN_LEVEL"
                   :max="MAX_LEVEL"
                   style="width: 60px"
-                  data-cy="`card-level-${index}`"
+                  :data-cy="`card-level-${index}`"
                   @update:model-value="onCardChange"
                 />
                 <q-btn
@@ -283,7 +284,7 @@ function onCardChange() {
                   icon="delete"
                   color="negative"
                   size="sm"
-                  data-cy="`delete-card-${index}`"
+                  :data-cy="`delete-card-${index}`"
                   @click="removeCard(index)"
                 >
                   <q-tooltip>{{ TEXT_DE.shared.words.delete }}</q-tooltip>
