@@ -8,8 +8,20 @@ pnpm-lock.yaml
 
 # Generated files
 *.d.ts
+*.js
+*.config.base.js
+*.config.base.d.ts
 
 # Cache
 .cspellcache
 .eslintcache
 
+# From .gitignore
+**/.DS_Store
+**/.github/copilot-instructions.md
+**/.vite/
+**/*.tsbuildinfo
+**/CLAUDE.md
+**/cypress/screenshots/
+**/GEMINI.md
+**/sonar-report.xml
