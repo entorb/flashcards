@@ -1,4 +1,4 @@
-describe('Navigation Smoke Tests', () => {
+describe('VOC Navigation Smoke Tests', () => {
   beforeEach(() => {
     cy.visit('/')
   })
@@ -69,7 +69,7 @@ describe('Navigation Smoke Tests', () => {
     cy.get('[data-cy="app-title"]').should('be.visible')
   })
 
-  it('navigate Cards to CardsEdit and back to Home', () => {
+  it('navigate Cards to CardsEdit and back to Cards', () => {
     // Navigate to Cards first
     cy.get('[data-cy="cards-button"]').click()
     cy.url().should('include', '/cards')
@@ -79,23 +79,20 @@ describe('Navigation Smoke Tests', () => {
     cy.url().should('include', '/cards-edit')
     cy.get('[data-cy="add-card-button"]').should('be.visible')
 
-    // Test back via button goes directly to Home
+    // Test back via button goes to CardsManPage
     cy.get('[data-cy="back-button"]').click()
     cy.url().should('not.include', '/cards-edit')
-    cy.url().should('not.include', '/cards')
-    cy.get('[data-cy="app-title"]').should('be.visible')
+    cy.url().should('include', '/cards')
 
     // Navigate again for escape key test
-    cy.get('[data-cy="cards-button"]').click()
     cy.get('[data-cy="edit-cards-button"]').click()
     cy.url().should('include', '/cards-edit')
     cy.get('body').type('{esc}')
     cy.url().should('not.include', '/cards-edit')
-    cy.url().should('not.include', '/cards')
-    cy.get('[data-cy="app-title"]').should('be.visible')
+    cy.url().should('include', '/cards')
   })
 
-  it('navigate Cards to DecksEdit and back to Home', () => {
+  it('navigate Cards to DecksEdit and back to CardsMan', () => {
     // Navigate to Cards first
     cy.get('[data-cy="cards-button"]').click()
     cy.url().should('include', '/cards')
@@ -105,20 +102,19 @@ describe('Navigation Smoke Tests', () => {
     cy.url().should('include', '/decks-edit')
     cy.get('[data-cy="add-deck-button"]').should('be.visible')
 
-    // Test back via button goes directly to Home
+    // Test back via button goes to CardsMan
     cy.get('[data-cy="back-button"]').click()
+    cy.url().should('include', '/cards')
     cy.url().should('not.include', '/decks-edit')
-    cy.url().should('not.include', '/cards')
-    cy.get('[data-cy="app-title"]').should('be.visible')
+    cy.get('[data-cy="edit-cards-button"]').should('be.visible')
 
     // Navigate again for escape key test
-    cy.get('[data-cy="cards-button"]').click()
     cy.get('[data-cy="edit-decks-button"]').click()
     cy.url().should('include', '/decks-edit')
     cy.get('body').type('{esc}')
+    cy.url().should('include', '/cards')
     cy.url().should('not.include', '/decks-edit')
-    cy.url().should('not.include', '/cards')
-    cy.get('[data-cy="app-title"]').should('be.visible')
+    cy.get('[data-cy="edit-cards-button"]').should('be.visible')
   })
 
   it('navigate Home to Game and back', () => {

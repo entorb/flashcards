@@ -1,6 +1,6 @@
 import { getCardsFromStorage } from '../support/commands'
 
-describe('Typing Mode Game - DE to Voc', () => {
+describe('VOC Typing Mode Game - DE to Voc', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
     cy.clearLocalStorage()

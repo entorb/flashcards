@@ -1,4 +1,4 @@
-describe('Full Game Flow', () => {
+describe('1x1 Full Game Flow', () => {
   beforeEach(() => {
     // Clear localStorage before visiting the page
     indexedDB.deleteDatabase('1x1')
