@@ -11,7 +11,7 @@ rm -rf node_modules
 rm -f pnpm-lock.yaml
 rm -rf packages/shared/node_modules
 rm -f packages/shared/pnpm-lock.yaml
-for app in 1x1 voc lwk; do
+for app in 1x1 eta lwk voc; do
   rm -rf $app/node_modules
   rm -f $app/pnpm-lock.yaml
 done
@@ -24,7 +24,7 @@ cd packages/shared
 pnpm up
 cd ../..
 
-for app in 1x1 voc lwk; do
+for app in 1x1 eta lwk voc; do
   echo === updating $app packages ===
   cd apps/$app
   pnpm up
