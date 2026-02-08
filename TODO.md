@@ -24,6 +24,10 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 
 ## eta
 
+- revert the sort order of the table
+
+### eta-req
+
 Erstelle eine weitere kleine App für Schulkinder, mit der sie die Restzeit, die sie für ihre Hausaufgaben brauchen, abschätzen können (durch Lineare Regression).
 
 App Kürzel: "eta"
