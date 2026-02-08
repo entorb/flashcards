@@ -1,6 +1,6 @@
 import { getCardsFromStorage } from '../support/commands'
 
-describe('Multiple Choice Game - Voc to DE', () => {
+describe('VOC Multiple Choice Game - Voc to DE', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
     cy.clearLocalStorage()

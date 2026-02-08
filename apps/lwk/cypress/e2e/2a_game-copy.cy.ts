@@ -2,7 +2,7 @@ import { normalizeDecks, loadGameState } from '../support/test-helpers'
 
 export const CYPRESS_SPEC_COPY = true
 
-describe('Copy Mode Game', () => {
+describe('LWK Copy Mode Game', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.clearLocalStorage()

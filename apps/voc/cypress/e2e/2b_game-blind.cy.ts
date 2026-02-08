@@ -1,4 +1,4 @@
-describe('Blind Mode Game - DE to Voc', () => {
+describe('VOC Blind Mode Game - DE to Voc', () => {
   beforeEach(() => {
     // Clear storage to ensure clean state
     cy.clearLocalStorage()

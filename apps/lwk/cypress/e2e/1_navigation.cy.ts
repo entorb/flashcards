@@ -38,7 +38,7 @@ describe('LWK Navigation Smoke Tests', () => {
     cy.get('[data-cy="app-title"]').should('be.visible')
   })
 
-  it('navigate Home to Cards, Decks, and Cards Edit and back to Home', () => {
+  it('navigate Home to Cards, Decks, and back to CardsMan', () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should('be.visible')
 
@@ -56,26 +56,20 @@ describe('LWK Navigation Smoke Tests', () => {
     cy.url().should('include', '/decks')
     cy.get('[data-cy="add-deck-button"]').should('be.visible')
 
-    // Back directly to Home
+    // Back to CardsMan
     cy.get('[data-cy="back-button"]').click()
-    cy.url().should('not.include', '/decks')
-    cy.url().should('not.include', '/cards')
-    cy.get('[data-cy="app-title"]').should('be.visible')
-
-    // Navigate to Cards again
-    cy.get('[data-cy="cards-button"]').click()
     cy.url().should('include', '/cards')
+    cy.url().should('not.include', '/decks')
+    cy.get('[data-cy="edit-cards-button"]').should('be.visible')
 
-    // Navigate to Cards edit
-    cy.get('[data-cy="edit-cards-button"]').click()
-    cy.url().should('include', '/cards-edit')
-    cy.get('[data-cy="add-card-button"]').should('be.visible')
-
-    // Back directly to Home
-    cy.get('[data-cy="back-button"]').click()
-    cy.url().should('not.include', '/cards-edit')
-    cy.url().should('not.include', '/cards')
-    cy.get('[data-cy="app-title"]').should('be.visible')
+    // Navigate to Decks again for escape key test
+    cy.get('[data-cy="edit-decks-button"]').click()
+    cy.url().should('include', '/decks')
+    cy.get('[data-cy="add-deck-button"]').should('be.visible')
+    cy.get('body').type('{esc}')
+    cy.url().should('include', '/cards')
+    cy.url().should('not.include', '/decks')
+    cy.get('[data-cy="edit-cards-button"]').should('be.visible')
   })
 
   it('navigate Home to Game and back', () => {

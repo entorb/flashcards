@@ -1,4 +1,4 @@
-describe('Navigation Smoke Tests', () => {
+describe('1x1 Navigation Smoke Tests', () => {
   beforeEach(() => {
     cy.clearAllSessionStorage()
     cy.visit('/')

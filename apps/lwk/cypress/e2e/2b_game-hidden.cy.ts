@@ -2,7 +2,7 @@ import { normalizeDecks, loadGameState } from '../support/test-helpers'
 
 export const CYPRESS_SPEC_HIDDEN = true
 
-describe('Hidden Mode Game', () => {
+describe('LWK Hidden Mode Game', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.clearLocalStorage()
