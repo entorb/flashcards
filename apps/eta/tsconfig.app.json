@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["src/**/*", "src/**/*.vue"],
+  "exclude": [],
+  "compilerOptions": {
+    "composite": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@flashcards/shared": ["../../packages/shared/src/index.ts"],
+      "@flashcards/shared/components": ["../../packages/shared/src/components/index.ts"]
+    }
+  },
+  "references": [{ "path": "../../packages/shared" }]
+}
