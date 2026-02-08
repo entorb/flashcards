@@ -14,6 +14,9 @@ This repository hosts the code of three educational apps, implementing flashcard
 <th align="center">
 <a href="https://entorb.net/lwk/">Lernwörter</a>
 </th>
+<th align="center">
+<a href="https://entorb.net/eta/">Hausi-Timer</a>
+</th>
 </tr>
 </thead>
 <tbody>
@@ -31,6 +34,11 @@ This repository hosts the code of three educational apps, implementing flashcard
 <td align="center">
 <a href="https://entorb.net/lwk/">
 <img src="apps/lwk/assets/icon.svg" alt="Lernwörter Eisbär" width="120">
+</a>
+</td>
+<td align="center">
+<a href="https://entorb.net/eta/">
+<img src="apps/eta/assets/icon.svg" alt="Hausi-Timer" width="120">
 </a>
 </td>
 </tbody>
@@ -66,18 +74,21 @@ pnpm dev                 # Run both apps in parallel
 pnpm dev:1x1             # Run only 1x1 app
 pnpm dev:voc             # Run only voc app
 pnpm dev:lwk             # Run only lwk app
+pnpm dev:eta             # Run only eta app
 
 # Build
 pnpm build               # Build all apps
 pnpm build:1x1           # Build only 1x1 app
 pnpm build:voc           # Build only voc app
 pnpm build:lwk           # Build only lwk app
+pnpm build:eta           # Build only eta app
 
 # Preview
 pnpm preview             # Preview all apps in parallel
 pnpm preview:1x1         # Preview only 1x1 app
 pnpm preview:voc         # Preview only voc app
 pnpm preview:lwk         # Preview only lwk app
+pnpm preview:eta         # Preview only eta app
 
 # Quality Checks
 pnpm types               # Type check all apps and packages
@@ -94,11 +105,13 @@ pnpm run test
 pnpm run cy:open:1x1
 pnpm run cy:open:voc
 pnpm run cy:open:lwk
+pnpm run cy:open:eta
 # headless
 pnpm run cy:run
 pnpm run cy:run:1x1
 pnpm run cy:run:voc
 pnpm run cy:run:lwk
+pnpm run cy:run:eta
 
 # Maintenance
 pnpm clean               # Remove all node_modules and dist folders
