@@ -110,32 +110,27 @@ const totalRuntimeFormatted = computed(() => {
   return formatDuration(totalSeconds)
 })
 
-function calculateTimePerTask(index: number): number | null {
-  if (!sessionData.value) {
-    return null
-  }
-  return calcTimePerTask(sessionData.value.measurements, sessionData.value.startTime, index)
-}
-
-// Calculate tasks per minute for each measurement (for bar chart)
-const tasksPerMinuteData = computed(() => {
+// Pre-computed table data with all calculated values
+const tableData = computed(() => {
   if (!sessionData.value) {
     return []
   }
 
-  const data: number[] = []
-  for (const [i, current] of sessionData.value.measurements.entries()) {
+  const session = sessionData.value
+
+  // Calculate tasks per minute for all measurements
+  const tasksPerMinuteData: number[] = []
+  for (const [i, current] of session.measurements.entries()) {
     if (!current) {
-      data.push(0)
+      tasksPerMinuteData.push(0)
       continue
     }
 
-    const previousTime =
-      i === 0 ? sessionData.value.startTime : sessionData.value.measurements[i - 1]?.timestamp
-    const previousTasks = i === 0 ? 0 : (sessionData.value.measurements[i - 1]?.completedTasks ?? 0)
+    const previousTime = i === 0 ? session.startTime : session.measurements[i - 1]?.timestamp
+    const previousTasks = i === 0 ? 0 : (session.measurements[i - 1]?.completedTasks ?? 0)
 
     if (!previousTime) {
-      data.push(0)
+      tasksPerMinuteData.push(0)
       continue
     }
 
@@ -143,32 +138,32 @@ const tasksPerMinuteData = computed(() => {
     const taskDiff = current.completedTasks - previousTasks
 
     if (timeDiffMs <= 0 || taskDiff <= 0) {
-      data.push(0)
+      tasksPerMinuteData.push(0)
       continue
     }
 
     const timeDiffMinutes = timeDiffMs / (1000 * 60)
     const tasksPerMinute = taskDiff / timeDiffMinutes
-    data.push(tasksPerMinute)
+    tasksPerMinuteData.push(tasksPerMinute)
   }
 
-  return data
+  const maxTasksPerMinute = Math.max(...tasksPerMinuteData, 1)
+
+  // Map measurements to table rows with pre-computed values
+  return [...session.measurements].reverse().map((measurement, index) => {
+    const originalIndex = session.measurements.length - 1 - index
+    const timePerTask = calcTimePerTask(session.measurements, session.startTime, originalIndex)
+    const tasksPerMinute = tasksPerMinuteData[originalIndex] ?? 0
+    const barWidth = tasksPerMinute > 0 ? (tasksPerMinute / maxTasksPerMinute) * 100 : 0
+
+    return {
+      ...measurement,
+      id: originalIndex,
+      timePerTask,
+      barWidth: barWidth / 100 // Normalized for q-linear-progress
+    }
+  })
 })
-
-const maxTasksPerMinute = computed(() => {
-  if (tasksPerMinuteData.value.length === 0) {
-    return 1
-  }
-  return Math.max(...tasksPerMinuteData.value, 1)
-})
-
-function getBarWidth(index: number): number {
-  const value = tasksPerMinuteData.value[index]
-  if (!value || value <= 0) {
-    return 0
-  }
-  return (value / maxTasksPerMinute.value) * 100
-}
 </script>
 
 <template>
@@ -300,7 +295,7 @@ function getBarWidth(index: number): number {
     >
       <!-- Measurement Table -->
       <q-table
-        :rows="[...sessionData.measurements].reverse()"
+        :rows="tableData"
         :columns="[
           {
             name: 'tasks',
@@ -312,14 +307,14 @@ function getBarWidth(index: number): number {
           {
             name: 'speed',
             label: '',
-            field: 'speed',
+            field: 'timePerTask',
             align: 'center',
             headerStyle: 'width: 20%'
           },
           {
             name: 'bar',
             label: '',
-            field: 'bar',
+            field: 'barWidth',
             align: 'left',
             headerStyle: 'width: 50%'
           },
@@ -377,12 +372,8 @@ function getBarWidth(index: number): number {
         </template>
         <template #body-cell-speed="props">
           <q-td :props="props">
-            <template
-              v-if="
-                calculateTimePerTask(sessionData.measurements.length - 1 - props.rowIndex) !== null
-              "
-            >
-              {{ calculateTimePerTask(sessionData.measurements.length - 1 - props.rowIndex) }} s
+            <template v-if="props.row.timePerTask !== null">
+              {{ props.row.timePerTask }} s
             </template>
             <template v-else> - </template>
           </q-td>
@@ -390,7 +381,7 @@ function getBarWidth(index: number): number {
         <template #body-cell-bar="props">
           <q-td :props="props">
             <q-linear-progress
-              :value="getBarWidth(sessionData.measurements.length - 1 - props.rowIndex) / 100"
+              :value="props.row.barWidth"
               size="20px"
               color="primary"
             />
@@ -403,8 +394,8 @@ function getBarWidth(index: number): number {
               dense
               icon="delete"
               color="negative"
-              :data-cy="`btn-delete-${sessionData.measurements.length - 1 - props.rowIndex}`"
-              @click="store.deleteMeasurement(sessionData.measurements.length - 1 - props.rowIndex)"
+              :data-cy="`btn-delete-${props.row.id}`"
+              @click="store.deleteMeasurement(props.row.id)"
             />
           </q-td>
         </template>
