@@ -80,8 +80,7 @@ function migrateToDecks(data: LegacyStorageData): CardDeck[] {
   return [{ name: 'en', cards }]
 }
 
-// eslint-disable-next-line sonarjs/todo-tag
-/** TODO: Remove this migration function 28.02.2026 */
+// TODO: Remove this migration function 28.02.2026
 function migrateCardTimeFields(card: LegacyCard): Card {
   const cardRecord = card as Record<string, unknown>
 

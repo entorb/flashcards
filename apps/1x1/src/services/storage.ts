@@ -3,8 +3,6 @@
  * Handles localStorage operations for cards, history, stats, and game configuration
  */
 
-/* eslint-disable sonarjs/todo-tag */
-
 import type { GameResult, GameStats } from '@flashcards/shared'
 import {
   createGamePersistence,
