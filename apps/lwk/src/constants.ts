@@ -78,7 +78,7 @@ export const THEME_COLOR = '#00bcd4'
 
 export const DEFAULT_DECKS = [
   {
-    name: 'Lernwörter_1',
+    name: 'LWK_1',
     //cspell:disable
     cards: [
       { word: 'Dienstag', level: 1, time: 60 },
