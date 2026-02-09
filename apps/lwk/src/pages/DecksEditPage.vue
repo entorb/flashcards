@@ -8,7 +8,7 @@ const router = useRouter()
 const { getDecks, addDeck, removeDeck, renameDeck } = useGameStore()
 
 function getNamingPattern() {
-  return { prefix: 'Lernwörter_', startIndex: 1 }
+  return { prefix: 'LWK_', startIndex: 1 }
 }
 
 function handleBack() {

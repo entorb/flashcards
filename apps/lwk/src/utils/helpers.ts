@@ -37,6 +37,7 @@ export function validateTypingAnswer(userInput: string, correctWord: string): An
 
 /**
  * Parses text input with various delimiters (tab, semicolon, comma, slash)
+ * or newline-only separated words (no delimiter)
  * Extracts pure parsing logic for card imports
  *
  * Returns an object with cards array and detected delimiter, or null if invalid
@@ -49,8 +50,10 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
   const lines = text.trim().split('\n')
   const firstLine = lines[0]
   const delimiter = detectDelimiter(firstLine)
+
+  // If no delimiter found, treat as newline-only separated words
   if (!delimiter) {
-    return null // No valid delimiter found
+    return parseNewlineOnlyCards(lines)
   }
 
   const newCards: Card[] = []
@@ -77,6 +80,26 @@ function detectDelimiter(firstLine: string): string | null {
   if (firstLine.includes(',')) return ','
   if (firstLine.includes('/')) return '/'
   return null
+}
+
+/**
+ * Parse cards from newline-only separated words (no delimiter)
+ */
+function parseNewlineOnlyCards(lines: string[]): { cards: Card[]; delimiter: string } | null {
+  const newCards: Card[] = []
+
+  for (const line of lines) {
+    const word = line.trim()
+    if (word && !isHeaderLine(line, 0)) {
+      newCards.push({
+        word,
+        level: MIN_LEVEL,
+        time: MAX_TIME
+      })
+    }
+  }
+
+  return newCards.length > 0 ? { cards: newCards, delimiter: '\n' } : null
 }
 
 /**

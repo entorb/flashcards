@@ -89,8 +89,7 @@ export const TEXT_DE = {
       confirmMoveTitle: 'Verschieben bestätigen',
       confirmMoveMessage: 'Alle {count} Karten auf Level {level} setzen?',
       confirmResetTitle: 'Zurücksetzen bestätigen',
-      confirmResetMessage:
-        'Diese Aktion setzt alle Karten und deinen Lernfortschritt zurück. Fortfahren?',
+      confirmResetMessage: 'Alle Karten zurück auf Level 1?',
       resetSuccess: 'Zurücksetzung erfolgreich!',
       copied: 'Kopiert!',
       emptyTextError: 'Das Textfeld ist leer.',
@@ -206,7 +205,7 @@ export const TEXT_DE = {
     cards: {
       header:
         'Du kannst mehrere Lernwort-<strong>Kisten</strong> anlegen. Eine Kiste enthält mehrere <strong>Karten</strong>. Jede Karte ist ein Lernwort und hat ein <strong>Level</strong> (1=unbekannt bis 5=sicher). Richtige Antworten im Spiel erhöhen das Level, falsche verringern es.',
-      reset: 'Alle Wörter löschen',
+      reset: 'Alle Decks und Wörter löschen',
       importDialogMessage: 'Füge deine Wörter ein (eines pro Zeile)',
       importDialogTitle: 'Wörter importieren',
       importHintExcel:
