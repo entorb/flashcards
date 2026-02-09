@@ -221,18 +221,18 @@ export function useGameStore() {
   }
 
   function resetCardsToDefault() {
-    // Reset current deck to default cards
-    const decks = loadDecks()
-    const currentDeckName = loadSettings()?.deck || DEFAULT_DECKS[0].name
-    const defaultDeck = DEFAULT_DECKS.find(d => d.name === currentDeckName)
+    // Delete all decks and reset to default set only
+    const defaultDeck = DEFAULT_DECKS[0]
 
-    if (defaultDeck) {
-      const deckIndex = decks.findIndex(d => d.name === currentDeckName)
-      if (deckIndex !== -1) {
-        decks[deckIndex].cards = defaultDeck.cards
-        saveDecks(decks)
-        baseStore.allCards.value = defaultDeck.cards
-      }
+    // Save only the default deck
+    saveDecks([defaultDeck])
+    baseStore.allCards.value = defaultDeck.cards
+
+    // Update settings to use the default deck
+    const currentSettings = loadSettings()
+    if (currentSettings) {
+      currentSettings.deck = defaultDeck.name
+      saveSettings(currentSettings)
     }
   }
 
