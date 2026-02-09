@@ -3,14 +3,13 @@ describe('LWK Card Edit Functionality', () => {
   beforeEach(() => {
     // Visit with onBeforeLoad to set up empty deck before app initializes
     cy.visit('/', {
-      onBeforeLoad(win: Cypress.AUWindow) {
+      onBeforeLoad(win: Cypress.AUTWindow) {
         win.localStorage.clear()
         win.sessionStorage.clear()
         // Set up empty deck to prevent default cards from loading
-        win.localStorage.setItem(
-          'fc-lwk-decks',
-          JSON.stringify([{ name: 'Lernwörter_1', cards: [] }])
-        )
+        win.localStorage.setItem('fc-lwk-decks', JSON.stringify([{ name: 'LWK_1', cards: [] }]))
+        // Set the current deck in settings
+        win.localStorage.setItem('fc-lwk-game-settings', JSON.stringify({ deck: 'LWK_1' }))
       }
     })
   })
@@ -106,7 +105,7 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="export-button"]').click()
 
     // Verify the button text changed to indicate copy
-    cy.get('[data-cy="export-button"]').should('contain', 'Kopiert')
+    cy.get('[data-cy="export-button"]').should('contain', 'Kopiert!')
   })
 
   it('import cards from text with tab delimiter', () => {
@@ -138,7 +137,7 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="edit-cards-button"]').click()
 
     // Mock clipboard API with semicolon delimiter
-    const importData = 'word;level\nHaus;1\nBaum;2'
+    const importData = 'Haus\nBaum'
     cy.window().then(win => {
       cy.stub(win.navigator.clipboard, 'readText').resolves(importData)
     })
@@ -161,7 +160,7 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="cards-button"]').click()
     cy.get('[data-cy="edit-cards-button"]').click()
 
-    // Mock clipboard API with comma delimiter
+    // Mock clipboard API with comma delimiter and level
     const importData = 'word,level\nKatze,1\nHund,2\nVogel,3'
     cy.window().then(win => {
       cy.stub(win.navigator.clipboard, 'readText').resolves(importData)
@@ -309,14 +308,30 @@ describe('LWK Card Edit Functionality', () => {
         cy.get('[data-cy="word-input"]').type('PersistTest')
       })
 
-    // Go back to save
+    // Verify card is visible before going back
+    cy.get('[data-cy="card-edit-item"]')
+      .first()
+      .within(() => {
+        cy.get('[data-cy="word-input"]').should('have.value', 'PersistTest')
+      })
+
+    // Go back to save the cards to localStorage
     cy.get('[data-cy="back-button"]').click()
+    cy.url().should('include', '/cards')
+
+    // Reload the page to test persistence
+    cy.reload()
 
     // Navigate back to cards edit
     cy.get('[data-cy="edit-cards-button"]').click()
 
-    // Verify the card persists
-    cy.get('[data-cy="card-edit-item"]').should('have.length.greaterThan', 0)
+    // Verify the card persists with correct data after reload
+    cy.get('[data-cy="card-edit-item"]').should('have.length', 1)
+    cy.get('[data-cy="card-edit-item"]')
+      .first()
+      .within(() => {
+        cy.get('[data-cy="word-input"]').should('have.value', 'PersistTest')
+      })
   })
 })
 /* cspell:enable */
