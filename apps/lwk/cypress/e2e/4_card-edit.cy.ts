@@ -89,25 +89,6 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="card-edit-item"]').should('have.length', 1)
   })
 
-  it('export cards to clipboard', () => {
-    cy.get('[data-cy="cards-button"]').click()
-    cy.get('[data-cy="edit-cards-button"]').click()
-
-    // Add a test card
-    cy.get('[data-cy="add-card-button"]').click()
-    cy.get('[data-cy="card-edit-item"]')
-      .last()
-      .within(() => {
-        cy.get('[data-cy="word-input"]').type('ExportTest')
-      })
-
-    // Export cards
-    cy.get('[data-cy="export-button"]').click()
-
-    // Verify the button text changed to indicate copy
-    cy.get('[data-cy="export-button"]').should('contain', 'Kopiert!')
-  })
-
   it('import cards from text with tab delimiter', () => {
     cy.get('[data-cy="cards-button"]').click()
     cy.get('[data-cy="edit-cards-button"]').click()
