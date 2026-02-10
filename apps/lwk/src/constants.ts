@@ -81,16 +81,16 @@ export const DEFAULT_DECKS = [
     name: 'LWK_1',
     //cspell:disable
     cards: [
-      { word: 'Dienstag', level: 1, time: 60 },
-      { word: 'Donnerstag', level: 1, time: 60 },
-      { word: 'fahren', level: 1, time: 60 },
-      { word: 'frieren', level: 1, time: 60 },
-      { word: 'Frühling', level: 1, time: 60 },
-      { word: 'Mittwoch', level: 1, time: 60 },
-      { word: 'Sommer', level: 1, time: 60 },
-      { word: 'Sonntag', level: 1, time: 60 },
-      { word: 'spielen', level: 1, time: 60 },
-      { word: 'Winter', level: 1, time: 60 }
+      { word: 'Jahr', level: 1, time: 60 },
+      { word: 'bleiben', level: 1, time: 60 },
+      { word: 'Januar', level: 1, time: 60 },
+      { word: 'essen', level: 1, time: 60 },
+      { word: 'März', level: 1, time: 60 },
+      { word: 'November', level: 1, time: 60 },
+      { word: 'nehmen', level: 1, time: 60 },
+      { word: 'Mai', level: 1, time: 60 },
+      { word: 'gehen', level: 1, time: 60 },
+      { word: 'Februar', level: 1, time: 60 }
       //cspell:enable
     ] as Card[]
   }
