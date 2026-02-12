@@ -3220,6 +3220,10 @@ packages:
     resolution: {integrity: sha512-vFrFJkWtJvJnD5hg+hJvVE8Lh/TcMzKnTgCWmtBipwI5yLX/iX+5UB2tfuyODF5E7k9xEzMdYgGqaSb1c0c5Yw==}
     engines: {node: 20 || >=22}
 
+  lru-cache@11.2.6:
+    resolution: {integrity: sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ==}
+    engines: {node: 20 || >=22}
+
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -3749,8 +3753,9 @@ packages:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
 
-  smob@1.5.0:
-    resolution: {integrity: sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==}
+  smob@1.6.1:
+    resolution: {integrity: sha512-KAkBqZl3c2GvNgNhcoyJae1aKldDW0LO279wF9bk1PnluRTETKBq0WyzRXxEhoQLk56yHaOY4JCBEKDuJIET5g==}
+    engines: {node: '>=20.0.0'}
 
   smol-toml@1.6.0:
     resolution: {integrity: sha512-4zemZi0HvTnYwLfrpk/CF9LOd9Lt87kAt50GnqhMpyF9U3poDAP2+iukq2bZsO/ufegbYehBkqINbsWxj4l4cw==}
@@ -5625,7 +5630,7 @@ snapshots:
   '@rollup/plugin-terser@0.4.4(rollup@2.79.2)':
     dependencies:
       serialize-javascript: 6.0.2
-      smob: 1.5.0
+      smob: 1.6.1
       terser: 5.46.0
     optionalDependencies:
       rollup: 2.79.2
@@ -7675,6 +7680,8 @@ snapshots:
 
   lru-cache@11.2.5: {}
 
+  lru-cache@11.2.6: {}
+
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
@@ -7898,7 +7905,7 @@ snapshots:
 
   path-scurry@2.0.1:
     dependencies:
-      lru-cache: 11.2.5
+      lru-cache: 11.2.6
       minipass: 7.1.2
 
   path-type@4.0.0: {}
@@ -8239,7 +8246,7 @@ snapshots:
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
 
-  smob@1.5.0: {}
+  smob@1.6.1: {}
 
   smol-toml@1.6.0: {}
 
