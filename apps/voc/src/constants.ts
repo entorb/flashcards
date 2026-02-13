@@ -55,7 +55,7 @@ export const MAX_CARDS_PER_GAME = 10
  * - vite.config.ts (themeColor property)
  * - index.html (meta name="theme-color" content)
  */
-export const THEME_COLOR = '#1976d2'
+export const THEME_COLOR = '#f97316'
 
 // ============================================================================
 // GAME SCORING
