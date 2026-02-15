@@ -6,7 +6,7 @@ cd $(dirname $0)/..
 # exit upon error
 set -e
 
-echo === deleting old node_modules and lock===
+echo === deleting old node_modules and lock ===
 rm -rf node_modules
 rm -f pnpm-lock.yaml
 rm -rf packages/shared/node_modules
