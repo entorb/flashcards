@@ -378,4 +378,75 @@ describe('useGameStore - Deck Operations', () => {
       expect(saveDecks).toHaveBeenCalledTimes(3)
     })
   })
+
+  describe('Scoring Operations', () => {
+    it('should never grant points for incorrect answers (multiple-choice mode)', async () => {
+      const { loadSettings, loadCards } = await import('../services/storage')
+      vi.mocked(loadSettings).mockReturnValue({
+        mode: 'multiple-choice',
+        focus: 'weak',
+        language: 'voc-de',
+        deck: 'en'
+      })
+      vi.mocked(loadCards).mockReturnValue([{ voc: 'hello', de: 'hallo', level: 1, time: 5 }])
+
+      const settings = {
+        mode: 'multiple-choice',
+        focus: 'weak',
+        language: 'voc-de',
+        deck: 'en'
+      } as any
+      store.startGame(settings)
+      const initialPoints = store.points.value
+
+      store.handleAnswer('incorrect', 5)
+      expect(store.points.value).toBe(initialPoints)
+    })
+
+    it('should never grant points for incorrect answers (typing mode)', async () => {
+      const { loadSettings, loadCards } = await import('../services/storage')
+      vi.mocked(loadSettings).mockReturnValue({
+        mode: 'typing',
+        focus: 'weak',
+        language: 'voc-de',
+        deck: 'en'
+      })
+      vi.mocked(loadCards).mockReturnValue([{ voc: 'hello', de: 'hallo', level: 1, time: 5 }])
+
+      const settings = {
+        mode: 'typing',
+        focus: 'weak',
+        language: 'voc-de',
+        deck: 'en'
+      } as any
+      store.startGame(settings)
+      const initialPoints = store.points.value
+
+      store.handleAnswer('incorrect', 5)
+      expect(store.points.value).toBe(initialPoints)
+    })
+
+    it('should grant points for correct answers', async () => {
+      const { loadSettings, loadCards } = await import('../services/storage')
+      vi.mocked(loadSettings).mockReturnValue({
+        mode: 'multiple-choice',
+        focus: 'weak',
+        language: 'voc-de',
+        deck: 'en'
+      })
+      vi.mocked(loadCards).mockReturnValue([{ voc: 'hello', de: 'hallo', level: 1, time: 5 }])
+
+      const settings = {
+        mode: 'multiple-choice',
+        focus: 'weak',
+        language: 'voc-de',
+        deck: 'en'
+      } as any
+      store.startGame(settings)
+      const initialPoints = store.points.value
+
+      store.handleAnswer('correct', 5)
+      expect(store.points.value).toBeGreaterThan(initialPoints)
+    })
+  })
 })
