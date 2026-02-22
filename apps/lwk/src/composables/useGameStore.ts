@@ -134,7 +134,11 @@ export function useGameStore() {
     if (result === 'correct' || result === 'close') {
       // Speed bonus only in hidden mode and only for correct answers
       if (result === 'correct' && baseStore.gameSettings.value.mode === 'hidden') {
-        if (answerTime < currentCard.time && currentCard.time < MAX_TIME) {
+        if (
+          currentCard.time != null &&
+          currentCard.time < MAX_TIME &&
+          answerTime <= currentCard.time
+        ) {
           speedBonus = true
         }
       }
