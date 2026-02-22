@@ -3,7 +3,6 @@ import {
   type AnswerStatus,
   MAX_TIME,
   TEXT_DE,
-  useFeedbackTimers,
   useGameNavigation,
   useGameTimer,
   useKeyboardContinue
@@ -55,15 +54,13 @@ const showProceedButton = ref(false)
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
 
 // Use shared navigation logic
-const { handleNextCard: navigateToNextCard, handleGoHome } = useGameNavigation({
+const { handleNextCard, handleGoHome } = useGameNavigation({
   stopTimer,
   nextCard,
   finishGame,
   discardGame,
   router
 })
-// Use shared feedback timers for auto-advance on correct answers
-const { startAutoCloseTimer, clearAutoCloseTimers } = useFeedbackTimers()
 
 // Track button disabled state for keyboard control
 const isProceedDisabled = ref(false)
@@ -73,12 +70,6 @@ function getFeedbackType(status: AnswerStatus | null): 'simple' | 'close' | 'typ
   if (status === 'close') return 'close'
   if (status === 'incorrect' && gameSettings.value?.mode === 'typing') return 'typing-incorrect'
   return 'simple'
-}
-
-// Wrapper function to cancel auto-close timer before proceeding
-function handleNextCard() {
-  clearAutoCloseTimers() // Cancel the auto-advance timer
-  navigateToNextCard()
 }
 
 // Compute question and answer based on language direction
@@ -157,11 +148,6 @@ function submitAnswer(result: AnswerStatus) {
   // Determine feedback type based on answer status
   const feedbackType = getFeedbackType(result)
   feedbackData.value.type = feedbackType
-
-  if (result === 'correct') {
-    // For correct answers: auto-advance after 3 seconds, but allow manual continue
-    startAutoCloseTimer(handleNextCard)
-  }
 
   if (result === 'close') {
     const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
