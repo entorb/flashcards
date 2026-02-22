@@ -141,7 +141,8 @@ export function useGameStore() {
     const pointsBreakdown = calculatePointsBreakdown({
       difficultyPoints,
       level: card.level,
-      timeBonus: card.time < MAX_TIME && answerTime <= card.time,
+      // no timeBonus for first answer on a card
+      timeBonus: card.time != null && card.time < MAX_TIME && answerTime <= card.time,
       closeAdjustment: result === 'close'
     })
 
