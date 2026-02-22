@@ -3,7 +3,6 @@ import {
   type AnswerStatus,
   calculatePointsBreakdown,
   MAX_TIME,
-  useFeedbackTimers,
   useGameNavigation,
   useGameTimer,
   useKeyboardContinue
@@ -67,9 +66,6 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
   router
 })
 
-// Use shared timer composable for auto-close on correct answers
-const { startAutoCloseTimer, clearAutoCloseTimers } = useFeedbackTimers()
-
 // Track button disabled state for keyboard control
 const isButtonDisabled = ref(false)
 
@@ -108,7 +104,6 @@ watch(
     userAnswerNum.value = null
     basePoints.value = 0
     isRecordTime.value = false
-    clearAutoCloseTimers()
   },
   { immediate: true }
 )
@@ -147,15 +142,9 @@ function submitAnswer() {
   // Call handleAnswer directly
   stopTimer()
   handleAnswer(answerStatus.value, answerTime)
-
-  if (isCorrect) {
-    // Auto-close after configured duration for correct answers
-    startAutoCloseTimer(handleContinue)
-  }
 }
 
 function handleContinue() {
-  clearAutoCloseTimers()
   showFeedback.value = false
   handleNextCard()
 }

@@ -36,11 +36,6 @@ export const MAX_TIME = 60
 // ============================================================================
 
 /**
- * Duration to auto-close correct answer feedback in milliseconds
- */
-export const AUTO_CLOSE_DURATION = 3000
-
-/**
  * Duration to disable buttons after wrong answer in milliseconds
  */
 export const BUTTON_DISABLE_DURATION = 3000
