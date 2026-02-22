@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-  type AnswerStatus,
-  calculatePointsBreakdown,
-  MAX_TIME,
-  useGameNavigation,
-  useGameTimer,
-  useKeyboardContinue
-} from '@flashcards/shared'
+import { useGameNavigation, useGameTimer, useKeyboardContinue } from '@flashcards/shared'
 import {
   GameFeedbackNegative,
   GameHeader,
@@ -31,28 +24,15 @@ const {
   handleAnswer,
   nextCard,
   finishGame: storeFinishGame,
-  discardGame
+  discardGame,
+  lastPointsBreakdown
 } = useGameStore()
 
 // GamePage component state
 const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
-const answerStatus = ref<AnswerStatus | null>(null)
-const timeTaken = ref(0)
+const answerStatus = ref<'correct' | 'incorrect' | null>(null)
 const userAnswerNum = ref<number | null>(null)
-const basePoints = ref(0)
-const isRecordTime = ref(false)
-
-const pointsBreakdown = computed(() => {
-  if (!answerStatus.value || answerStatus.value === 'incorrect') return null
-
-  return calculatePointsBreakdown({
-    difficultyPoints: basePoints.value,
-    level: currentCard.value.level,
-    timeBonus: isRecordTime.value,
-    closeAdjustment: false
-  })
-})
 
 // Use shared timer logic
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
@@ -100,10 +80,7 @@ watch(
     userAnswer.value = null
     showFeedback.value = false
     answerStatus.value = null
-    timeTaken.value = 0
     userAnswerNum.value = null
-    basePoints.value = 0
-    isRecordTime.value = false
   },
   { immediate: true }
 )
@@ -115,31 +92,11 @@ function submitAnswer() {
   const isCorrect = parsedUserAnswer === currentCard.value.answer
   const answerTime = elapsedTime.value
 
-  let multiplier = 0
-  let speedBonus = false
-
-  if (isCorrect) {
-    // Calculate points for correct answer
-    const [x, y] = currentCard.value.question.split('x').map(s => Number.parseInt(s, 10))
-    // multiplier is the smaller of the two factors
-    multiplier = Math.min(x, y)
-
-    // Add speed bonus if last time < MAX_TIME and current time <= last time
-    if (currentCard.value.time < MAX_TIME && answerTime <= currentCard.value.time) {
-      speedBonus = true
-    }
-  }
-
-  // Set individual reactive refs
   answerStatus.value = isCorrect ? 'correct' : 'incorrect'
-  timeTaken.value = answerTime
   userAnswerNum.value = parsedUserAnswer
-  basePoints.value = multiplier
-  isRecordTime.value = speedBonus
 
   showFeedback.value = true
 
-  // Call handleAnswer directly
   stopTimer()
   handleAnswer(answerStatus.value, answerTime)
 }
@@ -213,7 +170,7 @@ onUnmounted(() => {
 
           <GamePointsBreakdown
             :answer-status="answerStatus"
-            :points-breakdown="pointsBreakdown"
+            :points-breakdown="lastPointsBreakdown"
           />
 
           <!-- Continue Button -->

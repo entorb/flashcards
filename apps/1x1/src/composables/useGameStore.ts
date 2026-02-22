@@ -133,10 +133,14 @@ export function useGameStore() {
     const card = currentCard.value
     if (!card || !baseStore.gameSettings.value) return
 
+    // difficultyPoints is the smaller factor of the multiplication (e.g. 3 for 7x3)
+    const [x, y] = card.question.split('x').map(s => Number.parseInt(s, 10))
+    const difficultyPoints = result === 'correct' ? Math.min(x, y) : 0
+
     const pointsBreakdown = calculatePointsBreakdown({
-      difficultyPoints: 1,
+      difficultyPoints,
       level: card.level,
-      timeBonus: answerTime < card.time,
+      timeBonus: card.time < MAX_TIME && answerTime <= card.time,
       closeAdjustment: result === 'close'
     })
 
