@@ -128,43 +128,45 @@ export function useGameStore() {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
-    // Calculate points using shared scoring logic
-    // Determine mode multiplier
-    const difficultyPoints = (() => {
-      switch (baseStore.gameSettings.value.mode) {
-        case 'blind':
-          return POINTS_MODE_BLIND
-        case 'typing':
-          return POINTS_MODE_TYPING
-        default:
-          return 1
-      }
-    })()
+    if (result === 'correct' || result === 'close') {
+      // Calculate points using shared scoring logic
+      // Determine mode multiplier
+      const difficultyPoints = (() => {
+        switch (baseStore.gameSettings.value?.mode) {
+          case 'blind':
+            return POINTS_MODE_BLIND
+          case 'typing':
+            return POINTS_MODE_TYPING
+          default:
+            return 1
+        }
+      })()
 
-    // Calculate language bonus
-    const languageBonus =
-      result === 'correct' && baseStore.gameSettings.value.language === 'de-voc' ? 1 : 0
+      // Calculate language bonus
+      const languageBonus =
+        result === 'correct' && baseStore.gameSettings.value?.language === 'de-voc' ? 1 : 0
 
-    // Determine time bonus
-    const isBeatTime =
-      result === 'correct' &&
-      answerTime !== undefined &&
-      currentCard.time != null &&
-      currentCard.time < MAX_TIME &&
-      answerTime <= currentCard.time
+      // Determine time bonus
+      const isBeatTime =
+        result === 'correct' &&
+        answerTime !== undefined &&
+        currentCard.time != null &&
+        currentCard.time < MAX_TIME &&
+        answerTime <= currentCard.time
 
-    const timeBonus = isBeatTime
-    const closeAdjustment = result === 'close'
+      const timeBonus = isBeatTime
+      const closeAdjustment = result === 'close'
 
-    const pointsBreakdown = calculatePointsBreakdown({
-      difficultyPoints,
-      level: currentCard.level,
-      timeBonus,
-      closeAdjustment,
-      languageBonus
-    })
+      const pointsBreakdown = calculatePointsBreakdown({
+        difficultyPoints,
+        level: currentCard.level,
+        timeBonus,
+        closeAdjustment,
+        languageBonus
+      })
 
-    baseStore.handleAnswerBase(result, pointsBreakdown)
+      baseStore.handleAnswerBase(result, pointsBreakdown)
+    }
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {
