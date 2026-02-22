@@ -133,19 +133,21 @@ export function useGameStore() {
     const card = currentCard.value
     if (!card || !baseStore.gameSettings.value) return
 
-    // difficultyPoints is the smaller factor of the multiplication (e.g. 3 for 7x3)
-    const [x, y] = card.question.split('x').map(s => Number.parseInt(s, 10))
-    const difficultyPoints = result === 'correct' ? Math.min(x, y) : 0
+    if (result === 'correct' || result === 'close') {
+      // difficultyPoints is the smaller factor of the multiplication (e.g. 3 for 7x3)
+      const [x, y] = card.question.split('x').map(s => Number.parseInt(s, 10))
+      const difficultyPoints = result === 'correct' ? Math.min(x, y) : 0
 
-    const pointsBreakdown = calculatePointsBreakdown({
-      difficultyPoints,
-      level: card.level,
-      // no timeBonus for first answer on a card
-      timeBonus: card.time != null && card.time < MAX_TIME && answerTime <= card.time,
-      closeAdjustment: result === 'close'
-    })
+      const pointsBreakdown = calculatePointsBreakdown({
+        difficultyPoints,
+        level: card.level,
+        // no timeBonus for first answer on a card
+        timeBonus: card.time != null && card.time < MAX_TIME && answerTime <= card.time,
+        closeAdjustment: result === 'close'
+      })
 
-    baseStore.handleAnswerBase(result, pointsBreakdown)
+      baseStore.handleAnswerBase(result, pointsBreakdown)
+    }
 
     if (result === 'correct' || result === 'close') {
       const newLevel = Math.min(card.level + 1, MAX_LEVEL)
