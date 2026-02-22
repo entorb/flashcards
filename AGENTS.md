@@ -100,7 +100,7 @@ flashcards/
 
 ```typescript
 // Main exports
-import { TEXT_DE, useFeedbackTimers, useKeyboardContinue } from '@flashcards/shared'
+import { TEXT_DE, useKeyboardContinue } from '@flashcards/shared'
 
 // Component exports
 import { AppFooter, AnswerFeedback } from '@flashcards/shared/components'
