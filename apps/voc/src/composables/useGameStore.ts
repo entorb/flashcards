@@ -149,8 +149,9 @@ export function useGameStore() {
     const isBeatTime =
       result === 'correct' &&
       answerTime !== undefined &&
-      answerTime < MAX_TIME &&
-      answerTime < currentCard.time
+      currentCard.time != null &&
+      currentCard.time < MAX_TIME &&
+      answerTime <= currentCard.time
 
     const timeBonus = isBeatTime
     const closeAdjustment = result === 'close'
