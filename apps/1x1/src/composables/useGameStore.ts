@@ -33,7 +33,8 @@ import {
   saveHistory as storageSaveHistory,
   setGameConfig as storageSetGameConfig,
   setGameResult as storageSetGameResult,
-  updateCard as storageUpdateCard
+  updateCard as storageUpdateCard,
+  resetCards as storageResetCards
 } from '@/services/storage'
 import type { Card, GameHistory, GameSettings } from '@/types'
 
@@ -223,6 +224,7 @@ export function useGameStore() {
 
   function resetCards() {
     baseStore.resetAllCards()
+    storageResetCards()
   }
 
   // Computed
