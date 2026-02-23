@@ -31,14 +31,6 @@ export const baseViteConfig: UserConfig = {
       'unplugin-vue-router/runtime'
     ],
     include: ['vue', 'vue-router', 'quasar']
-  },
-
-  define: {
-    'process.env': {}
-  },
-
-  resolve: {
-    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue']
   }
 }
 

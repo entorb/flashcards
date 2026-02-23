@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
+    "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
       "@flashcards/shared": ["../../packages/shared/src/index.ts"],

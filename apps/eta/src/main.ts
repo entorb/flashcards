@@ -35,7 +35,7 @@ const updateSW = registerSW({
       cancel: true,
       persistent: true
     }).onOk(() => {
-      updateSW(true)
+      void updateSW(true)
     })
   }
 })
