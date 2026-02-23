@@ -211,7 +211,7 @@ describe('Card Selection', () => {
     for (let i = 0; i < 10; i++) {
       const selected = selectCardsForRound(cards, 'weak', 1)
       expect(selected).toHaveLength(1)
-      expect(['6x3', '6x4']).toContain(selected[0].question)
+      expect(['6x3', '6x4']).toContain(selected[0]!.question)
     }
   })
 })
