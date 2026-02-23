@@ -69,15 +69,17 @@ describe('VOC Card Edit Functionality', () => {
     cy.url().should('include', '/cards-edit')
     cy.get('[data-cy="add-card-button"]', { timeout: 5000 }).should('be.visible')
 
-    // Add a card first
+    // Add two cards first (last card cannot be deleted)
     cy.get('[data-cy="add-card-button"]').click()
     cy.get('[data-cy="card-edit-item"]', { timeout: 5000 }).should('have.length', 1)
+    cy.get('[data-cy="add-card-button"]').click()
+    cy.get('[data-cy="card-edit-item"]').should('have.length', 2)
 
-    // Delete the card using the specific data-cy selector
+    // Delete the first card using the specific data-cy selector
     cy.get('[data-cy="delete-card-0"]').click()
 
-    // Verify the card was deleted
-    cy.get('[data-cy="card-edit-item"]').should('have.length', 0)
+    // Verify one card remains
+    cy.get('[data-cy="card-edit-item"]').should('have.length', 1)
   })
 
   it('export cards to clipboard', () => {
