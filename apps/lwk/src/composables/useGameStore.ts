@@ -229,9 +229,13 @@ export function useGameStore() {
   }
 
   function importCards(newCards: Card[]) {
-    baseStore.allCards.value = newCards
+    if (newCards.length === 0) return
+    // Ensure all cards have non-empty word strings
+    const validCards = newCards.filter(c => c.word.trim().length > 0)
+    if (validCards.length === 0) return
+    baseStore.allCards.value = validCards
     // Explicitly save to ensure cards are persisted immediately
-    saveCards(newCards)
+    saveCards(validCards)
   }
 
   // Wrap nextCard to save state after moving to next card
@@ -252,15 +256,16 @@ export function useGameStore() {
 
   function removeDeckAndSwitch(name: string): boolean {
     const settings = loadSettings()
-    const isCurrentDeck =
-      settings?.deck === name || (settings?.deck === undefined && name === DEFAULT_DECKS[0]?.name)
+    const firstDeck = DEFAULT_DECKS[0]
+    const currentDeck = settings?.deck ?? (firstDeck ? firstDeck.name : '')
+    const isCurrentDeck = currentDeck === name
 
     const success = deckManagement.removeDeck(name)
 
     if (success && isCurrentDeck) {
       // Active deck was removed, switch to the new default deck
       const newSettings = loadSettings()
-      if (newSettings?.deck !== undefined && newSettings.deck.length > 0) {
+      if (newSettings?.deck !== undefined && newSettings.deck !== '') {
         switchDeck(newSettings.deck)
       }
     }

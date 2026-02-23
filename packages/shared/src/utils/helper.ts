@@ -1,4 +1,4 @@
-import { MAX_LEVEL, MIN_LEVEL } from '../constants'
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { DailyBonusConfig } from '../types'
 
@@ -190,4 +190,16 @@ export function parseLevel(levelStr: string | undefined): number {
     return MIN_LEVEL
   }
   return parsed
+}
+
+/**
+ * Sanitize base card fields: clamp level to valid range, default time to MAX_TIME
+ * Use this when creating or importing cards to ensure valid defaults.
+ */
+export function sanitizeBaseCard<T extends { level?: number; time?: number }>(
+  card: T
+): T & { level: number; time: number } {
+  const level = Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, card.level ?? MIN_LEVEL))
+  const time = Math.max(MIN_TIME, Math.min(MAX_TIME, card.time ?? MAX_TIME))
+  return { ...card, level, time }
 }

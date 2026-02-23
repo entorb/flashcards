@@ -50,13 +50,17 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
 const isButtonDisabled = ref(false)
 
 const displayQuestion = computed(() => {
-  return formatDisplayQuestion(currentCard.value?.question || '', gameSettings.value?.select)
+  const card = currentCard.value
+  if (!card) return ''
+  return formatDisplayQuestion(card.question, gameSettings.value?.select)
 })
 
 // Calculate expected answer length for dynamic auto-submit
 // (1 digit for 3×3=9, 2 digits for 6×8=48, 3 digits for 12×15=180)
 const expectedAnswerLength = computed(() => {
-  return String(currentCard.value?.answer || '').length
+  const card = currentCard.value
+  if (!card) return 1
+  return String(card.answer).length
 })
 
 // Auto-submit after user enters expected number of digits
@@ -165,7 +169,7 @@ onUnmounted(() => {
             v-if="answerStatus === 'incorrect'"
             status="incorrect"
             :user-answer="String(userAnswerNum)"
-            :correct-answer="String(currentCard?.answer)"
+            :correct-answer="String(currentCard.answer)"
           />
 
           <GamePointsBreakdown
