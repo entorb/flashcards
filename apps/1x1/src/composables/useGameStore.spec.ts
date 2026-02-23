@@ -31,6 +31,10 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 1 })),
     getGameResult: vi.fn(() => null),
     clearGameResult: vi.fn(),
+    parseCardQuestion: vi.fn((question: string) => {
+      const [yStr, xStr] = question.split('x')
+      return { y: Number.parseInt(yStr ?? '', 10) || 0, x: Number.parseInt(xStr ?? '', 10) || 0 }
+    }),
     ...overrides
   }))
 

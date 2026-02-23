@@ -30,10 +30,7 @@ export function calculateLinearRegression(X: number[], Y: number[]): RegressionR
   const avgX = sumX / n
   const avgY = sumY / n
 
-  const numerator = X.map((x, i) => (x - avgX) * ((Y[i] ?? 0) - avgY)).reduce(
-    (prev, curr) => prev + curr,
-    0
-  )
+  const numerator = X.reduce((sum, x, i) => sum + (x - avgX) * ((Y[i] ?? 0) - avgY), 0)
   const denominator = X.map(x => (x - avgX) ** 2).reduce((prev, curr) => prev + curr, 0)
 
   if (denominator === 0) {
@@ -61,15 +58,15 @@ export function calculateRegression(
   const { seconds: X, tasks: Y } = convertToXY(measurements, sessionStartTime)
 
   if (n === 2) {
-    if (X[0] === undefined || X[1] === undefined || Y[0] === undefined || Y[1] === undefined) {
-      return null
-    }
-    const dX = X[1] - X[0]
-    const dY = Y[1] - Y[0]
+    // X and Y are guaranteed to have exactly 2 elements (mapped 1:1 from measurements)
+    const [x0, x1] = X as [number, number]
+    const [y0, y1] = Y as [number, number]
+    const dX = x1 - x0
+    const dY = y1 - y0
     if (dX === 0) {
       return null
     }
-    return { slope: dY / dX, intercept: Y[0] - (dY / dX) * X[0] }
+    return { slope: dY / dX, intercept: y0 - (dY / dX) * x0 }
   }
 
   // For n >= 3, use linear regression (returns null if all X values are identical)

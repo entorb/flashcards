@@ -10,16 +10,6 @@ interface Props {
 }
 
 defineProps<Props>()
-
-// Normalize the games played property name
-function getGamesPlayed(stats: Statistics): number {
-  return stats.gamesPlayed ?? stats.gamesPlayed ?? 0
-}
-
-// Normalize the points/score property name
-function getPointsOrScore(stats: Statistics): number {
-  return stats.points ?? stats.points ?? 0
-}
 </script>
 
 <template>
@@ -35,7 +25,7 @@ function getPointsOrScore(stats: Statistics): number {
             class="text-h6"
             data-cy="stats-games-played"
           >
-            {{ getGamesPlayed(statistics) }} x
+            {{ statistics.gamesPlayed }} x
           </div>
         </div>
         <div class="col-3">
@@ -43,7 +33,7 @@ function getPointsOrScore(stats: Statistics): number {
             class="text-h6"
             data-cy="stats-total-points"
           >
-            {{ getPointsOrScore(statistics) }}
+            {{ statistics.points }}
             <q-icon
               name="emoji_events"
               color="amber"

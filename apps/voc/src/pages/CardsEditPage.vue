@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TEXT_DE, MAX_LEVEL, MIN_LEVEL } from '@flashcards/shared'
+import { TEXT_DE, MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -52,6 +52,12 @@ function handleGoBack() {
       })
       return
     }
+  }
+
+  // Trim whitespace from user inputs before saving
+  for (const card of editingCards.value) {
+    card.voc = card.voc.trim()
+    card.de = card.de.trim()
   }
 
   importCards(editingCards.value)
@@ -145,12 +151,19 @@ function addNewCard() {
   editingCards.value.push({
     voc: '',
     de: '',
-    level: 1,
-    time: 60
+    level: MIN_LEVEL,
+    time: MAX_TIME
   })
 }
 
 function removeCard(index: number) {
+  if (editingCards.value.length <= 1) {
+    $q.notify({
+      type: 'negative',
+      message: TEXT_DE.shared.cardActions.lastCardError
+    })
+    return
+  }
   editingCards.value.splice(index, 1)
 }
 
