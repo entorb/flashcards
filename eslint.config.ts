@@ -480,7 +480,7 @@ export default [
       'sonarjs/todo-tag': 'off',
       // Vitest-specific rules
       'vitest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
-      'vitest/expect-expect': 'warn',
+      'vitest/expect-expect': ['warn', { assertFunctionNames: ['expect', 'fc.assert'] }],
       'vitest/no-disabled-tests': 'warn',
       'vitest/no-focused-tests': 'error',
       'vitest/prefer-to-be': 'error',
