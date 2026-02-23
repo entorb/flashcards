@@ -91,12 +91,15 @@ pnpm preview:lwk         # Preview only lwk app
 pnpm preview:eta         # Preview only eta app
 
 # Quality Checks
-pnpm types               # Type check all apps and packages
-pnpm lint                # Lint all code
-pnpm format              # Format all code
-pnpm test                # Run tests in all apps
-pnpm spell               # Spell check all files
-pnpm check               # Run all checks
+pnpm run types               # Type check all apps and packages
+pnpm run lint                # Lint all code
+pnpm run format              # Format all code
+pnpm run test                # Run tests in all apps
+pnpm run spell               # Spell check all files
+pnpm run check               # Run all these checks
+
+# run only for certain app, here 1x1
+pnpm --filter 1x1 run test
 
 # Testing Vitest Unit Tests
 pnpm run test

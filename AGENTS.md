@@ -1,6 +1,6 @@
 # Flashcards Monorepo
 
-**pnpm workspace** with three Vue.js/Quasar educational apps sharing common code.
+**pnpm workspace** with Vue.js/Quasar educational apps sharing common code.
 
 - **[apps/1x1](apps/1x1/AGENTS.md)**
 - **[apps/voc](apps/voc/AGENTS.md)**
@@ -10,7 +10,9 @@
 
 ## Workflow Rules
 
+- Update `AGENTS.md` file to prevent running into the same issues and fixing them again and again
 - Before running OS commands like `head`, `tail`, `grep`, etc., check your environment (Linux-like or Windows) and adjust accordingly (e.g., use PowerShell commands instead)
+- to run checks per app: `pnpm --filter 1x1 run lint 2>&1`, with `1x1` being the app name, same for `test`
 - Run `pnpm run format` to automatically handle code formatting
 - Run `pnpm run lint` and `pnpm run test` after changes to validate linting and unit tests
 - Run `pnpm run cy:run:{app}` after phases
@@ -80,7 +82,8 @@ flashcards/
 ├── apps/
 │   ├── 1x1/              # Port 5173/4173
 │   ├── voc/              # Port 5174/4174
-│   └── lwk/              # Port 5175/4175
+│   ├── lwk/              # Port 5175/4175
+│   └── eta/              # Port 5176/4176
 ├── packages/shared/       # Workspace package
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json     # Shared TS config
@@ -117,6 +120,19 @@ import { HistoryPage, GameOverPage } from '@flashcards/shared/pages'
 2. Use tsconfig inheritance in `tsconfig.node.json` → Causes `vue-tsc` to hang. Keep duplicated.
 3. Use vitest workspace config → Causes path resolution failures. Use per-app configs.
 4. Use `registerType: 'autoUpdate'` in PWA → Returns undefined. Use `'prompt'`.
+5. Stub a component by its filename when it's imported under a local alias → stub key must match the local alias used in the template.
+
+**✅ Test Stub Alias Pattern:**
+When a component is imported under a local alias (e.g. `import FoxIcon from './FoxMascot.vue'`),
+stub it by the alias name, not the filename:
+
+```typescript
+// GameOverPage.vue uses: import FoxIcon from '../components/FoxMascot.vue'
+// ✅ Correct — matches the template tag <FoxIcon>
+stubs: { FoxIcon: { template: '<div data-cy="fox-mascot" />', props: ['smile', 'grin', 'size'] } }
+// ❌ Wrong — 'FoxMascot' is the filename, not the local alias
+stubs: { FoxMascot: { template: '<div data-cy="fox-mascot" />' } }
+```
 
 **✅ BASE_PATH Pattern:**
 Each app defines `BASE_PATH` in `src/constants.ts` AND `vite.config.ts`
