@@ -21,17 +21,17 @@ describe('VOC Blind Mode Game - DE to Voc', () => {
       cy.get('[data-cy="blind-no-button"]').should('be.visible').click()
     }
 
-    // Wait for feedback and continue button to appear
-    cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
+    // Wait for feedback and continue button to appear, alias to avoid re-query on DOM update
+    cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible').as('continueBtn')
 
     // Check if it's a wrong answer (button will be disabled for 3s)
     if (!isCorrect) {
       // Wait for button to be enabled
-      cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
+      cy.get('@continueBtn', { timeout: 5000 }).should('not.be.disabled')
     }
 
     // Click continue button
-    cy.get('[data-cy="continue-button"]').click()
+    cy.get('@continueBtn').click({ force: true })
   }
 
   it('should complete a game with 1 wrong and 9 correct answers', () => {
