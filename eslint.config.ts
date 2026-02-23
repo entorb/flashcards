@@ -149,14 +149,16 @@ export default [
   },
 
   // TypeScript files with type-aware linting (requires tsconfig project)
+  // Note: Each app has its own tsconfig.app.json — ESLint resolves the nearest one via tsconfigRootDir
   {
-    files: ['vue_app/src/**/*.{ts,mts,tsx}'],
+    files: ['apps/*/src/**/*.{ts,mts,tsx}', 'packages/shared/src/**/*.{ts,mts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: ['./tsconfig.app.json', './tsconfig.node.json']
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname
       }
     },
     plugins: {
@@ -346,48 +348,11 @@ export default [
     }
   },
 
-  // Vue files with type-aware linting
-  {
-    files: ['vue_app/src/**/*.vue'],
-    languageOptions: {
-      parserOptions: {
-        parser: tsParser,
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        extraFileExtensions: ['.vue'],
-        project: null // Disable type-aware linting for Vue files due to tsconfig issues
-      }
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin
-    },
-    rules: {
-      // Note: Type-aware rules disabled for Vue files
-      // Enable them once tsconfig properly includes .vue files
-    }
-  },
-
   // Vue composables - relax some rules
   {
-    files: ['vue_app/src/composables/**/*.ts'],
+    files: ['apps/*/src/composables/**/*.ts', 'packages/shared/src/composables/**/*.ts'],
     rules: {
       'require-atomic-updates': 'off' // False positives in Vue composables with async/await
-    }
-  },
-
-  // Clipboard utilities - allow deprecated execCommand (still needed for fallback)
-  {
-    files: ['vue_app/src/utils/clipboard.ts'],
-    rules: {
-      'sonarjs/deprecation': 'off' // document.execCommand is deprecated but needed for fallback
-    }
-  },
-
-  // Allow v-html in TextView.vue for markdown and diff rendering (trusted content)
-  {
-    files: ['vue_app/src/views/TextView.vue'],
-    rules: {
-      'vue/no-v-html': 'off'
     }
   },
 
@@ -425,7 +390,7 @@ export default [
 
   // Vitest test files - relaxed rules
   {
-    files: ['**/*.{test,spec}.{js,ts,jsx,tsx}', 'vue_app/**/__tests__/**/*.{js,ts,jsx,tsx}'],
+    files: ['**/*.{test,spec}.{js,ts,jsx,tsx}', 'apps/**/__tests__/**/*.{js,ts,jsx,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
