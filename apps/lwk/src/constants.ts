@@ -20,10 +20,10 @@ export const STORAGE_KEYS = {
   DECKS: 'fc-lwk-decks',
   HISTORY: 'fc-lwk-history',
   STATS: 'fc-lwk-stats',
-  GAME_CONFIG: 'fc-lwk-game-config',
+  SETTINGS: 'fc-lwk-settings',
+  SELECTED_CARDS: 'fc-lwk-selected-cards',
   GAME_STATE: 'fc-lwk-game-state',
   GAME_RESULT: 'fc-lwk-game-result',
-  GAME_SETTINGS: 'fc-lwk-settings',
   DAILY_STATS: 'fc-lwk-daily-stats'
 }
 
@@ -36,8 +36,8 @@ export const STORAGE_KEYS = {
  * References the STORAGE_KEYS for consistency
  */
 export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
-  settingsKey: STORAGE_KEYS.GAME_SETTINGS,
-  selectedCardsKey: STORAGE_KEYS.GAME_CONFIG,
+  settingsKey: STORAGE_KEYS.SETTINGS,
+  selectedCardsKey: STORAGE_KEYS.SELECTED_CARDS,
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,

@@ -62,7 +62,7 @@ export function useEtaStore() {
     // Silently ignore if same timestamp as last measurement
     const lastMeasurement =
       sessionData.value.measurements[sessionData.value.measurements.length - 1]
-    if (lastMeasurement && lastMeasurement.timestamp.getTime() === newTimestamp.getTime()) {
+    if (lastMeasurement?.timestamp.getTime() === newTimestamp.getTime()) {
       return false
     }
 

@@ -150,7 +150,7 @@ function submitAnswer(result: AnswerStatus) {
   feedbackData.value.type = feedbackType
 
   if (result === 'close') {
-    const mainCorrectAnswer = correctAnswer.value.split('/')[0].trim()
+    const mainCorrectAnswer = correctAnswer.value.split('/')[0]?.trim() ?? correctAnswer.value
     feedbackData.value = {
       type: feedbackType,
       userInput: userAnswer.value,

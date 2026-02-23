@@ -11,7 +11,8 @@ import { weightedRandomSelection } from '../utils'
  * Get today's date in ISO format (YYYY-MM-DD)
  */
 export function getTodayISODate(): string {
-  return new Date().toISOString().split('T')[0]
+  const [datePart] = new Date().toISOString().split('T')
+  return datePart ?? new Date().toISOString().slice(0, 10)
 }
 
 /**
@@ -28,8 +29,8 @@ export function isDifferentDay(storedDate: string): boolean {
  * @returns Parsed value or fallback
  */
 export function loadJSON<T>(key: string, fallback: T): T {
-  const stored = localStorage.getItem(key)
-  if (!stored) {
+  const stored = globalThis.localStorage.getItem(key)
+  if (stored === null || stored === '') {
     return fallback
   }
   try {
@@ -45,7 +46,7 @@ export function loadJSON<T>(key: string, fallback: T): T {
  * @param data - Data to save
  */
 export function saveJSON<T>(key: string, data: T): void {
-  localStorage.setItem(key, JSON.stringify(data))
+  globalThis.localStorage.setItem(key, JSON.stringify(data))
 }
 
 /**
@@ -106,7 +107,9 @@ export function saveArray<T>(key: string, data: T[]): void {
 export function createHistoryOperations<T>(storageKey: string) {
   return {
     load: () => loadArray<T>(storageKey, []),
-    save: (history: T[]) => saveArray(storageKey, history),
+    save: (history: T[]) => {
+      saveArray(storageKey, history)
+    },
     add: (entry: T) => {
       const all = loadArray<T>(storageKey, [])
       all.push(entry)
@@ -126,7 +129,9 @@ export function createStatsOperations<
 >(storageKey: string, defaultStats: T) {
   return {
     load: () => loadJSON<T>(storageKey, defaultStats),
-    save: (stats: T) => saveJSON(storageKey, stats),
+    save: (stats: T) => {
+      saveJSON(storageKey, stats)
+    },
     update: (points: number, correctAnswers: number) => {
       const stats = loadJSON<T>(storageKey, defaultStats)
       stats.gamesPlayed++
@@ -145,8 +150,8 @@ export function createStatsOperations<
  * @returns Parsed value or fallback
  */
 export function loadSessionJSON<T>(key: string, fallback: T): T {
-  const stored = sessionStorage.getItem(key)
-  if (!stored) {
+  const stored = globalThis.sessionStorage.getItem(key)
+  if (stored === null || stored === '') {
     return fallback
   }
   try {
@@ -162,7 +167,7 @@ export function loadSessionJSON<T>(key: string, fallback: T): T {
  * @param data - Data to save
  */
 export function saveSessionJSON<T>(key: string, data: T): void {
-  sessionStorage.setItem(key, JSON.stringify(data))
+  globalThis.sessionStorage.setItem(key, JSON.stringify(data))
 }
 
 /**
@@ -170,7 +175,7 @@ export function saveSessionJSON<T>(key: string, data: T): void {
  * @param key - Storage key
  */
 export function removeSessionJSON(key: string): void {
-  sessionStorage.removeItem(key)
+  globalThis.sessionStorage.removeItem(key)
 }
 
 /**
@@ -184,30 +189,38 @@ export function removeSessionJSON(key: string): void {
 export function createGamePersistence<TSettings, TState>(settingsKey: string, stateKey: string) {
   return {
     // Game Settings operations
-    saveSettings: (settings: TSettings) => saveSessionJSON(settingsKey, settings),
+    saveSettings: (settings: TSettings) => {
+      saveSessionJSON(settingsKey, settings)
+    },
     loadSettings: (): TSettings | null => {
-      const stored = sessionStorage.getItem(settingsKey)
-      if (!stored) return null
+      const stored = globalThis.sessionStorage.getItem(settingsKey)
+      if (stored === null || stored === '') return null
       try {
         return JSON.parse(stored) as TSettings
       } catch {
         return null
       }
     },
-    clearSettings: () => removeSessionJSON(settingsKey),
+    clearSettings: () => {
+      removeSessionJSON(settingsKey)
+    },
 
     // Game State operations
-    saveState: (state: TState) => saveSessionJSON(stateKey, state),
+    saveState: (state: TState) => {
+      saveSessionJSON(stateKey, state)
+    },
     loadState: (): TState | null => {
-      const stored = sessionStorage.getItem(stateKey)
-      if (!stored) return null
+      const stored = globalThis.sessionStorage.getItem(stateKey)
+      if (stored === null || stored === '') return null
       try {
         return JSON.parse(stored) as TState
       } catch {
         return null
       }
     },
-    clearState: () => removeSessionJSON(stateKey),
+    clearState: () => {
+      removeSessionJSON(stateKey)
+    },
 
     // Clear both at once
     clearAll: () => {
@@ -236,7 +249,9 @@ export function createGameResultOperations(resultKey: string) {
         null
       )
     },
-    clear: () => removeSessionJSON(resultKey)
+    clear: () => {
+      removeSessionJSON(resultKey)
+    }
   }
 }
 
@@ -258,10 +273,13 @@ export function createAppGameStorage(
 
   return {
     // Game Result operations
-    setGameResult: (result: { points: number; correctAnswers: number; totalCards: number }) =>
-      resultOps.save(result),
+    setGameResult: (result: { points: number; correctAnswers: number; totalCards: number }) => {
+      resultOps.save(result)
+    },
     getGameResult: () => resultOps.load(),
-    clearGameResult: () => resultOps.clear(),
+    clearGameResult: () => {
+      resultOps.clear()
+    },
 
     // Daily Stats operations
     incrementDailyGames: () => incrementDailyGames(dailyStatsKey),
@@ -343,20 +361,20 @@ export function migrateStorageKeys(oldPrefix: string, newPrefix: string): void {
   const keysToMigrate: string[] = []
 
   // Collect all keys that start with oldPrefix
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
-    if (key?.startsWith(oldPrefix)) {
+  for (let i = 0; i < globalThis.localStorage.length; i++) {
+    const key = globalThis.localStorage.key(i)
+    if (key?.startsWith(oldPrefix) === true) {
       keysToMigrate.push(key)
     }
   }
 
   // Migrate each key
   for (const oldKey of keysToMigrate) {
-    const value = localStorage.getItem(oldKey)
+    const value = globalThis.localStorage.getItem(oldKey)
     if (value !== null) {
       const newKey = oldKey.replace(oldPrefix, newPrefix)
-      localStorage.setItem(newKey, value)
-      localStorage.removeItem(oldKey)
+      globalThis.localStorage.setItem(newKey, value)
+      globalThis.localStorage.removeItem(oldKey)
     }
   }
 }

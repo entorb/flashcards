@@ -23,18 +23,17 @@ import {
   clearGameState,
   loadCards,
   loadDecks,
-  loadGameConfig,
   loadGameState,
   loadHistory,
   loadSettings,
-  loadStats,
+  loadGameStats,
   saveCards,
   saveDecks,
   saveGameConfig,
   saveGameState,
   saveHistory,
   saveSettings,
-  saveStats,
+  saveGameStats,
   setGameResult
 } from '../services/storage'
 import type { Card, GameHistory, GameSettings } from '../types'
@@ -44,8 +43,8 @@ const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
   loadCards,
   loadHistory,
   saveHistory,
-  loadGameStats: loadStats,
-  saveGameStats: saveStats,
+  loadGameStats,
+  saveGameStats,
   saveCards
 })
 
@@ -71,15 +70,7 @@ export function useGameStore() {
 
   if (savedGameState && savedGameState.gameCards.length > 0) {
     // Restore game settings from saved state (for page reload recovery)
-    if (savedGameState.gameSettings) {
-      baseStore.gameSettings.value = savedGameState.gameSettings
-    } else {
-      // Fallback to sessionStorage if gameSettings not in saved state (for backward compat)
-      const savedGameSettings = loadGameConfig()
-      if (savedGameSettings) {
-        baseStore.gameSettings.value = savedGameSettings
-      }
-    }
+    baseStore.gameSettings.value = savedGameState.gameSettings
     // Restore game state
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
@@ -99,7 +90,7 @@ export function useGameStore() {
     }
 
     // Ensure the correct deck is loaded before starting the game
-    if (settings.deck) {
+    if (settings.deck !== undefined && settings.deck.length > 0) {
       switchDeck(settings.deck)
     }
 
@@ -134,11 +125,7 @@ export function useGameStore() {
     if (result === 'correct' || result === 'close') {
       // Speed bonus only in hidden mode and only for correct answers
       if (result === 'correct' && baseStore.gameSettings.value.mode === 'hidden') {
-        if (
-          currentCard.time != null &&
-          currentCard.time < MAX_TIME &&
-          answerTime <= currentCard.time
-        ) {
+        if (currentCard.time < MAX_TIME && answerTime <= currentCard.time) {
           speedBonus = true
         }
       }
@@ -227,6 +214,7 @@ export function useGameStore() {
   function resetCardsToDefault() {
     // Delete all decks and reset to default set only
     const defaultDeck = DEFAULT_DECKS[0]
+    if (defaultDeck === undefined) return
 
     // Save only the default deck
     saveDecks([defaultDeck])
@@ -265,14 +253,14 @@ export function useGameStore() {
   function removeDeckAndSwitch(name: string): boolean {
     const settings = loadSettings()
     const isCurrentDeck =
-      settings?.deck === name || (!settings?.deck && name === DEFAULT_DECKS[0].name)
+      settings?.deck === name || (settings?.deck === undefined && name === DEFAULT_DECKS[0]?.name)
 
     const success = deckManagement.removeDeck(name)
 
     if (success && isCurrentDeck) {
       // Active deck was removed, switch to the new default deck
       const newSettings = loadSettings()
-      if (newSettings?.deck) {
+      if (newSettings?.deck !== undefined && newSettings.deck.length > 0) {
         switchDeck(newSettings.deck)
       }
     }
@@ -284,7 +272,7 @@ export function useGameStore() {
   // ============================================================================
 
   const currentCard = computed(() => {
-    return baseStore.gameCards.value[baseStore.currentCardIndex.value] || null
+    return baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null
   })
 
   const isEisiHappy = computed(() => {

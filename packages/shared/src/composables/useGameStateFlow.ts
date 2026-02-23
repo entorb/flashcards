@@ -156,8 +156,8 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
  * Called from GameOverPage when navigating home
  */
 export function clearGameSessionData(config: GameStateFlowConfig): void {
-  sessionStorage.removeItem(config.selectedCardsKey)
-  sessionStorage.removeItem(config.gameResultKey)
+  globalThis.sessionStorage.removeItem(config.selectedCardsKey)
+  globalThis.sessionStorage.removeItem(config.gameResultKey)
 }
 
 /**

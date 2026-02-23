@@ -61,8 +61,12 @@ const sortedFilteredCards = computed(() => {
   const cards = [...filteredCards.value]
   cards.sort((a, b) => {
     // Parse question format "5x3" to get y=5, x=3
-    const [aY, aX] = a.question.split('x').map(s => Number.parseInt(s, 10))
-    const [bY, bX] = b.question.split('x').map(s => Number.parseInt(s, 10))
+    const aParts = a.question.split('x').map(s => Number.parseInt(s, 10))
+    const bParts = b.question.split('x').map(s => Number.parseInt(s, 10))
+    const aY = aParts[0] ?? 0
+    const aX = aParts[1] ?? 0
+    const bY = bParts[0] ?? 0
+    const bX = bParts[1] ?? 0
 
     // Sort by X first (column), then by Y (row)
     if (aX !== bX) return aX - bX
@@ -144,7 +148,7 @@ function getCellStyle(y: number, x: number): Record<string, string> {
   const card = y < x ? getCard(x, y) : getCard(y, x)
 
   return {
-    backgroundColor: LEVEL_COLORS[card.level as keyof typeof LEVEL_COLORS] || BG_COLORS.disabled,
+    backgroundColor: LEVEL_COLORS[card.level] ?? BG_COLORS.disabled,
     color: getTimeTextColor(card.time)
   }
 }

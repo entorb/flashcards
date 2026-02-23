@@ -100,7 +100,7 @@ function getColor(status: AnswerStatus): string {
 
     <!-- Details Section -->
     <q-card-section
-      v-if="$slots.details"
+      v-if="$slots['details']"
       class="text-center q-pa-lg"
     >
       <!-- eslint-disable-next-line vue/require-explicit-slots -->

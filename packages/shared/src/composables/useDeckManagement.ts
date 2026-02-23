@@ -74,8 +74,9 @@ export function useDeckManagement<
     saveDecks(filtered)
     // If current deck was removed, update settings and switch to a new default
     const settings = loadSettings()
-    if (settings?.deck === name && filtered[0]) {
-      settings.deck = filtered[0].name
+    const firstRemaining = filtered[0]
+    if (settings?.deck === name && firstRemaining !== undefined) {
+      settings.deck = firstRemaining.name
       saveSettings(settings)
     }
     return true

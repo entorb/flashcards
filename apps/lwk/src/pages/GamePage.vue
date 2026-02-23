@@ -46,8 +46,8 @@ const readyToStart = ref(false) // For hidden mode: waiting for user to click GO
 const isHiddenModeActive = ref(false) // For hidden mode: word stays hidden after GO until next card
 const showProceedButton = ref(false)
 const totalCards = ref(0)
-const startHiddenTimeout = ref<number | null>(null)
-const countdownInterval = ref<number | null>(null)
+const startHiddenTimeout = ref<ReturnType<typeof globalThis.setTimeout> | null>(null)
+const countdownInterval = ref<ReturnType<typeof globalThis.setInterval> | null>(null)
 
 // Use shared timer logic
 const { elapsedTime, stopTimer } = useGameTimer(currentCard)
@@ -71,6 +71,7 @@ const canProceed = computed(
 
 const pointsBreakdown = computed(() => {
   if (!answerStatus.value || answerStatus.value === 'incorrect') return null
+  if (!currentCard.value) return null
 
   const difficultyPoints = gameSettings.value?.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1
   const timeBonus =
@@ -119,7 +120,7 @@ watch(
       // Hidden mode: show word and wait for user to click GO again
       showWord.value = true
       // Delay setting readyToStart to avoid Enter key triggering startHiddenMode
-      startHiddenTimeout.value = window.setTimeout(() => {
+      startHiddenTimeout.value = globalThis.setTimeout(() => {
         readyToStart.value = true
         startHiddenTimeout.value = null
       }, 150)
@@ -183,7 +184,7 @@ function showWordForDuration() {
   }
 
   // Decrement countdown every second
-  countdownInterval.value = window.setInterval(() => {
+  countdownInterval.value = globalThis.setInterval(() => {
     countdown.value--
     if (countdown.value <= 0) {
       if (countdownInterval.value !== null) {

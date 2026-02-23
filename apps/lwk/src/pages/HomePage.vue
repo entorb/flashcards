@@ -52,7 +52,9 @@ onMounted(() => {
     settings.value = { ...settings.value, ...lastSettings }
   } else if (loadedDecks.length > 0) {
     // Default to first deck if no valid saved settings or deck is invalid
-    settings.value.deck = loadedDecks[0].name
+    settings.value.deck = loadedDecks[0]?.name ?? ''
+    // Save settings to ensure deck info is persisted for card operations
+    saveSettings(settings.value)
   }
 
   // Set active deck in store
