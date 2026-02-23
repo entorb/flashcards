@@ -201,7 +201,7 @@ describe('helpers - Card Text Parsing', () => {
     it('should parse single card with all fields', () => {
       const result = parseCardsFromText('apple\tApfel\t2')
       expect(result?.cards).toHaveLength(1)
-      expect(result?.cards[0]).toEqual({
+      expect(result!.cards[0]!).toEqual({
         voc: 'apple',
         de: 'Apfel',
         level: 2,
@@ -212,7 +212,7 @@ describe('helpers - Card Text Parsing', () => {
     it('should parse single card without level (defaults to 1)', () => {
       const result = parseCardsFromText('apple\tApfel')
       expect(result?.cards).toHaveLength(1)
-      expect(result?.cards[0].level).toBe(1)
+      expect(result!.cards[0]!.level).toBe(1)
     })
 
     it('should parse multiple cards', () => {
@@ -223,7 +223,7 @@ describe('helpers - Card Text Parsing', () => {
 
     it('should trim whitespace from card values', () => {
       const result = parseCardsFromText('  apple  \t  Apfel  \t  2  ')
-      expect(result?.cards[0]).toEqual({
+      expect(result!.cards[0]!).toEqual({
         voc: 'apple',
         de: 'Apfel',
         level: 2,
@@ -237,7 +237,7 @@ describe('helpers - Card Text Parsing', () => {
       const text = 'voc\tde\tlevel\n' + 'apple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
-      expect(result?.cards[0].voc).toBe('apple')
+      expect(result!.cards[0]!.voc).toBe('apple')
     })
 
     it('should skip header with lowercase "voc" and "de"', () => {
@@ -263,42 +263,42 @@ describe('helpers - Card Text Parsing', () => {
     it('should parse valid levels 1-5', () => {
       for (let level = 1; level <= 5; level++) {
         const result = parseCardsFromText(`word\tWort\t${level}`)
-        expect(result?.cards[0].level).toBe(level)
+        expect(result!.cards[0]!.level).toBe(level)
       }
     })
 
     it('should default to level 1 if level is not a number', () => {
       const result = parseCardsFromText('apple\tApfel\tabc')
-      expect(result?.cards[0].level).toBe(1)
+      expect(result!.cards[0]!.level).toBe(1)
     })
 
     it('should default to level 1 if level field is empty', () => {
       const result = parseCardsFromText('apple\tApfel\t')
-      expect(result?.cards[0].level).toBe(1)
+      expect(result!.cards[0]!.level).toBe(1)
     })
 
     it('should default to level 1 when level is 0 (falsy check)', () => {
       // Note: Number.parseInt('0', 10) returns 0, but 0 || 1 evaluates to 1
       const result = parseCardsFromText('apple\tApfel\t0')
-      expect(result?.cards[0].level).toBe(1)
+      expect(result!.cards[0]!.level).toBe(1)
     })
 
-    it('should allow level values above 5', () => {
+    it('should clamp level values above MAX_LEVEL to MIN_LEVEL', () => {
       const result = parseCardsFromText('apple\tApfel\t10')
-      expect(result?.cards[0].level).toBe(10)
+      expect(result!.cards[0]!.level).toBe(1)
     })
   })
 
   describe('Multi-word and special characters', () => {
     it('should parse multi-word phrases', () => {
       const result = parseCardsFromText('to walk\tzu Fuß gehen\t1')
-      expect(result?.cards[0].voc).toBe('to walk')
-      expect(result?.cards[0].de).toBe('zu Fuß gehen')
+      expect(result!.cards[0]!.voc).toBe('to walk')
+      expect(result!.cards[0]!.de).toBe('zu Fuß gehen')
     })
 
     it('should handle special characters and umlauts', () => {
       const result = parseCardsFromText('Müller\tmüller@example.com\t1')
-      expect(result?.cards[0]).toEqual({
+      expect(result!.cards[0]!).toEqual({
         voc: 'Müller',
         de: 'müller@example.com',
         level: 1,
@@ -308,14 +308,14 @@ describe('helpers - Card Text Parsing', () => {
 
     it('should handle numbers in card text', () => {
       const result = parseCardsFromText('chapter 5\tkapitel 5\t2')
-      expect(result?.cards[0].voc).toBe('chapter 5')
-      expect(result?.cards[0].de).toBe('kapitel 5')
+      expect(result!.cards[0]!.voc).toBe('chapter 5')
+      expect(result!.cards[0]!.de).toBe('kapitel 5')
     })
 
     it('should handle punctuation in card text', () => {
       const result = parseCardsFromText("don't\tdarf nicht\t1")
-      expect(result?.cards[0].voc).toBe("don't")
-      expect(result?.cards[0].de).toBe('darf nicht')
+      expect(result!.cards[0]!.voc).toBe("don't")
+      expect(result!.cards[0]!.de).toBe('darf nicht')
     })
   })
 
@@ -353,22 +353,22 @@ describe('helpers - Card Text Parsing', () => {
       const text = 'voc;de;level\n' + 'apple;Apfel;1\n' + 'banana;Banane;2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards[0].voc).toBe('apple')
-      expect(result?.cards[0].de).toBe('Apfel')
+      expect(result!.cards[0]!.voc).toBe('apple')
+      expect(result!.cards[0]!.de).toBe('Apfel')
     })
 
     it('should parse comma-delimited cards correctly', () => {
       const text = 'apple,Apfel,1\n' + 'banana,Banane,2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards[0].voc).toBe('apple')
+      expect(result!.cards[0]!.voc).toBe('apple')
     })
 
     it('should parse slash-delimited cards correctly', () => {
       const text = 'apple/Apfel/1\n' + 'banana/Banane/2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards[0].voc).toBe('apple')
+      expect(result!.cards[0]!.voc).toBe('apple')
     })
   })
 
@@ -390,7 +390,7 @@ describe('helpers - Card Text Parsing', () => {
 
     it('should include MAX_TIME in parsed cards', () => {
       const result = parseCardsFromText('apple\tApfel')
-      expect(result?.cards[0].time).toBe(MAX_TIME)
+      expect(result!.cards[0]!.time).toBe(MAX_TIME)
     })
   })
 
@@ -398,7 +398,7 @@ describe('helpers - Card Text Parsing', () => {
     it('should handle cards with extra delimiter occurrences', () => {
       const result = parseCardsFromText('apple pie\tApfelkuchen\t1')
       expect(result?.cards).toHaveLength(1)
-      expect(result?.cards[0].voc).toBe('apple pie')
+      expect(result!.cards[0]!.voc).toBe('apple pie')
     })
 
     it('should handle empty lines in input', () => {
@@ -418,14 +418,14 @@ describe('helpers - Card Text Parsing', () => {
       const longEn = 'a'.repeat(1000)
       const longDe = 'b'.repeat(1000)
       const result = parseCardsFromText(`${longEn}\t${longDe}\t1`)
-      expect(result?.cards[0].voc).toBe(longEn)
-      expect(result?.cards[0].de).toBe(longDe)
+      expect(result!.cards[0]!.voc).toBe(longEn)
+      expect(result!.cards[0]!.de).toBe(longDe)
     })
 
     it('should preserve spaces within card values', () => {
       const result = parseCardsFromText('to walk quickly\tschnell zu Fuß gehen\t1')
-      expect(result?.cards[0].voc).toBe('to walk quickly')
-      expect(result?.cards[0].de).toBe('schnell zu Fuß gehen')
+      expect(result!.cards[0]!.voc).toBe('to walk quickly')
+      expect(result!.cards[0]!.de).toBe('schnell zu Fuß gehen')
     })
   })
 
@@ -460,9 +460,9 @@ describe('helpers - Card Text Parsing', () => {
       const text = 'apple\tApfel\t2\n' + 'banana\tBanane\n' + 'cherry\tKirsche\t4'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
-      expect(result?.cards[0].level).toBe(2)
-      expect(result?.cards[1].level).toBe(1)
-      expect(result?.cards[2].level).toBe(4)
+      expect(result!.cards[0]!.level).toBe(2)
+      expect(result!.cards[1]!.level).toBe(1)
+      expect(result!.cards[2]!.level).toBe(4)
     })
   })
 })
