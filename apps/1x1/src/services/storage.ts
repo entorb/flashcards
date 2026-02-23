@@ -42,9 +42,9 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
  * @returns Object with x and y numbers
  */
 export function parseCardQuestion(question: string): { x: number; y: number } {
-  const parts = question.split('x').map(s => Number.parseInt(s, 10))
-  const y = parts[0] ?? 0
-  const x = parts[1] ?? 0
+  const [yStr, xStr] = question.split('x')
+  const y = Number.parseInt(yStr ?? '', 10) || 0
+  const x = Number.parseInt(xStr ?? '', 10) || 0
   return { x, y }
 }
 

@@ -32,6 +32,7 @@ export function calculateTimePerTask(
   }
 
   // Subsequent measurements: calculate from previous measurement
+  // index > 0 is guaranteed by the index === 0 early return above
   const previous = measurements[index - 1]
   if (!previous) {
     return null
