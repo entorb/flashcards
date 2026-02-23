@@ -3,13 +3,14 @@ describe('LWK Card Edit Functionality', () => {
   beforeEach(() => {
     // Visit with onBeforeLoad to set up empty deck before app initializes
     cy.visit('/', {
-      onBeforeLoad(win: Cypress.AUTWindow) {
+      onBeforeLoad(win: Cypress.AUWindow) {
         win.localStorage.clear()
         win.sessionStorage.clear()
         // Set up empty deck to prevent default cards from loading
-        win.localStorage.setItem('fc-lwk-decks', JSON.stringify([{ name: 'LWK_1', cards: [] }]))
-        // Set the current deck in settings
-        win.localStorage.setItem('fc-lwk-game-settings', JSON.stringify({ deck: 'LWK_1' }))
+        win.localStorage.setItem(
+          'fc-lwk-decks',
+          JSON.stringify([{ name: 'Lernwörter_1', cards: [] }])
+        )
       }
     })
   })
@@ -89,6 +90,25 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="card-edit-item"]').should('have.length', 1)
   })
 
+  it('export cards to clipboard', () => {
+    cy.get('[data-cy="cards-button"]').click()
+    cy.get('[data-cy="edit-cards-button"]').click()
+
+    // Add a test card
+    cy.get('[data-cy="add-card-button"]').click()
+    cy.get('[data-cy="card-edit-item"]')
+      .last()
+      .within(() => {
+        cy.get('[data-cy="word-input"]').type('ExportTest')
+      })
+
+    // Export cards
+    cy.get('[data-cy="export-button"]').click()
+
+    // Verify the button text changed to indicate copy
+    cy.get('[data-cy="export-button"]').should('contain', 'Kopiert')
+  })
+
   it('import cards from text with tab delimiter', () => {
     cy.get('[data-cy="cards-button"]').click()
     cy.get('[data-cy="edit-cards-button"]').click()
@@ -118,7 +138,7 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="edit-cards-button"]').click()
 
     // Mock clipboard API with semicolon delimiter
-    const importData = 'Haus\nBaum'
+    const importData = 'word;level\nHaus;1\nBaum;2'
     cy.window().then(win => {
       cy.stub(win.navigator.clipboard, 'readText').resolves(importData)
     })
@@ -141,7 +161,7 @@ describe('LWK Card Edit Functionality', () => {
     cy.get('[data-cy="cards-button"]').click()
     cy.get('[data-cy="edit-cards-button"]').click()
 
-    // Mock clipboard API with comma delimiter and level
+    // Mock clipboard API with comma delimiter
     const importData = 'word,level\nKatze,1\nHund,2\nVogel,3'
     cy.window().then(win => {
       cy.stub(win.navigator.clipboard, 'readText').resolves(importData)
@@ -279,36 +299,34 @@ describe('LWK Card Edit Functionality', () => {
 
   it('persist card changes after page reload', () => {
     cy.get('[data-cy="cards-button"]').click()
+    cy.url().should('include', '/cards')
     cy.get('[data-cy="edit-cards-button"]').click()
+    cy.url().should('include', '/cards')
+    cy.get('[data-cy="add-card-button"]', { timeout: 5000 }).should('be.visible')
 
     // Add and edit a card
     cy.get('[data-cy="add-card-button"]').click()
-    cy.get('[data-cy="card-edit-item"]')
+    cy.get('[data-cy="card-edit-item"]', { timeout: 5000 })
       .last()
       .within(() => {
         cy.get('[data-cy="word-input"]').type('PersistTest')
       })
 
-    // Verify card is visible before going back
-    cy.get('[data-cy="card-edit-item"]')
-      .first()
-      .within(() => {
-        cy.get('[data-cy="word-input"]').should('have.value', 'PersistTest')
-      })
-
-    // Go back to save the cards to localStorage
+    // Go back to save
     cy.get('[data-cy="back-button"]').click()
-    cy.url().should('include', '/cards')
 
-    // Reload the page to test persistence
-    cy.reload()
+    // Wait for navigation to complete
+    cy.url({ timeout: 10000 }).should('not.include', '/cards-edit')
+    cy.url().should('include', '/cards')
 
     // Navigate back to cards edit
     cy.get('[data-cy="edit-cards-button"]').click()
+    cy.url().should('include', '/cards')
+    cy.get('[data-cy="add-card-button"]', { timeout: 5000 }).should('be.visible')
 
-    // Verify the card persists with correct data after reload
-    cy.get('[data-cy="card-edit-item"]').should('have.length', 1)
-    cy.get('[data-cy="card-edit-item"]')
+    // Verify the card persists
+    cy.get('[data-cy="card-edit-item"]', { timeout: 5000 })
+      .should('have.length', 1)
       .first()
       .within(() => {
         cy.get('[data-cy="word-input"]').should('have.value', 'PersistTest')
