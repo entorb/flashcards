@@ -70,7 +70,7 @@ function migrateToDecks(data: LegacyStorageData): CardDeck[] {
   return [{ name: 'en', cards }]
 }
 
-// TODO: Remove this migration function 28.02.2026
+// TODO: Remove this migration function 01.07.2026
 function migrateCardTimeFields(card: LegacyCard): Card {
   // If card already has time field, remove old fields
   if (card.time !== undefined) {
@@ -137,8 +137,8 @@ export function getCurrentDeckName(): string {
 export function loadCards(): Card[] {
   const decks = loadDecks()
   const deckName = getCurrentDeckName()
-  const deck = decks.find(d => d.name === deckName)
-  return deck?.cards ?? decks[0]?.cards ?? []
+  const deck = decks.find(d => d.name === deckName) ?? decks[0]
+  return deck?.cards ?? []
 }
 
 /**

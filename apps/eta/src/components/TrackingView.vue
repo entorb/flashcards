@@ -120,8 +120,9 @@ const tableData = computed(() => {
 
   // Calculate tasks per minute for all measurements
   const tasksPerMinuteData: number[] = session.measurements.map((current, i) => {
-    const previousTime = i === 0 ? session.startTime : session.measurements[i - 1]?.timestamp
-    const previousTasks = i === 0 ? 0 : (session.measurements[i - 1]?.completedTasks ?? 0)
+    const prev = i === 0 ? undefined : session.measurements[i - 1]
+    const previousTime = prev ? prev.timestamp : session.startTime
+    const previousTasks = prev ? prev.completedTasks : 0
 
     if (!previousTime) {
       return 0

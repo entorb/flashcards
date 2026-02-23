@@ -37,7 +37,10 @@ function handleGoBack() {
     return
   }
 
-  // Auto-save
+  // Auto-save — trim whitespace from user inputs
+  for (const card of editingCards.value) {
+    card.word = card.word.trim()
+  }
   importCards(editingCards.value)
   router.push('/cards')
 }
@@ -133,6 +136,13 @@ function handleAddCard() {
 }
 
 function handleRemoveCard(index: number) {
+  if (editingCards.value.length <= 1) {
+    $q.notify({
+      type: 'negative',
+      message: TEXT_DE.shared.cardActions.lastCardError
+    })
+    return
+  }
   editingCards.value.splice(index, 1)
 }
 

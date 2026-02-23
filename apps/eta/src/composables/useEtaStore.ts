@@ -14,7 +14,9 @@ export function useEtaStore() {
     if (!measurements || measurements.length === 0) {
       return 0
     }
-    return measurements[measurements.length - 1]?.completedTasks ?? 0
+    // Array is non-empty, so last element is always defined
+    const last = measurements[measurements.length - 1]
+    return last ? last.completedTasks : 0
   })
 
   const progressPercentage = computed(() => {

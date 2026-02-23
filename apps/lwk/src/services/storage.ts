@@ -64,9 +64,14 @@ export function saveDecks(decks: CardDeck[]): void {
 /**
  * Get current deck name from settings
  */
-// NOTE: Logic for determining the current deck name is now inlined
-// where needed (e.g., in loadCards) to avoid duplicating logic
-// defined elsewhere (such as in useGameStore.ts).
+/**
+ * Get current deck name from settings, falling back to first default deck
+ */
+function getCurrentDeckName(): string {
+  const settings = loadSettings()
+  const firstDeck = DEFAULT_DECKS[0]
+  return settings?.deck ?? (firstDeck ? firstDeck.name : '')
+}
 
 // ============================================================================
 // Cards (operates on current deck)
@@ -77,9 +82,7 @@ export function saveDecks(decks: CardDeck[]): void {
  */
 export function loadCards(): Card[] {
   const decks = loadDecks()
-  const settings = loadSettings()
-  const currentDeckName = settings?.deck ?? DEFAULT_DECKS[0]?.name
-  const deck = decks.find(d => d.name === currentDeckName)
+  const deck = decks.find(d => d.name === getCurrentDeckName())
   return deck?.cards ?? []
 }
 
@@ -88,9 +91,7 @@ export function loadCards(): Card[] {
  */
 export function saveCards(cards: Card[]): void {
   const decks = loadDecks()
-  const settings = loadSettings()
-  const currentDeckName = settings?.deck ?? DEFAULT_DECKS[0]?.name
-  const deckIndex = decks.findIndex(d => d.name === currentDeckName)
+  const deckIndex = decks.findIndex(d => d.name === getCurrentDeckName())
   if (deckIndex !== -1) {
     const deck = decks[deckIndex]
     if (deck) {

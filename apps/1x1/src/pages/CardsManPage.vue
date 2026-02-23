@@ -19,6 +19,7 @@ import {
   createDefaultCard,
   loadCards,
   loadRange,
+  parseCardQuestion,
   saveRange,
   toggleFeature
 } from '@/services/storage'
@@ -60,17 +61,12 @@ const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(
 const sortedFilteredCards = computed(() => {
   const cards = [...filteredCards.value]
   cards.sort((a, b) => {
-    // Parse question format "5x3" to get y=5, x=3
-    const aParts = a.question.split('x').map(s => Number.parseInt(s, 10))
-    const bParts = b.question.split('x').map(s => Number.parseInt(s, 10))
-    const aY = aParts[0] ?? 0
-    const aX = aParts[1] ?? 0
-    const bY = bParts[0] ?? 0
-    const bX = bParts[1] ?? 0
+    const aQ = parseCardQuestion(a.question)
+    const bQ = parseCardQuestion(b.question)
 
     // Sort by X first (column), then by Y (row)
-    if (aX !== bX) return aX - bX
-    return aY - bY
+    if (aQ.x !== bQ.x) return aQ.x - bQ.x
+    return aQ.y - bQ.y
   })
   return cards
 })

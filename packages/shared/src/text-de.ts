@@ -94,7 +94,8 @@ export const TEXT_DE = {
       copied: 'Kopiert!',
       emptyTextError: 'Das Textfeld ist leer.',
       clipboardError: 'Zugriff auf Zwischenablage fehlgeschlagen.',
-      invalidLevelError: 'Bitte gib ein Level zwischen {min} und {max} ein.'
+      invalidLevelError: 'Bitte gib ein Level zwischen {min} und {max} ein.',
+      lastCardError: 'Die letzte Karte kann nicht entfernt werden.'
     },
     pwa: {
       install: {
