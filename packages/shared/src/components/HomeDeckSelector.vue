@@ -44,8 +44,9 @@ function loadDecksAndSettings() {
 
   // Validate that current deck exists, fall back to first deck if not
   const deckExists = decks.some(d => d.name === currentDeck.value)
-  if (!deckExists && decks.length > 0) {
-    handleDeckChange(decks[0].name)
+  const firstDeck = decks[0]
+  if (!deckExists && firstDeck !== undefined) {
+    handleDeckChange(firstDeck.name)
   }
 }
 

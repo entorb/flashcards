@@ -17,6 +17,10 @@ function getCardKey(card: BaseCard): string {
   const c = card as unknown as { word: string }
   return c.word
 }
+
+function switchDeck(name: string): void {
+  store.switchDeck(name)
+}
 </script>
 
 <template>
@@ -28,7 +32,7 @@ function getCardKey(card: BaseCard): string {
     edit-cards-route="/cards-edit"
     edit-decks-route="/decks"
     :get-decks="() => store.getDecks()"
-    :switch-deck="name => store.switchDeck(name)"
+    :switch-deck="switchDeck"
     :load-settings="loadSettings"
     :save-settings="saveSettings"
     :store="store"

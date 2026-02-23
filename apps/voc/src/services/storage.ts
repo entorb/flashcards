@@ -55,8 +55,8 @@ function migrateToDecks(data: LegacyStorageData): CardDeck[] {
   }
 
   // Check if it's already deck structure
-  const firstItem = data[0] as Record<string, unknown>
-  if ('name' in firstItem && 'cards' in firstItem) {
+  const firstItem = data[0] as Record<string, unknown> | undefined
+  if (firstItem && 'name' in firstItem && 'cards' in firstItem) {
     // Migrate cards within decks
     const decks = (data as LegacyCardDeck[]).map(deck => ({
       ...deck,
@@ -72,27 +72,18 @@ function migrateToDecks(data: LegacyStorageData): CardDeck[] {
 
 // TODO: Remove this migration function 28.02.2026
 function migrateCardTimeFields(card: LegacyCard): Card {
-  const cardRecord = card as Record<string, unknown>
-
   // If card already has time field, remove old fields
-  if ('time' in cardRecord && typeof cardRecord.time === 'number') {
-    const cleanCard = { ...cardRecord }
+  if (card.time !== undefined) {
+    const cleanCard = { ...card }
     delete cleanCard.time_blind
     delete cleanCard.time_typing
     return cleanCard as unknown as Card
   }
 
   // Use time_typing if it exists (typing mode was more advanced), otherwise time_blind, otherwise default
-  let timeValue: number
-  if (typeof cardRecord.time_typing === 'number') {
-    timeValue = cardRecord.time_typing
-  } else if (typeof cardRecord.time_blind === 'number') {
-    timeValue = cardRecord.time_blind
-  } else {
-    timeValue = MAX_TIME
-  }
+  const timeValue = card.time_typing ?? card.time_blind ?? MAX_TIME
 
-  const cleanCard = { ...cardRecord }
+  const cleanCard = { ...card }
   delete cleanCard.time_blind
   delete cleanCard.time_typing
   return { ...cleanCard, time: timeValue } as unknown as Card
@@ -103,7 +94,7 @@ function migrateCardTimeFields(card: LegacyCard): Card {
  */
 export function loadDecks(): CardDeck[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
-  if (!stored) {
+  if (stored === null) {
     const defaultDecks = [{ name: 'en', cards: INITIAL_CARDS }]
     saveDecks(defaultDecks)
     return defaultDecks
@@ -135,7 +126,7 @@ export function saveDecks(decks: CardDeck[]): void {
  */
 export function getCurrentDeckName(): string {
   const settings = loadSettings()
-  return settings?.deck || 'en'
+  return settings?.deck ?? 'en'
 }
 
 // Cards (for backward compatibility - operates on current deck)
@@ -147,7 +138,7 @@ export function loadCards(): Card[] {
   const decks = loadDecks()
   const deckName = getCurrentDeckName()
   const deck = decks.find(d => d.name === deckName)
-  return deck ? deck.cards : decks[0].cards
+  return deck?.cards ?? decks[0]?.cards ?? []
 }
 
 /**
@@ -159,8 +150,11 @@ export function saveCards(cards: Card[]): void {
   const deckIndex = decks.findIndex(d => d.name === deckName)
 
   if (deckIndex >= 0) {
-    decks[deckIndex].cards = cards
-    saveDecks(decks)
+    const deck = decks[deckIndex]
+    if (deck) {
+      deck.cards = cards
+      saveDecks(decks)
+    }
   } else {
     // Deck not found, log an error and do not save to prevent data corruption.
     console.error(`Attempted to save cards to a non-existent deck: "${deckName}". Aborting.`)

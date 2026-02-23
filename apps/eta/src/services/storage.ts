@@ -8,14 +8,18 @@ import type { SessionData } from '@/types'
 export function loadSession(): SessionData | null {
   try {
     const stored = globalThis.localStorage.getItem(STORAGE_KEYS.SESSION)
-    if (!stored) {
+    if (stored === null) {
       return null
     }
 
     const parsed = JSON.parse(stored)
 
     // Validate the session data
-    if (!parsed.totalTasks || parsed.totalTasks <= 0 || !Number.isInteger(parsed.totalTasks)) {
+    if (
+      typeof parsed.totalTasks !== 'number' ||
+      parsed.totalTasks <= 0 ||
+      !Number.isInteger(parsed.totalTasks)
+    ) {
       // Invalid session, clear it
       clearSession()
       return null
