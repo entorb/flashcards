@@ -2,7 +2,14 @@
  * LWK App - Helper Utilities
  */
 
-import { levenshteinDistance, MAX_TIME, MIN_LEVEL, parseLevel, type AnswerStatus } from '@flashcards/shared'
+import {
+  levenshteinDistance,
+  MAX_TIME,
+  MIN_LEVEL,
+  parseLevel,
+  sanitizeBaseCard,
+  type AnswerStatus
+} from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '@/constants'
 
@@ -85,11 +92,13 @@ function parseNewlineOnlyCards(lines: string[]): { cards: Card[]; delimiter: str
   for (const line of lines) {
     const word = line.trim()
     if (word.length > 0 && !isHeaderLine(line, 0)) {
-      newCards.push({
-        word,
-        level: MIN_LEVEL,
-        time: MAX_TIME
-      })
+      newCards.push(
+        sanitizeBaseCard({
+          word,
+          level: MIN_LEVEL,
+          time: MAX_TIME
+        })
+      )
     }
   }
 
@@ -108,11 +117,11 @@ function isHeaderLine(line: string, index: number): boolean {
  */
 function parseCardFromLine(line: string, delimiter: string): Card | null {
   const parts = line.split(delimiter)
-  if (parts.length < 1 || (parts[0]?.trim() ?? '').length === 0) {
+  const word = parts[0]?.trim()
+  if (word === undefined || word === '') {
     return null
   }
 
-  const word = parts[0]?.trim() ?? ''
   const level = parseLevel(parts[1])
-  return { word, level, time: MAX_TIME }
+  return sanitizeBaseCard({ word, level, time: MAX_TIME })
 }

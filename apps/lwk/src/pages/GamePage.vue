@@ -288,7 +288,7 @@ function submitAnswer() {
           v-if="showFeedback && (answerStatus === 'close' || answerStatus === 'incorrect')"
           :status="answerStatus === 'close' ? 'close' : 'incorrect'"
           :user-answer="userInput"
-          :correct-answer="currentCard?.word"
+          :correct-answer="currentCard.word"
         />
 
         <GamePointsBreakdown

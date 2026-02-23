@@ -21,6 +21,7 @@ import {
 import {
   getVirtualCardsForRange,
   initializeCards,
+  parseCardQuestion,
   clearGameState as storageClearGameState,
   getGameConfig as storageGetGameConfig,
   loadCards as storageLoadCards,
@@ -135,10 +136,8 @@ export function useGameStore() {
 
     if (result === 'correct' || result === 'close') {
       // difficultyPoints is the smaller factor of the multiplication (e.g. 3 for 7x3)
-      const parts = card.question.split('x').map(s => Number.parseInt(s, 10))
-      const px = parts[0] ?? 0
-      const py = parts[1] ?? 0
-      const difficultyPoints = result === 'correct' ? Math.min(px, py) : 0
+      const { x, y } = parseCardQuestion(card.question)
+      const difficultyPoints = result === 'correct' ? Math.min(x, y) : 0
 
       const pointsBreakdown = calculatePointsBreakdown({
         difficultyPoints,
@@ -158,7 +157,8 @@ export function useGameStore() {
         level: newLevel,
         time: roundTime(clampedTime)
       })
-    } else { // result === 'incorrect'
+    } else {
+      // result === 'incorrect'
       const newLevel = Math.max(card.level - 1, MIN_LEVEL)
       storageUpdateCard(card.question, {
         level: newLevel
