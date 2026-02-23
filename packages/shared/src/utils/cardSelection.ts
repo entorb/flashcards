@@ -31,14 +31,18 @@ export function weightedRandomSelection<T>(
     let selectedIndex = 0
 
     for (let j = 0; j < availableItems.length; j++) {
-      random -= availableItems[j].weight
+      const entry = availableItems[j]
+      if (entry === undefined) break
+      random -= entry.weight
       if (random <= 0) {
         selectedIndex = j
         break
       }
     }
 
-    selected.push(availableItems[selectedIndex].item)
+    const selectedEntry = availableItems[selectedIndex]
+    if (selectedEntry === undefined) break
+    selected.push(selectedEntry.item)
     availableItems.splice(selectedIndex, 1)
   }
 
@@ -61,7 +65,12 @@ export function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const a = shuffled[i]
+    const b = shuffled[j]
+    if (a !== undefined && b !== undefined) {
+      shuffled[i] = b
+      shuffled[j] = a
+    }
   }
   return shuffled
 }

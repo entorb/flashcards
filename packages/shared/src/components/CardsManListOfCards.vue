@@ -14,7 +14,7 @@ interface Props {
 defineProps<Props>()
 
 function getLevelColor(level: number): string {
-  return LEVEL_COLORS[level] || LEVEL_COLORS[1]
+  return LEVEL_COLORS[level] ?? '#ffffff'
 }
 </script>
 

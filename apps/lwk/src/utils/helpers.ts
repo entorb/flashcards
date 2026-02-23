@@ -2,13 +2,7 @@
  * LWK App - Helper Utilities
  */
 
-import {
-  levenshteinDistance,
-  MAX_LEVEL,
-  MAX_TIME,
-  MIN_LEVEL,
-  type AnswerStatus
-} from '@flashcards/shared'
+import { levenshteinDistance, MAX_TIME, MIN_LEVEL, parseLevel, type AnswerStatus } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '@/constants'
 
@@ -48,11 +42,11 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
   }
 
   const lines = text.trim().split('\n')
-  const firstLine = lines[0]
+  const firstLine = lines[0] ?? ''
   const delimiter = detectDelimiter(firstLine)
 
   // If no delimiter found, treat as newline-only separated words
-  if (!delimiter) {
+  if (delimiter === null) {
     return parseNewlineOnlyCards(lines)
   }
 
@@ -90,7 +84,7 @@ function parseNewlineOnlyCards(lines: string[]): { cards: Card[]; delimiter: str
 
   for (const line of lines) {
     const word = line.trim()
-    if (word && !isHeaderLine(line, 0)) {
+    if (word.length > 0 && !isHeaderLine(line, 0)) {
       newCards.push({
         word,
         level: MIN_LEVEL,
@@ -114,23 +108,11 @@ function isHeaderLine(line: string, index: number): boolean {
  */
 function parseCardFromLine(line: string, delimiter: string): Card | null {
   const parts = line.split(delimiter)
-  if (parts.length < 1 || !parts[0].trim()) {
+  if (parts.length < 1 || (parts[0]?.trim() ?? '').length === 0) {
     return null
   }
 
-  const word = parts[0].trim()
+  const word = parts[0]?.trim() ?? ''
   const level = parseLevel(parts[1])
   return { word, level, time: MAX_TIME }
-}
-
-/**
- * Parse level from string, default to MIN_LEVEL if invalid
- */
-function parseLevel(levelStr?: string): number {
-  if (!levelStr) return MIN_LEVEL
-  const parsed = Number.parseInt(levelStr, 10)
-  if (Number.isNaN(parsed) || parsed < MIN_LEVEL || parsed > MAX_LEVEL) {
-    return MIN_LEVEL
-  }
-  return parsed
 }
