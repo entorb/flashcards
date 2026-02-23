@@ -20,6 +20,10 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 
 ## all
 
+- endless level 1
+- 3 Runden mit gleichen Karten
+- Gesamtpunkte sofort erhöhen, so dass auch bei Spielabbruch die Punkte erhalten bleiben
+
 ## 1x1
 
 ## lwk
