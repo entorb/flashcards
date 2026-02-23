@@ -20,6 +20,9 @@ import { loadSession, saveSession, clearSession } from '@/services/storage'
 
 describe('useEtaStore', () => {
   beforeEach(() => {
+    // Reset shared module-level state between tests, then clear mock call counts
+    const store = useEtaStore()
+    store.resetSession()
     vi.clearAllMocks()
   })
 
@@ -31,6 +34,16 @@ describe('useEtaStore', () => {
       expect(store.sessionData.value).toBeNull()
       expect(store.currentCompleted.value).toBe(0)
       expect(store.progressPercentage.value).toBe(0)
+    })
+
+    it('should not load session when loadSession returns null', () => {
+      vi.mocked(loadSession).mockReturnValue(null)
+
+      const store = useEtaStore()
+      store.initialize()
+
+      expect(store.isSessionActive.value).toBe(false)
+      expect(store.sessionData.value).toBeNull()
     })
 
     it('should load session on initialize', () => {
@@ -231,6 +244,109 @@ describe('useEtaStore', () => {
       store.addMeasurement(10)
 
       expect(store.isComplete()).toBe(true)
+    })
+  })
+
+  describe('currentCompleted', () => {
+    it('returns 0 when session has no measurements', () => {
+      const store = useEtaStore()
+      store.startSession(10)
+
+      expect(store.currentCompleted.value).toBe(0)
+    })
+
+    it('returns last measurement completedTasks', () => {
+      vi.useFakeTimers()
+      const store = useEtaStore()
+      store.startSession(10)
+      store.addMeasurement(3)
+      vi.advanceTimersByTime(1000)
+      store.addMeasurement(7)
+      vi.useRealTimers()
+
+      expect(store.currentCompleted.value).toBe(7)
+    })
+  })
+
+  describe('progressPercentage', () => {
+    it('returns 0 when no session', () => {
+      const store = useEtaStore()
+
+      expect(store.progressPercentage.value).toBe(0)
+    })
+
+    it('returns correct percentage after measurement', () => {
+      const store = useEtaStore()
+      store.startSession(10)
+      store.addMeasurement(5)
+
+      expect(store.progressPercentage.value).toBe(50)
+    })
+
+    it('returns 100 when all tasks complete', () => {
+      const store = useEtaStore()
+      store.startSession(10)
+      store.addMeasurement(10)
+
+      expect(store.progressPercentage.value).toBe(100)
+    })
+  })
+
+  describe('getTimeEstimates edge cases', () => {
+    it('returns null when regression returns null', () => {
+      vi.mocked(calculateRegression).mockReturnValue(null)
+
+      const store = useEtaStore()
+      vi.useFakeTimers()
+      store.startSession(10)
+      store.addMeasurement(3)
+      vi.advanceTimersByTime(1000)
+      store.addMeasurement(6)
+      vi.useRealTimers()
+
+      const result = store.getTimeEstimates()
+
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('addMeasurement equal to total tasks', () => {
+    it('allows adding measurement equal to totalTasks (completion)', () => {
+      const store = useEtaStore()
+      store.startSession(5)
+
+      const result = store.addMeasurement(5)
+
+      expect(result).toBe(true)
+      expect(store.isComplete()).toBe(true)
+    })
+  })
+
+  describe('addMeasurement duplicate timestamp guard', () => {
+    it('rejects measurement with same timestamp as last measurement', () => {
+      vi.useFakeTimers()
+      const store = useEtaStore()
+      store.startSession(10)
+      store.addMeasurement(3)
+      // Do NOT advance time — next addMeasurement will have same timestamp
+      const result = store.addMeasurement(6)
+      vi.useRealTimers()
+
+      expect(result).toBe(false)
+      expect(store.sessionData.value?.measurements).toHaveLength(1)
+    })
+
+    it('accepts measurement after time has advanced', () => {
+      vi.useFakeTimers()
+      const store = useEtaStore()
+      store.startSession(10)
+      store.addMeasurement(3)
+      vi.advanceTimersByTime(1000)
+      const result = store.addMeasurement(6)
+      vi.useRealTimers()
+
+      expect(result).toBe(true)
+      expect(store.sessionData.value?.measurements).toHaveLength(2)
     })
   })
 })

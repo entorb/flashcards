@@ -2,13 +2,6 @@
 
 import { vi } from 'vitest'
 
-// Suppress Vue warnings about unresolved Quasar components
-const originalWarn = console.warn
-console.warn = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('Failed to resolve component')) return
-  originalWarn(...args)
-}
-
 // Create in-memory storage implementation for localStorage
 class LocalStorageMock implements Storage {
   private readonly store: Map<string, string> = new Map()

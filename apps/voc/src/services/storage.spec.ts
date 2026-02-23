@@ -21,8 +21,8 @@ describe('Deck Storage', () => {
     it('should return default deck when no storage exists', () => {
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0].name).toBe('en')
-      expect(decks[0].cards).toEqual(INITIAL_CARDS)
+      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
 
     it('should load existing decks from storage', () => {
@@ -40,9 +40,9 @@ describe('Deck Storage', () => {
 
       const decks = loadDecks()
       expect(decks).toHaveLength(2)
-      expect(decks[0].name).toBe('en')
-      expect(decks[1].name).toBe('fr')
-      expect(decks[0].cards[0].voc).toBe('hello')
+      expect(decks[0]!.name).toBe('en')
+      expect(decks[1]!.name).toBe('fr')
+      expect(decks[0]!.cards[0]!.voc).toBe('hello')
     })
 
     it('should handle invalid storage data', () => {
@@ -50,8 +50,8 @@ describe('Deck Storage', () => {
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0].name).toBe('en')
-      expect(decks[0].cards).toEqual(INITIAL_CARDS)
+      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
 
     it('should handle empty array in storage', () => {
@@ -59,8 +59,8 @@ describe('Deck Storage', () => {
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0].name).toBe('en')
-      expect(decks[0].cards).toEqual(INITIAL_CARDS)
+      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
   })
 
@@ -83,8 +83,8 @@ describe('Deck Storage', () => {
       expect(stored).not.toBeNull()
       const parsed = JSON.parse(stored!)
       expect(parsed).toHaveLength(2)
-      expect(parsed[0].name).toBe('en')
-      expect(parsed[1].name).toBe('fr')
+      expect(parsed[0]!.name).toBe('en')
+      expect(parsed[1]!.name).toBe('fr')
     })
   })
 
@@ -126,7 +126,7 @@ describe('Deck Storage', () => {
 
       const cards = loadCards()
       expect(cards).toHaveLength(1)
-      expect(cards[0].voc).toBe('bonjour')
+      expect(cards[0]!.voc).toBe('bonjour')
     })
 
     it('should load from first deck when current deck not found', () => {
@@ -146,7 +146,7 @@ describe('Deck Storage', () => {
 
       const cards = loadCards()
       expect(cards).toHaveLength(1)
-      expect(cards[0].voc).toBe('hello')
+      expect(cards[0]!.voc).toBe('hello')
     })
   })
 
@@ -172,10 +172,10 @@ describe('Deck Storage', () => {
       saveCards(newCards)
 
       const decks = loadDecks()
-      expect(decks[1].cards).toHaveLength(1)
-      expect(decks[1].cards[0].voc).toBe('merci')
+      expect(decks[1]!.cards).toHaveLength(1)
+      expect(decks[1]!.cards[0]!.voc).toBe('merci')
       // Verify first deck unchanged
-      expect(decks[0].cards[0].voc).toBe('hello')
+      expect(decks[0]!.cards[0]!.voc).toBe('hello')
     })
 
     it('should not save when deck does not exist', () => {
@@ -198,7 +198,7 @@ describe('Deck Storage', () => {
 
       // Verify original deck unchanged
       const decks = loadDecks()
-      expect(decks[0].cards[0].voc).toBe('hello')
+      expect(decks[0]!.cards[0]!.voc).toBe('hello')
     })
   })
 
@@ -209,7 +209,7 @@ describe('Deck Storage', () => {
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0].cards[0].voc).toBe('hello')
+      expect(decks[0]!.cards[0]!.voc).toBe('hello')
     })
   })
 })
