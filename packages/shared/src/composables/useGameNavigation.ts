@@ -47,7 +47,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
     if (isGameOver) {
       stopTimer()
       finishGame()
-      router.push({ name: '/game-over' })
+      void router.push({ name: '/game-over' })
     }
   }
 
@@ -58,7 +58,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
   function handleGoHome() {
     stopTimer()
     discardGame()
-    router.push({ name: '/' })
+    void router.push({ name: '/' })
   }
 
   return {

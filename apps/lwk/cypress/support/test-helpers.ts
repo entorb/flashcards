@@ -36,7 +36,7 @@ export const saveDecks = (win: Cypress.AUTWindow, decks: SpellDeck[]): void => {
 }
 
 export const getCurrentDeckName = (win: Cypress.AUTWindow): string => {
-  const stored = win.localStorage.getItem(STORAGE_KEYS.GAME_SETTINGS)
+  const stored = win.localStorage.getItem(STORAGE_KEYS.SETTINGS)
   if (!stored) return ''
   try {
     const parsed = JSON.parse(stored) as SpellLastSettings

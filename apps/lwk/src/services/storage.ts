@@ -28,7 +28,7 @@ interface GameState {
 }
 
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
-  STORAGE_KEYS.GAME_CONFIG,
+  STORAGE_KEYS.SELECTED_CARDS,
   STORAGE_KEYS.GAME_STATE
 )
 
@@ -41,7 +41,7 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
  */
 export function loadDecks(): CardDeck[] {
   const stored = localStorage.getItem(STORAGE_KEYS.DECKS)
-  if (!stored) {
+  if (stored === null || stored === '') {
     saveDecks(DEFAULT_DECKS)
     return DEFAULT_DECKS
   }
@@ -78,9 +78,9 @@ export function saveDecks(decks: CardDeck[]): void {
 export function loadCards(): Card[] {
   const decks = loadDecks()
   const settings = loadSettings()
-  const currentDeckName = settings?.deck || DEFAULT_DECKS[0].name
+  const currentDeckName = settings?.deck ?? DEFAULT_DECKS[0]?.name
   const deck = decks.find(d => d.name === currentDeckName)
-  return deck?.cards || []
+  return deck?.cards ?? []
 }
 
 /**
@@ -89,11 +89,14 @@ export function loadCards(): Card[] {
 export function saveCards(cards: Card[]): void {
   const decks = loadDecks()
   const settings = loadSettings()
-  const currentDeckName = settings?.deck || DEFAULT_DECKS[0].name
+  const currentDeckName = settings?.deck ?? DEFAULT_DECKS[0]?.name
   const deckIndex = decks.findIndex(d => d.name === currentDeckName)
   if (deckIndex !== -1) {
-    decks[deckIndex].cards = cards
-    saveDecks(decks)
+    const deck = decks[deckIndex]
+    if (deck) {
+      deck.cards = cards
+      saveDecks(decks)
+    }
   }
 }
 
@@ -103,9 +106,17 @@ export function saveCards(cards: Card[]): void {
 
 const historyOps = createHistoryOperations<GameHistory>(STORAGE_KEYS.HISTORY)
 
-export const loadHistory = historyOps.load
-export const saveHistory = historyOps.save
-export const addHistoryEntry = historyOps.add
+export function loadHistory(): GameHistory[] {
+  return historyOps.load()
+}
+
+export function saveHistory(history: GameHistory[]): void {
+  historyOps.save(history)
+}
+
+export function addHistory(entry: GameHistory): void {
+  historyOps.add(entry)
+}
 
 // ============================================================================
 // Statistics
@@ -119,10 +130,17 @@ const DEFAULT_STATS = {
 
 const statsOps = createStatsOperations(STORAGE_KEYS.STATS, DEFAULT_STATS)
 
-export const loadStats = statsOps.load
-export const saveStats = statsOps.save
-export const saveGameStats = statsOps.save // Alias for consistency with other apps
-export const updateStats = statsOps.update
+export function loadGameStats() {
+  return statsOps.load()
+}
+
+export function saveGameStats(stats: typeof DEFAULT_STATS) {
+  statsOps.save(stats)
+}
+
+export function updateStatistics(points: number, correctAnswers: number) {
+  return statsOps.update(points, correctAnswers)
+}
 
 // ============================================================================
 // Settings
@@ -132,14 +150,14 @@ export const updateStats = statsOps.update
  * Load game settings
  */
 export function loadSettings(): GameSettings | null {
-  return loadJSON<GameSettings | null>(STORAGE_KEYS.GAME_SETTINGS, null)
+  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
 }
 
 /**
  * Save game settings
  */
 export function saveSettings(settings: GameSettings): void {
-  saveJSON(STORAGE_KEYS.GAME_SETTINGS, settings)
+  saveJSON(STORAGE_KEYS.SETTINGS, settings)
 }
 
 // ============================================================================

@@ -78,7 +78,7 @@ onMounted(async () => {
 
   if (!result.value && props.gameStoreHistory.length > 0) {
     const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
-    if (hasTotalCards(lastEntry)) {
+    if (lastEntry !== undefined && hasTotalCards(lastEntry)) {
       result.value = {
         points: lastEntry.points,
         correctAnswers: lastEntry.correctAnswers,
@@ -108,7 +108,9 @@ onMounted(async () => {
   // Update history in memory (last entry)
   if (props.gameStoreHistory.length > 0) {
     const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
-    lastEntry.points += totalBonusPoints
+    if (lastEntry !== undefined) {
+      lastEntry.points += totalBonusPoints
+    }
   }
 
   // Update stats in memory - props are refs from store, so mutation is intentional

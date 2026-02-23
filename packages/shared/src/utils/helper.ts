@@ -1,3 +1,4 @@
+import { MAX_LEVEL, MIN_LEVEL } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { DailyBonusConfig } from '../types'
 
@@ -89,38 +90,67 @@ export const calculateDailyBonuses = (
 }
 
 /**
+ * Initialize the Levenshtein distance matrix
+ */
+function initLevenshteinMatrix(len1: number, len2: number): number[][] {
+  const matrix: number[][] = []
+  for (let i = 0; i <= len1; i++) {
+    const row = new Array<number>(len2 + 1)
+    row[0] = i
+    matrix[i] = row
+  }
+
+  const firstRow = matrix[0]
+  if (firstRow) {
+    for (let j = 1; j <= len2; j++) {
+      firstRow[j] = j
+    }
+  }
+
+  return matrix
+}
+
+/**
+ * Fill a single cell in the Levenshtein matrix
+ */
+function fillMatrixCell(row: number[], prevRow: number[], j: number, cost: number): void {
+  const deletion = prevRow[j]
+  const insertion = row[j - 1]
+  const substitution = prevRow[j - 1]
+
+  if (deletion !== undefined && insertion !== undefined && substitution !== undefined) {
+    row[j] = Math.min(deletion + 1, insertion + 1, substitution + cost)
+  }
+}
+
+/**
  * Calculate Levenshtein distance between two strings
  * Used for fuzzy string matching in spelling and typing validation
  */
 export function levenshteinDistance(str1: string, str2: string): number {
   const len1 = str1.length
   const len2 = str2.length
-  const matrix: number[][] = []
 
   if (len1 === 0) return len2
   if (len2 === 0) return len1
 
-  // Initialize matrix
-  for (let i = 0; i <= len1; i++) {
-    matrix[i] = [i]
-  }
-  for (let j = 0; j <= len2; j++) {
-    matrix[0][j] = j
-  }
+  const matrix = initLevenshteinMatrix(len1, len2)
 
-  // Fill matrix
+  // Fill matrix using dynamic programming
   for (let i = 1; i <= len1; i++) {
-    for (let j = 1; j <= len2; j++) {
-      const cost = str1[i - 1] === str2[j - 1] ? 0 : 1
-      matrix[i][j] = Math.min(
-        matrix[i - 1][j] + 1, // deletion
-        matrix[i][j - 1] + 1, // insertion
-        matrix[i - 1][j - 1] + cost // substitution
-      )
+    const row = matrix[i]
+    const prevRow = matrix[i - 1]
+    if (row && prevRow) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1
+        fillMatrixCell(row, prevRow, j, cost)
+      }
     }
   }
 
-  return matrix[len1][len2]
+  const lastRow = matrix[len1]
+  const result = lastRow?.[len2]
+  return result ?? 0
 }
 
 /**
@@ -146,4 +176,18 @@ export function formatDate(dateString: string): string {
  */
 export function roundTime(seconds: number): number {
   return Math.round(seconds * 10) / 10
+}
+
+/**
+ * Parse level from string with validation
+ * @param levelStr - String to parse as level number (undefined treated as empty)
+ * @returns Parsed level number, or MIN_LEVEL if invalid
+ */
+export function parseLevel(levelStr: string | undefined): number {
+  if (levelStr === undefined || levelStr.length === 0) return MIN_LEVEL
+  const parsed = Number.parseInt(levelStr, 10)
+  if (Number.isNaN(parsed) || parsed < MIN_LEVEL || parsed > MAX_LEVEL) {
+    return MIN_LEVEL
+  }
+  return parsed
 }

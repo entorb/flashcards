@@ -66,9 +66,7 @@ export function useGameStore() {
 
   if (savedGameState && savedGameState.gameCards.length > 0) {
     // Restore game settings from saved state
-    if (savedGameState.gameSettings) {
-      baseStore.gameSettings.value = savedGameState.gameSettings
-    }
+    baseStore.gameSettings.value = savedGameState.gameSettings
     // Restore game state
     baseStore.gameCards.value = savedGameState.gameCards
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
@@ -106,7 +104,7 @@ export function useGameStore() {
     }
 
     // Ensure the correct deck is loaded before starting the game
-    if (settings.deck) {
+    if (settings.deck !== undefined && settings.deck !== '') {
       switchDeck(settings.deck)
     }
 
@@ -128,45 +126,59 @@ export function useGameStore() {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
     if (!currentCard || !baseStore.gameSettings.value) return
 
-    if (result === 'correct' || result === 'close') {
-      // Calculate points using shared scoring logic
-      // Determine mode multiplier
-      const difficultyPoints = (() => {
-        switch (baseStore.gameSettings.value?.mode) {
-          case 'blind':
-            return POINTS_MODE_BLIND
-          case 'typing':
-            return POINTS_MODE_TYPING
-          default:
-            return 1
+    // Calculate points using shared scoring logic
+    // Determine mode multiplier
+    const difficultyPoints = (() => {
+      switch (baseStore.gameSettings.value.mode) {
+        case 'blind':
+          return POINTS_MODE_BLIND
+        case 'typing':
+          return POINTS_MODE_TYPING
+        case 'multiple-choice':
+          return 1
+        default: {
+          // Exhaustive check: TypeScript will error if a new mode is added but not handled
+          const _exhaustive: never = baseStore.gameSettings.value.mode
+          console.error('Unexpected game mode:', _exhaustive)
+          return 1 // Fallback to multiple-choice points
         }
-      })()
+      }
+    })()
 
-      // Calculate language bonus
-      const languageBonus =
-        result === 'correct' && baseStore.gameSettings.value?.language === 'de-voc' ? 1 : 0
+    // Calculate language bonus
+    const languageBonus =
+      result === 'correct' && baseStore.gameSettings.value.language === 'de-voc' ? 1 : 0
 
-      // Determine time bonus
-      const isBeatTime =
-        result === 'correct' &&
-        answerTime !== undefined &&
-        currentCard.time != null &&
-        currentCard.time < MAX_TIME &&
-        answerTime <= currentCard.time
+    // Determine time bonus
+    const isBeatTime =
+      result === 'correct' &&
+      answerTime !== undefined &&
+      answerTime < MAX_TIME &&
+      answerTime < currentCard.time
 
-      const timeBonus = isBeatTime
-      const closeAdjustment = result === 'close'
+    const timeBonus = isBeatTime
+    const closeAdjustment = result === 'close'
 
-      const pointsBreakdown = calculatePointsBreakdown({
-        difficultyPoints,
-        level: currentCard.level,
-        timeBonus,
-        closeAdjustment,
-        languageBonus
-      })
+    const pointsBreakdown =
+      result === 'incorrect'
+        ? {
+            levelPoints: 0,
+            difficultyPoints: 0,
+            pointsBeforeBonus: 0,
+            closeAdjustment: 0,
+            languageBonus: 0,
+            timeBonus: 0,
+            totalPoints: 0
+          }
+        : calculatePointsBreakdown({
+            difficultyPoints,
+            level: currentCard.level,
+            timeBonus,
+            closeAdjustment,
+            languageBonus
+          })
 
-      baseStore.handleAnswerBase(result, pointsBreakdown)
-    }
+    baseStore.handleAnswerBase(result, pointsBreakdown)
 
     // Update card level and time
     baseStore.allCards.value = baseStore.allCards.value.map(card => {
@@ -275,14 +287,14 @@ export function useGameStore() {
   function removeDeckAndSwitch(name: string): boolean {
     const settings = loadSettings()
     const isCurrentDeck =
-      settings?.deck === name || (!settings?.deck && name === DEFAULT_DECKS[0].name)
+      settings?.deck === name || (settings?.deck === undefined && name === DEFAULT_DECKS[0]?.name)
 
     const success = deckManagement.removeDeck(name)
 
     if (success && isCurrentDeck) {
       // Active deck was removed, switch to the new default deck
       const newSettings = loadSettings()
-      if (newSettings?.deck) {
+      if (newSettings?.deck !== undefined && newSettings.deck !== '') {
         switchDeck(newSettings.deck)
       }
     }
@@ -291,7 +303,7 @@ export function useGameStore() {
 
   // Computed
   const currentCard = computed(() => {
-    return baseStore.gameCards.value[baseStore.currentCardIndex.value] || null
+    return baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null
   })
 
   const isFoxHappy = computed(() => {
