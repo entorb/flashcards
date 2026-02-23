@@ -20,6 +20,44 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 
 ## all
 
+non-functional requirements:
+
+- adjust AGENTS.md if needed, to prevent repeated problems
+- ensure unit test coverage is above 80%
+- is there more code that should me harmonized to the shared package, if so move (DRY)
+- afterwards run
+    pnpm run check
+    and fix all issues, errors and warnings
+- finally run
+    pnpm run cy:run
+    and fix all issues, errors and warnings
+
+The Cypress tests run too long.
+
+- for lwk and voc, reduce the number of cards to 4
+
+- for lwk and voc, the cards management of the import and export to clipboard are fragile and should be remove / or the clipboard mocked.
+
+- on my windows machine it takes very long for the first cypress test to start, is there a way to improve this?
+
+(note: I already started the dev server)
+
+- is there repeated code in the cypress tests, that should be moved to the central helper utils?
+
+- you are on Windows, use PowerShell instead of Bash
+
+- afterwards run
+
+    pnpm run check
+
+    and fix all issues, errors and warnings
+
+- finally run
+
+    pnpm run cy:run
+
+    and fix all issues, errors and warnings
+
 ## 1x1
 
 ## lwk
