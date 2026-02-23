@@ -9,7 +9,8 @@
     "./components": "./src/components/index.ts",
     "./layouts": "./src/layouts/index.ts",
     "./pages": "./src/pages/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./test-utils": "./src/test-utils.ts"
   },
   "scripts": {
     "test:cov": "vitest --watch=false --coverage",
@@ -22,6 +23,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "fast-check": "^4.5.3",
     "typescript": "^5.9.3",
     "vue-tsc": "^2.2.12"
   }
