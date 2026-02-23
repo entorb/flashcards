@@ -92,6 +92,13 @@ export const LEVEL_COLORS: Record<number, string> = {
   5: '#c8e6c9' // green-100 - Level 5 (advanced)
 }
 
+// Validate at import time: LEVEL_COLORS must cover every level
+for (let level = MIN_LEVEL; level <= MAX_LEVEL; level++) {
+  if (LEVEL_COLORS[level] === undefined) {
+    throw new Error(`LEVEL_COLORS is missing color for level ${level}`)
+  }
+}
+
 /**
  * Background colors
  */

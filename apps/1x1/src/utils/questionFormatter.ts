@@ -13,10 +13,12 @@ export function formatDisplayQuestion(
   selection: SelectionType | undefined
 ): string {
   // Check if a single number is selected (array with one element, not x² and not multiple numbers)
-  const isSingleNumberSelected = selection && Array.isArray(selection) && selection.length === 1
+  const isSingleNumberSelected =
+    selection !== undefined && Array.isArray(selection) && selection.length === 1
 
   if (isSingleNumberSelected) {
     const selectedNum = selection[0]
+    if (selectedNum === undefined) return cardQuestion.replace('x', '\u00d7')
     const [x, y] = cardQuestion.split('x').map(s => Number.parseInt(s, 10))
 
     // If the selected number matches one of the operands, rearrange so it's last

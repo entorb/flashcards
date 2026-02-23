@@ -1,4 +1,4 @@
-import { levenshteinDistance, MAX_TIME, type AnswerStatus } from '@flashcards/shared'
+import { levenshteinDistance, MAX_TIME, parseLevel, type AnswerStatus } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '../constants'
 import type { Card } from '../types'
@@ -61,7 +61,7 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
   }
 
   const lines = text.trim().split('\n')
-  const firstLine = lines[0]
+  const firstLine = lines[0] ?? ''
   let delimiter: string
   if (firstLine.includes('\t')) delimiter = '\t'
   else if (firstLine.includes(';')) delimiter = ';'
@@ -78,11 +78,17 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
     }
 
     const parts = line.split(delimiter)
-    if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
+    if (
+      parts.length >= 2 &&
+      (parts[0]?.trim() ?? '').length > 0 &&
+      (parts[1]?.trim() ?? '').length > 0
+    ) {
+      const voc = parts[0]?.trim() ?? ''
+      const de = parts[1]?.trim() ?? ''
       newCards.push({
-        voc: parts[0].trim(),
-        de: parts[1].trim(),
-        level: Number.parseInt(parts[2], 10) || 1,
+        voc,
+        de,
+        level: parseLevel(parts[2]),
         time: MAX_TIME
       })
     }

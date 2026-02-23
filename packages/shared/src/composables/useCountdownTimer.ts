@@ -53,7 +53,7 @@ export function useCountdownTimer(options: UseCountdownTimerOptions = {}) {
     stop()
     countdown.value = durationSeconds
     isRunning.value = true
-    endCallback = onComplete || null
+    endCallback = onComplete ?? null
 
     countdownInterval = setInterval(() => {
       countdown.value = Math.max(0, countdown.value - tickInterval / 1000)

@@ -42,7 +42,9 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
  * @returns Object with x and y numbers
  */
 export function parseCardQuestion(question: string): { x: number; y: number } {
-  const [y, x] = question.split('x').map(s => Number.parseInt(s, 10))
+  const parts = question.split('x').map(s => Number.parseInt(s, 10))
+  const y = parts[0] ?? 0
+  const x = parts[1] ?? 0
   return { x, y }
 }
 
@@ -85,51 +87,17 @@ export function initializeCards(): Card[] {
 }
 
 /**
- * TODO: delete after a week (10.11.2025)
- * Migrate old format cards (y <= x) to new format (x <= y)
- * Old: "3x5" where y=3, x=5, y <= x
- * New: "5x3" where y=5, x=3, x <= y
- */
-function migrateCardsToNewFormat(cards: Card[]): Card[] {
-  let migrated = false
-  const migratedCards = cards.map(card => {
-    const [first, second] = card.question.split('x').map(s => Number.parseInt(s, 10))
-
-    // If first <= second, it's old format (y <= x), needs migration
-    if (first < second) {
-      migrated = true
-      return {
-        ...card,
-        question: `${second}x${first}` // Swap to new format (x <= y)
-      }
-    }
-
-    // Already in new format or square (first === second)
-    return card
-  })
-
-  // Save migrated cards if any changes were made
-  if (migrated) {
-    console.warn('Migrated cards from old format (y <= x) to new format (x <= y)')
-    saveCards(migratedCards)
-  }
-
-  return migratedCards
-}
-
-/**
  * Load all multiplication cards from storage
  * Returns empty array if no cards exist (no auto-initialization)
- * Automatically migrates old format cards to new format
  */
 export function loadCards(): Card[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
-  if (!stored) {
+  if (stored === null) {
     return []
   }
   try {
     const cards = JSON.parse(stored) as Card[]
-    return migrateCardsToNewFormat(cards)
+    return cards
   } catch {
     console.error('Error parsing 1x1 cards from localStorage.')
     return []
@@ -197,7 +165,10 @@ export function updateCard(question: string, updates: Partial<Card>): void {
     })
   } else {
     // Card exists, update it
-    cards[index] = { ...cards[index], ...updates }
+    const existing = cards[index]
+    if (existing) {
+      cards[index] = { ...existing, ...updates }
+    }
   }
 
   saveCards(cards)
@@ -360,7 +331,7 @@ export function clearGameState(): void {
  */
 export function loadRange(): number[] {
   const stored = localStorage.getItem(STORAGE_KEYS.RANGE)
-  if (!stored) {
+  if (stored === null) {
     return [...DEFAULT_RANGE]
   }
   try {
@@ -402,37 +373,37 @@ export function toggleFeature(
 ): number[] {
   const currentSet = new Set(current)
 
-  if (feature === 'feature1x2') {
-    // Toggle 2 in range
-    if (currentSet.has(2)) {
-      // Deactivate: remove 2
-      return current.filter(n => n !== 2)
+  switch (feature) {
+    case 'feature1x2': {
+      // Toggle 2 in range
+      if (currentSet.has(2)) {
+        // Deactivate: remove 2
+        return current.filter(n => n !== 2)
+      }
+      // Activate: add 2 at beginning
+      return [2, ...current]
     }
-    // Activate: add 2 at beginning
-    return [2, ...current]
-  }
-  if (feature === 'feature1x12') {
-    // Toggle 11, 12 in range
-    if (currentSet.has(11) || currentSet.has(12)) {
-      // Deactivate: remove 11, 12, and also remove 13-20 if present (1x20 depends on 1x12)
-      return current.filter(n => n < 11)
+    case 'feature1x12': {
+      // Toggle 11, 12 in range
+      if (currentSet.has(11) || currentSet.has(12)) {
+        // Deactivate: remove 11, 12, and also remove 13-20 if present (1x20 depends on 1x12)
+        return current.filter(n => n < 11)
+      }
+      // Activate: add 11, 12
+      const base = current.filter(n => n < 11)
+      return [...base, 11, 12]
     }
-    // Activate: add 11, 12
-    const base = current.filter(n => n < 11)
-    return [...base, 11, 12]
-  }
-  if (feature === 'feature1x20') {
-    // Toggle 13-20 in range (and auto-enable 1x12)
-    if (currentSet.has(13)) {
-      // Deactivate: remove 13-20
-      return current.filter(n => n < 13)
+    case 'feature1x20': {
+      // Toggle 13-20 in range (and auto-enable 1x12)
+      if (currentSet.has(13)) {
+        // Deactivate: remove 13-20
+        return current.filter(n => n < 13)
+      }
+      // Activate: add 11-20 (auto-enables 1x12)
+      const base = current.filter(n => n < 11)
+      return [...base, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     }
-    // Activate: add 11-20 (auto-enables 1x12)
-    const base = current.filter(n => n < 11)
-    return [...base, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
   }
-
-  return current
 }
 
 // Reset All

@@ -20,7 +20,7 @@ function getCardCountByLevel(level: number): number {
 }
 
 function getLevelBackgroundColor(level: number): string {
-  return LEVEL_COLORS[level] || '#f5f5f5'
+  return LEVEL_COLORS[level] ?? '#f5f5f5'
 }
 
 function handleReset() {

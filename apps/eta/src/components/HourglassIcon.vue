@@ -11,6 +11,8 @@ const props = withDefaults(defineProps<Props>(), {
   size: 120
 })
 
+const sizeValue = computed(() => props.size)
+
 // Calculate sand heights - simpler and more accurate
 const topSandHeight = computed(() => {
   // Top chamber: starts at 50, decreases to 0 as progress increases
@@ -30,8 +32,8 @@ const isActive = computed(() => props.progress > 0 && props.progress < 100)
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 100 140"
-    :width="size"
-    :height="size * 1.4"
+    :width="sizeValue"
+    :height="sizeValue * 1.4"
     aria-labelledby="hourglass-title"
   >
     <title id="hourglass-title">Hourglass Progress Icon</title>
