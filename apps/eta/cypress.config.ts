@@ -2,10 +2,12 @@ import { defineConfig } from 'cypress'
 
 import baseConfig from '../../cypress.config.base'
 
+import { BASE_PATH } from './src/constants'
+
 export default defineConfig({
   ...baseConfig,
   e2e: {
     ...baseConfig.e2e,
-    baseUrl: 'http://localhost:5176/fc-eta/'
+    baseUrl: `http://localhost:5176/${BASE_PATH}/`
   }
 })
