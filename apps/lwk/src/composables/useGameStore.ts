@@ -15,9 +15,11 @@ import {
   initializeGameFlow,
   useDeckManagement,
   filterLevel1Cards,
+  filterBelowMaxLevel,
   repeatCards,
   LOOP_COUNT,
   handleNextCard,
+  isEndlessMode,
   type SessionMode
 } from '@flashcards/shared'
 import { computed, ref } from 'vue'
@@ -146,6 +148,9 @@ export function useGameStore() {
     if (mode === 'endless-level1') {
       // Endless Level 1: filter all Level 1 cards from the current pool (respecting deck selection)
       selectedCards = filterLevel1Cards(baseStore.allCards.value)
+    } else if (mode === 'endless-level5') {
+      // Endless Level 5: filter all cards below MAX_LEVEL
+      selectedCards = filterBelowMaxLevel(baseStore.allCards.value)
     } else if (mode === '3-rounds') {
       // 3 Rounds: select cards via focus logic, then repeat each LOOP_COUNT times
       const focusSelected = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
@@ -236,10 +241,9 @@ export function useGameStore() {
     if (!resolvedSettings) return
 
     // For endless mode, gameCards is empty at game end, so use initialCardCount
-    const totalCards =
-      baseStore.sessionMode.value === 'endless-level1'
-        ? initialCardCount.value
-        : baseStore.gameCards.value.length
+    const totalCards = isEndlessMode(baseStore.sessionMode.value)
+      ? initialCardCount.value
+      : baseStore.gameCards.value.length
 
     const historyEntry: GameHistory = {
       date: new Date().toISOString(),

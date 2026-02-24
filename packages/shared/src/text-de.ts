@@ -111,8 +111,10 @@ export const TEXT_DE = {
     },
     gameModes: {
       endlessLevel1: 'Endlos Level 1',
+      endlessLevel5: 'Endlos Level 5',
       threeRounds: '3 Runden',
-      noLevel1Cards: 'Keine Karten auf Level 1'
+      noLevel1Cards: 'Keine Karten auf Level 1',
+      noCardsBelow5: 'Alle Karten bereits auf Level 5'
     }
   },
 

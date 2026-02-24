@@ -1,13 +1,27 @@
-import { MIN_LEVEL } from '../constants.js'
+import { MAX_LEVEL, MIN_LEVEL } from '../constants.js'
 import type { BaseCard, SessionMode } from '../types.js'
 
 import { shuffleArray } from './cardSelection.js'
+
+/**
+ * Check if a session mode is an endless mode (cards are removed as they're mastered)
+ */
+export function isEndlessMode(mode: SessionMode): boolean {
+  return mode === 'endless-level1' || mode === 'endless-level5'
+}
 
 /**
  * Filter cards at Level 1 from any card array
  */
 export function filterLevel1Cards<T extends BaseCard>(cards: T[]): T[] {
   return cards.filter(card => card.level === MIN_LEVEL)
+}
+
+/**
+ * Filter cards below MAX_LEVEL (level < 5) from any card array
+ */
+export function filterBelowMaxLevel<T extends BaseCard>(cards: T[]): T[] {
+  return cards.filter(card => card.level < MAX_LEVEL)
 }
 
 /**
@@ -82,6 +96,33 @@ export function endlessNextCard<T extends BaseCard>(
 }
 
 /**
+ * Endless Level 5 mode nextCard logic: remove cards that have reached MAX_LEVEL.
+ * Cards stay in the pool until they reach level 5, then they are removed.
+ * Returns true if the game is over (no cards left).
+ */
+export function endlessLevel5NextCard<T extends BaseCard>(
+  gameCards: { value: T[] },
+  currentCardIndex: { value: number }
+): boolean {
+  const currentIdx = currentCardIndex.value
+  const card = gameCards.value[currentIdx]
+  if (card && card.level >= MAX_LEVEL) {
+    // Card reached MAX_LEVEL — remove it
+    gameCards.value = gameCards.value.filter((_, i) => i !== currentIdx)
+    if (currentCardIndex.value >= gameCards.value.length) {
+      currentCardIndex.value = 0
+    }
+  } else {
+    // Card stays — move to next
+    currentCardIndex.value++
+    if (currentCardIndex.value >= gameCards.value.length) {
+      currentCardIndex.value = 0
+    }
+  }
+  return gameCards.value.length === 0
+}
+
+/**
  * Shared nextCard logic for all game modes with avoid-consecutive-repeat.
  * Encapsulates the common pattern used across 1x1, voc, and lwk apps.
  *
@@ -104,6 +145,19 @@ export function handleNextCard<T extends BaseCard>(
 
   if (sessionMode === 'endless-level1') {
     const isGameOver = endlessNextCard(gameCards, currentCardIndex)
+
+    currentCardIndex.value = avoidConsecutiveRepeat(
+      gameCards.value,
+      currentCardIndex.value,
+      previousKey,
+      getKey
+    )
+
+    return isGameOver
+  }
+
+  if (sessionMode === 'endless-level5') {
+    const isGameOver = endlessLevel5NextCard(gameCards, currentCardIndex)
 
     currentCardIndex.value = avoidConsecutiveRepeat(
       gameCards.value,

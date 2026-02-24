@@ -2,6 +2,7 @@
 import {
   type AnswerStatus,
   calculatePointsBreakdown,
+  isEndlessMode,
   MAX_TIME,
   useGameNavigation,
   useGameTimer,
@@ -38,7 +39,7 @@ const {
 
 // For endless mode, show remaining cards count (shrinks as cards are removed)
 const totalCardsOverride = computed(() =>
-  sessionMode.value === 'endless-level1' ? gameCards.value.length : undefined
+  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined
 )
 
 const userInput = ref('')

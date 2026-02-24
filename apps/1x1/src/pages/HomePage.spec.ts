@@ -368,4 +368,57 @@ describe('HomePage', () => {
       )
     })
   })
+
+  describe('Endless Level 5 button disabled state — property test', () => {
+    const cardArb = fc
+      .record({
+        level: fc.integer({ min: MIN_LEVEL, max: MAX_LEVEL }),
+        time: fc.integer({ min: 1, max: 60 }),
+        question: fc.constant('3x3'),
+        answer: fc.constant(9)
+      })
+      .map((r): Card => r)
+
+    const createPropertyMountOptions = (router: ReturnType<typeof createMockRouter>) => {
+      const base = createMountOptions(router)
+      return {
+        ...base,
+        global: {
+          ...base.global,
+          stubs: {
+            ...base.global.stubs,
+            QBtn: {
+              template:
+                '<button :disabled="disable || undefined" :data-cy="$attrs[\'data-cy\']"><slot /></button>',
+              props: ['disable', 'color', 'size', 'icon', 'outline', 'unelevated'],
+              inheritAttrs: false
+            }
+          }
+        }
+      }
+    }
+
+    it('button is disabled iff no card has level < MAX_LEVEL', async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.array(cardArb, { minLength: 0, maxLength: 20 }), async cards => {
+          mocks.getVirtualCardsForRange.mockReturnValue(cards)
+
+          const router = createMockRouter()
+          const wrapper = mount(HomePage, createPropertyMountOptions(router))
+          await wrapper.vm.$nextTick()
+
+          const button = wrapper.find('[data-cy="start-endless-level5"]')
+          expect(button.exists()).toBe(true)
+
+          const hasAnyBelowMax = cards.some(c => c.level < MAX_LEVEL)
+          const isDisabled = button.attributes('disabled') !== undefined
+
+          expect(isDisabled).toBe(!hasAnyBelowMax)
+
+          wrapper.unmount()
+        }),
+        { numRuns: 100 }
+      )
+    })
+  })
 })

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { useGameNavigation, useGameTimer, useKeyboardContinue } from '@flashcards/shared'
+import {
+  isEndlessMode,
+  useGameNavigation,
+  useGameTimer,
+  useKeyboardContinue
+} from '@flashcards/shared'
 import {
   GameFeedbackNegative,
   GameHeader,
@@ -31,7 +36,7 @@ const {
 
 // For endless mode, show remaining cards count (shrinks as cards are removed)
 const totalCardsOverride = computed(() =>
-  sessionMode.value === 'endless-level1' ? gameCards.value.length : undefined
+  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined
 )
 
 // GamePage component state

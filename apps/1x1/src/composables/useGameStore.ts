@@ -9,9 +9,11 @@ import {
   type AnswerStatus,
   calculatePointsBreakdown,
   filterLevel1Cards,
+  filterBelowMaxLevel,
   repeatCards,
   LOOP_COUNT,
   handleNextCard,
+  isEndlessMode,
   type SessionMode
 } from '@flashcards/shared'
 import { computed, ref } from 'vue'
@@ -132,6 +134,9 @@ export function useGameStore() {
     if (mode === 'endless-level1') {
       // Endless Level 1: filter all Level 1 cards from the filtered pool
       selectedCards = filterLevel1Cards(filteredCards)
+    } else if (mode === 'endless-level5') {
+      // Endless Level 5: filter all cards below MAX_LEVEL
+      selectedCards = filterBelowMaxLevel(filteredCards)
     } else if (mode === '3-rounds') {
       // 3 Rounds: select cards via focus logic, then repeat each LOOP_COUNT times
       const focusSelected = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
@@ -248,10 +253,9 @@ export function useGameStore() {
 
     // Save game result to sessionStorage for GameOverPage
     // For endless mode, gameCards is empty at game end, so use initialCardCount
-    const totalCards =
-      baseStore.sessionMode.value === 'endless-level1'
-        ? initialCardCount.value
-        : baseStore.gameCards.value.length
+    const totalCards = isEndlessMode(baseStore.sessionMode.value)
+      ? initialCardCount.value
+      : baseStore.gameCards.value.length
     storageSetGameResult({
       points: baseStore.points.value,
       correctAnswers: baseStore.correctAnswersCount.value,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SessionMode } from '@flashcards/shared'
-import { TEXT_DE, filterLevel1Cards } from '@flashcards/shared'
+import { TEXT_DE, filterBelowMaxLevel, filterLevel1Cards } from '@flashcards/shared'
 import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -101,6 +101,8 @@ function ensureValidMode() {
 }
 
 const hasLevel1CardsForEndless = computed(() => filterLevel1Cards(allCards.value).length > 0)
+
+const hasBelowMaxLevelCards = computed(() => filterBelowMaxLevel(allCards.value).length > 0)
 
 function startGameWithMode(mode: SessionMode) {
   saveSettings(settings.value)
@@ -254,6 +256,20 @@ function goToInfo() {
           @click="startGameWithMode('3-rounds')"
         >
           &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.threeRounds }}</span>
+        </q-btn>
+        <q-btn
+          color="positive"
+          size="lg"
+          class="col"
+          icon="military_tech"
+          :disable="!hasBelowMaxLevelCards"
+          data-cy="start-endless-level5"
+          @click="startGameWithMode('endless-level5')"
+        >
+          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.endlessLevel5 }}</span>
+          <q-tooltip v-if="!hasBelowMaxLevelCards">
+            {{ TEXT_DE.shared.gameModes.noCardsBelow5 }}
+          </q-tooltip>
         </q-btn>
       </div>
     </template>
