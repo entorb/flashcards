@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import type { SessionMode } from '@flashcards/shared'
 import { ref } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -23,7 +24,8 @@ const storeState = {
   points: ref(0),
   currentCard: ref<Card | null>(null),
   gameSettings: ref<GameSettings | null>(null),
-  lastPointsBreakdown: ref(null)
+  lastPointsBreakdown: ref(null),
+  sessionMode: ref<SessionMode>('standard')
 }
 
 vi.mock('@/composables/useGameStore', () => ({
@@ -38,7 +40,8 @@ vi.mock('@/composables/useGameStore', () => ({
     nextCard: mocks.nextCard,
     finishGame: mocks.finishGame,
     discardGame: mocks.discardGame,
-    lastPointsBreakdown: storeState.lastPointsBreakdown
+    lastPointsBreakdown: storeState.lastPointsBreakdown,
+    sessionMode: storeState.sessionMode
   }))
 }))
 
@@ -158,6 +161,7 @@ describe('GamePage', () => {
     storeState.currentCardIndex.value = 0
     storeState.points.value = 0
     storeState.lastPointsBreakdown.value = null
+    storeState.sessionMode.value = 'standard'
     mocks.nextCard.mockReturnValue(false)
   })
 

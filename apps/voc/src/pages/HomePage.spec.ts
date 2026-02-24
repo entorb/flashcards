@@ -203,7 +203,8 @@ describe('HomePage', () => {
         removeDeck: vi.fn(),
         renameDeck: vi.fn(),
         switchDeck: vi.fn(),
-        moveAllCards: mockMoveAllCards
+        moveAllCards: mockMoveAllCards,
+        sessionMode: ref('standard')
       } as ReturnType<typeof useGameStore>)
 
       const router = createMockRouter()

@@ -108,6 +108,11 @@ export const TEXT_DE = {
       update: {
         confirmMessage: 'Neue Version verfügbar. Neu laden?'
       }
+    },
+    gameModes: {
+      endlessLevel1: 'Endlos Level 1',
+      threeRounds: '3 Runden',
+      noLevel1Cards: 'Keine Karten auf Level 1'
     }
   },
 

@@ -30,11 +30,17 @@ const {
   points,
   currentCard,
   lastPointsBreakdown,
+  sessionMode,
   handleAnswer: storeHandleAnswer,
   nextCard,
   finishGame,
   discardGame
 } = useGameStore()
+
+// For endless mode, show remaining cards count (shrinks as cards are removed)
+const totalCardsOverride = computed(() =>
+  sessionMode.value === 'endless-level1' ? gameCards.value.length : undefined
+)
 
 // GamePage component state
 const showAnswer = ref(false)
@@ -219,6 +225,7 @@ onUnmounted(() => {
       <GameHeader
         :current-index="currentCardIndex"
         :total-cards="gameCards.length"
+        v-bind="totalCardsOverride !== undefined ? { totalCardsOverride } : {}"
         :points="points"
         @back="handleGoHome"
       />

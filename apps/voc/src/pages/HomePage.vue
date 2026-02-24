@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
+import type { SessionMode } from '@flashcards/shared'
+import { TEXT_DE, filterLevel1Cards } from '@flashcards/shared'
 import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -7,7 +8,7 @@ import { useRouter } from 'vue-router'
 import FoxMascot from '../components/FoxMascot.vue'
 import { useGameStore } from '../composables/useGameStore'
 import { BASE_PATH } from '../constants'
-import { loadSettings } from '../services/storage'
+import { loadSettings, saveSettings } from '../services/storage'
 import type { GameSettings } from '../types'
 
 const router = useRouter()
@@ -99,9 +100,16 @@ function ensureValidMode() {
   }
 }
 
-function startGame() {
-  startGameStore(settings.value)
+const hasLevel1CardsForEndless = computed(() => filterLevel1Cards(allCards.value).length > 0)
+
+function startGameWithMode(mode: SessionMode) {
+  saveSettings(settings.value)
+  startGameStore(settings.value, mode)
   router.push({ name: '/game' })
+}
+
+function startGame() {
+  startGameWithMode('standard')
 }
 
 function goToHistory() {
@@ -220,6 +228,34 @@ function goToInfo() {
           </q-item-section>
         </q-item>
       </q-list>
+    </template>
+    <template #extra-buttons>
+      <div class="row q-gutter-sm q-mb-sm">
+        <q-btn
+          color="positive"
+          size="lg"
+          class="col"
+          icon="all_inclusive"
+          :disable="!hasLevel1CardsForEndless"
+          data-cy="start-endless-level1"
+          @click="startGameWithMode('endless-level1')"
+        >
+          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.endlessLevel1 }}</span>
+          <q-tooltip v-if="!hasLevel1CardsForEndless">
+            {{ TEXT_DE.shared.gameModes.noLevel1Cards }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn
+          color="positive"
+          size="lg"
+          class="col"
+          icon="looks_3"
+          data-cy="start-three-rounds"
+          @click="startGameWithMode('3-rounds')"
+        >
+          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.threeRounds }}</span>
+        </q-btn>
+      </div>
     </template>
   </HomePageLayout>
 </template>

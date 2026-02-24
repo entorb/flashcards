@@ -21,6 +21,9 @@
     "test": "vitest --watch=false",
     "types": "vue-tsc --build"
   },
+  "devDependencies": {
+    "fast-check": "^4.5.3"
+  },
   "dependencies": {
     "@flashcards/shared": "workspace:*",
     "@quasar/extras": "^1.17.0",

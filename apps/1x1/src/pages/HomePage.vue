@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { FocusType } from '@flashcards/shared'
-import { TEXT_DE } from '@flashcards/shared'
+import type { FocusType, SessionMode } from '@flashcards/shared'
+import { TEXT_DE, filterLevel1Cards } from '@flashcards/shared'
 import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -8,7 +8,14 @@ import { useRouter } from 'vue-router'
 import GroundhogMascot from '@/components/GroundhogMascot.vue'
 import { useGameStore } from '@/composables/useGameStore'
 import { BASE_PATH, DEFAULT_RANGE } from '@/constants'
-import { loadGameStats, loadRange, loadSettings, saveSettings } from '@/services/storage'
+import { filterCardsAll, filterCardsBySelection, filterCardsSquares } from '@/services/cardSelector'
+import {
+  getVirtualCardsForRange,
+  loadGameStats,
+  loadRange,
+  loadSettings,
+  saveSettings
+} from '@/services/storage'
 import type { SelectionType } from '@/types'
 
 const router = useRouter()
@@ -31,6 +38,24 @@ const isNumberSelected = computed(() => (num: number) => {
 
 // Check if x² is selected
 const isSquaresSelected = computed(() => select.value === 'x²')
+
+// Compute filtered cards for the current selection to check for Level 1 cards
+const hasLevel1Cards = computed(() => {
+  const currentRange = range.value
+  const allAvailableCards = getVirtualCardsForRange(currentRange)
+  const rangeSet = new Set(currentRange)
+
+  let filteredCards
+  if (select.value === 'x²') {
+    filteredCards = filterCardsSquares(allAvailableCards, rangeSet)
+  } else if (Array.isArray(select.value)) {
+    filteredCards = filterCardsBySelection(allAvailableCards, select.value, rangeSet)
+  } else {
+    filteredCards = filterCardsAll(allAvailableCards, rangeSet)
+  }
+
+  return filterLevel1Cards(filteredCards).length > 0
+})
 
 onMounted(() => {
   // Load range configuration
@@ -57,16 +82,16 @@ onMounted(() => {
 })
 
 function startGame() {
-  // Save game config to store and navigate
-  // Pass true as second parameter to force a fresh game start
+  startGameWithMode('standard')
+}
+
+function startGameWithMode(mode: SessionMode) {
   const gameConfig = {
     select: select.value,
     focus: focus.value
   }
   saveSettings(gameConfig)
-  storeStartGame(gameConfig, true)
-
-  // Navigate to game page without query parameters
+  storeStartGame(gameConfig, mode, true)
   router.push({ name: '/game' })
 }
 
@@ -175,6 +200,34 @@ function toggleSquares() {
 
       <!-- Focus Selection -->
       <HomeFocusSelector v-model="focus" />
+    </template>
+    <template #extra-buttons>
+      <div class="row q-gutter-sm q-mb-sm">
+        <q-btn
+          color="positive"
+          size="lg"
+          class="col"
+          icon="all_inclusive"
+          :disable="!hasLevel1Cards"
+          data-cy="start-endless-level1"
+          @click="startGameWithMode('endless-level1')"
+        >
+          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.endlessLevel1 }}</span>
+          <q-tooltip v-if="!hasLevel1Cards">
+            {{ TEXT_DE.shared.gameModes.noLevel1Cards }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn
+          color="positive"
+          size="lg"
+          class="col"
+          icon="looks_3"
+          data-cy="start-three-rounds"
+          @click="startGameWithMode('3-rounds')"
+        >
+          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.threeRounds }}</span>
+        </q-btn>
+      </div>
     </template>
   </HomePageLayout>
 </template>

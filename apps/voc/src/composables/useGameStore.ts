@@ -8,9 +8,14 @@ import {
   initializeGameFlow,
   calculatePointsBreakdown,
   roundTime,
-  useDeckManagement
+  useDeckManagement,
+  filterLevel1Cards,
+  repeatCards,
+  LOOP_COUNT,
+  handleNextCard,
+  type SessionMode
 } from '@flashcards/shared'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import {
   INITIAL_CARDS,
@@ -60,6 +65,9 @@ export function useGameStore() {
   // Initialize store on first use
   baseStore.initializeStore()
 
+  // Track initial card count for endless mode (where gameCards shrinks)
+  const initialCardCount = ref(0)
+
   // Restore game state and settings if page was reloaded during a game
   // Only restore if there was an active game saved
   const savedGameState = storageLoadGameState()
@@ -72,6 +80,8 @@ export function useGameStore() {
     baseStore.currentCardIndex.value = savedGameState.currentCardIndex
     baseStore.points.value = savedGameState.points
     baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
+    baseStore.sessionMode.value = savedGameState.sessionMode ?? 'standard'
+    initialCardCount.value = savedGameState.initialCardCount ?? savedGameState.gameCards.length
   }
 
   // Helper function to save current game state to sessionStorage
@@ -81,14 +91,23 @@ export function useGameStore() {
       currentCardIndex: baseStore.currentCardIndex.value,
       points: baseStore.points.value,
       correctAnswersCount: baseStore.correctAnswersCount.value,
-      gameSettings: baseStore.gameSettings.value as GameSettings
+      gameSettings: baseStore.gameSettings.value as GameSettings,
+      sessionMode: baseStore.sessionMode.value,
+      initialCardCount: initialCardCount.value
     })
   }
 
-  // Wrap nextCard to save state on card progression
+  // Wrap nextCard to save state and handle endless mode
   const baseNextCard = baseStore.nextCard
   function nextCard(): boolean {
-    const isGameOver = baseNextCard()
+    const isGameOver = handleNextCard(
+      baseStore.gameCards,
+      baseStore.currentCardIndex,
+      baseStore.sessionMode.value,
+      baseNextCard,
+      (c: Card) => c.voc
+    )
+
     if (!isGameOver) {
       saveCurrentGameState()
     }
@@ -96,7 +115,7 @@ export function useGameStore() {
   }
 
   // App-specific actions
-  function startGame(settings: GameSettings) {
+  function startGame(settings: GameSettings, mode: SessionMode = 'standard') {
     // Only start a new game if there are no cards in session storage (new game)
     // If cards exist, user reloaded page during game - just resume (return early)
     if (baseStore.gameCards.value.length > 0) {
@@ -110,13 +129,28 @@ export function useGameStore() {
 
     saveSettings(settings)
     baseStore.gameSettings.value = settings
-    const selectedCards = selectCardsForRound(baseStore.allCards.value, settings.focus)
+    baseStore.resetGameState()
+    baseStore.sessionMode.value = mode
+
+    let selectedCards: Card[]
+
+    if (mode === 'endless-level1') {
+      // Endless Level 1: filter all Level 1 cards from the current pool (respecting deck selection)
+      selectedCards = filterLevel1Cards(baseStore.allCards.value)
+    } else if (mode === '3-rounds') {
+      // 3 Rounds: select cards via focus logic, then repeat each LOOP_COUNT times
+      const focusSelected = selectCardsForRound(baseStore.allCards.value, settings.focus)
+      selectedCards = repeatCards(focusSelected, LOOP_COUNT)
+    } else {
+      // Standard mode: existing behavior
+      selectedCards = selectCardsForRound(baseStore.allCards.value, settings.focus)
+    }
 
     // Use centralized game state flow to store settings + selected cards
     initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
 
     baseStore.gameCards.value = selectedCards
-    baseStore.resetGameState()
+    initialCardCount.value = selectedCards.length
 
     // Save initial game state to sessionStorage for page reload persistence
     saveCurrentGameState()
@@ -203,6 +237,17 @@ export function useGameStore() {
       return card
     })
 
+    // Also update the in-memory gameCards entry (needed for endless mode card removal check)
+    if (result === 'correct') {
+      currentCard.level = Math.min(MAX_LEVEL, currentCard.level + 1)
+      if (answerTime !== undefined) {
+        const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
+        currentCard.time = roundTime(clampedTime)
+      }
+    } else if (result === 'incorrect') {
+      currentCard.level = Math.max(MIN_LEVEL, currentCard.level - 1)
+    }
+
     // Explicitly save cards on every answer because the watcher in the base store
     // doesn't seem to fire consistently. This is a workaround to ensure data is saved.
     saveCards(baseStore.allCards.value)
@@ -227,14 +272,22 @@ export function useGameStore() {
     // points and correctAnswers already persisted per-answer in handleAnswerBase
 
     // Save game result to sessionStorage for GameOverPage
+    // For endless mode, gameCards is empty at game end, so use initialCardCount
+    const totalCards =
+      baseStore.sessionMode.value === 'endless-level1'
+        ? initialCardCount.value
+        : baseStore.gameCards.value.length
     storageSetGameResult({
       points: baseStore.points.value,
       correctAnswers: baseStore.correctAnswersCount.value,
-      totalCards: baseStore.gameCards.value.length
+      totalCards
     })
 
     // Clear game state from sessionStorage
     storageClearGameState()
+
+    // Clear session mode
+    baseStore.sessionMode.value = 'standard'
 
     // Reset in-memory game state to prevent "11/10" bug when starting a new game
     baseStore.resetGameState()
@@ -319,6 +372,7 @@ export function useGameStore() {
     allCards: baseStore.allCards,
     gameCards: baseStore.gameCards,
     gameSettings: baseStore.gameSettings,
+    sessionMode: baseStore.sessionMode,
     currentCardIndex: baseStore.currentCardIndex,
     points: baseStore.points,
     correctAnswersCount: baseStore.correctAnswersCount,
