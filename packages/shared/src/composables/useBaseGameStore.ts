@@ -96,8 +96,7 @@ export function createBaseGameStore<
     // Create a new array to ensure watchers detect the change
     history.value = [...history.value, historyEntry]
     gameStats.value.gamesPlayed++
-    gameStats.value.points += points.value
-    gameStats.value.correctAnswers += correctAnswersCount.value
+    // points and correctAnswers already persisted per-answer in handleAnswerBase
   }
 
   /**
@@ -138,6 +137,13 @@ export function createBaseGameStore<
     }
     lastPointsBreakdown.value = pointsBreakdown
     points.value += pointsBreakdown.totalPoints
+
+    // Early persist: update gameStats and save to localStorage
+    gameStats.value.points += pointsBreakdown.totalPoints
+    if (result === 'correct') {
+      gameStats.value.correctAnswers++
+    }
+    config.saveGameStats(gameStats.value)
   }
 
   return {
