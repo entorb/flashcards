@@ -1,10 +1,12 @@
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as fc from 'fast-check'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from '../constants'
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import type { BaseGameHistory, DailyBonusConfig, GameResult } from '../types'
+import { calculateDailyBonuses } from '../utils/helper'
 import GameOverPage from './GameOverPage.vue'
 
 // Mock helperStatsDataWrite so it doesn't make real network calls
@@ -285,5 +287,276 @@ describe('GameOverPage (shared)', () => {
 
     expect(wrapper.find('[data-cy="correct-answers-count"]').text()).toContain('7')
     expect(wrapper.find('[data-cy="total-questions-count"]').text()).toContain('10')
+  })
+})
+
+// Feature: game-points-early-persist, Property 5: GameOverPage total equals session points plus bonus points
+/**
+ * **Validates: Requirements 5.1**
+ * For any GameResult with random points and any set of daily bonuses,
+ * the totalPoints computed on the GameOverPage equals result.points + sum(bonusReasons.points).
+ */
+describe('GameOverPage — total equals session points plus bonus points (Property 5)', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    sessionStorage.clear()
+    vi.clearAllMocks()
+  })
+
+  const dailyInfoArb = fc.record({
+    isFirstGame: fc.boolean(),
+    gamesPlayedToday: fc.integer({ min: 1, max: 50 })
+  })
+
+  const bonusConfigArb: fc.Arbitrary<DailyBonusConfig> = fc.record({
+    firstGameBonus: fc.integer({ min: 0, max: 50 }),
+    streakGameBonus: fc.integer({ min: 0, max: 50 }),
+    streakGameInterval: fc.integer({ min: 1, max: 10 })
+  })
+
+  const gameResultArb: fc.Arbitrary<GameResult> = fc.record({
+    points: fc.integer({ min: 0, max: 10_000 }),
+    correctAnswers: fc.integer({ min: 0, max: 100 }),
+    totalCards: fc.integer({ min: 1, max: 100 })
+  })
+
+  it('totalPoints displayed by component matches session points plus bonus points', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        gameResultArb,
+        dailyInfoArb,
+        bonusConfigArb,
+        async (gameResult, dailyInfo, config) => {
+          const bonuses = calculateDailyBonuses(dailyInfo, config)
+          let expectedBonusSum = 0
+          for (const bonus of bonuses) {
+            expectedBonusSum += bonus.points
+          }
+          const expectedTotal = gameResult.points + expectedBonusSum
+
+          const router = createRouter({
+            history: createMemoryHistory(),
+            routes: [
+              { path: '/', component: { template: '<div />' } },
+              { path: '/game-over', component: { template: '<div />' } }
+            ]
+          })
+
+          const storageFunctions = {
+            getGameResult: vi.fn(() => gameResult),
+            clearGameResult: vi.fn(),
+            clearGameState: vi.fn(),
+            incrementDailyGames: vi.fn(() => dailyInfo),
+            saveGameStats: vi.fn(),
+            saveHistory: vi.fn()
+          }
+
+          const wrapper = mount(GameOverPage, {
+            props: {
+              storageFunctions,
+              bonusConfig: config,
+              basePath: '1x1',
+              gameStoreHistory: [] as Array<BaseGameHistory & { totalCards: number }>,
+              gameStoreStats: { gamesPlayed: 1, points: 100, correctAnswers: 50 }
+            },
+            global: {
+              mocks: quasarMocks,
+              plugins: [router],
+              provide: quasarProvide,
+              stubs: { ...quasarStubs }
+            }
+          })
+
+          // Wait for onMounted to complete
+          await new Promise(resolve => setTimeout(resolve, 0))
+          await wrapper.vm.$nextTick()
+
+          const finalPointsEl = wrapper.find('[data-cy="final-points"]')
+          expect(finalPointsEl.exists()).toBe(true)
+          expect(finalPointsEl.text()).toBe(String(expectedTotal))
+
+          wrapper.unmount()
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+})
+
+// Feature: game-points-early-persist, Property 6: GameOverPage persists gamesPlayed increment and bonus points
+/**
+ * **Validates: Requirements 2.3, 2.4**
+ * For any completed game, after GameOverPage processing, saveGameStats is called
+ * with gamesPlayed incremented by 1 (compared to pre-game value) and points
+ * that include the bonus points added by the GameOverPage.
+ */
+describe('GameOverPage — persists gamesPlayed increment and bonus points (Property 6)', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    sessionStorage.clear()
+    vi.clearAllMocks()
+  })
+
+  const dailyInfoArb = fc.record({
+    isFirstGame: fc.boolean(),
+    gamesPlayedToday: fc.integer({ min: 1, max: 50 })
+  })
+
+  const bonusConfigArb: fc.Arbitrary<DailyBonusConfig> = fc.record({
+    firstGameBonus: fc.integer({ min: 0, max: 50 }),
+    streakGameBonus: fc.integer({ min: 0, max: 50 }),
+    streakGameInterval: fc.integer({ min: 1, max: 10 })
+  })
+
+  const gameResultArb: fc.Arbitrary<GameResult> = fc.record({
+    points: fc.integer({ min: 0, max: 10_000 }),
+    correctAnswers: fc.integer({ min: 0, max: 100 }),
+    totalCards: fc.integer({ min: 1, max: 100 })
+  })
+
+  const preGameStatsArb = fc.record({
+    gamesPlayed: fc.integer({ min: 0, max: 1000 }),
+    points: fc.integer({ min: 0, max: 100_000 }),
+    correctAnswers: fc.integer({ min: 0, max: 10_000 })
+  })
+
+  it('saveGameStats receives gamesPlayed incremented by 1 and points including bonus', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        gameResultArb,
+        dailyInfoArb,
+        bonusConfigArb,
+        preGameStatsArb,
+        async (gameResult, dailyInfo, config, preGameStats) => {
+          // Simulate what finishGame/saveGameResults does: increment gamesPlayed by 1
+          const statsAfterFinish = {
+            gamesPlayed: preGameStats.gamesPlayed + 1,
+            points: preGameStats.points,
+            correctAnswers: preGameStats.correctAnswers
+          }
+
+          const bonuses = calculateDailyBonuses(dailyInfo, config)
+          let expectedBonusSum = 0
+          for (const bonus of bonuses) {
+            expectedBonusSum += bonus.points
+          }
+
+          const router = createRouter({
+            history: createMemoryHistory(),
+            routes: [
+              { path: '/', component: { template: '<div />' } },
+              { path: '/game-over', component: { template: '<div />' } }
+            ]
+          })
+
+          const storageFunctions = {
+            getGameResult: vi.fn(() => gameResult),
+            clearGameResult: vi.fn(),
+            clearGameState: vi.fn(),
+            incrementDailyGames: vi.fn(() => dailyInfo),
+            saveGameStats: vi.fn(),
+            saveHistory: vi.fn()
+          }
+
+          const wrapper = mount(GameOverPage, {
+            props: {
+              storageFunctions,
+              bonusConfig: config,
+              basePath: '1x1',
+              gameStoreHistory: [] as Array<BaseGameHistory & { totalCards: number }>,
+              gameStoreStats: statsAfterFinish
+            },
+            global: {
+              mocks: quasarMocks,
+              plugins: [router],
+              provide: quasarProvide,
+              stubs: { ...quasarStubs }
+            }
+          })
+
+          // Wait for onMounted to complete
+          await new Promise(resolve => setTimeout(resolve, 0))
+          await wrapper.vm.$nextTick()
+
+          // Verify saveGameStats was called
+          expect(storageFunctions.saveGameStats).toHaveBeenCalledOnce()
+
+          const savedStats = storageFunctions.saveGameStats.mock.calls[0][0] as {
+            gamesPlayed: number
+            points: number
+            correctAnswers: number
+          }
+
+          // gamesPlayed should be exactly 1 more than pre-game value
+          expect(savedStats.gamesPlayed).toBe(preGameStats.gamesPlayed + 1)
+
+          // points should include the bonus points added by GameOverPage
+          expect(savedStats.points).toBe(preGameStats.points + expectedBonusSum)
+
+          wrapper.unmount()
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+})
+
+// Feature: game-points-early-persist
+/**
+ * Unit test: zero bonus points edge case
+ * When bonus points are zero, gamesPlayed still increments.
+ * _Requirements: 2.4_
+ */
+describe('GameOverPage — zero bonus points edge case', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    sessionStorage.clear()
+    vi.clearAllMocks()
+  })
+
+  it('gamesPlayed increments and points stay unchanged when no bonuses are earned', async () => {
+    const router = createMockRouter()
+    const result: GameResult = { points: 55, correctAnswers: 6, totalCards: 10 }
+    const storageFunctions = makeStorageFunctions(result)
+    // Not first game, gamesPlayedToday=2 is not a multiple of streakGameInterval(5) → zero bonuses
+    storageFunctions.incrementDailyGames.mockReturnValue({
+      isFirstGame: false,
+      gamesPlayedToday: 2
+    })
+
+    const initialPoints = 200
+    const initialGamesPlayed = 7
+
+    const wrapper = mount(GameOverPage, {
+      props: makeProps(storageFunctions, [], {
+        gamesPlayed: initialGamesPlayed,
+        points: initialPoints,
+        correctAnswers: 30
+      }),
+      global: {
+        mocks: quasarMocks,
+        plugins: [router],
+        provide: quasarProvide,
+        stubs: { ...quasarStubs }
+      }
+    })
+    await new Promise(resolve => setTimeout(resolve, 0))
+    await wrapper.vm.$nextTick()
+
+    expect(storageFunctions.saveGameStats).toHaveBeenCalledOnce()
+
+    const savedStats = storageFunctions.saveGameStats.mock.calls[0][0] as {
+      gamesPlayed: number
+      points: number
+      correctAnswers: number
+    }
+
+    // gamesPlayed was already incremented by finishGame before reaching GameOverPage,
+    // so the saved value should match what was passed in
+    expect(savedStats.gamesPlayed).toBe(initialGamesPlayed)
+    // Points unchanged — no bonus added
+    expect(savedStats.points).toBe(initialPoints)
+
+    wrapper.unmount()
   })
 })
