@@ -79,7 +79,11 @@ export const calculateDailyBonuses = (
     })
   }
 
-  if (dailyInfo.gamesPlayedToday % bonusConfig.streakGameInterval === 0) {
+  if (
+    bonusConfig.streakGameInterval > 0 &&
+    dailyInfo.gamesPlayedToday > 0 &&
+    dailyInfo.gamesPlayedToday % bonusConfig.streakGameInterval === 0
+  ) {
     bonuses.push({
       label: TEXT_DE.shared.words.streakGameBonus,
       points: bonusConfig.streakGameBonus

@@ -119,7 +119,9 @@ export function createBaseGameStore<
    * Move all cards to a specific level
    */
   function moveAllCards(level: number) {
-    if (level < MIN_LEVEL || level > MAX_LEVEL) return
+    if (!Number.isInteger(level) || level < MIN_LEVEL || level > MAX_LEVEL) {
+      throw new Error(`Invalid level: ${level} (expected integer ${MIN_LEVEL}-${MAX_LEVEL})`)
+    }
     allCards.value = allCards.value.map(card => ({ ...card, level }))
     config.saveCards?.(allCards.value)
   }

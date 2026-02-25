@@ -59,6 +59,13 @@ function migrateToDecks(data: LegacyStorageData): CardDeck[] {
   // Check if it's already deck structure
   const firstItem = data[0] as Record<string, unknown> | undefined
   if (firstItem && 'name' in firstItem && 'cards' in firstItem) {
+    // Validate all decks have required structure
+    const allValid = (data as LegacyCardDeck[]).every(
+      d => typeof d.name === 'string' && d.name.length > 0 && Array.isArray(d.cards)
+    )
+    if (!allValid) {
+      return [{ name: 'en', cards: INITIAL_CARDS }]
+    }
     // Migrate cards within decks
     const decks = (data as LegacyCardDeck[]).map(deck => ({
       ...deck,
