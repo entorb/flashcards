@@ -3,7 +3,7 @@ import * as fc from 'fast-check'
 
 import { MAX_TIME, MIN_LEVEL } from '../constants'
 import { createBaseGameStore } from './useBaseGameStore'
-import type { BaseCard, BaseGameHistory, GameStats } from '../types'
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats } from '../types'
 import type { PointsBreakdown } from '../services/scoring'
 
 // ─── Mock helpers ────────────────────────────────────────────────────────────
@@ -161,20 +161,20 @@ describe('useBaseGameStore', () => {
       expect(store.gameStats.value.gamesPlayed).toBe(4)
     })
 
-    it('adds current points to gameStats.points', () => {
+    it('does not add session points to gameStats.points (already persisted per-answer)', () => {
       const { store } = makeStore(undefined, undefined, makeStats({ points: 10 }))
       store.initializeStore()
       store.points.value = 7
       store.saveGameResults(makeHistory())
-      expect(store.gameStats.value.points).toBe(17)
+      expect(store.gameStats.value.points).toBe(10)
     })
 
-    it('adds correctAnswersCount to gameStats.correctAnswers', () => {
+    it('does not add correctAnswersCount to gameStats.correctAnswers (already persisted per-answer)', () => {
       const { store } = makeStore(undefined, undefined, makeStats({ correctAnswers: 5 }))
       store.initializeStore()
       store.correctAnswersCount.value = 3
       store.saveGameResults(makeHistory())
-      expect(store.gameStats.value.correctAnswers).toBe(8)
+      expect(store.gameStats.value.correctAnswers).toBe(5)
     })
   })
 
@@ -334,6 +334,247 @@ describe('useBaseGameStore', () => {
       const { store } = makeStore()
       store.handleAnswerBase('incorrect', makeBreakdown(0))
       expect(store.points.value).toBe(0)
+    })
+
+    // ── Early persistence unit tests (Requirements 1.1, 1.2, 6.1) ──────────
+
+    it('zero-point answer still calls saveGameStats', () => {
+      const { store, saveGameStats } = makeStore()
+      store.initializeStore()
+      store.handleAnswerBase('incorrect', makeBreakdown(0))
+      expect(saveGameStats).toHaveBeenCalledOnce()
+      expect(store.gameStats.value.points).toBe(0)
+    })
+
+    it('incorrect answer does not increment gameStats.correctAnswers', () => {
+      const { store, saveGameStats } = makeStore()
+      store.initializeStore()
+      store.handleAnswerBase('incorrect', makeBreakdown(0))
+      expect(store.gameStats.value.correctAnswers).toBe(0)
+      expect(saveGameStats).toHaveBeenCalledWith(expect.objectContaining({ correctAnswers: 0 }))
+    })
+
+    it('close answer adds points but does not increment gameStats.correctAnswers', () => {
+      const { store, saveGameStats } = makeStore()
+      store.initializeStore()
+      store.handleAnswerBase('close', makeBreakdown(3))
+      expect(store.gameStats.value.points).toBe(3)
+      expect(store.gameStats.value.correctAnswers).toBe(0)
+      expect(saveGameStats).toHaveBeenCalledWith(
+        expect.objectContaining({ points: 3, correctAnswers: 0 })
+      )
+    })
+  })
+
+  // Feature: game-points-early-persist, Property 1: Per-answer gameStats persistence is cumulative
+  /**
+   * **Validates: Requirements 1.1, 1.2, 4.3, 6.1**
+   * For any sequence of answers, gameStats.points equals the sum of all totalPoints,
+   * gameStats.correctAnswers equals the count of correct answers,
+   * and saveGameStats was called after each answer.
+   */
+  describe('handleAnswerBase — per-answer gameStats persistence is cumulative (Property 1)', () => {
+    const answerStatusArb = fc.constantFrom<AnswerStatus>('correct', 'incorrect', 'close')
+
+    const pointsBreakdownArb: fc.Arbitrary<PointsBreakdown> = fc.record({
+      levelPoints: fc.integer({ min: 0, max: 20 }),
+      difficultyPoints: fc.integer({ min: 0, max: 20 }),
+      pointsBeforeBonus: fc.integer({ min: 0, max: 40 }),
+      closeAdjustment: fc.integer({ min: 0, max: 10 }),
+      languageBonus: fc.integer({ min: 0, max: 10 }),
+      timeBonus: fc.integer({ min: 0, max: 5 }),
+      totalPoints: fc.integer({ min: 0, max: 100 })
+    })
+
+    const answerPairArb = fc.tuple(answerStatusArb, pointsBreakdownArb)
+
+    it('gameStats accumulates points and correctAnswers, saveGameStats called per answer', () => {
+      fc.assert(
+        fc.property(fc.array(answerPairArb, { minLength: 1, maxLength: 30 }), answers => {
+          const { store, saveGameStats } = makeStore()
+          store.initializeStore()
+
+          let expectedPoints = 0
+          let expectedCorrect = 0
+
+          for (const [status, breakdown] of answers) {
+            store.handleAnswerBase(status, breakdown)
+            expectedPoints += breakdown.totalPoints
+            if (status === 'correct') {
+              expectedCorrect++
+            }
+          }
+
+          // gameStats.points equals sum of all totalPoints
+          expect(store.gameStats.value.points).toBe(expectedPoints)
+          // gameStats.correctAnswers equals count of correct answers
+          expect(store.gameStats.value.correctAnswers).toBe(expectedCorrect)
+          // saveGameStats called once per answer
+          expect(saveGameStats).toHaveBeenCalledTimes(answers.length)
+          // Last call received the current cumulative gameStats
+          const lastCall = saveGameStats.mock.calls[answers.length - 1]![0] as GameStats
+          expect(lastCall.points).toBe(expectedPoints)
+          expect(lastCall.correctAnswers).toBe(expectedCorrect)
+        }),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  // Feature: game-points-early-persist, Property 2: finishGame does not double-count session points
+  /**
+   * **Validates: Requirements 2.1, 2.2**
+   * After a random answer sequence, calling saveGameResults (finishGame) should not
+   * change gameStats.points or gameStats.correctAnswers. Only gamesPlayed is incremented by 1.
+   */
+  describe('saveGameResults — finishGame does not double-count session points (Property 2)', () => {
+    const answerStatusArb = fc.constantFrom<AnswerStatus>('correct', 'incorrect', 'close')
+
+    const pointsBreakdownArb: fc.Arbitrary<PointsBreakdown> = fc.record({
+      levelPoints: fc.integer({ min: 0, max: 20 }),
+      difficultyPoints: fc.integer({ min: 0, max: 20 }),
+      pointsBeforeBonus: fc.integer({ min: 0, max: 40 }),
+      closeAdjustment: fc.integer({ min: 0, max: 10 }),
+      languageBonus: fc.integer({ min: 0, max: 10 }),
+      timeBonus: fc.integer({ min: 0, max: 5 }),
+      totalPoints: fc.integer({ min: 0, max: 100 })
+    })
+
+    const answerPairArb = fc.tuple(answerStatusArb, pointsBreakdownArb)
+
+    it('points and correctAnswers unchanged after saveGameResults, only gamesPlayed incremented', () => {
+      fc.assert(
+        fc.property(fc.array(answerPairArb, { minLength: 1, maxLength: 30 }), answers => {
+          const { store } = makeStore()
+          store.initializeStore()
+
+          // Play a random answer sequence
+          for (const [status, breakdown] of answers) {
+            store.handleAnswerBase(status, breakdown)
+          }
+
+          // Snapshot gameStats before finishGame
+          const pointsBefore = store.gameStats.value.points
+          const correctBefore = store.gameStats.value.correctAnswers
+          const gamesPlayedBefore = store.gameStats.value.gamesPlayed
+
+          // Call finishGame via saveGameResults
+          store.saveGameResults(makeHistory(store.points.value))
+
+          // points and correctAnswers must be unchanged (already persisted per-answer)
+          expect(store.gameStats.value.points).toBe(pointsBefore)
+          expect(store.gameStats.value.correctAnswers).toBe(correctBefore)
+          // Only gamesPlayed incremented by 1
+          expect(store.gameStats.value.gamesPlayed).toBe(gamesPlayedBefore + 1)
+        }),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  // Feature: game-points-early-persist, Property 3: Cancellation retains persisted gameStats
+  /**
+   * **Validates: Requirements 3.1, 3.2, 6.2**
+   * After a random answer sequence, calling discardGame should leave gameStats.points
+   * and gameStats.correctAnswers unchanged (equal to the values persisted during the N answers).
+   * The in-memory session counters are reset, but localStorage gameStats are not rolled back.
+   */
+  describe('discardGame — cancellation retains persisted gameStats (Property 3)', () => {
+    const answerStatusArb = fc.constantFrom<AnswerStatus>('correct', 'incorrect', 'close')
+
+    const pointsBreakdownArb: fc.Arbitrary<PointsBreakdown> = fc.record({
+      levelPoints: fc.integer({ min: 0, max: 20 }),
+      difficultyPoints: fc.integer({ min: 0, max: 20 }),
+      pointsBeforeBonus: fc.integer({ min: 0, max: 40 }),
+      closeAdjustment: fc.integer({ min: 0, max: 10 }),
+      languageBonus: fc.integer({ min: 0, max: 10 }),
+      timeBonus: fc.integer({ min: 0, max: 5 }),
+      totalPoints: fc.integer({ min: 0, max: 100 })
+    })
+
+    const answerPairArb = fc.tuple(answerStatusArb, pointsBreakdownArb)
+
+    it('gameStats.points and gameStats.correctAnswers unchanged after discardGame', () => {
+      fc.assert(
+        fc.property(fc.array(answerPairArb, { minLength: 1, maxLength: 30 }), answers => {
+          const { store, saveGameStats } = makeStore()
+          store.initializeStore()
+
+          // Play a random answer sequence (each answer persists to gameStats)
+          for (const [status, breakdown] of answers) {
+            store.handleAnswerBase(status, breakdown)
+          }
+
+          // Snapshot gameStats after all answers
+          const pointsAfterAnswers = store.gameStats.value.points
+          const correctAfterAnswers = store.gameStats.value.correctAnswers
+
+          // Verify the last saveGameStats call matches the snapshot
+          const lastCall = saveGameStats.mock.calls.at(-1)![0] as GameStats
+          expect(lastCall.points).toBe(pointsAfterAnswers)
+          expect(lastCall.correctAnswers).toBe(correctAfterAnswers)
+
+          // Cancel the game
+          store.discardGame()
+
+          // gameStats.points and gameStats.correctAnswers must be retained
+          expect(store.gameStats.value.points).toBe(pointsAfterAnswers)
+          expect(store.gameStats.value.correctAnswers).toBe(correctAfterAnswers)
+        }),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  // Feature: game-points-early-persist, Property 4: Cancellation does not increment gamesPlayed
+  /**
+   * **Validates: Requirements 3.3**
+   * For any game session that is discarded via discardGame, gameStats.gamesPlayed
+   * should remain equal to its value before the game started.
+   */
+  describe('discardGame — cancellation does not increment gamesPlayed (Property 4)', () => {
+    const answerStatusArb = fc.constantFrom<AnswerStatus>('correct', 'incorrect', 'close')
+
+    const pointsBreakdownArb: fc.Arbitrary<PointsBreakdown> = fc.record({
+      levelPoints: fc.integer({ min: 0, max: 20 }),
+      difficultyPoints: fc.integer({ min: 0, max: 20 }),
+      pointsBeforeBonus: fc.integer({ min: 0, max: 40 }),
+      closeAdjustment: fc.integer({ min: 0, max: 10 }),
+      languageBonus: fc.integer({ min: 0, max: 10 }),
+      timeBonus: fc.integer({ min: 0, max: 5 }),
+      totalPoints: fc.integer({ min: 0, max: 100 })
+    })
+
+    const answerPairArb = fc.tuple(answerStatusArb, pointsBreakdownArb)
+
+    it('gamesPlayed unchanged after random answers followed by discardGame', () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 0, max: 50 }),
+          fc.array(answerPairArb, { minLength: 1, maxLength: 30 }),
+          (initialGamesPlayed, answers) => {
+            const stats = makeStats({ gamesPlayed: initialGamesPlayed })
+            const { store } = makeStore(undefined, undefined, stats)
+            store.initializeStore()
+
+            // Record gamesPlayed before the game
+            const gamesPlayedBefore = store.gameStats.value.gamesPlayed
+            expect(gamesPlayedBefore).toBe(initialGamesPlayed)
+
+            // Play a random answer sequence
+            for (const [status, breakdown] of answers) {
+              store.handleAnswerBase(status, breakdown)
+            }
+
+            // Cancel the game
+            store.discardGame()
+
+            // gamesPlayed must remain unchanged
+            expect(store.gameStats.value.gamesPlayed).toBe(gamesPlayedBefore)
+          }
+        ),
+        { numRuns: 100 }
+      )
     })
   })
 
