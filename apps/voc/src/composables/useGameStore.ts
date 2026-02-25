@@ -224,8 +224,7 @@ export function useGameStore() {
     // Update history and stats in memory only - GameOverPage will save to localStorage
     baseStore.history.value = [...baseStore.history.value, historyEntry]
     baseStore.gameStats.value.gamesPlayed++
-    baseStore.gameStats.value.points += baseStore.points.value
-    baseStore.gameStats.value.correctAnswers += baseStore.correctAnswersCount.value
+    // points and correctAnswers already persisted per-answer in handleAnswerBase
 
     // Save game result to sessionStorage for GameOverPage
     storageSetGameResult({
