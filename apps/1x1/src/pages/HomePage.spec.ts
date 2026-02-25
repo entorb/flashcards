@@ -1,8 +1,11 @@
 import { mount } from '@vue/test-utils'
+import fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
+import { MIN_LEVEL, MAX_LEVEL } from '@flashcards/shared'
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import type { Card } from '@/types'
 import HomePage from './HomePage.vue'
 
 const mocks = vi.hoisted(() => ({
@@ -11,7 +14,8 @@ const mocks = vi.hoisted(() => ({
   loadRange: vi.fn(() => [3, 4, 5, 6, 7, 8, 9]),
   saveSettings: vi.fn(),
   initializeCards: vi.fn(),
-  startGame: vi.fn()
+  startGame: vi.fn(),
+  getVirtualCardsForRange: vi.fn((): Card[] => [])
 }))
 
 vi.mock('@/services/storage', () => ({
@@ -19,7 +23,14 @@ vi.mock('@/services/storage', () => ({
   loadSettings: mocks.loadSettings,
   loadRange: mocks.loadRange,
   saveSettings: mocks.saveSettings,
-  initializeCards: mocks.initializeCards
+  initializeCards: mocks.initializeCards,
+  getVirtualCardsForRange: mocks.getVirtualCardsForRange
+}))
+
+vi.mock('@/services/cardSelector', () => ({
+  filterCardsAll: (cards: Card[]) => cards,
+  filterCardsBySelection: (cards: Card[]) => cards,
+  filterCardsSquares: (cards: Card[]) => cards
 }))
 
 vi.mock('@/composables/useGameStore', () => ({
@@ -61,6 +72,7 @@ describe('HomePage', () => {
             <slot name="mascot" />
             <slot name="config" />
             <button data-cy="start-game-button" @click="$emit('start-game')">Start</button>
+            <slot name="extra-buttons" />
             <button data-cy="go-to-history-button" @click="$emit('go-to-history')">History</button>
             <button data-cy="go-to-cards-button" @click="$emit('go-to-cards')">Cards</button>
             <button data-cy="go-to-info-button" @click="$emit('go-to-info')">Info</button>
@@ -289,6 +301,123 @@ describe('HomePage', () => {
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
       expect(mocks.saveSettings).toHaveBeenCalledWith(
         expect.objectContaining({ select: [3, 5], focus: 'strong' })
+      )
+    })
+  })
+
+  // Feature: game-modes-endless-and-loops, Property 8
+  // **Validates: Requirements 2.3, 2.4**
+  describe('Endless Level 1 button disabled state — property test', () => {
+    /**
+     * Arbitrary: generates a 1x1 Card with a random level and a valid question format.
+     * The cardSelector mock passes all cards through, so the question format doesn't matter
+     * for filtering — only the level matters for filterLevel1Cards.
+     */
+    const cardArb = fc
+      .record({
+        level: fc.integer({ min: MIN_LEVEL, max: MAX_LEVEL }),
+        time: fc.integer({ min: 1, max: 60 }),
+        question: fc.constant('3x3'),
+        answer: fc.constant(9)
+      })
+      .map((r): Card => r)
+
+    /**
+     * Mount options with a QBtn stub that forwards the `disable` prop as the
+     * HTML `disabled` attribute, so we can observe it in the rendered output.
+     */
+    const createPropertyMountOptions = (router: ReturnType<typeof createMockRouter>) => {
+      const base = createMountOptions(router)
+      return {
+        ...base,
+        global: {
+          ...base.global,
+          stubs: {
+            ...base.global.stubs,
+            QBtn: {
+              template:
+                '<button :disabled="disable || undefined" :data-cy="$attrs[\'data-cy\']"><slot /></button>',
+              props: ['disable', 'color', 'size', 'icon', 'outline', 'unelevated'],
+              inheritAttrs: false
+            }
+          }
+        }
+      }
+    }
+
+    it('button is disabled iff no card has level === 1', async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.array(cardArb, { minLength: 0, maxLength: 20 }), async cards => {
+          mocks.getVirtualCardsForRange.mockReturnValue(cards)
+
+          const router = createMockRouter()
+          const wrapper = mount(HomePage, createPropertyMountOptions(router))
+          await wrapper.vm.$nextTick()
+
+          const button = wrapper.find('[data-cy="start-endless-level1"]')
+          expect(button.exists()).toBe(true)
+
+          const hasAnyLevel1 = cards.some(c => c.level === MIN_LEVEL)
+          const isDisabled = button.attributes('disabled') !== undefined
+
+          expect(isDisabled).toBe(!hasAnyLevel1)
+
+          wrapper.unmount()
+        }),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  describe('Endless Level 5 button disabled state — property test', () => {
+    const cardArb = fc
+      .record({
+        level: fc.integer({ min: MIN_LEVEL, max: MAX_LEVEL }),
+        time: fc.integer({ min: 1, max: 60 }),
+        question: fc.constant('3x3'),
+        answer: fc.constant(9)
+      })
+      .map((r): Card => r)
+
+    const createPropertyMountOptions = (router: ReturnType<typeof createMockRouter>) => {
+      const base = createMountOptions(router)
+      return {
+        ...base,
+        global: {
+          ...base.global,
+          stubs: {
+            ...base.global.stubs,
+            QBtn: {
+              template:
+                '<button :disabled="disable || undefined" :data-cy="$attrs[\'data-cy\']"><slot /></button>',
+              props: ['disable', 'color', 'size', 'icon', 'outline', 'unelevated'],
+              inheritAttrs: false
+            }
+          }
+        }
+      }
+    }
+
+    it('button is disabled iff no card has level < MAX_LEVEL', async () => {
+      await fc.assert(
+        fc.asyncProperty(fc.array(cardArb, { minLength: 0, maxLength: 20 }), async cards => {
+          mocks.getVirtualCardsForRange.mockReturnValue(cards)
+
+          const router = createMockRouter()
+          const wrapper = mount(HomePage, createPropertyMountOptions(router))
+          await wrapper.vm.$nextTick()
+
+          const button = wrapper.find('[data-cy="start-endless-level5"]')
+          expect(button.exists()).toBe(true)
+
+          const hasAnyBelowMax = cards.some(c => c.level < MAX_LEVEL)
+          const isDisabled = button.attributes('disabled') !== undefined
+
+          expect(isDisabled).toBe(!hasAnyBelowMax)
+
+          wrapper.unmount()
+        }),
+        { numRuns: 100 }
       )
     })
   })

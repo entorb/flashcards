@@ -3,6 +3,7 @@ interface Props {
   currentIndex: number
   totalCards: number
   points: number
+  totalCardsOverride?: number
 }
 
 defineProps<Props>()
@@ -31,7 +32,10 @@ const emit = defineEmits<{ back: [] }>()
       class="text-h6 text-weight-bold"
       data-cy="card-counter"
     >
-      {{ currentIndex + 1 }} / {{ totalCards }}
+      <template v-if="totalCardsOverride !== undefined">
+        {{ totalCardsOverride }}
+      </template>
+      <template v-else> {{ currentIndex + 1 }} / {{ totalCards }} </template>
     </div>
   </div>
 </template>

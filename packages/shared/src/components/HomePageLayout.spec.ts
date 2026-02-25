@@ -101,3 +101,40 @@ describe('HomePageLayout', () => {
     expect(wrapper.emitted('goToHistory')).toHaveLength(1)
   })
 })
+
+// Requirement 6.4: HomePageLayout extra-buttons slot
+describe('HomePageLayout — extra-buttons slot', () => {
+  it('renders extra-buttons slot content between start and nav buttons', () => {
+    const wrapper = mount(HomePageLayout, {
+      props: { appTitle: 'Test', basePath: '/test/', statistics: defaultStats },
+      slots: {
+        mascot: '<div />',
+        config: '<div />',
+        'extra-buttons': '<button data-cy="extra-btn">Extra</button>'
+      },
+      ...mountOptions
+    })
+
+    const extraBtn = wrapper.find('[data-cy="extra-btn"]')
+    expect(extraBtn.exists()).toBe(true)
+    expect(extraBtn.text()).toBe('Extra')
+
+    // Verify ordering: start button → extra-buttons → nav buttons
+    const html = wrapper.html()
+    const startIdx = html.indexOf('data-cy="start-button"')
+    const extraIdx = html.indexOf('data-cy="extra-btn"')
+    const cardsIdx = html.indexOf('data-cy="cards-button"')
+    expect(startIdx).toBeLessThan(extraIdx)
+    expect(extraIdx).toBeLessThan(cardsIdx)
+  })
+
+  it('renders nothing when extra-buttons slot is not provided', () => {
+    const wrapper = mount(HomePageLayout, {
+      props: { appTitle: 'Test', basePath: '/test/', statistics: defaultStats },
+      ...mountOptions
+    })
+
+    // The slot area should not contain any extra content
+    expect(wrapper.find('[data-cy="extra-btn"]').exists()).toBe(false)
+  })
+})
