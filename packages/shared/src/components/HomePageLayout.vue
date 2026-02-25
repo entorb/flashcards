@@ -25,6 +25,7 @@ defineEmits<{
 defineSlots<{
   mascot(): VNode[]
   config(): VNode[]
+  'extra-buttons'?(): VNode[]
 }>()
 </script>
 
@@ -85,6 +86,9 @@ defineSlots<{
     >
       <span class="text-body1">{{ TEXT_DE.shared.common.start }}</span>
     </q-btn>
+
+    <!-- Extra Buttons (e.g., game mode buttons) -->
+    <slot name="extra-buttons" />
 
     <!-- Navigation Buttons -->
     <div class="row q-gutter-sm">

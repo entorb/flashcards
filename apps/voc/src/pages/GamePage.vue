@@ -3,6 +3,7 @@ import {
   type AnswerStatus,
   MAX_TIME,
   TEXT_DE,
+  isEndlessMode,
   useGameNavigation,
   useGameTimer,
   useKeyboardContinue
@@ -30,11 +31,17 @@ const {
   points,
   currentCard,
   lastPointsBreakdown,
+  sessionMode,
   handleAnswer: storeHandleAnswer,
   nextCard,
   finishGame,
   discardGame
 } = useGameStore()
+
+// For endless mode, show remaining cards count (shrinks as cards are removed)
+const totalCardsOverride = computed(() =>
+  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined
+)
 
 // GamePage component state
 const showAnswer = ref(false)
@@ -219,6 +226,7 @@ onUnmounted(() => {
       <GameHeader
         :current-index="currentCardIndex"
         :total-cards="gameCards.length"
+        v-bind="totalCardsOverride !== undefined ? { totalCardsOverride } : {}"
         :points="points"
         @back="handleGoHome"
       />
