@@ -91,6 +91,7 @@ export const TEXT_DE = {
       confirmResetTitle: 'Zurücksetzen bestätigen',
       confirmResetMessage: 'Alle Karten zurück auf Level 1?',
       resetSuccess: 'Zurücksetzung erfolgreich!',
+      share: 'Teilen',
       copied: 'Kopiert!',
       emptyTextError: 'Das Textfeld ist leer.',
       clipboardError: 'Zugriff auf Zwischenablage fehlgeschlagen.',

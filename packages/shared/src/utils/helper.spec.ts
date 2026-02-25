@@ -10,6 +10,7 @@ import {
   levenshteinDistance,
   roundTime
 } from '../utils/helper'
+import { STATS_PENDING_STORAGE_KEY } from '../constants'
 
 describe('getFocusText', () => {
   it('returns weak text for "weak"', () => {
@@ -248,10 +249,11 @@ describe('helperStatsDataRead', () => {
 describe('helperStatsDataWrite', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    globalThis.localStorage.removeItem(STATS_PENDING_STORAGE_KEY)
   })
 
   it('calls fetch with correct URL', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({})
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
     vi.stubGlobal('fetch', fetchMock)
     await helperStatsDataWrite('voc')
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('voc'))
@@ -260,6 +262,61 @@ describe('helperStatsDataWrite', () => {
   it('does not throw when fetch fails', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')))
     await expect(helperStatsDataWrite('lwk')).resolves.toBeUndefined()
+  })
+
+  it('caches a pending count in localStorage when offline', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
+    await helperStatsDataWrite('voc')
+    const pending = JSON.parse(globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY) ?? '{}')
+    expect(pending).toEqual({ voc: 1 })
+  })
+
+  it('increments the pending count on repeated offline calls', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
+    await helperStatsDataWrite('voc')
+    await helperStatsDataWrite('voc')
+    await helperStatsDataWrite('1x1')
+    const pending = JSON.parse(globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY) ?? '{}')
+    expect(pending).toEqual({ voc: 2, '1x1': 1 })
+  })
+
+  it('flushes pending writes when back online', async () => {
+    // Simulate 2 offline writes
+    globalThis.localStorage.setItem(STATS_PENDING_STORAGE_KEY, JSON.stringify({ voc: 2 }))
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await helperStatsDataWrite('1x1')
+
+    // 1 for the current call + 2 for the cached voc writes = 3
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY)).toBeNull()
+  })
+
+  it('keeps remaining pending writes if flush partially fails', async () => {
+    globalThis.localStorage.setItem(STATS_PENDING_STORAGE_KEY, JSON.stringify({ voc: 3 }))
+    let callCount = 0
+    const fetchMock = vi.fn().mockImplementation(() => {
+      callCount++
+      // First call (current write) succeeds, first flush succeeds, second flush fails
+      if (callCount <= 2) return { ok: true }
+      throw new Error('offline again')
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await helperStatsDataWrite('1x1')
+
+    const pending = JSON.parse(globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY) ?? '{}')
+    expect(pending).toEqual({ voc: 2 })
+  })
+
+  it('clears localStorage key when all pending writes are flushed', async () => {
+    globalThis.localStorage.setItem(STATS_PENDING_STORAGE_KEY, JSON.stringify({ voc: 1 }))
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true }))
+
+    await helperStatsDataWrite('1x1')
+
+    expect(globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY)).toBeNull()
   })
 })
 

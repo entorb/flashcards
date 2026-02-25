@@ -2,6 +2,15 @@
  * Shared constants used across all flashcards apps
  */
 
+/**
+ * localStorage key for caching pending stats writes when offline
+ */
+export const STATS_PENDING_STORAGE_KEY = 'fc-stats-pending'
+
+// share app via footer URL
+export const SHARE_URL = 'https://entorb.net/flashcards/'
+
+export const WEB_STATS_URL = 'https://entorb.net/web-stats-json.php'
 // ============================================================================
 // GAME DIFFICULTY LEVELS
 // ============================================================================
