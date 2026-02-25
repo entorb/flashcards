@@ -3,7 +3,12 @@
  * Common patterns for points calculation across apps
  */
 
-import { CLOSE_MATCH_SCORE_PERCENTAGE, MAX_LEVEL, SPEED_BONUS_POINTS } from '../constants'
+import {
+  CLOSE_MATCH_SCORE_PERCENTAGE,
+  MAX_LEVEL,
+  MIN_LEVEL,
+  SPEED_BONUS_POINTS
+} from '../constants'
 
 /**
  * Calculate base points from card level
@@ -17,6 +22,9 @@ import { CLOSE_MATCH_SCORE_PERCENTAGE, MAX_LEVEL, SPEED_BONUS_POINTS } from '../
  * calculateBasePoints(5) // Returns 1
  */
 export function calculateLevelPoints(level: number): number {
+  if (!Number.isInteger(level) || level < MIN_LEVEL || level > MAX_LEVEL) {
+    throw new Error(`Invalid card level: ${level} (expected integer ${MIN_LEVEL}-${MAX_LEVEL})`)
+  }
   return MAX_LEVEL + 1 - level
 }
 
