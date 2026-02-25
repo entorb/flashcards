@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import type { SessionMode } from '@flashcards/shared'
 import type { Card } from '@/types'
 import GamePage from './GamePage.vue'
 
@@ -22,7 +23,8 @@ const storeState = {
   points: ref(0),
   currentCard: ref<Card | null>(null),
   gameSettings: ref<{ select: number[]; focus: string } | null>(null),
-  lastPointsBreakdown: ref(null)
+  lastPointsBreakdown: ref(null),
+  sessionMode: ref<SessionMode>('standard')
 }
 
 vi.mock('@/composables/useGameStore', () => ({
@@ -32,6 +34,7 @@ vi.mock('@/composables/useGameStore', () => ({
     points: storeState.points,
     currentCard: storeState.currentCard,
     gameSettings: storeState.gameSettings,
+    sessionMode: storeState.sessionMode,
     handleAnswer: mocks.handleAnswer,
     nextCard: mocks.nextCard,
     finishGame: mocks.finishGame,
@@ -114,6 +117,7 @@ describe('GamePage', () => {
     storeState.currentCardIndex.value = 0
     storeState.points.value = 0
     storeState.lastPointsBreakdown.value = null
+    storeState.sessionMode.value = 'standard'
     mocks.nextCard.mockReturnValue(false)
   })
 

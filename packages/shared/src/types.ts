@@ -89,3 +89,10 @@ export interface DailyBonusConfig {
   streakGameBonus: number
   streakGameInterval: number
 }
+
+/**
+ * Session mode for game sessions
+ * Named SessionMode to avoid collision with app-specific GameMode types
+ * (voc: 'multiple-choice' | 'blind' | 'typing', lwk: 'copy' | 'hidden')
+ */
+export type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'

@@ -3,7 +3,7 @@
  * Handles localStorage operations for cards, history, settings, and stats
  */
 
-import type { GameResult, GameStats } from '@flashcards/shared'
+import type { GameResult, GameStats, SessionMode } from '@flashcards/shared'
 import {
   createAppGameStorage,
   createGamePersistence,
@@ -40,6 +40,8 @@ interface GameState {
   points: number
   correctAnswersCount: number
   gameSettings: GameSettings
+  sessionMode?: SessionMode
+  initialCardCount?: number
 }
 
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
