@@ -48,8 +48,21 @@ export function loadDecks(): CardDeck[] {
     return DEFAULT_DECKS
   }
   try {
-    const parsed = JSON.parse(stored) as CardDeck[]
-    return parsed
+    const parsed = JSON.parse(stored) as unknown
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      saveDecks(DEFAULT_DECKS)
+      return DEFAULT_DECKS
+    }
+    // Validate each deck has required structure
+    const decks = parsed as CardDeck[]
+    const valid = decks.every(
+      d => typeof d.name === 'string' && d.name.length > 0 && Array.isArray(d.cards)
+    )
+    if (!valid) {
+      saveDecks(DEFAULT_DECKS)
+      return DEFAULT_DECKS
+    }
+    return decks
   } catch {
     saveDecks(DEFAULT_DECKS)
     return DEFAULT_DECKS

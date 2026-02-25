@@ -98,8 +98,12 @@ export function loadCards(): Card[] {
     return []
   }
   try {
-    const cards = JSON.parse(stored) as Card[]
-    return cards
+    const parsed = JSON.parse(stored) as unknown
+    if (!Array.isArray(parsed)) {
+      console.error('Invalid 1x1 cards data in localStorage.')
+      return []
+    }
+    return parsed as Card[]
   } catch {
     console.error('Error parsing 1x1 cards from localStorage.')
     return []
@@ -337,7 +341,16 @@ export function loadRange(): number[] {
     return [...DEFAULT_RANGE]
   }
   try {
-    return JSON.parse(stored) as number[]
+    const parsed = JSON.parse(stored) as unknown
+    if (
+      !Array.isArray(parsed) ||
+      parsed.length === 0 ||
+      !parsed.every(n => typeof n === 'number' && Number.isInteger(n))
+    ) {
+      console.error('Invalid range data in localStorage. Using defaults.')
+      return [...DEFAULT_RANGE]
+    }
+    return parsed as number[]
   } catch {
     console.error('Error parsing range from localStorage. Using defaults.')
     return [...DEFAULT_RANGE]
