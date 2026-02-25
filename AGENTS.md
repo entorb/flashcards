@@ -1,58 +1,80 @@
 # Flashcards Monorepo
 
-**pnpm workspace** with Vue.js/Quasar educational apps sharing common code.
+**pnpm workspace** with Vue 3 / Quasar / TypeScript educational apps sharing common code.
 
-- **[apps/1x1](apps/1x1/AGENTS.md)**
-- **[apps/voc](apps/voc/AGENTS.md)**
-- **[apps/lwk](apps/lwk/AGENTS.md)**
-- **[apps/eta](apps/eta/AGENTS.md)**
-- **[packages/shared](packages/shared/AGENTS.md)**
+- **[apps/1x1](apps/1x1/AGENTS.md)** — Multiplication tables
+- **[apps/voc](apps/voc/AGENTS.md)** — Vocabulary learning
+- **[apps/lwk](apps/lwk/AGENTS.md)** — Spelling trainer
+- **[apps/eta](apps/eta/AGENTS.md)** — Homework time estimator
+- **[packages/shared](packages/shared/AGENTS.md)** — Common code
+
+## Commands
+
+```bash
+# Validation (run after changes)
+pnpm run check                # format + lint + types + spell + test
+pnpm run cy:run               # all Cypress E2E tests
+pnpm run cy:run:{app}         # E2E for one app (1x1, voc, lwk, eta)
+
+# Single Cypress spec (for debugging)
+pnpm run cy:run:{app} -- --spec "cypress/e2e/{spec}.cy.ts" 2>&1
+
+# Per-app commands
+pnpm --filter {app} run lint 2>&1
+pnpm --filter {app} run test 2>&1
+
+# Formatting (auto-fix)
+pnpm run format
+```
+
+Commit only after `pnpm run check` and `pnpm run cy:run` pass. Commit header only, no body.
 
 ## Workflow Rules
 
-- Update `AGENTS.md` file to prevent running into the same issues and fixing them again and again
-- Before running OS commands like `head`, `tail`, `grep`, etc., check your environment (Linux-like or Windows) and adjust accordingly (e.g., use PowerShell commands instead)
-- to run checks per app: `pnpm --filter 1x1 run lint 2>&1`, with `1x1` being the app name, same for `test`
-- Run `pnpm run format` to automatically handle code formatting
-- Run `pnpm run lint` and `pnpm run test` after changes to validate linting and unit tests
-- Run `pnpm run cy:run:{app}` after phases
-- All text in `@flashcards/shared/src/text-de.ts`
-- Unit tests: `.spec.ts` suffix, import functions (don't copy)
-- E2E tests: `data-cy` locators (not text/ids)
-- Check for code duplication and ensure common code is moved to shared package before committing
-- Commit after implementing new features, Only after `pnpm run check` and `pnpm run cy:run` pass. Only commit header, no body.
+- Before running OS commands (`head`, `tail`, `grep`, etc.), check the environment (Linux vs Windows) and use the appropriate equivalent (e.g., PowerShell commands on Windows).
 
-## Critical Code Rules
+**Maintaining AGENTS.md (mandatory):**
 
-**Modern Code**
+- When you encounter a non-obvious bug, surprising behavior, or a workaround, add it to the relevant `AGENTS.md` file immediately — don't wait until the end.
+- Add to `Critical Gotchas` if it's a "never do X" lesson. Add to `Required Patterns` or `Code Rules` if it's a coding convention. Add to `Workflow Rules` if it's about process.
+- Use the app-specific `AGENTS.md` (`apps/*/AGENTS.md`) for app-local lessons and the root `AGENTS.md` for cross-cutting lessons.
+- Before starting work, read the relevant `AGENTS.md` files to avoid repeating known mistakes.
+- If you hit the same error twice in one session, that's a strong signal it belongs in `AGENTS.md`.
 
-- use best practice as of 2025 for vue and typescript
+## Code Rules
 
-**Type Safety:**
+**Type Safety & Fail Fast:**
 
-- No `any` → use proper types
-- Type all refs: `ref<HTMLInputElement | null>(null)`
-- No `!` assertions → use null checks
-- Consolidate imports: `import type { Card, SelectionType } from '@/types'`
+- No `any` — use proper types
+- Type all refs: `ref<Type | null>(null)`
+- No `!` assertions — use null checks
+- Use `import type` for type-only imports
+- Validate and sanitize inputs at entry points (function params, user input, storage reads) — fail early with clear errors instead of propagating `undefined`/`null` through the code
+- Prefer strict return types over loose unions — a function that always returns a value is simpler than one that might return `undefined`
 
-**Patterns:**
+**Required Patterns:**
 
-- `globalThis` not `window` or `global`
+- `globalThis` not `window`/`global`
 - `for...of` not `.forEach()`
 - `Number.parseInt(str, 10)` not `parseInt(str)`
-- `items.sort((a, b) => a.localeCompare(b))` for strings
-- Cognitive complexity < 15 → extract functions
-- No duplicate strings (3+) → use `TEXT_DE` or constants
+- String sort: `items.sort((a, b) => a.localeCompare(b))`
+- Cognitive complexity < 15 — extract functions
+- No duplicate strings (3+) — use `TEXT_DE` or constants
+- All UI text in `TEXT_DE` from `@flashcards/shared`
 
-**DRY Principles:**
+**DRY (critical for this monorepo):**
 
-- Strictly adhere to Don't Repeat Yourself: Prevent code duplication across the monorepo.
-- Use the shared package (`packages/shared/`) for any common code, components, composables, services, utilities, or types.
-- Before implementing new features, search for existing implementations in `packages/shared/` or other apps.
-- Extract duplicated code into shared modules immediately to maintain a single source of truth.
-- All UI text must be centralized in `TEXT_DE` from `@flashcards/shared` to avoid string duplication.
-- Use shared constants, types, and patterns consistently across all apps.
-- Regularly refactor to move app-specific code to shared when it becomes reusable.
+- Before writing new code, always search `packages/shared/` and other apps for existing implementations
+- If logic, types, constants, components, or composables are used by more than one app, they must live in `packages/shared/`
+- Never duplicate UI text — all strings go in `TEXT_DE`
+- Never duplicate constants — use shared `constants.ts` or app-level `constants.ts`
+- When adding a feature to one app, check if another app already solved it and extract to shared
+- Refactor app-specific code to shared as soon as it becomes reusable
+
+**Tests:**
+
+- Unit tests: `.spec.ts` suffix, import functions (don't copy implementations)
+- E2E tests: `data-cy` locators only (not text/ids)
 
 **Suppressing warnings (rare):**
 
@@ -62,20 +84,7 @@
 <!-- eslint-enable vuejs-accessibility/no-autofocus -->
 ```
 
-## Key Files
-
-| Category        | Location                                              | Purpose                           |
-| --------------- | ----------------------------------------------------- | --------------------------------- |
-| **Text**        | `packages/shared/src/text-de.ts`                      | All UI strings (i18n)             |
-| **Types**       | `packages/shared/src/types.ts`                        | Base types (BaseCard, GameStats)  |
-|                 | `apps/*/src/types.ts`                                 | App-specific types                |
-| **Constants**   | `packages/shared/src/constants.ts`                    | Shared constants                  |
-|                 | `apps/*/src/constants.ts`                             | App-specific constants            |
-| **Store**       | `packages/shared/src/composables/useBaseGameStore.ts` | State management factory          |
-| **Storage**     | `packages/shared/src/services/storage.ts`             | localStorage operations           |
-| **Composables** | `packages/shared/src/composables/`                    | Reusable logic (timers, keyboard) |
-
-## Directory Layout
+## Architecture
 
 ```text
 flashcards/
@@ -84,89 +93,68 @@ flashcards/
 │   ├── voc/              # Port 5174/4174
 │   ├── lwk/              # Port 5175/4175
 │   └── eta/              # Port 5176/4176
-├── packages/shared/       # Workspace package
-├── pnpm-workspace.yaml
-├── tsconfig.base.json     # Shared TS config
-├── vite.config.base.ts    # Shared Vite config
-└── vitest.config.base.ts  # Shared Vitest config
+├── packages/shared/       # @flashcards/shared
+├── tsconfig.base.json     # Shared TS config (apps extend)
+├── vite.config.base.ts    # Shared Vite config (apps mergeConfig())
+└── vitest.config.base.ts  # Shared Vitest config (apps call getVitestConfig())
 ```
 
-## Configuration Patterns
-
-**Base + Override Pattern:**
-
-- TypeScript: `tsconfig.base.json` → apps extend with paths
-- Vite: `vite.config.base.ts` → apps merge with `mergeConfig()`
-- Vitest: `vitest.config.base.ts` → apps call `getVitestConfig(rootDir)`
-
-## Shared Package Import Patterns
+## Shared Package Imports
 
 ```typescript
-// Main exports
 import { TEXT_DE, useKeyboardContinue } from '@flashcards/shared'
-
-// Component exports
-import { AppFooter, AnswerFeedback } from '@flashcards/shared/components'
-
-// Page exports
+import { AppFooter, GameAnswerFeedback } from '@flashcards/shared/components'
 import { HistoryPage, GameOverPage } from '@flashcards/shared/pages'
+import { cardSelection } from '@flashcards/shared/utils'
 ```
+
+Export paths: `.`, `./components`, `./pages`, `./layouts`, `./utils`, `./test-utils`
+
+## Key Files
+
+| File                                                  | Purpose                                                         |
+| ----------------------------------------------------- | --------------------------------------------------------------- |
+| `packages/shared/src/text-de.ts`                      | All UI strings (German)                                         |
+| `packages/shared/src/types.ts`                        | Base types: `BaseCard`, `GameStats`, `SessionMode`, `FocusType` |
+| `packages/shared/src/constants.ts`                    | `MIN_LEVEL`, `MAX_LEVEL`, `LEVEL_COLORS`, bonus values          |
+| `packages/shared/src/services/storage.ts`             | localStorage/sessionStorage CRUD                                |
+| `packages/shared/src/services/scoring.ts`             | Points calculation                                              |
+| `packages/shared/src/composables/useBaseGameStore.ts` | Game state factory                                              |
+| `packages/shared/src/composables/useGameStateFlow.ts` | Game flow: init → play → results                                |
+| `packages/shared/src/utils/gameModeUtils.ts`          | Endless/3-rounds mode logic                                     |
+| `packages/shared/src/utils/cardSelection.ts`          | Weighted card selection by focus                                |
+| `apps/*/src/constants.ts`                             | `BASE_PATH`, `STORAGE_KEYS`, `GAME_STATE_FLOW_CONFIG`           |
+| `apps/*/src/types.ts`                                 | App-specific `Card`, `GameSettings`, `GameHistory`              |
+
+## Game Modes
+
+`SessionMode`: `'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'`
+
+Helpers in `gameModeUtils.ts`: `isEndlessMode()`, `handleNextCard()`, `endlessNextCard()`, `endlessLevel5NextCard()`, `filterLevel1Cards()`, `filterBelowMaxLevel()`, `avoidConsecutiveRepeat()`, `repeatCards()`
+
+## Game State Flow
+
+All apps follow the same pattern via `useGameStateFlow`:
+
+1. **HomePage**: Save settings to localStorage, save selected cards to sessionStorage, navigate to GamePage
+2. **GamePage**: Read cards from sessionStorage, update card level/time in localStorage after each answer, save result to sessionStorage on finish
+3. **GameOverPage**: Load result from sessionStorage, calculate daily bonuses, save history+stats to localStorage atomically, clear sessionStorage
+
+Each app defines a `GAME_STATE_FLOW_CONFIG` in `src/constants.ts` mapping storage keys.
 
 ## Critical Gotchas
 
-**❌ DO NOT:**
+1. **Never** import `TEXT_DE`/`BASE_PATH` in `vite.config.ts` — causes ESM errors. Hardcode values.
+2. **Never** use tsconfig inheritance in `tsconfig.node.json` — causes `vue-tsc` to hang. Keep duplicated.
+3. **Never** use vitest workspace config — causes path resolution failures. Use per-app configs.
+4. **Never** use `registerType: 'autoUpdate'` in PWA — returns undefined. Use `'prompt'`.
+5. **Stub by alias**: When a component is imported as `import FoxIcon from './FoxMascot.vue'`, stub as `FoxIcon` not `FoxMascot`.
+6. **BASE_PATH** must be defined in both `src/constants.ts` AND hardcoded in `vite.config.ts`.
 
-1. Import TEXT_DE/BASE_PATH in `vite.config.ts` → Causes ESM errors. Hardcode instead.
-2. Use tsconfig inheritance in `tsconfig.node.json` → Causes `vue-tsc` to hang. Keep duplicated.
-3. Use vitest workspace config → Causes path resolution failures. Use per-app configs.
-4. Use `registerType: 'autoUpdate'` in PWA → Returns undefined. Use `'prompt'`.
-5. Stub a component by its filename when it's imported under a local alias → stub key must match the local alias used in the template.
-
-**✅ Test Stub Alias Pattern:**
-When a component is imported under a local alias (e.g. `import FoxIcon from './FoxMascot.vue'`),
-stub it by the alias name, not the filename:
+## PWA Config
 
 ```typescript
-// GameOverPage.vue uses: import FoxIcon from '../components/FoxMascot.vue'
-// ✅ Correct — matches the template tag <FoxIcon>
-stubs: { FoxIcon: { template: '<div data-cy="fox-mascot" />', props: ['smile', 'grin', 'size'] } }
-// ❌ Wrong — 'FoxMascot' is the filename, not the local alias
-stubs: { FoxMascot: { template: '<div data-cy="fox-mascot" />' } }
-```
-
-**✅ BASE_PATH Pattern:**
-Each app defines `BASE_PATH` in `src/constants.ts` AND `vite.config.ts`
-
-## Game State Handling
-
-**No parallel sessions:** Each client handles one game at a time.
-
-### HomePage → Start Game
-
-- Store game settings to localStorage
-- Store selected cards to sessionStorage
-- Navigate to GamePage
-
-### GamePage Flow
-
-- Read cards from sessionStorage at page load
-- Remove card from sessionStorage after answer
-- Update card properties (level, time) in localStorage immediately
-- Track game statistics in sessionStorage state
-- On finish: save result to sessionStorage, navigate to GameOverPage
-
-### GameOverPage → End-of-Game
-
-- Load game result from sessionStorage
-- Calculate daily bonuses (first game +5, every 5th game +5, time bonuses)
-- Transfer statistics + bonuses to localStorage (single atomic save)
-- Clear sessionStorage
-
-## PWA Critical Config
-
-**Service Worker** (`apps/*/src/main.ts`):
-
-```typescript
+// apps/*/src/main.ts
 registerSW({
   immediate: true,
   onNeedRefresh() {
@@ -175,22 +163,9 @@ registerSW({
     }
   }
 })
-```
 
-**Vite Config** (`apps/*/vite.config.ts`):
-
-```typescript
-VitePWA({
-  registerType: 'prompt' // NOT 'autoUpdate'
-})
-```
-
-**Display Mode Detection:**
-
-```typescript
-const isStandalone =
-  globalThis.matchMedia('(display-mode: standalone)').matches ||
-  (globalThis.navigator as Navigator & { standalone?: boolean }).standalone === true
+// apps/*/vite.config.ts
+VitePWA({ registerType: 'prompt' })
 ```
 
 ## SonarCloud

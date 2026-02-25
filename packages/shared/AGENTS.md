@@ -1,40 +1,57 @@
-# Shared Package
+# Shared Package (`@flashcards/shared`)
 
-Common types, utilities, components, and services for flashcards apps (1x1, voc, lwk).
+Common types, utilities, components, composables, services, and pages for flashcards apps.
+
+## Export Paths
+
+```typescript
+import { TEXT_DE, MIN_LEVEL, MAX_LEVEL } from '@flashcards/shared'
+import { AppFooter, GameAnswerFeedback } from '@flashcards/shared/components'
+import { HistoryPage, GameOverPage } from '@flashcards/shared/pages'
+import { MainLayout } from '@flashcards/shared/layouts'
+import { cardSelection } from '@flashcards/shared/utils'
+import { quasarStubs, quasarMocks } from '@flashcards/shared/test-utils'
+```
 
 ## Directory Structure
 
 ```text
 src/
-├── components/          # Shared Vue components
-├── composables/         # Shared Vue composables
-├── pages/               # Shared Vue pages
-├── services/storage.ts  # localStorage/sessionStorage utilities
-├── utils/               # Helper functions
-├── constants.ts         # Shared constants
-├── types.ts             # Shared type definitions
-└── text-de.ts           # German i18n strings
+├── components/           # Shared Vue components (17+)
+├── composables/          # Shared composables (10)
+├── layouts/              # App layouts
+├── pages/                # Shared pages (4)
+├── services/
+│   ├── storage.ts        # localStorage/sessionStorage CRUD
+│   └── scoring.ts        # Points calculation
+├── utils/
+│   ├── cardSelection.ts  # Weighted card selection by focus
+│   ├── gameModeUtils.ts  # Endless/3-rounds mode logic
+│   └── helper.ts         # General helpers
+├── constants.ts          # MIN/MAX_LEVEL, colors, bonuses
+├── types.ts              # BaseCard, GameStats, SessionMode, FocusType
+├── text-de.ts            # All German UI strings
+├── test-utils.ts         # quasarStubs, quasarMocks, quasarProvide
+└── __tests__/setup.ts    # Test setup (localStorage mock, matchMedia)
 ```
 
 ## Key Types
 
 ```typescript
+interface BaseCard {
+  level: number
+  time: number
+} // Apps extend this
 interface BaseGameHistory {
   date: string
   points: number
   correctAnswers: number
 }
-
-interface BaseCard {
-  level: number // 1-5
-}
-
 interface GameStats {
+  correctAnswers: number
   gamesPlayed: number
   points: number
-  correctAnswers: number
 }
-
 interface GameState<T = BaseCard> {
   cards: T[]
   currentCardIndex: number
@@ -42,195 +59,74 @@ interface GameState<T = BaseCard> {
   correctAnswers: number
   startTime: number
 }
-
+interface GameResult {
+  points: number
+  correctAnswers: number
+  totalCards: number
+}
+interface DailyStats {
+  date: string
+  gamesPlayed: number
+}
 type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
 type AnswerStatus = 'correct' | 'incorrect' | 'close'
+type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 ```
 
-## Key Functions
+## Composables
 
-### Storage Operations
+| Composable            | Purpose                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `useBaseGameStore`    | Game state factory (cards, scoring, navigation)                      |
+| `useGameStateFlow`    | Full game flow: HomePage init → GamePage play → GameOverPage results |
+| `useGameTimer`        | Elapsed time tracking with start/stop                                |
+| `useAnswerFeedback`   | Answer status display + button disable timing                        |
+| `useCountdownTimer`   | Countdown timer (e.g., hidden mode word display)                     |
+| `useKeyboardContinue` | Enter/Space key listener for "continue" actions                      |
+| `useCardFiltering`    | Filter cards by level/mode for button states                         |
+| `useGameNavigation`   | Router navigation helpers for game flow                              |
+| `useResetCards`       | Reset all card levels to 1                                           |
+| `useDeckManagement`   | CRUD operations for card decks (voc, lwk)                            |
 
-- `loadJSON<T>(key, fallback)` / `saveJSON<T>(key, data)` — localStorage
-- `loadSessionJSON<T>(key, fallback)` / `saveSessionJSON<T>(key, data)` — sessionStorage
-- `createHistoryOperations<T>(storageKey)` → `{ load(), save(), add() }`
-- `createStatsOperations<T>(storageKey, defaultStats)` → `{ load(), save(), update() }`
-- `createAppGameStorage(resultKey, gameStateKey, dailyStatsKey)` → `{ setGameResult, getGameResult, clearGameResult, incrementDailyGames, clearGameState }`
-- `incrementDailyGames(key)` → `{ isFirstGame, gamesPlayedToday }`
+## Services
 
-### Game State Flow
+**storage.ts**: `loadJSON()`, `saveJSON()`, `loadSessionJSON()`, `saveSessionJSON()`, `createHistoryOperations()`, `createStatsOperations()`, `createAppGameStorage()`, `incrementDailyGames()`
 
-```typescript
-interface GameStateFlowConfig {
-  settingsKey: string      // localStorage: game settings
-  selectedCardsKey: string // sessionStorage: cards for this game
-  gameResultKey: string    // sessionStorage: game result/stats
-  historyKey: string       // localStorage: all past games
-  statsKey: string         // localStorage: aggregate statistics
-  dailyStatsKey: string    // localStorage: daily bonus tracking
-}
+**scoring.ts**: Points calculation with level/mode/time factors.
 
-// HomePage: Initialize game
-initializeGameFlow<TSettings, TCard>(config, settings, selectedCards): void
+## Pages
 
-// GamePage: Get/manage cards during gameplay
-getGameCards<TCard>(config): TCard[]
-removeCardFromGame(config, cardIndex): void
-updateGameStats(config, points, correctAnswers, totalCards): void
+`HistoryPage`, `GameOverPage`, `DecksEditPage`, `ScoringRulesPage`
 
-// GameOverPage: Transfer results with bonuses
-transferGameResultsWithBonuses<THistory>(config, bonusConfig, historyEntry, saveHistoryFn, saveStatsFn): { bonusPoints, totalPoints, dailyInfo }
+## Components
 
-// Cleanup
-clearGameSessionData(config): void
-getLastGameSettings<TSettings>(config, fallback): TSettings
-```
+`AppFooter`, `CardManActions`, `CardsListOfCards`, `CardsManLevelDistribution`, `CardsManPage`, `GameAnswerFeedback`, `GameFeedbackNegative`, `GameHeader`, `GameInputSubmit`, `GameNextCardButton`, `GamePointsBreakdown`, `GameShowCardQuestion`, `HomeDeckSelector`, `HomeFocusSelector`, `HomePageLayout`, `HomePwaInstallInfo`, `HomeStatisticsCard`
 
-### Game Store
+## Unit Test Patterns
 
-```typescript
-createBaseGameStore<TCard, THistory, TSettings>(config: {
-  loadCards: () => TCard[]
-  loadHistory: () => THistory[]
-  saveHistory: (history: THistory[]) => void
-  loadGameStats: () => GameStats
-  saveGameStats: (stats: GameStats) => void
-  saveCards?: (cards: TCard[]) => void
-})
-```
+**Test setup**: `src/__tests__/setup.ts` installs `LocalStorageMock`, `matchMedia` mock, suppresses Vue lifecycle warnings. Auto-loaded via `vitest.config.base.ts`.
 
-### Timer
+**Quasar mocks** — use `vi.mock('quasar', () => ({ ... }))` without `importOriginal` (saves ~300ms per spec). Exception: `../utils/helper` needs `importOriginal`.
+
+**v-ripple directive**: Add `directives: { ripple: {} }` to mount options for components using `v-ripple`.
+
+**Stub by alias**: When a component is imported as `import FoxIcon from './FoxMascot.vue'`, stub key must be `FoxIcon` (the alias), not `FoxMascot` (the filename).
+
+**Typed mock return values**: Use generic overload to avoid narrow type inference:
 
 ```typescript
-useGameTimer(trigger: Ref<any>, maxTime?: number)
-// Returns: { elapsedTime, stopTimer, startTimer }
-```
-
-## Exports
-
-**Main exports** (`src/index.ts`):
-
-```typescript
-export * from './utils/helper.js'
-export * from './test-utils.js'
-export { TEXT_DE } from './text-de.js'
-export * from './types.js'
-export * from './constants.js'
-export * from './services/storage.js'
-export * from './composables/useBaseGameStore.js'
-export * from './composables/useGameTimer.js'
-// ... and other composables
-```
-
-**Component exports** (`./components`):
-
-```typescript
-export { default as AppFooter } from './AppFooter.vue'
-export { default as AnswerFeedback } from './AnswerFeedback.vue'
-// ... etc
-```
-
-**Page exports** (`./pages`):
-
-```typescript
-export { default as HistoryPage } from './HistoryPage.vue'
-export { default as GameOverPage } from './GameOverPage.vue'
-```
-
-## Storage Scoping
-
-- **localStorage** (persistent):
-  - `{app}-cards` — Card list with learned progress
-  - `{app}-history` — Array of all past games
-  - `{app}-stats` — Aggregate statistics
-  - `{app}-settings` — Last used game settings
-  - `{app}-daily-stats` — Daily bonus tracking
-
-- **sessionStorage** (temporary):
-  - `{app}-selected-cards` — Cards for current game
-  - `{app}-game-result` — Current game result
-
-## Critical Rules
-
-- Apps extend `BaseCard` and `BaseGameHistory` with app-specific fields
-- No parallel sessions: Each app handles one game at a time
-- Card progress saved immediately after each answer
-- Game results saved atomically (history + stats together)
-- localStorage scoped per app via prefixed keys
-
-## Unit Test Infrastructure
-
-### Setup files
-
-- `src/__tests__/setup.ts` — installs `LocalStorageMock`, `matchMedia` mock, suppresses Vue lifecycle warnings
-- `src/__tests__/testUtils.ts` — exports `quasarStubs`, `quasarMocks`, `quasarProvide`
-- Referenced automatically via `vitest.config.base.ts` → `setupFiles: ['./src/__tests__/setup.ts']`
-
-### dist/ exclusion
-
-The `packages/shared/vitest.config.ts` explicitly excludes `dist/**` to prevent compiled `.spec.js` files from running as duplicate tests:
-
-```typescript
-export default defineConfig(
-  mergeConfig(getVitestConfig(import.meta.url), {
-    test: { exclude: ['dist/**', 'e2e/**', 'node_modules/'] }
-  })
-)
-```
-
-### Fast mocking patterns
-
-Use `vi.mock('quasar', () => ({ useQuasar: () => ({ ... }) }))` — **no `importOriginal`** — for quasar mocks. The `importOriginal` pattern imports the full Quasar bundle and is ~300ms slower per spec file.
-
-For `../utils/helper` (which has `helperStatsDataRead/Write`), `importOriginal` is still needed to preserve the rest of the module.
-
-### v-ripple directive warning
-
-Add `directives: { ripple: {} }` to mount options for components using `v-ripple` (e.g. HistoryPage):
-
-```typescript
-global: { ..., directives: { ripple: {} } }
-```
-
-### PBT round-trip test for JSON storage
-
-`fc.jsonValue({ noNegativeZero: true })` does NOT recursively exclude `-0` from nested object values. Use `JSON.parse(JSON.stringify(value))` as the expected value instead:
-
-```typescript
-expect(loaded).toEqual(JSON.parse(JSON.stringify(value)))
-```
-
-### Typed mock return values — avoid narrow inference
-
-When a `vi.fn()` mock is initialized with a literal, TypeScript infers a narrow type.
-Later `.mockReturnValue(...)` calls with a wider type will fail `vue-tsc`.
-
-**Fix:** Use the generic overload to declare the full return type upfront:
-
-```typescript
-// ❌ Inferred as () => { mode: 'copy'; ... } — too narrow
-loadSettings: vi.fn(() => ({ mode: 'copy' as const, ... }))
-
-// ✅ Explicit union type
+// ✅ Explicit type
 loadSettings: vi.fn<() => GameSettings | null>(() => ({ mode: 'copy', ... }))
 ```
 
-### mock.calls tuple index access
-
-`vi.fn()` without explicit parameter types gives `mock.calls` the type `[][]`.
-Accessing `mock.calls[0]?.[0] as T` causes TS2493 under `vue-tsc`.
-
-**Fix:** Cast via `unknown`:
+**mock.calls access**: Cast via `unknown` to avoid TS2493:
 
 ```typescript
-// ❌ TS2493
-const arg = mockFn.mock.calls[0]?.[0] as string
-
-// ✅
 const arg = (mockFn.mock.calls[0] as unknown as [string])[0]
 ```
 
-### Inline arrow functions in Vue templates — implicit any
+**Inline arrow in templates**: Extract `:prop="x => fn(x)"` to a named function with explicit types to avoid TS7006.
 
-`:prop="x => fn(x)"` in templates causes `TS7006` under `vue-tsc`.
-Extract to a named function in `<script setup>` with explicit parameter types.
+**PBT JSON round-trip**: Use `JSON.parse(JSON.stringify(value))` as expected (not raw value) because `fc.jsonValue` doesn't recursively exclude `-0`.
+
+**dist/ exclusion**: `packages/shared/vitest.config.ts` excludes `dist/**` to prevent duplicate test runs from compiled `.spec.js`.

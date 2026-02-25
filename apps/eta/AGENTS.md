@@ -1,11 +1,13 @@
-# Homework time Estimator App (eta)
+# eta — Homework Time Estimator App
 
-PWA for estimating home work task completion time using linear regression.
+PWA for estimating homework task completion time using linear regression.
 
-## Quick Facts
+## Quick Reference
 
 - `BASE_PATH = 'fc-eta'`
 - `STORAGE_PREFIX = 'fc-eta-'`
+- Stack: Vue 3, Quasar, TypeScript, Vite, Vitest
+- No Cypress E2E tests (simpler app)
 
 ## Data Model
 
@@ -21,45 +23,38 @@ interface SessionData {
   measurements: MeasurementPoint[]
 }
 
+interface RegressionResult {
+  slope: number
+  intercept: number
+}
+
 interface TimeEstimate {
   remainingSeconds: number
   completionTime: Date
 }
 ```
 
-## Game Mechanics
+## Storage Keys
 
-### Session Flow
+Source of truth: `STORAGE_KEYS` in `src/constants.ts`.
 
-- Start: Input total tasks, begin session
-- Track: Periodically input completed tasks
-- Estimate: Linear regression predicts remaining time
-- Complete: When completed tasks >= total tasks
+- `fc-eta-session` — `SessionData` (sessionStorage)
 
-### Regression
+## Session Flow
 
-- Requires minimum 2 measurements
-- Calculates slope/intercept from time vs completed tasks
-- Predicts completion time based on trend
+1. Start: input total tasks, begin session
+2. Track: periodically input completed tasks (must increase)
+3. Estimate: linear regression predicts remaining time (requires ≥ 2 measurements)
+4. Complete: when completed tasks ≥ total tasks
 
-## Architecture
+## Key Files
 
-**Stack:** Vue 3, Quasar, TypeScript, Vite, Vitest
-
-### Key Files
-
-- `src/constants.ts` — `BASE_PATH`, `STORAGE_PREFIX`
+- `src/constants.ts` — `BASE_PATH`, `STORAGE_KEYS`, `THEME_COLOR`, `THEME_COLORS`
+- `src/types.ts` — `MeasurementPoint`, `SessionData`, `RegressionResult`, `TimeEstimate`
 - `src/services/regression.ts` — `calculateRegression()`, `predictRemainingTime()`
 - `src/services/storage.ts` — Session persistence
 - `src/composables/useEtaStore.ts` — Session state management
 
-### Storage Keys
+## Note
 
-- `fc-eta-session`: `SessionData`
-
-## Critical Rules
-
-- One active session at a time
-- Measurements must increase completed tasks
-- Regression needs >=2 measurements for estimates
-- Session data stored in sessionStorage
+This app does not use the shared game store pattern (`useBaseGameStore`/`useGameStateFlow`). It has its own simpler session-based architecture.
