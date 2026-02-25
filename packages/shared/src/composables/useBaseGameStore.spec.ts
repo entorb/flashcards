@@ -238,22 +238,22 @@ describe('useBaseGameStore', () => {
       expect(saveCards).toHaveBeenCalledWith(store.allCards.value)
     })
 
-    it('does nothing when level is below MIN_LEVEL', () => {
+    it('throws when level is below MIN_LEVEL', () => {
       const cards = [makeCard(2)]
-      const { store, saveCards } = makeStore(cards)
+      const { store } = makeStore(cards)
       store.initializeStore()
-      store.moveAllCards(0)
-      expect(store.allCards.value[0]!.level).toBe(2)
-      expect(saveCards).not.toHaveBeenCalled()
+      expect(() => {
+        store.moveAllCards(0)
+      }).toThrow()
     })
 
-    it('does nothing when level is above MAX_LEVEL', () => {
+    it('throws when level is above MAX_LEVEL', () => {
       const cards = [makeCard(2)]
-      const { store, saveCards } = makeStore(cards)
+      const { store } = makeStore(cards)
       store.initializeStore()
-      store.moveAllCards(6)
-      expect(store.allCards.value[0]!.level).toBe(2)
-      expect(saveCards).not.toHaveBeenCalled()
+      expect(() => {
+        store.moveAllCards(6)
+      }).toThrow()
     })
   })
 
