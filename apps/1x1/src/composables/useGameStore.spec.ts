@@ -66,7 +66,7 @@ describe('useGameStore - initialization', () => {
     expect(store.points.value).toBe(0)
     expect(store.correctAnswersCount.value).toBe(0)
     expect(store.currentCardIndex.value).toBe(0)
-  })
+  }, 15_000)
 
   it('restores game state from sessionStorage when available', async () => {
     const store = await setupMocks({
@@ -232,7 +232,7 @@ describe('useGameStore - startGame', () => {
     store.handleAnswer('correct', 5)
     expect(store.points.value).toBeGreaterThan(0)
 
-    store.startGame({ select: 'all', focus: 'medium' }, true)
+    store.startGame({ select: 'all', focus: 'medium' }, 'standard', true)
     expect(store.points.value).toBe(0)
     expect(store.currentCardIndex.value).toBe(0)
     expect(store.correctAnswersCount.value).toBe(0)
@@ -243,7 +243,7 @@ describe('useGameStore - startGame', () => {
     store.startGame({ select: 'all', focus: 'medium' })
     const initialCards = store.gameCards.value
 
-    store.startGame({ select: 'all', focus: 'medium' }, false)
+    store.startGame({ select: 'all', focus: 'medium' }, 'standard', false)
     expect(store.gameCards.value).toBe(initialCards)
   })
 

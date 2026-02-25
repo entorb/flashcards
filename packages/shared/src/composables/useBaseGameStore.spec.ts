@@ -3,7 +3,7 @@ import * as fc from 'fast-check'
 
 import { MAX_TIME, MIN_LEVEL } from '../constants'
 import { createBaseGameStore } from './useBaseGameStore'
-import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats } from '../types'
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from '../types'
 import type { PointsBreakdown } from '../services/scoring'
 
 // ─── Mock helpers ────────────────────────────────────────────────────────────
@@ -510,7 +510,9 @@ describe('useBaseGameStore', () => {
           const correctAfterAnswers = store.gameStats.value.correctAnswers
 
           // Verify the last saveGameStats call matches the snapshot
-          const lastCall = saveGameStats.mock.calls.at(-1)![0] as GameStats
+          const calls = saveGameStats.mock.calls
+          const lastCallArgs = calls[calls.length - 1]
+          const lastCall = (lastCallArgs ? lastCallArgs[0] : undefined) as GameStats
           expect(lastCall.points).toBe(pointsAfterAnswers)
           expect(lastCall.correctAnswers).toBe(correctAfterAnswers)
 
@@ -651,6 +653,35 @@ describe('useBaseGameStore', () => {
             return JSON.stringify(afterOnce) === JSON.stringify(afterTwice)
           }
         )
+      )
+    })
+  })
+
+  // Feature: game-modes-endless-and-loops, Property 7: SessionMode cleared on game end or discard
+  /**
+   * **Validates: Requirements 7.3**
+   * For any SessionMode value, setting sessionMode then calling discardGame()
+   * should result in sessionMode being reset to 'standard'.
+   */
+  describe('discardGame — sessionMode cleared on discard (Property 7)', () => {
+    const sessionModeArb = fc.constantFrom<SessionMode>('standard', 'endless-level1', '3-rounds')
+
+    it('sessionMode is reset to standard after discardGame for any SessionMode', () => {
+      fc.assert(
+        fc.property(sessionModeArb, mode => {
+          const { store } = makeStore()
+          store.initializeStore()
+
+          // Set sessionMode to an arbitrary value
+          store.sessionMode.value = mode
+
+          // Discard the game
+          store.discardGame()
+
+          // sessionMode must be reset to 'standard'
+          expect(store.sessionMode.value).toBe('standard')
+        }),
+        { numRuns: 100 }
       )
     })
   })

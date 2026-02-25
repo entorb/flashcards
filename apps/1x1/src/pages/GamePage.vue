@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { useGameNavigation, useGameTimer, useKeyboardContinue } from '@flashcards/shared'
+import {
+  isEndlessMode,
+  useGameNavigation,
+  useGameTimer,
+  useKeyboardContinue
+} from '@flashcards/shared'
 import {
   GameFeedbackNegative,
   GameHeader,
@@ -21,12 +26,18 @@ const {
   points,
   currentCard,
   gameSettings,
+  sessionMode,
   handleAnswer,
   nextCard,
   finishGame: storeFinishGame,
   discardGame,
   lastPointsBreakdown
 } = useGameStore()
+
+// For endless mode, show remaining cards count (shrinks as cards are removed)
+const totalCardsOverride = computed(() =>
+  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined
+)
 
 // GamePage component state
 const userAnswer = ref<number | null>(null)
@@ -137,6 +148,7 @@ onUnmounted(() => {
       <GameHeader
         :current-index="currentCardIndex"
         :total-cards="gameCards.length"
+        v-bind="totalCardsOverride !== undefined ? { totalCardsOverride } : {}"
         :points="points"
         @back="handleGoHome"
       />

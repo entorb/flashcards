@@ -329,7 +329,8 @@ describe('HomePage', () => {
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
       expect(mockStartGame).toHaveBeenCalledWith(
-        expect.objectContaining({ mode: 'copy', focus: 'weak' })
+        expect.objectContaining({ mode: 'copy', focus: 'weak' }),
+        'standard'
       )
     })
   })

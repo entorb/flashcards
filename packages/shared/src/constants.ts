@@ -107,3 +107,12 @@ export const BG_COLORS = {
   grey: '#fafafa',
   lightGrey: '#f8f9fa'
 }
+
+// ============================================================================
+// GAME MODES
+// ============================================================================
+
+/**
+ * Number of rounds each card is repeated in 3-rounds mode
+ */
+export const LOOP_COUNT = 3

@@ -3,3 +3,4 @@
 
 export * from './helper.js'
 export * from './cardSelection.js'
+export * from './gameModeUtils.js'

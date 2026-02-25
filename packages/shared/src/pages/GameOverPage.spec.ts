@@ -481,13 +481,11 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
           // Verify saveGameStats was called
           expect(storageFunctions.saveGameStats).toHaveBeenCalledOnce()
 
-          const savedStats = storageFunctions.saveGameStats.mock.calls[0][0] as {
+          const savedStats = storageFunctions.saveGameStats.mock.calls[0]?.[0] as {
             gamesPlayed: number
             points: number
             correctAnswers: number
           }
-
-          // gamesPlayed should be exactly 1 more than pre-game value
           expect(savedStats.gamesPlayed).toBe(preGameStats.gamesPlayed + 1)
 
           // points should include the bonus points added by GameOverPage
@@ -545,7 +543,7 @@ describe('GameOverPage — zero bonus points edge case', () => {
 
     expect(storageFunctions.saveGameStats).toHaveBeenCalledOnce()
 
-    const savedStats = storageFunctions.saveGameStats.mock.calls[0][0] as {
+    const savedStats = storageFunctions.saveGameStats.mock.calls[0]?.[0] as {
       gamesPlayed: number
       points: number
       correctAnswers: number

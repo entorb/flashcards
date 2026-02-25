@@ -7,7 +7,7 @@ import { type Ref, ref } from 'vue'
 
 import { MAX_LEVEL, MIN_LEVEL, MAX_TIME } from '../constants'
 import { type PointsBreakdown } from '../services/scoring'
-import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats } from '../types'
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from '../types'
 
 /**
  * Configuration for creating a base game store
@@ -49,6 +49,9 @@ export function createBaseGameStore<
     points: 0,
     correctAnswers: 0
   })
+
+  // Session mode (standard, endless-level1, 3-rounds)
+  const sessionMode = ref<SessionMode>('standard')
 
   // Last points breakdown for display
   const lastPointsBreakdown = ref<PointsBreakdown | null>(null)
@@ -109,6 +112,7 @@ export function createBaseGameStore<
     points.value = 0
     correctAnswersCount.value = 0
     gameSettings.value = null as unknown as TSettings
+    sessionMode.value = 'standard'
   }
 
   /**
@@ -151,6 +155,7 @@ export function createBaseGameStore<
     allCards,
     gameCards,
     gameSettings,
+    sessionMode,
     currentCardIndex,
     points,
     correctAnswersCount,
