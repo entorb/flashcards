@@ -124,9 +124,9 @@ describe('repeatCards — unit tests', () => {
     expect(repeatCards([], 3)).toEqual([])
   })
 
-  it('returns empty array when count is 0', () => {
+  it('throws when count is 0', () => {
     const cards: BaseCard[] = [{ level: 1, time: 10 }]
-    expect(repeatCards(cards, 0)).toEqual([])
+    expect(() => repeatCards(cards, 0)).toThrow('Invalid repeat count')
   })
 })
 

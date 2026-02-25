@@ -709,18 +709,18 @@ describe('useGameStore - moveAllCards', () => {
     }
   })
 
-  it('does nothing for invalid level (0)', async () => {
+  it('throws for invalid level (0)', async () => {
     const store = await setupMocks()
-    const initialCards = [...store.allCards.value]
-    store.moveAllCards(0)
-    expect(store.allCards.value).toEqual(initialCards)
+    expect(() => {
+      store.moveAllCards(0)
+    }).toThrow()
   })
 
-  it('does nothing for invalid level (6)', async () => {
+  it('throws for invalid level (6)', async () => {
     const store = await setupMocks()
-    const initialCards = [...store.allCards.value]
-    store.moveAllCards(6)
-    expect(store.allCards.value).toEqual(initialCards)
+    expect(() => {
+      store.moveAllCards(6)
+    }).toThrow()
   })
 })
 
