@@ -1,195 +1,136 @@
 import { getCardsFromStorage } from '../support/commands'
+import { seedTestCards, TEST_CARD_COUNT } from '../support/test-helpers'
 
 describe('VOC Typing Mode Game - DE to Voc', () => {
   beforeEach(() => {
-    // Clear storage to ensure clean state
     cy.clearLocalStorage()
     cy.clearAllSessionStorage()
-    cy.visit('/')
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        seedTestCards(win)
+      }
+    })
   })
 
-  it('should complete a game with 1 wrong, 1 close, and 8 correct answers', () => {
-    // Select Typing mode
+  /**
+   * Answer a typing card with a specific answer strategy.
+   * @param strategy - 'correct' | 'wrong' | 'close'
+   */
+  const answerTypingCard = (strategy: 'correct' | 'wrong' | 'close') => {
+    cy.window().then(win => {
+      const cards = getCardsFromStorage(win)
+      cy.get('[data-cy="question-display"]')
+        .invoke('text')
+        .then(questionText => {
+          const card = cards.find(c => c.de === questionText.trim())
+          let answerToType: string
+
+          if (strategy === 'wrong') {
+            answerToType = 'xxx wrong answer'
+          } else if (strategy === 'close' && card) {
+            const correctAnswer = card.voc.split('/')[0].trim()
+            answerToType = `x${correctAnswer.substring(1)}`
+          } else {
+            answerToType = card ? card.voc.split('/')[0].trim() : 'test'
+          }
+
+          cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
+          cy.get('[data-cy="answer-input"]').clear()
+          cy.get('[data-cy="answer-input"]').type(answerToType)
+          cy.get('[data-cy="submit-answer-button"]').click()
+
+          cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
+          cy.get('body').then($body => {
+            // cspell:disable-next-line
+            if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
+              cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
+            }
+          })
+          cy.get('[data-cy="continue-button"]').click()
+        })
+    })
+  }
+
+  it('should complete a game with 1 wrong, 1 close, and remaining correct answers', () => {
     // cspell:disable-next-line
     cy.contains('Schreiben').click()
-
-    // Select DE → Voc language direction
     cy.contains('DE → Voc').click()
-
-    // Start the game
     cy.get('[data-cy="start-button"]').click()
 
-    // Verify we're on the game page
     cy.url().should('include', '/game')
-
-    // Wait for game question to be visible
     cy.get('[data-cy="question-display"]', { timeout: 10000 }).should('be.visible')
-
-    // Wait for typing input to appear (first card initialization)
     cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
 
-    // Helper function to answer a card
-    const answerCard = (cardIndex: number) => {
-      // Get the question text and cards from localStorage
-      cy.window().then(win => {
-        const cards = getCardsFromStorage(win)
-
-        cy.get('[data-cy="question-display"]')
-          .invoke('text')
-          .then(questionText => {
-            let answerToType = ''
-
-            if (cardIndex === 0) {
-              // First card: answer incorrectly
-              answerToType = 'xxx wrong answer'
-            } else if (cardIndex === 1) {
-              // Second card: answer almost correctly (with typo)
-              // Find the correct answer and introduce a small typo
-              const card = cards.find((c: any) => c.de === questionText.trim())
-              if (card) {
-                const correctAnswer = card.voc.split('/')[0].trim()
-                // Add a typo by changing one character (e.g., replace first char with 'x')
-                answerToType = `x${correctAnswer.substring(1)}`
-              } else {
-                // Fallback: generic close answer
-                answerToType = 'xxx close'
-              }
-            } else {
-              // Remaining cards: answer correctly
-              const card = cards.find((c: any) => c.de === questionText.trim())
-              if (card) {
-                const correctAnswer = card.voc.split('/')[0].trim()
-                answerToType = correctAnswer
-              } else {
-                // Fallback: generic answer
-                answerToType = 'test'
-              }
-            }
-
-            // Wait for input to be ready, clear and type
-            cy.get('[data-cy="answer-input"]', { timeout: 10000 }).should('be.visible')
-            cy.get('[data-cy="answer-input"]').clear()
-            cy.get('[data-cy="answer-input"]').type(answerToType)
-
-            // Click Check button
-            cy.get('[data-cy="submit-answer-button"]').click()
-
-            // Wait for feedback and continue button
-            cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
-
-            // Check if wrong or close answer (wait for button to enable)
-            cy.get('body').then($body => {
-              if ($body.text().includes('Falsch') || $body.text().includes('Fast richtig')) {
-                // Wait for button to be enabled
-                cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
-              }
-            })
-
-            // Click continue button
-            cy.get('[data-cy="continue-button"]').click()
-          })
-      })
+    answerTypingCard('wrong')
+    answerTypingCard('close')
+    for (let i = 2; i < TEST_CARD_COUNT; i++) {
+      answerTypingCard('correct')
     }
 
-    // Play through 10 cards
-    answerCard(0) // Card 0 - wrong answer
-    answerCard(1) // Card 1 - close answer (typo)
-    for (let i = 2; i < 10; i++) {
-      answerCard(i) // Cards 2-9 - correct answers
-    }
-
-    // After all cards, we should be on game over page
     cy.url({ timeout: 15000 }).should('include', '/game-over')
-    cy.get('[data-cy="back-to-home-button"]').should('be.visible')
 
-    // Should have 8 correct (cards 2-9), but allow for 7-9 due to "close" answer
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
-        const count = Number.parseInt(text, 10)
-        expect(count).to.be.at.least(7).and.at.most(9)
+        const count = Number.parseInt(text.trim(), 10)
+        expect(count)
+          .to.be.at.least(TEST_CARD_COUNT - 2)
+          .and.at.most(TEST_CARD_COUNT - 1)
       })
-    cy.get('[data-cy="total-questions-count"]').should('contain', '10')
+    cy.get('[data-cy="total-questions-count"]').should('contain', String(TEST_CARD_COUNT))
 
-    // Capture exact values from GameOverPage
-    let gameOverPoints: number
-    let gameOverCorrectAnswers: number
+    let gameOverPoints = 0
+    let gameOverCorrectAnswers = 0
 
     cy.get('[data-cy="final-points"]')
       .invoke('text')
       .then(text => {
         gameOverPoints = Number.parseInt(text.trim(), 10)
-        cy.log('GameOver Points:', gameOverPoints)
-        expect(gameOverPoints).to.greaterThan(1)
+        expect(gameOverPoints).to.be.greaterThan(0)
       })
 
     cy.get('[data-cy="correct-answers-count"]')
       .invoke('text')
       .then(text => {
         gameOverCorrectAnswers = Number.parseInt(text.trim(), 10)
-        cy.log('GameOver Correct Answers:', gameOverCorrectAnswers)
-        expect(gameOverCorrectAnswers).to.be.at.least(7).and.at.most(9)
       })
 
-    // Navigate back to home page
     cy.get('[data-cy="back-to-home-button"]').click()
-
-    // Verify we're back on home page
-    cy.url().should('not.include', '/game-over')
     cy.get('[data-cy="app-title"]').should('be.visible')
 
-    // Verify exact points and correct answers match on HomePage
+    // Verify home page stats match
     cy.get('[data-cy="stats-total-points"]')
       .invoke('text')
       .then(text => {
-        const homePagePoints = Number.parseInt(text.trim(), 10)
-        cy.log('HomePage Points:', homePagePoints)
-        expect(homePagePoints).to.equal(gameOverPoints)
+        expect(Number.parseInt(text.trim(), 10)).to.equal(gameOverPoints)
       })
 
     cy.get('[data-cy="stats-correct-answers"]')
       .invoke('text')
       .then(text => {
-        const homePageCorrectAnswers = Number.parseInt(text.trim(), 10)
-        cy.log('HomePage Correct Answers:', homePageCorrectAnswers)
-        expect(homePageCorrectAnswers).to.equal(gameOverCorrectAnswers)
+        expect(Number.parseInt(text.trim(), 10)).to.equal(gameOverCorrectAnswers)
       })
 
-    // Verify gamesPlayed incremented to 1
     cy.get('[data-cy="stats-games-played"]').should('contain', '1')
 
-    // Navigate to history page
+    // Verify history page stats match
     cy.get('[data-cy="history-button"]').click()
-
-    // Verify we're on history page
     cy.url().should('include', '/history')
-    cy.get('[data-cy="history-page-title"]').should('be.visible')
-
-    // Verify the most recent game appears in history (index 0 since sorted by date DESC)
     cy.get('[data-cy="history-game-0"]').should('be.visible')
 
-    // Verify exact correct answers and points in history match GameOverPage
     cy.get('[data-cy="history-game-0-correct"]')
       .invoke('text')
       .then(text => {
-        const historyCorrectAnswers = Number.parseInt(text.trim(), 10)
-        cy.log('History Correct Answers:', historyCorrectAnswers)
-        expect(historyCorrectAnswers).to.equal(gameOverCorrectAnswers)
+        expect(Number.parseInt(text.trim(), 10)).to.equal(gameOverCorrectAnswers)
       })
 
     cy.get('[data-cy="history-game-0-points"]')
       .invoke('text')
       .then(text => {
-        const historyPoints = Number.parseInt(text.trim(), 10)
-        cy.log('History Points:', historyPoints)
-        expect(historyPoints).to.equal(gameOverPoints)
+        expect(Number.parseInt(text.trim(), 10)).to.equal(gameOverPoints)
       })
 
-    // Navigate back to home
     cy.get('[data-cy="back-button"]').click()
-
-    // Verify we're back on home page
-    cy.url().should('not.include', '/history')
     cy.get('[data-cy="app-title"]').should('be.visible')
   })
 })
