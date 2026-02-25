@@ -96,7 +96,7 @@ export default [
       // Import organization
       'import/first': 'error',
       'import/newline-after-import': 'error',
-      'import/no-cycle': 'error',
+      'import/no-cycle': 'off', // Slow rule (~33% of lint time) — caught by SonarCloud in CI
       'import/no-duplicates': 'error',
       'import/no-self-import': 'error',
       'import/no-useless-path-segments': 'error',
@@ -141,6 +141,7 @@ export default [
       'require-atomic-updates': 'error',
       // SonarJS
       'sonarjs/cognitive-complexity': ['warn', 20],
+      'sonarjs/no-commented-code': 'off', // Slow rule (~56% of lint time) — caught by SonarCloud in CI
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
       'sonarjs/pseudo-random': 'off',
@@ -231,7 +232,7 @@ export default [
       // Import organization
       'import/first': 'error',
       'import/newline-after-import': 'error',
-      'import/no-cycle': 'error',
+      'import/no-cycle': 'off', // Slow rule — caught by SonarCloud in CI
       'import/no-duplicates': 'error',
       'import/no-self-import': 'error',
       'import/no-useless-path-segments': 'error',
@@ -254,6 +255,7 @@ export default [
       ],
       // SonarJS
       'sonarjs/cognitive-complexity': ['warn', 20],
+      'sonarjs/no-commented-code': 'off', // Slow rule — caught by SonarCloud in CI
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
       'sonarjs/pseudo-random': 'off',
