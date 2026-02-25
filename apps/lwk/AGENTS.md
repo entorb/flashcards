@@ -1,18 +1,22 @@
-# Spelling Trainer (lwk)
+# lwk — Spelling Trainer App
 
 PWA for spelling practice with adaptive difficulty and custom word decks.
 
-## Quick Facts
+## Quick Reference
 
 - `BASE_PATH = 'fc-lwk'`
+- `MAX_CARDS_PER_GAME = 10`
+- `WORD_DISPLAY_DURATION = 3` (seconds)
+- `LEVENSHTEIN_THRESHOLD = 1`
+- Stack: Vue 3, Quasar, TypeScript, Vite, Vitest, Cypress
 
 ## Data Model
 
 ```typescript
-interface Card {
-  word: string
-  level: number // 1-5
-  time: number // 0.1-60s
+type GameMode = 'copy' | 'hidden'
+
+interface Card extends BaseCard {
+  word: string // Spelling word (unique key)
 }
 
 interface CardDeck {
@@ -21,56 +25,42 @@ interface CardDeck {
 }
 
 interface GameSettings {
-  mode: 'copy' | 'hidden'
-  focus: 'weak' | 'medium' | 'strong' | 'slow'
+  mode: GameMode
+  focus: FocusType
   deck?: string
+}
+
+interface GameHistory extends BaseGameHistory {
+  settings: GameSettings
+  totalCards?: number
+}
+
+interface GameState extends SharedGameState {
+  settings: GameSettings
+  currentCard: Card | null
+  showWord: boolean
+  countdown: number // 0-3 seconds for hidden mode
 }
 ```
 
+## Storage Keys
+
+Source of truth: `STORAGE_KEYS` in `src/constants.ts` (all prefixed `fc-lwk-`).
+
+Key constants: `DECKS`, `HISTORY`, `STATS`, `SETTINGS`, `SELECTED_CARDS`, `GAME_STATE`, `GAME_RESULT`, `DAILY_STATS`
+
 ## Game Mechanics
 
-### Modes
+- Copy mode: word visible while typing (levels 1-2 only)
+- Hidden mode: word shown 3s then hidden (`POINTS_MODE_HIDDEN = 4`), all levels
+- Correct: `6 - level` points, level +1. Wrong: 0 points, level -1
+- Close match (Levenshtein = 1): 75% points, level unchanged
+- Time bonus: +5 if beating record (hidden mode)
+- Time tracking: 0.1-60s, 1 decimal precision
 
-- `copy`: Word visible while typing (levels 1-2 only)
-- `hidden`: Word shown 3s then hidden (all levels)
+## Key Files
 
-### Scoring
-
-- Correct: `6 - level` points, level +1
-- Incorrect: 0 points, level -1
-- Close match (hidden): 75% points, level unchanged
-- Time bonus (hidden): +5 if beating record
-
-### Card Selection
-
-Weighted by focus:
-
-- `weak`: Low levels prioritized
-- `strong`: High levels prioritized
-- `medium`: Medium levels prioritized
-- `slow`: High time prioritized
-
-## Architecture
-
-**Stack:** Vue 3, Quasar, TypeScript, Vite, Vitest, Cypress
-
-### Key Files
-
-- `src/constants.ts` — `BASE_PATH`, `MAX_CARDS_PER_GAME`, display duration
+- `src/constants.ts` — `BASE_PATH`, `STORAGE_KEYS`, `GAME_STATE_FLOW_CONFIG`, `DEFAULT_DECKS`
+- `src/types.ts` — `Card`, `CardDeck`, `GameSettings`, `GameMode`, `GameState`
 - `src/services/storage.ts` — Deck operations, history, stats
 - `src/composables/useGameStore.ts` — Game state + deck operations
-
-### Storage Keys
-
-- `lwk-decks`: `CardDeck[]`
-- `lwk-history`: `GameHistory[]`
-- `lwk-stats`: `GameStats`
-- `lwk-last-settings`: `GameSettings`
-
-## Critical Rules
-
-- Close match: Levenshtein distance = 1
-- Time tracking: 0.1-60s, 1 decimal precision
-- Level adjustment: +1 correct, -1 incorrect, 0 close
-- Copy mode: Levels 1-2 only
-- No parallel sessions: One game at a time
