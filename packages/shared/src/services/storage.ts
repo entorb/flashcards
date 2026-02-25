@@ -308,6 +308,10 @@ export function selectCardsByFocus<T extends { level: number }>(
 ): T[] {
   const { cards, focus, maxCards, modeFilter, timeExtractor } = config
 
+  if (maxCards < 1) {
+    return []
+  }
+
   // Apply mode filter if provided
   const eligible = modeFilter ? cards.filter(modeFilter) : cards
 

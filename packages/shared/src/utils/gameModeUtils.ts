@@ -28,6 +28,9 @@ export function filterBelowMaxLevel<T extends BaseCard>(cards: T[]): T[] {
  * Create a repeated card list for 3-rounds mode, shuffled
  */
 export function repeatCards<T>(cards: T[], count: number): T[] {
+  if (!Number.isInteger(count) || count < 1) {
+    throw new Error(`Invalid repeat count: ${count} (expected positive integer)`)
+  }
   const repeated: T[] = []
   for (let i = 0; i < count; i++) {
     repeated.push(...cards)
@@ -141,7 +144,7 @@ export function handleNextCard<T extends BaseCard>(
   getKey: (card: T) => string
 ): boolean {
   const previousCard = gameCards.value[currentCardIndex.value]
-  const previousKey = previousCard !== undefined ? getKey(previousCard) : ''
+  const previousKey = previousCard === undefined ? '' : getKey(previousCard)
 
   if (sessionMode === 'endless-level1') {
     const isGameOver = endlessNextCard(gameCards, currentCardIndex)
