@@ -1,4 +1,11 @@
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
+import {
+  MAX_LEVEL,
+  MAX_TIME,
+  MIN_LEVEL,
+  MIN_TIME,
+  STATS_PENDING_STORAGE_KEY,
+  WEB_STATS_URL
+} from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { DailyBonusConfig } from '../types'
 
@@ -27,7 +34,7 @@ export const getFocusText = (focus: string): string => {
  */
 export const helperStatsDataRead = async (basePath: string): Promise<number> => {
   try {
-    const url = `https://entorb.net/web-stats-json.php?origin=${basePath}&action=read`
+    const url = `${WEB_STATS_URL}?origin=${basePath}&action=read`
     const response = await fetch(url)
 
     if (!response.ok) {
@@ -47,16 +54,116 @@ export const helperStatsDataRead = async (basePath: string): Promise<number> => 
 }
 
 /**
- * Write app stats to database
- * @param basePath - The app identifier (1x1, voc, lwk)
+
+/**
+ * Load pending stats counts from localStorage
+ */
+function loadPendingStats(): Record<string, number> {
+  try {
+    const stored = globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY)
+    if (stored === null || stored === '') return {}
+    return JSON.parse(stored) as Record<string, number>
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * Save pending stats counts to localStorage
+ */
+function savePendingStats(pending: Record<string, number>): void {
+  try {
+    globalThis.localStorage.setItem(STATS_PENDING_STORAGE_KEY, JSON.stringify(pending))
+  } catch {
+    // Storage full or unavailable — nothing we can do
+  }
+}
+
+/**
+ * Send a single stats write request
+ * @returns true if the request succeeded, false otherwise
+ */
+async function sendStatsWrite(basePath: string): Promise<boolean> {
+  try {
+    const url = `${WEB_STATS_URL}?origin=${basePath}&action=write`
+    const response = await fetch(url)
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Send pending writes for a single app one by one, returning the number that succeeded.
+ * Stops at the first failure (still offline).
+ */
+async function flushAppPending(app: string, count: number): Promise<number> {
+  let sent = 0
+  for (let i = 0; i < count; i++) {
+    const ok = await sendStatsWrite(app)
+    if (!ok) break
+    sent++
+  }
+  return sent
+}
+
+/**
+ * Remove zero-count entries and persist (or clear) the pending map.
+ */
+function persistCleanedPending(pending: Record<string, number>): void {
+  const cleaned: Record<string, number> = {}
+  for (const [app, count] of Object.entries(pending)) {
+    if (count > 0) cleaned[app] = count
+  }
+  if (Object.keys(cleaned).length === 0) {
+    globalThis.localStorage.removeItem(STATS_PENDING_STORAGE_KEY)
+  } else {
+    savePendingStats(cleaned)
+  }
+}
+
+/**
+ * Flush all pending (cached) stats writes for every app.
+ * Sends them one by one; any that still fail stay in the cache.
+ */
+async function flushPendingStats(): Promise<void> {
+  const pending = loadPendingStats()
+  let changed = false
+
+  for (const [app, count] of Object.entries(pending)) {
+    const sent = await flushAppPending(app, count)
+    if (sent > 0) {
+      pending[app] = count - sent
+      changed = true
+    }
+    if (sent < count) {
+      // Still offline — stop trying further apps
+      break
+    }
+  }
+
+  if (changed) {
+    persistCleanedPending(pending)
+  }
+}
+
+/**
+ * Write app stats to database.
+ * If the device is offline the call is cached in localStorage and
+ * retried automatically on the next successful invocation.
+ * @param basePath - The app identifier (1x1, voc, lwk, eta)
  */
 export const helperStatsDataWrite = async (basePath: string): Promise<void> => {
-  try {
-    const url = `https://entorb.net/web-stats-json.php?origin=${basePath}&action=write`
-    await fetch(url)
-    // Silently ignore errors - stats are not critical for app functionality
-  } catch {
-    // Silently ignore errors - stats are not critical for app functionality
+  const ok = await sendStatsWrite(basePath)
+
+  if (ok) {
+    // Current write succeeded — also flush any previously cached writes
+    await flushPendingStats()
+  } else {
+    // Offline — cache this write for later
+    const pending = loadPendingStats()
+    pending[basePath] = (pending[basePath] ?? 0) + 1
+    savePendingStats(pending)
   }
 }
 
