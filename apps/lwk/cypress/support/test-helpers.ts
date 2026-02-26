@@ -35,6 +35,7 @@ const DEFAULT_TEST_CARDS: SpellCard[] = [
 
 /**
  * Seed localStorage with exactly TEST_CARD_COUNT cards before the app loads.
+ * Also sets the deck selection in settings so tests don't depend on default deck fallback.
  * Use in `cy.visit('/', { onBeforeLoad(win) { seedTestCards(win) } })`.
  *
  * @param level - optional level for all cards (default 1)
@@ -43,6 +44,9 @@ export const seedTestCards = (win: Cypress.AUTWindow, level = 1): void => {
   const cards = DEFAULT_TEST_CARDS.map(c => ({ ...c, level }))
   const decks: SpellDeck[] = [{ name: TEST_DECK_NAME, cards }]
   win.localStorage.setItem(STORAGE_KEYS.DECKS, JSON.stringify(decks))
+  // Explicitly set the selected deck in settings (independent of app defaults)
+  const settings = { deck: TEST_DECK_NAME }
+  win.localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings))
 }
 
 export const loadGameState = (win: Cypress.AUTWindow): LwkGameState | null => {
