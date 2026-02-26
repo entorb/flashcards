@@ -14,6 +14,9 @@ export const seedTestCards = (win: Cypress.AUTWindow): void => {
     { voc: 'Why', de: 'Warum', level: 1, time: 60 }
   ]
   win.localStorage.setItem('fc-voc-cards', JSON.stringify([{ name: 'en', cards: testCards }]))
+  // Explicitly set the selected deck in settings (independent of app defaults)
+  const settings = { deck: 'en' }
+  win.localStorage.setItem('fc-voc-settings', JSON.stringify(settings))
 }
 
 /**
