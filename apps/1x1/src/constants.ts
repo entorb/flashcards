@@ -1,15 +1,15 @@
 /**
- * Central configuration file for 1x1 Learning App
- * All magic numbers and reusable constants are defined here
+ * Central configuration for the 1x1 app
  */
 
 import type { GameStateFlowConfig } from '@flashcards/shared'
 
+/**
+ * Base path for the 1x1 app — used in routing, PWA config, and database
+ */
 export const BASE_PATH = 'fc-1x1'
 
-// ============================================================================
-// STORAGE KEYS
-// ============================================================================
+// --- Storage Keys ---
 
 /**
  * All storage keys for localStorage and sessionStorage
@@ -28,9 +28,7 @@ export const STORAGE_KEYS = {
   RANGE: 'fc-1x1-range'
 }
 
-// ============================================================================
-// GAME STATE FLOW CONFIGURATION
-// ============================================================================
+// --- Game State Flow Configuration ---
 
 /**
  * Centralized game state flow configuration for shared game store
@@ -45,9 +43,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   dailyStatsKey: STORAGE_KEYS.DAILY_STATS
 }
 
-// ============================================================================
-// GAME LOGIC CONSTANTS
-// ============================================================================
+// --- Game Logic ---
 
 /**
  * Default range configuration (base multiplication tables)
@@ -61,9 +57,7 @@ export const DEFAULT_RANGE = [3, 4, 5, 6, 7, 8, 9]
  */
 export const MAX_CARDS_PER_GAME = 10
 
-// ============================================================================
-// COLOR SCHEMES
-// ============================================================================
+// --- Color Scheme ---
 
 /**
  * Theme color for PWA and browser chrome

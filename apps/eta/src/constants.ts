@@ -1,17 +1,26 @@
+/**
+ * Central configuration for the eta app
+ */
+
+/**
+ * Base path for the eta app — used in routing, PWA config, and database
+ */
 export const BASE_PATH = 'fc-eta'
 
+/**
+ * Prefix for all eta storage keys
+ */
 export const STORAGE_PREFIX = 'fc-eta-'
 
+/**
+ * All storage keys for localStorage and sessionStorage
+ */
 export const STORAGE_KEYS = {
   SESSION: `${STORAGE_PREFIX}session`
 } as const
 
-// ============================================================================
-// COLOR SCHEME
-// ============================================================================
-
 /**
- * Theme color for PWA and browser chrome (brown/earth tone for eta)
+ * Theme color for PWA and browser chrome
  * CRITICAL: Must also be updated in:
  * - vite.config.ts (themeColor property)
  * - index.html (meta name="theme-color" content)
@@ -19,7 +28,7 @@ export const STORAGE_KEYS = {
 export const THEME_COLOR = '#8B4513'
 
 /**
- * Quasar theme colors for eta app (brown/earth tones)
+ * Quasar theme colors for the eta app
  */
 export const THEME_COLORS = {
   primary: '#8B4513',
