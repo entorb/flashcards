@@ -1,16 +1,17 @@
+/**
+ * Central configuration for the lwk app
+ */
+
 import type { GameStateFlowConfig } from '@flashcards/shared'
 
 import type { Card } from './types'
 
 /**
- * Base path for routing and storage
- * CRITICAL: Must be hardcoded separately in vite.config.ts (ESM issue)
+ * Base path for the lwk app — used in routing, PWA config, and database
  */
 export const BASE_PATH = 'fc-lwk'
 
-// ============================================================================
-// STORAGE KEYS
-// ============================================================================
+// --- Storage Keys ---
 
 /**
  * All storage keys for localStorage and sessionStorage
@@ -27,9 +28,7 @@ export const STORAGE_KEYS = {
   DAILY_STATS: 'fc-lwk-daily-stats'
 }
 
-// ============================================================================
-// GAME STATE FLOW CONFIGURATION
-// ============================================================================
+// --- Game State Flow Configuration ---
 
 /**
  * Centralized game state flow configuration for shared game store
@@ -44,10 +43,19 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   dailyStatsKey: STORAGE_KEYS.DAILY_STATS
 }
 
+// --- Game Logic ---
+
 /**
  * Maximum number of cards per game
  */
 export const MAX_CARDS_PER_GAME = 10
+
+/**
+ * Levenshtein distance threshold for close match detection
+ */
+export const LEVENSHTEIN_THRESHOLD = 1
+
+// --- Game Scoring ---
 
 /**
  * Word display duration in hidden mode (seconds)
@@ -59,14 +67,7 @@ export const WORD_DISPLAY_DURATION = 3
  */
 export const POINTS_MODE_HIDDEN = 4
 
-/**
- * Levenshtein distance threshold for close match detection
- */
-export const LEVENSHTEIN_THRESHOLD = 1
-
-// ============================================================================
-// COLOR SCHEME
-// ============================================================================
+// --- Color Scheme ---
 
 /**
  * Theme color for PWA and browser chrome
@@ -76,6 +77,11 @@ export const LEVENSHTEIN_THRESHOLD = 1
  */
 export const THEME_COLOR = '#00bcd4'
 
+// --- Default Data ---
+
+/**
+ * Default decks with starter words
+ */
 export const DEFAULT_DECKS = [
   {
     name: 'LWK_1',

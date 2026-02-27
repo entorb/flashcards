@@ -7,13 +7,22 @@
  */
 export const STATS_PENDING_STORAGE_KEY = 'fc-stats-pending'
 
-// share app via footer URL
+/**
+ * Hostname for production environment, to ensure stats are only recorded in production
+ */
+export const PROD_HOSTNAME = 'entorb.net'
+
+/**
+ * Share app via footer URL
+ */
 export const SHARE_URL = 'https://entorb.net/flashcards/'
 
+/**
+ * Web stats API endpoint for reading/writing access counts
+ */
 export const WEB_STATS_URL = 'https://entorb.net/web-stats-json.php'
-// ============================================================================
-// GAME DIFFICULTY LEVELS
-// ============================================================================
+
+// --- Game Difficulty Levels ---
 
 /**
  * Minimum difficulty level for cards
@@ -23,12 +32,9 @@ export const MIN_LEVEL = 1
 /**
  * Maximum difficulty level for cards
  */
-
 export const MAX_LEVEL = 5
 
-// ============================================================================
-// CARD TIMING
-// ============================================================================
+// --- Card Timing ---
 
 /**
  * Minimum card response time in seconds
@@ -40,9 +46,7 @@ export const MIN_TIME = 0.1
  */
 export const MAX_TIME = 60
 
-// ============================================================================
-// FEEDBACK TIMING
-// ============================================================================
+// --- Feedback Timing ---
 
 /**
  * Duration to disable buttons after wrong answer in milliseconds
@@ -55,9 +59,7 @@ export const BUTTON_DISABLE_DURATION = 3000
  */
 export const COUNTDOWN_INTERVAL = 1000
 
-// ============================================================================
-// DAILY BONUSES
-// ============================================================================
+// --- Daily Bonuses ---
 
 /**
  * Bonus points for the first game of the day
@@ -84,9 +86,7 @@ export const SPEED_BONUS_POINTS = 5
  */
 export const CLOSE_MATCH_SCORE_PERCENTAGE = 0.75
 
-// ============================================================================
-// COLOR PALETTE
-// ============================================================================
+// --- Color Palette ---
 
 /**
  * Color palette for card difficulty levels
@@ -117,9 +117,7 @@ export const BG_COLORS = {
   lightGrey: '#f8f9fa'
 }
 
-// ============================================================================
-// GAME MODES
-// ============================================================================
+// --- Game Modes ---
 
 /**
  * Number of rounds each card is repeated in 3-rounds mode

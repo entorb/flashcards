@@ -1,15 +1,17 @@
+/**
+ * Central configuration for the voc app
+ */
+
 import type { GameStateFlowConfig } from '@flashcards/shared'
 
 import type { Card } from './types'
 
 /**
- * Base path for the Wordplay app - used in routing, PWA config, and database
+ * Base path for the voc app — used in routing, PWA config, and database
  */
 export const BASE_PATH = 'fc-voc'
 
-// ============================================================================
-// STORAGE KEYS
-// ============================================================================
+// --- Storage Keys ---
 
 /**
  * All storage keys for localStorage and sessionStorage
@@ -26,9 +28,7 @@ export const STORAGE_KEYS = {
   GAME_RESULT: 'fc-voc-game-result'
 }
 
-// ============================================================================
-// GAME STATE FLOW CONFIGURATION
-// ============================================================================
+// --- Game State Flow Configuration ---
 
 /**
  * Centralized game state flow configuration for shared game store
@@ -43,11 +43,20 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   dailyStatsKey: STORAGE_KEYS.DAILY_STATS
 }
 
+// --- Game Logic ---
+
+/**
+ * Maximum number of cards per game
+ */
 export const MAX_CARDS_PER_GAME = 10
 
-// ============================================================================
-// COLOR SCHEME
-// ============================================================================
+/**
+ * Levenshtein distance threshold for accepting "close" answers
+ * Distance of 2 means up to 2 character changes are tolerated
+ */
+export const LEVENSHTEIN_THRESHOLD = 2
+
+// --- Color Scheme ---
 
 /**
  * Theme color for PWA and browser chrome
@@ -57,9 +66,7 @@ export const MAX_CARDS_PER_GAME = 10
  */
 export const THEME_COLOR = '#f97316'
 
-// ============================================================================
-// GAME SCORING
-// ============================================================================
+// --- Game Scoring ---
 
 /**
  * Points for blind mode (medium difficulty)
@@ -76,6 +83,11 @@ export const POINTS_MODE_TYPING = 8
  */
 export const LANGUAGE_BONUS_DE_VOC = 1
 
+// --- Default Data ---
+
+/**
+ * Initial cards for new users
+ */
 export const INITIAL_CARDS: Card[] = [
   { voc: 'Where', de: 'Wo', level: 1, time: 60 },
   { voc: 'Who', de: 'Wer', level: 1, time: 60 },
@@ -88,12 +100,6 @@ export const INITIAL_CARDS: Card[] = [
   { voc: 'Where to', de: 'Wohin', level: 5, time: 60 },
   { voc: 'How much', de: 'Wie viel', level: 5, time: 60 }
 ]
-
-/**
- * Levenshtein distance threshold for accepting "close" answers
- * Distance of 2 means up to 2 character changes are tolerated
- */
-export const LEVENSHTEIN_THRESHOLD = 2
 
 /**
  * Default decks configuration
