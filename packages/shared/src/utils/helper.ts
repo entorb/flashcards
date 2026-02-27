@@ -3,6 +3,7 @@ import {
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
+  PROD_HOSTNAME,
   STATS_PENDING_STORAGE_KEY,
   WEB_STATS_URL
 } from '../constants'
@@ -52,8 +53,6 @@ export const helperStatsDataRead = async (basePath: string): Promise<number> => 
     return 0
   }
 }
-
-/**
 
 /**
  * Load pending stats counts from localStorage
@@ -154,6 +153,13 @@ async function flushPendingStats(): Promise<void> {
  * @param basePath - The app identifier (1x1, voc, lwk, eta)
  */
 export const helperStatsDataWrite = async (basePath: string): Promise<void> => {
+  // Skip stats writes outside production to prevent dev/Cypress from spoiling stats
+  try {
+    if (globalThis.location.hostname !== PROD_HOSTNAME) return
+  } catch {
+    return
+  }
+
   const ok = await sendStatsWrite(basePath)
 
   if (ok) {
