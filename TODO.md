@@ -2,6 +2,12 @@
 
 Hallo zusammen, falls ihr mal versuchen wollt, eure Kinder zuhause zum Üben für die Schule zu überreden, probiert gerne die Karteikarten-Apps, die ich jüngst für meine Zwerge geschrieben habe. Klappt bei uns bisher ganz gut.
 
+An die Hobby-Lehrer (aka Eltern) in meinem Netzwerk: Ich habe in einem Hobby Projekt ein paar Lern-Apps für meine Zwerge geschrieben:
+https://
+entorb.net/flashcards/
+
+Gerne nutzen und weitergeben. Ich freue mich über Ideen für Verbesserungen (bitte direkt über den Kontaktlink unten in den Apps). Natürlich kostenlos, OpenSource, ohne Anmeldung, werbefrei und offline-fähig.
+
 - 1x1
 - Lernwortkiste (Rechtschreibung)
 - Vokabeln
