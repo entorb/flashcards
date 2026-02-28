@@ -96,7 +96,7 @@ type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 
 ## Pages
 
-`HistoryPage`, `GameOverPage`, `DecksEditPage`, `ScoringRulesPage`
+`HistoryPage`, `GameOverPage`, `DecksEditPage`, `InfoPage`
 
 ## Components
 
