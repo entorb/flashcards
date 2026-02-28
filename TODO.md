@@ -5,7 +5,7 @@ Hallo zusammen, falls ihr mal versuchen wollt, eure Kinder zuhause zum Üben fü
 - 1x1
 - Lernwortkiste (Rechtschreibung)
 - Vokabeln
-- Hausi-Zeit-Schätzer
+- Hausi-Rest-Zeit-Schätzer
 
 Ist ein kleines Hobby Projekt, kostenlos, OpenSource, offline lauffähig und ohne Werbung.
 
