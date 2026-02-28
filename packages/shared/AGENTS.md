@@ -96,7 +96,7 @@ type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 
 ## Pages
 
-`HistoryPage`, `GameOverPage`, `DecksEditPage`, `ScoringRulesPage`
+`HistoryPage`, `GameOverPage`, `DecksEditPage`, `InfoPage`
 
 ## Components
 
@@ -130,3 +130,5 @@ const arg = (mockFn.mock.calls[0] as unknown as [string])[0]
 **PBT JSON round-trip**: Use `JSON.parse(JSON.stringify(value))` as expected (not raw value) because `fc.jsonValue` doesn't recursively exclude `-0`.
 
 **dist/ exclusion**: `packages/shared/vitest.config.ts` excludes `dist/**` to prevent duplicate test runs from compiled `.spec.js`.
+
+**helperStatsDataWrite hostname guard**: Tests for `helperStatsDataWrite` must stub `globalThis.location` with `{ hostname: PROD_HOSTNAME }` in `beforeEach`. The function early-returns when `hostname !== PROD_HOSTNAME`, and jsdom sets it to `"localhost"` by default.

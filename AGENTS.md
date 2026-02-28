@@ -150,6 +150,7 @@ Each app defines a `GAME_STATE_FLOW_CONFIG` in `src/constants.ts` mapping storag
 4. **Never** use `registerType: 'autoUpdate'` in PWA — returns undefined. Use `'prompt'`.
 5. **Stub by alias**: When a component is imported as `import FoxIcon from './FoxMascot.vue'`, stub as `FoxIcon` not `FoxMascot`.
 6. **BASE_PATH** must be defined in both `src/constants.ts` AND hardcoded in `vite.config.ts`.
+7. **`unicorn/prefer-string-replace-all`** — IDE (VS Code) may suggest `replaceAll()` but the ESLint config doesn't have this rule. Using `eslint-disable-next-line` for it causes a lint error ("Definition for rule not found"). Just use `.replace()` with `/g` flag.
 
 ## PWA Config
 
