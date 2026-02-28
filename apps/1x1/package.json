@@ -13,7 +13,7 @@
     "cy:run": "cypress run --e2e --quiet",
     "dev": "vite",
     "format": "prettier --cache --cache-location .cache/prettiercache --write --ignore-path .prettierignore \"**/*.{html,ts,json,md,vue,js,tsx,jsx}\" --log-level silent",
-    "lint": "eslint . --cache --cache-location .cache/eslintcache --fix",
+    "lint": "eslint . --cache --cache-location .cache/eslintcache --cache-strategy content --fix",
     "preview": "vite preview",
     "run": "run-s build preview",
     "spell": "cspell --cache --quiet \"src/**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",
@@ -28,7 +28,7 @@
     "@flashcards/shared": "workspace:*",
     "@quasar/extras": "^1.17.0",
     "quasar": "^2.18.6",
-    "vue": "^3.5.27",
+    "vue": "^3.5.29",
     "vue-router": "^4.6.4",
     "workbox-window": "^7.4.0"
   }
