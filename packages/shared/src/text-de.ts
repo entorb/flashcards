@@ -30,7 +30,7 @@ export const TEXT_DE = {
       history: 'Verlauf',
       cards: 'Karten',
       backToHome: 'Zurück zur Startseite',
-      infoTooltip: 'Info zu Scoring-Regeln'
+      infoTooltip: 'Info'
     },
     cards: {
       cardsPerLevel: 'Karten pro Level',
@@ -53,7 +53,7 @@ export const TEXT_DE = {
       vocable: 'Vokabel',
       german: 'Deutsch',
       delete: 'Löschen',
-      deck: 'Deck',
+      deck: 'Kiste',
       points: 'Punkte'
     },
     focusOptions: {
@@ -61,6 +61,35 @@ export const TEXT_DE = {
       strong: 'Starke',
       medium: 'Mittlere',
       slow: 'Langsame'
+    },
+    info: {
+      title: 'Info',
+      cardDescriptionTitle: 'Karten',
+      cardDescription1x1: 'Eine Karte ist eine Rechenaufgabe (z.B. 3×4=12).',
+      cardDescriptionVoc: 'Eine Karte ist ein Wort mit Übersetzung.',
+      cardDescriptionLwk: 'Eine Karte ist ein Lernwort zum Üben der Rechtschreibung.',
+      levelSystemTitle: 'Level-System',
+      levelSystem:
+        'Jede Karte hat ein Level von 1 (unbekannt) bis 5 (sicher). Richtige Antworten erhöhen das Level, falsche verringern es.',
+      scoringSectionTitle: 'Punktevergabe',
+      decksTitle: 'Kisten',
+      decksVoc: 'Karten werden in Kisten organisiert (z.B. pro Kapitel oder Sprache).',
+      decksLwk: 'Wörter werden in Kisten organisiert. Du kannst Kisten haben.',
+      focusTitle: 'Fokus',
+      focusDescription: 'Bestimmt, welche Karten bevorzugt abgefragt werden:',
+      startButtonsTitle: 'Spielmodi',
+      startStandard: 'Normales Spiel (max. 10 Karten).',
+      startEndlessLevel1: 'Endlos: Nur Level-1-Karten, bis alle aufgestiegen sind.',
+      startThreeRounds: '3 Runden: Jede Karte wird 3× abgefragt (max. 10 Karten).',
+      startEndlessLevel5: 'Endlos: Alle Karten, bis alle Level 5 erreicht haben.',
+      modesTitle: 'Spielarten',
+      aboutTitle: 'Über diese App',
+      aboutPrefix: 'Teil von',
+      aboutTorben: "Torben's",
+      aboutOpenSource: 'Open-Source',
+      aboutProject: 'Flashcards',
+      aboutSuffix: 'Hobbyprojekt. Kostenlos, werbefrei und ohne Tracking.',
+      aboutShare: 'Gerne teilen'
     },
     scoring: {
       title: 'Scoring-Regeln',
@@ -133,7 +162,8 @@ export const TEXT_DE = {
       feature1x20: '1x20'
     },
     info: {
-      difficulty: 'Das 1x1: 4x8 -> 4'
+      difficulty: 'Das 1x1: 4x8 -> 4',
+      modeDescription: 'Wähle die Zahlenreihen (2-10 oder x²), die geübt werden sollen.'
     }
   },
 
@@ -156,7 +186,7 @@ export const TEXT_DE = {
     cards: {
       // title: 'Kartenverwaltung',
       header:
-        'Du kannst mehrere Karten-<strong>Decks</strong> anlegen (z.B. Kapitel deines Buches oder verschiedene Sprachen). Ein Deck enthält mehrere <strong>Karten</strong>. Jede Karte hat ein <strong>Level</strong> (1=unbekannt bis 5=sicher). Richtige Antworten im Spiel erhöhen das Level, falsche verringern es.',
+        'Du kannst mehrere Karten-<strong>Kisten</strong> anlegen (z.B. Kapitel deines Buches oder verschiedene Sprachen). Eine Kiste enthält mehrere <strong>Karten</strong>. Jede Karte hat ein <strong>Level</strong> (1=unbekannt bis 5=sicher). Richtige Antworten im Spiel erhöhen das Level, falsche verringern es.',
       export: 'Raus kopieren',
       import: 'Rein kopieren',
       copied: 'Kopiert!',
@@ -178,18 +208,22 @@ export const TEXT_DE = {
       reset: 'Zurücksetzen'
     },
     decks: {
-      title: 'Deck',
-      duplicateNameError: 'Ein Deck mit diesem Namen existiert bereits.',
-      lastDeckError: 'Das letzte Deck kann nicht entfernt werden.',
-      confirmRemoveTitle: 'Deck entfernen',
+      title: 'Kiste',
+      duplicateNameError: 'Eine Kiste mit diesem Namen existiert bereits.',
+      lastDeckError: 'Die letzte Kiste kann nicht entfernt werden.',
+      confirmRemoveTitle: 'Kiste entfernen',
       confirmRemoveMessage:
-        'Möchtest du das Deck "{name}" wirklich entfernen? Alle Karten darin gehen verloren.',
-      emptyNameError: 'Der Deck-Name darf nicht leer sein.',
-      editDecksTitle: 'Decks bearbeiten',
-      addDeck: 'Deck hinzufügen',
-      deckNamePlaceholder: 'Deck-Name'
+        'Möchtest du die Kiste "{name}" wirklich entfernen? Alle Karten darin gehen verloren.',
+      emptyNameError: 'Der Kisten-Name darf nicht leer sein.',
+      editDecksTitle: 'Kisten bearbeiten',
+      addDeck: 'Kiste hinzufügen',
+      deckNamePlaceholder: 'Kisten-Name'
     },
     info: {
+      modeMultipleChoice: 'Multiple Choice: einfach',
+      modeBlindInfo: 'Blind: mittel',
+      modeTypingInfo: 'Schreiben: schwer',
+      modeDirection: 'Sprachrichtung: Voc→DE oder DE→Voc',
       modeChoice: 'Multiple Choice: 1 Punkt',
       modeBlind: 'Blind: {points} Punkte',
       modeTyping: 'Schreiben: {points} Punkte',
@@ -214,7 +248,7 @@ export const TEXT_DE = {
     cards: {
       header:
         'Du kannst mehrere Lernwort-<strong>Kisten</strong> anlegen. Eine Kiste enthält mehrere <strong>Karten</strong>. Jede Karte ist ein Lernwort und hat ein <strong>Level</strong> (1=unbekannt bis 5=sicher). Richtige Antworten im Spiel erhöhen das Level, falsche verringern es.',
-      reset: 'Alle Decks und Wörter löschen',
+      reset: 'Alle Kisten und Wörter löschen',
       importDialogMessage: 'Füge deine Wörter ein (eines pro Zeile)',
       importDialogTitle: 'Wörter importieren',
       importHintExcel:
@@ -246,6 +280,8 @@ export const TEXT_DE = {
       points: 'Punkte:'
     },
     info: {
+      modeCopyInfo: 'Abschreiben: Level 1-2 (zum Üben)',
+      modeHiddenInfo: 'Verdeckt: Wort kurz merken, dann schreiben',
       modeCopy: 'Abschreiben: Nur für Karten mit Level 1 oder 2 (zum Üben). 1 Punkt',
       modeHidden: 'Verdeckt: Wort wird 3 Sekunden gezeigt, dann verdeckt. {points} Punkte',
       additionalRulesTitle: 'Zusätzliche Regeln',
@@ -263,6 +299,21 @@ export const TEXT_DE = {
     tracking: {
       inputPlaceholderCompleted: '# fertig',
       inputPlaceholderRemaining: '# noch'
+    },
+    info: {
+      title: 'Info',
+      descriptionTitle: 'Was ist das?',
+      description:
+        'Der Hausi-Zeit-Schätzer hilft dir, die verbleibende Zeit für deine Hausaufgaben abzuschätzen.',
+      howToTitle: 'So geht\u2019s',
+      step1: 'Gib die Gesamtanzahl der Aufgaben ein und starte.',
+      step2: 'Trage nach jeder Aufgabe deinen Fortschritt ein (Anzahl fertig oder noch übrig).',
+      step3:
+        'Die App berechnet anhand deiner Geschwindigkeit die voraussichtliche Restzeit und Fertig-Uhrzeit.',
+      tipTitle: 'Tipps',
+      tipPlusOne: 'Tippe auf + um schnell eine weitere Aufgabe als erledigt zu melden.',
+      tipToggle: 'Wechsle zwischen „fertig" und „noch übrig" Eingabemodus.',
+      tipTable: 'Die Tabelle zeigt deine Geschwindigkeit pro Aufgabe.'
     }
   }
 } as const

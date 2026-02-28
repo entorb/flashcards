@@ -5,9 +5,9 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from '@flashcards/shared'
 
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import ScoringRulesPage from './ScoringRulesPage.vue'
+import InfoPage from './InfoPage.vue'
 
-describe('voc ScoringRulesPage', () => {
+describe('voc InfoPage', () => {
   const createRouter_ = () =>
     createRouter({
       history: createMemoryHistory(),
@@ -21,8 +21,8 @@ describe('voc ScoringRulesPage', () => {
       provide: quasarProvide,
       stubs: {
         ...quasarStubs,
-        // Stub the shared ScoringRulesPage to isolate the voc wrapper
-        ScoringRulesPage: {
+        // Stub the shared InfoPage to isolate the voc wrapper
+        InfoPage: {
           template: '<div data-cy="shared-scoring-rules"><slot /></div>',
           props: ['appName', 'pointsModeBlind', 'pointsModeTyping', 'pointsLanguageDirection'],
           emits: ['back']
@@ -39,25 +39,25 @@ describe('voc ScoringRulesPage', () => {
 
   it('mounts without errors', async () => {
     const router = createRouter_()
-    const wrapper = mount(ScoringRulesPage, createMountOptions(router))
+    const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('passes appName="voc" to shared ScoringRulesPage', async () => {
+  it('passes appName="voc" to shared InfoPage', async () => {
     const router = createRouter_()
-    const wrapper = mount(ScoringRulesPage, createMountOptions(router))
+    const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
-    const sharedPage = wrapper.findComponent({ name: 'ScoringRulesPage' })
+    const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
     expect(sharedPage.exists()).toBe(true)
     expect(sharedPage.props('appName')).toBe('voc')
   })
 
-  it('passes voc-specific point constants to shared ScoringRulesPage', async () => {
+  it('passes voc-specific point constants to shared InfoPage', async () => {
     const router = createRouter_()
-    const wrapper = mount(ScoringRulesPage, createMountOptions(router))
+    const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
-    const sharedPage = wrapper.findComponent({ name: 'ScoringRulesPage' })
+    const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
     expect(sharedPage.props('pointsModeBlind')).toBe(4)
     expect(sharedPage.props('pointsModeTyping')).toBe(8)
     expect(sharedPage.props('pointsLanguageDirection')).toBe(1)
@@ -66,9 +66,9 @@ describe('voc ScoringRulesPage', () => {
   it('back event from shared page navigates to /', async () => {
     const router = createRouter_()
     vi.spyOn(router, 'push')
-    const wrapper = mount(ScoringRulesPage, createMountOptions(router))
+    const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
-    const sharedPage = wrapper.findComponent({ name: 'ScoringRulesPage' })
+    const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
     await sharedPage.vm.$emit('back')
     expect(router.push).toHaveBeenCalledWith('/')
   })
@@ -76,7 +76,7 @@ describe('voc ScoringRulesPage', () => {
   it('Escape key navigates to /', async () => {
     const router = createRouter_()
     vi.spyOn(router, 'push')
-    mount(ScoringRulesPage, createMountOptions(router))
+    mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     expect(router.push).toHaveBeenCalledWith('/')
@@ -85,7 +85,7 @@ describe('voc ScoringRulesPage', () => {
   it('non-Escape key does not navigate', async () => {
     const router = createRouter_()
     vi.spyOn(router, 'push')
-    mount(ScoringRulesPage, createMountOptions(router))
+    mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
     expect(router.push).not.toHaveBeenCalled()
@@ -94,7 +94,7 @@ describe('voc ScoringRulesPage', () => {
   it('removes keydown listener on unmount', async () => {
     const router = createRouter_()
     vi.spyOn(router, 'push')
-    const wrapper = mount(ScoringRulesPage, createMountOptions(router))
+    const wrapper = mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
     wrapper.unmount()
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
@@ -113,7 +113,7 @@ describe('voc ScoringRulesPage', () => {
 
     it('renders bonus constants in text', async () => {
       const router = createRouter_()
-      const wrapper = mount(ScoringRulesPage, createFullMountOptions(router))
+      const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.html()).toContain(FIRST_GAME_BONUS.toString())
       expect(wrapper.html()).toContain(STREAK_GAME_BONUS.toString())
@@ -121,7 +121,7 @@ describe('voc ScoringRulesPage', () => {
 
     it('renders voc-specific mode content (blind and typing)', async () => {
       const router = createRouter_()
-      const wrapper = mount(ScoringRulesPage, createFullMountOptions(router))
+      const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
       // voc shows blind mode points (4) and typing mode points (8)
       expect(wrapper.html()).toContain('4')
@@ -130,7 +130,7 @@ describe('voc ScoringRulesPage', () => {
 
     it('renders voc additional rules section', async () => {
       const router = createRouter_()
-      const wrapper = mount(ScoringRulesPage, createFullMountOptions(router))
+      const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
       // voc shows close match and language direction rules
       expect(wrapper.html()).toContain('75%')
@@ -139,7 +139,7 @@ describe('voc ScoringRulesPage', () => {
     it('back button click navigates to /', async () => {
       const router = createRouter_()
       vi.spyOn(router, 'push')
-      const wrapper = mount(ScoringRulesPage, createFullMountOptions(router))
+      const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="back-button"]').trigger('click')
       expect(router.push).toHaveBeenCalledWith('/')
