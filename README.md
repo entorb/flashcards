@@ -44,10 +44,13 @@ This repository hosts the code of three educational apps, implementing flashcard
 </tbody>
 </table>
 
-- Lernmethode: Karteikarten-System mit 5 Stufen: (Stufe 1 = unbekannt → Stufe 5 = sicher beherrscht)
-- Features: Adaptives Lernen • Gewichtete Kartenauswahl
-  (Fokus auf unsichere, sichere oder langsame)
-- Gamification: Punkte sammeln • Maskotchen freut sich • Tagesstatistik mit Bonuspunkten • Spielverlauf-Historie
+- Lernmethode: Karteikarten-System mit 5 Leveln (Level 1 = unbekannt → Level 5 = sicher beherrscht)
+- Karten: Rechenaufgaben (1×1) • Vokabeln mit Übersetzung • Lernwörter für Rechtschreibung
+- Kisten: Karten werden in Kisten organisiert (voc & lwk), z.B. pro Kapitel oder Sprache
+- Spielmodi: Normal (max. 10 Karten) • Endlos Level 1 • 3 Runden • Endlos bis Level 5
+- Fokus: Gewichtete Kartenauswahl (Schwache, Mittlere, Starke oder Langsame)
+- Spielarten: Multiple Choice / Blind / Tippen (voc) • Abschreiben / Verdeckt (lwk)
+- Gamification: Punkte sammeln • Maskottchen freut sich • Tagesstatistik mit Bonuspunkten • Spielverlauf-Historie
 - Technologie: Web • offline nutzbar • PWA App
   (kann auf Android oder Apple als App installiert werden)
 - Privatsphäre: Open Source • Keine Kosten • Keine Werbung • Kein Login • Keine Datenspeicherung auf dem Server
