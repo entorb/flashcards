@@ -310,6 +310,14 @@ export function parseLevel(levelStr: string | undefined): number {
 }
 
 /**
+ * Normalize whitespace: trim leading/trailing and collapse multiple spaces into one.
+ * Use on card fields at import/entry and on user input before validation.
+ */
+export function normalizeWhitespace(str: string): string {
+  return str.trim().replace(/\s+/g, ' ')
+}
+
+/**
  * Sanitize base card fields: clamp level to valid range, default time to MAX_TIME
  * Use this when creating or importing cards to ensure valid defaults.
  */
