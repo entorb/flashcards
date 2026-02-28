@@ -104,10 +104,9 @@ describe('helpers - Typing Answer Validation', () => {
     })
 
     it('should handle multiple spaces with fuzzy matching', () => {
-      // normalizeString only trims edges, not internal spaces
-      // So '  hello  world  ' becomes 'hello  world' which is distance 1 from 'hello world'
+      // normalizeWhitespace collapses multiple spaces, so both become 'hello world'
       const result = validateTypingAnswer('  hello  world  ', 'hello world', 'voc-de')
-      expect(result).toBe('close') // Close due to extra space
+      expect(result).toBe('correct') // Exact match after whitespace normalization
     })
   })
 
