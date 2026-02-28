@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TEXT_DE, MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '@flashcards/shared'
+import { TEXT_DE, MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -54,10 +54,10 @@ function handleGoBack() {
     }
   }
 
-  // Trim whitespace from user inputs before saving
+  // Normalize whitespace from user inputs before saving
   for (const card of editingCards.value) {
-    card.voc = card.voc.trim()
-    card.de = card.de.trim()
+    card.voc = normalizeWhitespace(card.voc)
+    card.de = normalizeWhitespace(card.de)
   }
 
   importCards(editingCards.value)

@@ -6,6 +6,7 @@ import {
   levenshteinDistance,
   MAX_TIME,
   MIN_LEVEL,
+  normalizeWhitespace,
   parseLevel,
   sanitizeBaseCard,
   type AnswerStatus
@@ -21,8 +22,8 @@ import type { Card } from '../types'
  * Returns 'correct', 'close', or 'incorrect'
  */
 export function validateTypingAnswer(userInput: string, correctWord: string): AnswerStatus {
-  const normalized = userInput.trim()
-  const correct = correctWord.trim()
+  const normalized = normalizeWhitespace(userInput)
+  const correct = normalizeWhitespace(correctWord)
 
   if (normalized === correct) {
     return 'correct'
@@ -65,6 +66,7 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
 
     const card = parseCardFromLine(line, delimiter)
     if (card) {
+      card.word = normalizeWhitespace(card.word)
       newCards.push(card)
     }
   }
@@ -90,7 +92,7 @@ function parseNewlineOnlyCards(lines: string[]): { cards: Card[]; delimiter: str
   const newCards: Card[] = []
 
   for (const line of lines) {
-    const word = line.trim()
+    const word = normalizeWhitespace(line)
     if (word.length > 0 && !isHeaderLine(line, 0)) {
       newCards.push(
         sanitizeBaseCard({
@@ -117,8 +119,8 @@ function isHeaderLine(line: string, index: number): boolean {
  */
 function parseCardFromLine(line: string, delimiter: string): Card | null {
   const parts = line.split(delimiter)
-  const word = parts[0]?.trim()
-  if (word === undefined || word === '') {
+  const word = normalizeWhitespace(parts[0] ?? '')
+  if (word === '') {
     return null
   }
 

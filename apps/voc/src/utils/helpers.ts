@@ -1,6 +1,7 @@
 import {
   levenshteinDistance,
   MAX_TIME,
+  normalizeWhitespace,
   parseLevel,
   sanitizeBaseCard,
   type AnswerStatus
@@ -13,7 +14,7 @@ import type { Card } from '../types'
  * Normalize a string for comparison (lowercase, trim)
  */
 export function normalizeString(str: string): string {
-  return str.toLowerCase().trim()
+  return normalizeWhitespace(str).toLowerCase()
 }
 
 /**
@@ -84,9 +85,9 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
     }
 
     const parts = line.split(delimiter)
-    const voc = parts[0]?.trim()
-    const de = parts[1]?.trim()
-    if (voc !== undefined && voc !== '' && de !== undefined && de !== '') {
+    const voc = normalizeWhitespace(parts[0] ?? '')
+    const de = normalizeWhitespace(parts[1] ?? '')
+    if (voc !== '' && de !== '') {
       newCards.push(
         sanitizeBaseCard({
           voc,
