@@ -41,7 +41,7 @@ export const router = createRouter({
     {
       path: '/info',
       name: '/info',
-      component: async () => import('./pages/ScoringRulesPage.vue')
+      component: async () => import('./pages/InfoPage.vue')
     }
   ]
 })

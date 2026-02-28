@@ -8,6 +8,10 @@ import { BASE_PATH } from '@/constants'
 
 import HourglassIcon from './HourglassIcon.vue'
 
+defineEmits<{
+  goToInfo: []
+}>()
+
 const store = useEtaStore()
 const totalTasks = ref<number | null>(null)
 
@@ -27,8 +31,28 @@ async function handleStart() {
     class="q-pa-md"
     style="max-width: 400px; width: 100%"
   >
-    <div class="text-h4 text-center q-mb-lg">
-      {{ TEXT_DE.eta.config.title }}
+    <div class="row items-center justify-between q-mb-lg">
+      <q-btn
+        flat
+        round
+        dense
+        icon="info_outline"
+        style="visibility: hidden"
+      />
+      <div class="text-h4 text-center">
+        {{ TEXT_DE.eta.config.title }}
+      </div>
+      <q-btn
+        flat
+        round
+        dense
+        icon="info_outline"
+        color="grey-6"
+        data-cy="info-button"
+        @click="$emit('goToInfo')"
+      >
+        <q-tooltip>{{ TEXT_DE.shared.nav.infoTooltip }}</q-tooltip>
+      </q-btn>
     </div>
 
     <div class="text-center q-mb-lg">
