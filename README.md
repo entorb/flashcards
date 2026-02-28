@@ -65,7 +65,7 @@ This repository hosts the code of three educational apps, implementing flashcard
 - ESLint
 - Vitest unit tests
 - Cypress E2E test
-- [SonarQube](https://sonarcloud.io/project/issues?id=entorb_flashcards) for
+- [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_flashcards&branch=main) for
   code quality analysis
 
 ## Scripts
