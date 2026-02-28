@@ -40,7 +40,7 @@
     "preview:voc": "pnpm --filter voc preview",
     "spell": "cspell --cache --quiet \"**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",
     "test:cov": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" test:cov",
-    "test": "pnpm --filter \"./apps/*\" test",
+    "test": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" test",
     "types": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" types"
   },
   "devDependencies": {
