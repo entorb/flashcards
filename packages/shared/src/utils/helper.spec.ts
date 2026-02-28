@@ -10,7 +10,7 @@ import {
   levenshteinDistance,
   roundTime
 } from '../utils/helper'
-import { STATS_PENDING_STORAGE_KEY } from '../constants'
+import { PROD_HOSTNAME, STATS_PENDING_STORAGE_KEY } from '../constants'
 
 describe('getFocusText', () => {
   it('returns weak text for "weak"', () => {
@@ -250,6 +250,7 @@ describe('helperStatsDataWrite', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     globalThis.localStorage.removeItem(STATS_PENDING_STORAGE_KEY)
+    vi.stubGlobal('location', { hostname: PROD_HOSTNAME })
   })
 
   it('calls fetch with correct URL', async () => {

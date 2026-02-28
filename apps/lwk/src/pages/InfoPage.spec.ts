@@ -3,28 +3,26 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from '@flashcards/shared'
-
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import InfoPage from './InfoPage.vue'
 
-describe('1x1 InfoPage', () => {
-  const createRouter_ = () =>
+describe('lwk InfoPage', () => {
+  const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [{ path: '/', name: '/', component: { template: '<div />' } }]
     })
 
-  const createMountOptions = (router: ReturnType<typeof createRouter_>) => ({
+  const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
     global: {
       mocks: quasarMocks,
       plugins: [router],
       provide: quasarProvide,
       stubs: {
         ...quasarStubs,
-        // Stub the shared InfoPage to isolate the 1x1 wrapper
         InfoPage: {
           template: '<div data-cy="shared-scoring-rules"><slot /></div>',
-          props: ['appName'],
+          props: ['appName', 'pointsModeHidden'],
           emits: ['back']
         }
       }
@@ -37,35 +35,47 @@ describe('1x1 InfoPage', () => {
     vi.clearAllMocks()
   })
 
+  // ─── Mounting ─────────────────────────────────────────────────────────────
+
   it('mounts without errors', async () => {
-    const router = createRouter_()
+    const router = createMockRouter()
     const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('passes appName="1x1" to shared InfoPage', async () => {
-    const router = createRouter_()
+  it('passes appName="lwk" to shared InfoPage', async () => {
+    const router = createMockRouter()
     const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
     expect(sharedPage.exists()).toBe(true)
-    expect(sharedPage.props('appName')).toBe('1x1')
+    expect(sharedPage.props('appName')).toBe('lwk')
   })
 
+  it('passes pointsModeHidden constant to shared InfoPage', async () => {
+    const router = createMockRouter()
+    const wrapper = mount(InfoPage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+    const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
+    expect(typeof sharedPage.props('pointsModeHidden')).toBe('number')
+    expect(sharedPage.props('pointsModeHidden') as number).toBeGreaterThan(0)
+  })
+
+  // ─── Navigation ───────────────────────────────────────────────────────────
+
   it('back event from shared page navigates to /', async () => {
-    const router = createRouter_()
+    const router = createMockRouter()
     vi.spyOn(router, 'push')
     const wrapper = mount(InfoPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
-    // Emit the back event from the stubbed shared component
     const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
     await sharedPage.vm.$emit('back')
     expect(router.push).toHaveBeenCalledWith('/')
   })
 
   it('Escape key navigates to /', async () => {
-    const router = createRouter_()
+    const router = createMockRouter()
     vi.spyOn(router, 'push')
     mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
@@ -74,7 +84,7 @@ describe('1x1 InfoPage', () => {
   })
 
   it('non-Escape key does not navigate', async () => {
-    const router = createRouter_()
+    const router = createMockRouter()
     vi.spyOn(router, 'push')
     mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
@@ -83,7 +93,7 @@ describe('1x1 InfoPage', () => {
   })
 
   it('removes keydown listener on unmount', async () => {
-    const router = createRouter_()
+    const router = createMockRouter()
     vi.spyOn(router, 'push')
     const wrapper = mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
@@ -92,8 +102,10 @@ describe('1x1 InfoPage', () => {
     expect(router.push).not.toHaveBeenCalled()
   })
 
-  describe('renders 1x1-specific scoring content (via shared component)', () => {
-    const createFullMountOptions = (router: ReturnType<typeof createRouter_>) => ({
+  // ─── Full render (no stub) ────────────────────────────────────────────────
+
+  describe('renders lwk-specific scoring content', () => {
+    const createFullMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
       global: {
         mocks: quasarMocks,
         plugins: [router],
@@ -103,23 +115,15 @@ describe('1x1 InfoPage', () => {
     })
 
     it('renders bonus constants in text', async () => {
-      const router = createRouter_()
+      const router = createMockRouter()
       const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.html()).toContain(FIRST_GAME_BONUS.toString())
       expect(wrapper.html()).toContain(STREAK_GAME_BONUS.toString())
     })
 
-    it('renders 1x1-specific multiply content', async () => {
-      const router = createRouter_()
-      const wrapper = mount(InfoPage, createFullMountOptions(router))
-      await wrapper.vm.$nextTick()
-      // 1x1 shows multiply difficulty text (e.g. "4x8")
-      expect(wrapper.html()).toContain('4x8')
-    })
-
     it('back button click navigates to /', async () => {
-      const router = createRouter_()
+      const router = createMockRouter()
       vi.spyOn(router, 'push')
       const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
