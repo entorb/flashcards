@@ -293,7 +293,7 @@ export const TEXT_DE = {
   // ETA App specific
   eta: {
     config: {
-      title: 'Hausi-Zeit-Schätzer',
+      title: 'Hausi-Rest-Zeit-Schätzer',
       totalTasksPlaceholder: 'Aufgaben'
     },
     tracking: {
@@ -304,7 +304,7 @@ export const TEXT_DE = {
       title: 'Info',
       descriptionTitle: 'Was ist das?',
       description:
-        'Der Hausi-Zeit-Schätzer hilft dir, die verbleibende Zeit für deine Hausaufgaben abzuschätzen.',
+        'Der Hausi-Rest-Zeit-Schätzer hilft dir, die verbleibende Zeit für deine Hausaufgaben abzuschätzen.',
       howToTitle: 'So geht\u2019s',
       step1: 'Gib die Gesamtanzahl der Aufgaben ein und starte.',
       step2: 'Trage nach jeder Aufgabe deinen Fortschritt ein (Anzahl fertig oder noch übrig).',
