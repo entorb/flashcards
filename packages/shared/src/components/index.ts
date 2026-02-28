@@ -1,6 +1,7 @@
 // Shared Vue components
 // Export your shared components here
 
+export { default as AboutSection } from './AboutSection.vue'
 export { default as AppFooter } from './AppFooter.vue'
 export { default as CardManActions } from './CardsManActions.vue'
 export { default as CardsListOfCards } from './CardsManListOfCards.vue'
