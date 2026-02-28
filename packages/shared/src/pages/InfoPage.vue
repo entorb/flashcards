@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { QIcon } from 'quasar'
+
+import AboutSection from '../components/AboutSection.vue'
 import {
   FIRST_GAME_BONUS,
   SPEED_BONUS_POINTS,
@@ -40,7 +43,7 @@ defineEmits<{
         <q-toolbar-title
           class="text-center"
           data-cy="info-page-title"
-          >{{ TEXT_DE.shared.scoring.title }}</q-toolbar-title
+          >{{ TEXT_DE.shared.info.title }}</q-toolbar-title
         >
         <q-btn
           flat
@@ -57,6 +60,152 @@ defineEmits<{
         class="q-mx-auto q-gutter-lg text-grey-8"
         style="max-width: 700px"
       >
+        <!-- Card Description -->
+        <div>
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.cardDescriptionTitle }}
+          </h3>
+          <p v-if="appName === '1x1'">
+            {{ TEXT_DE.shared.info.cardDescription1x1 }}
+          </p>
+          <p v-else-if="appName === 'voc'">
+            {{ TEXT_DE.shared.info.cardDescriptionVoc }}
+          </p>
+          <p v-else-if="appName === 'lwk'">
+            {{ TEXT_DE.shared.info.cardDescriptionLwk }}
+          </p>
+        </div>
+
+        <!-- Level System Section -->
+        <div>
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.levelSystemTitle }}
+          </h3>
+          <p>{{ TEXT_DE.shared.info.levelSystem }}</p>
+        </div>
+
+        <!-- Decks Section (voc & lwk only) -->
+        <div v-if="appName === 'voc'">
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.decksTitle }}
+          </h3>
+          <p>{{ TEXT_DE.shared.info.decksVoc }}</p>
+        </div>
+        <div v-else-if="appName === 'lwk'">
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.decksTitle }}
+          </h3>
+          <p>{{ TEXT_DE.shared.info.decksLwk }}</p>
+        </div>
+
+        <!-- App Modes Section -->
+        <div>
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.modesTitle }}
+          </h3>
+          <p v-if="appName === '1x1'">
+            {{ TEXT_DE.multiply.info.modeDescription }}
+          </p>
+          <ul
+            v-else-if="appName === 'voc'"
+            class="q-pl-md q-mt-sm"
+          >
+            <li>{{ TEXT_DE.voc.info.modeMultipleChoice }}</li>
+            <li>{{ TEXT_DE.voc.info.modeBlindInfo }}</li>
+            <li>{{ TEXT_DE.voc.info.modeTypingInfo }}</li>
+            <li>{{ TEXT_DE.voc.info.modeDirection }}</li>
+          </ul>
+          <ul
+            v-else-if="appName === 'lwk'"
+            class="q-pl-md q-mt-sm"
+          >
+            <li>{{ TEXT_DE.lwk.info.modeCopyInfo }}</li>
+            <li>{{ TEXT_DE.lwk.info.modeHiddenInfo }}</li>
+          </ul>
+        </div>
+
+        <!-- Focus Section -->
+        <div>
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.focusTitle }}
+          </h3>
+          <p>{{ TEXT_DE.shared.info.focusDescription }}</p>
+          <ul class="q-pl-md q-mt-sm">
+            <li>
+              <QIcon
+                name="trending_down"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.focusOptions.weak }}
+            </li>
+            <li>
+              <QIcon
+                name="change_history"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.focusOptions.medium }}
+            </li>
+            <li>
+              <QIcon
+                name="trending_up"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.focusOptions.strong }}
+            </li>
+            <li>
+              <QIcon
+                name="schedule"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.focusOptions.slow }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Start Buttons Section -->
+        <div>
+          <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
+            {{ TEXT_DE.shared.info.startButtonsTitle }}
+          </h3>
+          <ul class="q-pl-md q-mt-sm">
+            <li>
+              <QIcon
+                name="play_arrow"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.info.startStandard }}
+            </li>
+            <li>
+              <QIcon
+                name="all_inclusive"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.info.startEndlessLevel1 }}
+            </li>
+            <li>
+              <QIcon
+                name="looks_3"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.info.startThreeRounds }}
+            </li>
+            <li>
+              <QIcon
+                name="military_tech"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.info.startEndlessLevel5 }}
+            </li>
+          </ul>
+        </div>
+
+        <q-separator />
+
+        <!-- Scoring Section Header -->
+        <h2 class="text-h6 text-weight-bold q-mb-none">
+          {{ TEXT_DE.shared.info.scoringSectionTitle }}
+        </h2>
+
         <!-- Base Points Section -->
         <div>
           <h3 class="text-subtitle1 text-weight-bold q-mb-sm">
@@ -181,6 +330,11 @@ defineEmits<{
             </li>
           </ul>
         </div>
+
+        <q-separator />
+
+        <!-- About Section -->
+        <AboutSection :contact-origin="`fc-${appName}`" />
       </div>
     </q-page>
   </div>

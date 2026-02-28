@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ScoringRulesPage } from '@flashcards/shared/pages'
+import { InfoPage } from '@flashcards/shared/pages'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -25,7 +25,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ScoringRulesPage
+  <InfoPage
     app-name="1x1"
     @back="handleBack"
   />

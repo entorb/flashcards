@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ScoringRulesPage } from '@flashcards/shared/pages'
+import { InfoPage } from '@flashcards/shared/pages'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { POINTS_MODE_BLIND, POINTS_MODE_TYPING, LANGUAGE_BONUS_DE_VOC } from '../constants'
+import { POINTS_MODE_HIDDEN } from '../constants'
 
 const router = useRouter()
 
@@ -27,11 +27,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ScoringRulesPage
-    app-name="voc"
-    :points-mode-blind="POINTS_MODE_BLIND"
-    :points-mode-typing="POINTS_MODE_TYPING"
-    :points-language-direction="LANGUAGE_BONUS_DE_VOC"
+  <InfoPage
+    app-name="lwk"
+    :points-mode-hidden="POINTS_MODE_HIDDEN"
     @back="handleBack"
   />
 </template>
