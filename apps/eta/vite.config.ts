@@ -4,7 +4,7 @@ import { createAppViteConfig } from '../../vite.config.factory'
 
 export default createAppViteConfig({
   basePath: 'fc-eta',
-  appTitle: 'Hausi-Zeit-Schätzer',
+  appTitle: 'Hausi-Rest-Zeit-Schätzer',
   description: 'Schätze die Restzeit für deine Hausaufgaben',
   themeColor: '#8B4513',
   serverPort: 5176,
