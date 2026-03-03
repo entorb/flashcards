@@ -26,7 +26,7 @@ const emit = defineEmits<{ back: [] }>()
         color="amber"
         size="24px"
       />
-      {{ points }}
+      <span data-cy="points-game-total">{{ points }}</span>
     </div>
     <div
       class="text-h6 text-weight-bold"
