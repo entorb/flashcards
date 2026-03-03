@@ -24,6 +24,10 @@ export const seedTestCards = (win: Cypress.AUTWindow): void => {
  * read the question, find the matching card, type the answer, submit, continue.
  */
 export const answerCurrentCardCorrectly = (): void => {
+  cy.get('[data-cy="points-game-total"]')
+    .invoke('text')
+    .then(text => Number.parseInt(text.trim(), 10))
+    .as('pointsBefore')
   cy.window().then(win => {
     const cards = getCardsFromStorage(win)
     cy.get('[data-cy="question-display"]')
@@ -35,6 +39,17 @@ export const answerCurrentCardCorrectly = (): void => {
         cy.get('[data-cy="answer-input"]').clear()
         cy.get('[data-cy="answer-input"]').type(correctAnswer)
         cy.get('[data-cy="submit-answer-button"]').click()
+        cy.get('[data-cy="points-breakdown-total"]')
+          .invoke('text')
+          .then(text => Number.parseInt(text.trim(), 10))
+          .then(pointsEarned => {
+            cy.get<number>('@pointsBefore').then(pointsBefore => {
+              cy.get('[data-cy="points-game-total"]')
+                .invoke('text')
+                .then(text => Number.parseInt(text.trim(), 10))
+                .should('eq', pointsBefore + pointsEarned)
+            })
+          })
         cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
         cy.get('[data-cy="continue-button"]').click()
       })
@@ -46,6 +61,10 @@ export const answerCurrentCardCorrectly = (): void => {
  * @param isCorrect - true to click the correct option, false to click a wrong one
  */
 export const answerMultipleChoiceCard = (isCorrect: boolean): void => {
+  cy.get('[data-cy="points-game-total"]')
+    .invoke('text')
+    .then(text => Number.parseInt(text.trim(), 10))
+    .as('pointsBefore')
   cy.window().then(win => {
     const cards = getCardsFromStorage(win)
     cy.get('[data-cy="question-display"]')
@@ -71,6 +90,19 @@ export const answerMultipleChoiceCard = (isCorrect: boolean): void => {
           }
         })
 
+        if (isCorrect) {
+          cy.get('[data-cy="points-breakdown-total"]')
+            .invoke('text')
+            .then(text => Number.parseInt(text.trim(), 10))
+            .then(pointsEarned => {
+              cy.get<number>('@pointsBefore').then(pointsBefore => {
+                cy.get('[data-cy="points-game-total"]')
+                  .invoke('text')
+                  .then(text => Number.parseInt(text.trim(), 10))
+                  .should('eq', pointsBefore + pointsEarned)
+              })
+            })
+        }
         cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('be.visible')
         if (!isCorrect) {
           cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should('not.be.disabled')
@@ -85,10 +117,25 @@ export const answerMultipleChoiceCard = (isCorrect: boolean): void => {
  * @param isCorrect - true to click Yes, false to click No
  */
 export const answerBlindCard = (isCorrect: boolean): void => {
+  cy.get('[data-cy="points-game-total"]')
+    .invoke('text')
+    .then(text => Number.parseInt(text.trim(), 10))
+    .as('pointsBefore')
   cy.get('[data-cy="reveal-answer-button"]', { timeout: 10000 }).should('be.visible').click()
 
   if (isCorrect) {
     cy.get('[data-cy="blind-yes-button"]').should('be.visible').click()
+    cy.get('[data-cy="points-breakdown-total"]')
+      .invoke('text')
+      .then(text => Number.parseInt(text.trim(), 10))
+      .then(pointsEarned => {
+        cy.get<number>('@pointsBefore').then(pointsBefore => {
+          cy.get('[data-cy="points-game-total"]')
+            .invoke('text')
+            .then(text => Number.parseInt(text.trim(), 10))
+            .should('eq', pointsBefore + pointsEarned)
+        })
+      })
   } else {
     cy.get('[data-cy="blind-no-button"]').should('be.visible').click()
   }

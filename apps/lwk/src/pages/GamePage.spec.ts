@@ -25,7 +25,8 @@ const storeState = {
   points: ref(0),
   currentCard: ref<Card | null>(null),
   gameSettings: ref<GameSettings | null>(null),
-  sessionMode: ref<'standard' | 'endless-level1' | '3-rounds'>('standard')
+  sessionMode: ref<'standard' | 'endless-level1' | '3-rounds'>('standard'),
+  lastPointsBreakdown: ref<null>(null)
 }
 
 vi.mock('@/composables/useGameStore', () => ({
@@ -36,6 +37,7 @@ vi.mock('@/composables/useGameStore', () => ({
     currentCard: storeState.currentCard,
     gameSettings: storeState.gameSettings,
     sessionMode: storeState.sessionMode,
+    lastPointsBreakdown: storeState.lastPointsBreakdown,
     handleAnswer: mocks.handleAnswer,
     nextCard: mocks.nextCard,
     finishGame: mocks.finishGame,

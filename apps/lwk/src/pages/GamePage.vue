@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {
   type AnswerStatus,
-  calculatePointsBreakdown,
   isEndlessMode,
-  MAX_TIME,
   useGameNavigation,
   useGameTimer,
   useKeyboardContinue
@@ -20,7 +18,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
-import { POINTS_MODE_HIDDEN, WORD_DISPLAY_DURATION } from '../constants'
+import { WORD_DISPLAY_DURATION } from '../constants'
 import { validateTypingAnswer } from '../utils/helpers'
 
 const router = useRouter()
@@ -31,6 +29,7 @@ const {
   gameSettings,
   points,
   sessionMode,
+  lastPointsBreakdown,
   handleAnswer,
   nextCard,
   finishGame,
@@ -47,7 +46,6 @@ const showWord = ref(false)
 const countdown = ref(0)
 const isSubmitting = ref(false)
 const answerStatus = ref<AnswerStatus | null>(null)
-const timeTaken = ref(0)
 const showFeedback = ref(false)
 const readyToStart = ref(false) // For hidden mode: waiting for user to click GO
 const isHiddenModeActive = ref(false) // For hidden mode: word stays hidden after GO until next card
@@ -76,22 +74,10 @@ const canProceed = computed(
   () => showFeedback.value && showProceedButton.value && !isProceedDisabled.value
 )
 
+// Use the breakdown captured by the store at answer time (before level mutation)
 const pointsBreakdown = computed(() => {
   if (!answerStatus.value || answerStatus.value === 'incorrect') return null
-  if (!currentCard.value) return null
-
-  const difficultyPoints = gameSettings.value?.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1
-  const timeBonus =
-    gameSettings.value?.mode === 'hidden' &&
-    currentCard.value.time < MAX_TIME &&
-    timeTaken.value <= currentCard.value.time
-
-  return calculatePointsBreakdown({
-    difficultyPoints,
-    level: currentCard.value.level,
-    timeBonus,
-    closeAdjustment: answerStatus.value === 'close'
-  })
+  return lastPointsBreakdown.value
 })
 
 // Enable keyboard continue when feedback is shown and button is enabled
@@ -110,7 +96,6 @@ watch(
     showFeedback.value = false
     showProceedButton.value = false
     answerStatus.value = null
-    timeTaken.value = 0
     userInput.value = ''
     isSubmitting.value = false
     isHiddenModeActive.value = false
@@ -225,7 +210,6 @@ function submitAnswer() {
 
   // Show feedback
   answerStatus.value = resultType
-  timeTaken.value = answerTime
 
   showFeedback.value = true
   showWord.value = true // Always show correct word in feedback

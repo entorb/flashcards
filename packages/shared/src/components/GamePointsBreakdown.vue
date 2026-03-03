@@ -32,7 +32,8 @@ defineProps<Props>()
         class="text-h5 text-weight-bold"
         :class="[answerStatus === 'correct' ? 'text-positive' : 'text-warning']"
       >
-        {{ pointsBreakdown.totalPoints }} {{ TEXT_DE.shared.words.points }}
+        <span data-cy="points-breakdown-total">{{ pointsBreakdown.totalPoints }}</span>
+        {{ TEXT_DE.shared.words.points }}
       </div>
       <div class="text-caption q-mt-xs text-weight-medium text-grey-8">
         <div>
