@@ -64,6 +64,10 @@ export const loadGameState = (win: Cypress.AUTWindow): LwkGameState | null => {
  * @param isCorrect - true to type the correct word, false to type a wrong answer
  */
 export const answerCopyCard = (isCorrect: boolean): void => {
+  cy.get('[data-cy="points-game-total"]')
+    .invoke('text')
+    .then(text => Number.parseInt(text.trim(), 10))
+    .as('pointsBefore')
   cy.get('[data-cy="question-display"]')
     .invoke('text')
     .then(text => {
@@ -73,6 +77,19 @@ export const answerCopyCard = (isCorrect: boolean): void => {
       cy.get('[data-cy="answer-input"]').type(answer)
       cy.get('[data-cy="submit-answer-button"]').click()
     })
+  if (isCorrect) {
+    cy.get('[data-cy="points-breakdown-total"]')
+      .invoke('text')
+      .then(text => Number.parseInt(text.trim(), 10))
+      .then(pointsEarned => {
+        cy.get<number>('@pointsBefore').then(pointsBefore => {
+          cy.get('[data-cy="points-game-total"]')
+            .invoke('text')
+            .then(text => Number.parseInt(text.trim(), 10))
+            .should('eq', pointsBefore + pointsEarned)
+        })
+      })
+  }
   cy.get('[data-cy="continue-button"]', { timeout: 10000 }).should('be.visible')
   cy.get('[data-cy="continue-button"]').should('not.be.disabled')
   cy.get('[data-cy="continue-button"]').click()
@@ -83,6 +100,10 @@ export const answerCopyCard = (isCorrect: boolean): void => {
  * @param isCorrect - true to type the correct word, false to type a wrong answer
  */
 export const answerHiddenCard = (isCorrect: boolean): void => {
+  cy.get('[data-cy="points-game-total"]')
+    .invoke('text')
+    .then(text => Number.parseInt(text.trim(), 10))
+    .as('pointsBefore')
   cy.get('[data-cy="question-display"]')
     .invoke('text')
     .then(text => {
@@ -96,6 +117,19 @@ export const answerHiddenCard = (isCorrect: boolean): void => {
       cy.get('[data-cy="answer-input"]').type(answer)
       cy.get('[data-cy="submit-answer-button"]').click()
     })
+  if (isCorrect) {
+    cy.get('[data-cy="points-breakdown-total"]')
+      .invoke('text')
+      .then(text => Number.parseInt(text.trim(), 10))
+      .then(pointsEarned => {
+        cy.get<number>('@pointsBefore').then(pointsBefore => {
+          cy.get('[data-cy="points-game-total"]')
+            .invoke('text')
+            .then(text => Number.parseInt(text.trim(), 10))
+            .should('eq', pointsBefore + pointsEarned)
+        })
+      })
+  }
   cy.get('[data-cy="continue-button"]', { timeout: 10000 }).should('be.visible')
   cy.get('[data-cy="continue-button"]').should('not.be.disabled')
   cy.get('[data-cy="continue-button"]').click()
