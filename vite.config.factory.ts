@@ -33,7 +33,7 @@ export function createAppViteConfig(config: AppConfig) {
       plugins: [
         getVuePlugin(),
         getQuasarPlugin(join(config.srcDir, 'quasar-variables.sass')),
-        getVueRouterPlugin(join(config.srcDir, 'typed-router.d.ts')),
+        getVueRouterPlugin(join(config.srcDir, 'route-map.d.ts')),
         getVitePwaPlugin(config)
       ],
       resolve: {

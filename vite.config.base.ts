@@ -1,8 +1,8 @@
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import Vue from '@vitejs/plugin-vue'
-import VueRouter from 'unplugin-vue-router/vite'
 import type { UserConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import VueRouter from 'vue-router/vite'
 
 export interface AppConfig {
   basePath: string
@@ -25,11 +25,6 @@ export const baseViteConfig: UserConfig = {
   },
 
   optimizeDeps: {
-    exclude: [
-      'unplugin-vue-router/data-loaders',
-      'unplugin-vue-router/data-loaders/basic',
-      'unplugin-vue-router/runtime'
-    ],
     include: ['vue', 'vue-router', 'quasar']
   }
 }
