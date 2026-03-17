@@ -18,6 +18,7 @@ done
 
 echo === updating root packages ===
 pnpm up
+pnpm exec biome migrate --write
 
 echo === updating shared packages ===
 cd packages/shared

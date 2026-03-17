@@ -21,7 +21,7 @@
     "types": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "quasar": "^2.18.6",
+    "quasar": "^2.18.7",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"
   },

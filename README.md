@@ -61,7 +61,7 @@ This repository hosts the code of three educational apps, implementing flashcard
 - Vue.js
 - Quasar Framework, no custom styles
 - Typescript with strict rules
-- Prettier
+- Biome (formatting + linting)
 - ESLint
 - Vitest unit tests
 - Cypress E2E test

@@ -2,7 +2,7 @@ name: Update
 
 on:
   schedule:
-    - cron: '51 5 12 * *' # At 05:51 on 12th day-of-month
+    - cron: "51 5 12 * *" # At 05:51 on 12th day-of-month
   workflow_dispatch: # Manual trigger
 
 permissions:
@@ -25,13 +25,16 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Update Vite, etc.
-        run: pnpm up vite cspell eslint prettier vue-tsc
+        run: pnpm up vite cspell eslint vue-tsc @biomejs/biome
+
+      - name: Migrate Biome config
+        run: pnpm exec biome migrate --write
 
       - name: Run code checks
         run: pnpm run check
@@ -43,7 +46,7 @@ jobs:
             git config --local user.email "action@github.com"
             git add pnpm-lock.yaml
             git commit -m "Lock" || true
-            git add package.json
+            git add package.json biome.json
             git commit -m "Auto-Update Vite, etc." || true
             git push
           fi
