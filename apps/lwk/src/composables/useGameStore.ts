@@ -5,22 +5,22 @@
 
 import {
   type AnswerStatus,
+  calculatePointsBreakdown,
   createBaseGameStore,
-  roundTime,
+  filterBelowMaxLevel,
+  filterLevel1Cards,
+  handleNextCard,
+  initializeGameFlow,
+  isEndlessMode,
+  LOOP_COUNT,
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
-  calculatePointsBreakdown,
-  initializeGameFlow,
-  useDeckManagement,
-  filterLevel1Cards,
-  filterBelowMaxLevel,
   repeatCards,
-  LOOP_COUNT,
-  handleNextCard,
-  isEndlessMode,
-  type SessionMode
+  roundTime,
+  type SessionMode,
+  useDeckManagement
 } from '@flashcards/shared'
 import { computed, ref } from 'vue'
 
@@ -31,16 +31,16 @@ import {
   loadCards,
   loadDecks,
   loadGameState,
+  loadGameStats,
   loadHistory,
   loadSettings,
-  loadGameStats,
   saveCards,
   saveDecks,
   saveGameConfig,
   saveGameState,
+  saveGameStats,
   saveHistory,
   saveSettings,
-  saveGameStats,
   setGameResult
 } from '../services/storage'
 import type { Card, GameHistory, GameSettings } from '../types'
@@ -168,22 +168,38 @@ export function useGameStore() {
     saveCurrentGameState()
   }
 
+  function updateCardLevelAndTime(
+    card: Card,
+    result: AnswerStatus,
+    answerTime: number,
+    isHiddenMode: boolean
+  ): Partial<Card> {
+    const updates: Partial<Card> = {}
+    if (result === 'correct') {
+      updates.level = Math.min(MAX_LEVEL, card.level + 1)
+    } else if (result === 'incorrect') {
+      updates.level = Math.max(MIN_LEVEL, card.level - 1)
+    }
+    if (result === 'correct' && isHiddenMode) {
+      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
+      updates.time = roundTime(clampedTime)
+    }
+    return updates
+  }
+
   function handleAnswer(result: AnswerStatus, answerTime: number) {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
-    if (!currentCard || !baseStore.gameSettings.value) return
+    if (!(currentCard && baseStore.gameSettings.value)) return
 
-    let speedBonus = false
+    const isHiddenMode = baseStore.gameSettings.value.mode === 'hidden'
 
     if (result === 'correct' || result === 'close') {
-      // Speed bonus only in hidden mode and only for correct answers
-      if (result === 'correct' && baseStore.gameSettings.value.mode === 'hidden') {
-        if (currentCard.time < MAX_TIME && answerTime <= currentCard.time) {
-          speedBonus = true
-        }
-      }
-
-      // Determine mode multiplier
-      const modePoints = baseStore.gameSettings.value.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1
+      const speedBonus =
+        result === 'correct' &&
+        isHiddenMode &&
+        currentCard.time < MAX_TIME &&
+        answerTime <= currentCard.time
+      const modePoints = isHiddenMode ? POINTS_MODE_HIDDEN : 1
 
       const pointsBreakdown = calculatePointsBreakdown({
         difficultyPoints: modePoints,
@@ -195,39 +211,15 @@ export function useGameStore() {
       baseStore.handleAnswerBase(result, pointsBreakdown)
     }
 
-    // Update card level and time
-    baseStore.allCards.value = baseStore.allCards.value.map(card => {
-      if (card.word === currentCard.word) {
-        const updates: Partial<Card> = {}
-
-        // Update level (not for close matches)
-        if (result === 'correct') {
-          updates.level = Math.min(MAX_LEVEL, card.level + 1)
-        } else if (result === 'incorrect') {
-          updates.level = Math.max(MIN_LEVEL, card.level - 1)
-        }
-
-        // Update time (only on correct answers in hidden mode)
-        if (result === 'correct' && baseStore.gameSettings.value?.mode === 'hidden') {
-          const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-          updates.time = roundTime(clampedTime)
-        }
-
-        return { ...card, ...updates }
-      }
-      return card
-    })
+    // Update card level and time in allCards
+    const updates = updateCardLevelAndTime(currentCard, result, answerTime, isHiddenMode)
+    baseStore.allCards.value = baseStore.allCards.value.map(card =>
+      card.word === currentCard.word ? { ...card, ...updates } : card
+    )
 
     // Also update the in-memory gameCards entry (needed for endless mode card removal check)
-    if (result === 'correct') {
-      currentCard.level = Math.min(MAX_LEVEL, currentCard.level + 1)
-      if (baseStore.gameSettings.value.mode === 'hidden') {
-        const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-        currentCard.time = roundTime(clampedTime)
-      }
-    } else if (result === 'incorrect') {
-      currentCard.level = Math.max(MIN_LEVEL, currentCard.level - 1)
-    }
+    if (updates.level !== undefined) currentCard.level = updates.level
+    if (updates.time !== undefined) currentCard.time = updates.time
 
     // Explicitly save cards on every answer
     saveCards(baseStore.allCards.value)

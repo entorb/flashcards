@@ -1,5 +1,5 @@
-import { ref } from 'vue'
 import { describe, expect, it } from 'vitest'
+import { ref } from 'vue'
 
 import type { BaseCard } from '../types'
 import { useCardFiltering } from './useCardFiltering'

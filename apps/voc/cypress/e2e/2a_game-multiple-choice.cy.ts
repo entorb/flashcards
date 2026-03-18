@@ -1,9 +1,9 @@
 import { getCardsFromStorage } from '../support/commands'
 import {
   answerMultipleChoiceCard,
-  verifyPostGameStats,
   seedTestCards,
-  TEST_CARD_COUNT
+  TEST_CARD_COUNT,
+  verifyPostGameStats
 } from '../support/test-helpers'
 
 describe('VOC Multiple Choice Game - Voc to DE', () => {

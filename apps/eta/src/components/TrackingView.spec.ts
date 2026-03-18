@@ -1,8 +1,8 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import type { SessionData, TimeEstimate } from '@/types'
+import TrackingView from './TrackingView.vue'
 
 // Mock shared package text
 vi.mock('@flashcards/shared', async importOriginal => {
@@ -42,8 +42,6 @@ vi.mock('@/utils/timeFormatters', () => ({
   formatDuration: vi.fn((s: number) => `${s}s`),
   formatClockTime: vi.fn((d: Date) => d.toISOString())
 }))
-
-import TrackingView from './TrackingView.vue'
 
 const mountOptions = {
   global: {

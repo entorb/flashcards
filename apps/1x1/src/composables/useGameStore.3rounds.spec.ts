@@ -1,9 +1,9 @@
 // Feature: game-modes-endless-and-loops, Property 4
 // **Validates: Requirements 5.4**
+
+import { calculatePointsBreakdown, LOOP_COUNT, MAX_TIME } from '@flashcards/shared'
 import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { LOOP_COUNT, calculatePointsBreakdown, MAX_TIME } from '@flashcards/shared'
 
 import type { Card } from '@/types'
 
@@ -90,53 +90,51 @@ const cardsArb = fc
   )
 
 describe('useGameStore - 3-rounds mode independent scoring (Property 4)', () => {
-  it(
-    'each card appearance is scored independently and total equals sum of individual scores',
-    { timeout: 30_000 },
-    async () => {
-      await fc.assert(
-        fc.asyncProperty(cardsArb, async cards => {
-          vi.resetModules()
-          const store = await setup3RoundsMocks(cards)
+  it('each card appearance is scored independently and total equals sum of individual scores', {
+    timeout: 30_000
+  }, async () => {
+    await fc.assert(
+      fc.asyncProperty(cardsArb, async cards => {
+        vi.resetModules()
+        const store = await setup3RoundsMocks(cards)
 
-          store.startGame({ select: 'all', focus: 'medium' }, '3-rounds', true)
+        store.startGame({ select: 'all', focus: 'medium' }, '3-rounds', true)
 
-          const totalAppearances = cards.length * LOOP_COUNT
-          expect(store.gameCards.value).toHaveLength(totalAppearances)
+        const totalAppearances = cards.length * LOOP_COUNT
+        expect(store.gameCards.value).toHaveLength(totalAppearances)
 
-          // Play through all card appearances, tracking expected points
-          let expectedTotalPoints = 0
+        // Play through all card appearances, tracking expected points
+        let expectedTotalPoints = 0
 
-          for (let i = 0; i < totalAppearances; i++) {
-            const card = store.currentCard.value
-            expect(card).not.toBeNull()
-            if (!card) break
+        for (let i = 0; i < totalAppearances; i++) {
+          const card = store.currentCard.value
+          expect(card).not.toBeNull()
+          if (!card) break
 
-            // Parse question to get difficulty (same logic as handleAnswer)
-            const [yStr, xStr] = card.question.split('x')
-            const x = Number.parseInt(xStr ?? '', 10) || 0
-            const y = Number.parseInt(yStr ?? '', 10) || 0
-            const difficultyPoints = Math.min(x, y)
+          // Parse question to get difficulty (same logic as handleAnswer)
+          const [yStr, xStr] = card.question.split('x')
+          const x = Number.parseInt(xStr ?? '', 10) || 0
+          const y = Number.parseInt(yStr ?? '', 10) || 0
+          const difficultyPoints = Math.min(x, y)
 
-            // Calculate expected points for this individual appearance
-            const breakdown = calculatePointsBreakdown({
-              difficultyPoints,
-              level: card.level,
-              timeBonus: false,
-              closeAdjustment: false
-            })
-            expectedTotalPoints += breakdown.totalPoints
+          // Calculate expected points for this individual appearance
+          const breakdown = calculatePointsBreakdown({
+            difficultyPoints,
+            level: card.level,
+            timeBonus: false,
+            closeAdjustment: false
+          })
+          expectedTotalPoints += breakdown.totalPoints
 
-            // Answer correctly with a time that won't trigger time bonus
-            store.handleAnswer('correct', MAX_TIME)
-            store.nextCard()
-          }
+          // Answer correctly with a time that won't trigger time bonus
+          store.handleAnswer('correct', MAX_TIME)
+          store.nextCard()
+        }
 
-          // The accumulated store points should equal the sum of individual calculations
-          expect(store.points.value).toBe(expectedTotalPoints)
-        }),
-        { numRuns: 100 }
-      )
-    }
-  )
+        // The accumulated store points should equal the sum of individual calculations
+        expect(store.points.value).toBe(expectedTotalPoints)
+      }),
+      { numRuns: 100 }
+    )
+  })
 })

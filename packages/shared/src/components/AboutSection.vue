@@ -26,7 +26,7 @@ const resetShareAfterDelay = (icon: string) => {
   shareButtonTimeout.value = setTimeout(() => {
     shareIcon.value = 'share'
     shareLabel.value = TEXT_DE.shared.info.aboutShare
-  }, 10000)
+  }, 10_000)
   shareIcon.value = icon
   shareLabel.value = TEXT_DE.shared.cardActions.copied
 }
@@ -52,18 +52,15 @@ const handleShare = async () => {
         :href="`https://entorb.net/contact.php?origin=${contactOrigin}`"
         target="_blank"
         rel="noopener noreferrer"
-        >{{ TEXT_DE.shared.info.aboutTorben }}</a
-      >&nbsp;<a
+      >{{ TEXT_DE.shared.info.aboutTorben }}</a>&nbsp;<a
         href="https://github.com/entorb/flashcards"
         target="_blank"
         rel="noopener noreferrer"
-        >{{ TEXT_DE.shared.info.aboutOpenSource }}</a
-      >&nbsp;<a
+      >{{ TEXT_DE.shared.info.aboutOpenSource }}</a>&nbsp;<a
         href="https://entorb.net/flashcards/"
         target="_blank"
         rel="noopener noreferrer"
-        >{{ TEXT_DE.shared.info.aboutProject }}</a
-      >
+      >{{ TEXT_DE.shared.info.aboutProject }}</a>
       {{ TEXT_DE.shared.info.aboutSuffix }}
     </p>
     <button

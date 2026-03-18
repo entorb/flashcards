@@ -178,11 +178,9 @@ function showWordForDuration() {
   // Decrement countdown every second
   countdownInterval.value = globalThis.setInterval(() => {
     countdown.value--
-    if (countdown.value <= 0) {
-      if (countdownInterval.value !== null) {
-        clearInterval(countdownInterval.value)
-        countdownInterval.value = null
-      }
+    if (countdown.value <= 0 && countdownInterval.value !== null) {
+      clearInterval(countdownInterval.value)
+      countdownInterval.value = null
     }
   }, 1000)
 }

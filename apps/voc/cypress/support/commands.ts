@@ -31,6 +31,7 @@ export function getCardsFromStorage(win: Window): VocCard[] {
 }
 
 declare global {
+  // biome-ignore lint/style/noNamespace: Required for Cypress type augmentation
   namespace Cypress {
     interface Chainable {
       /**
@@ -47,5 +48,3 @@ Cypress.Commands.add('getCardsFromStorage', () => {
     return getCardsFromStorage(win)
   })
 })
-
-export {}

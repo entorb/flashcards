@@ -1,24 +1,24 @@
 import {
-  createBaseGameStore,
-  MAX_LEVEL,
-  MIN_LEVEL,
-  initializeGameFlow,
-  roundTime,
-  MIN_TIME,
-  MAX_TIME,
   type AnswerStatus,
   calculatePointsBreakdown,
-  filterLevel1Cards,
+  createBaseGameStore,
   filterBelowMaxLevel,
-  repeatCards,
-  LOOP_COUNT,
+  filterLevel1Cards,
   handleNextCard,
+  initializeGameFlow,
   isEndlessMode,
+  LOOP_COUNT,
+  MAX_LEVEL,
+  MAX_TIME,
+  MIN_LEVEL,
+  MIN_TIME,
+  repeatCards,
+  roundTime,
   type SessionMode
 } from '@flashcards/shared'
 import { computed, ref } from 'vue'
 
-import { MAX_CARDS_PER_GAME, GAME_STATE_FLOW_CONFIG } from '@/constants'
+import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from '@/constants'
 import {
   filterCardsAll,
   filterCardsBySelection,
@@ -92,6 +92,24 @@ export function useGameStore() {
     })
   }
 
+  function selectCardsByMode(
+    filteredCards: Card[],
+    mode: SessionMode,
+    settings: GameSettings
+  ): Card[] {
+    if (mode === 'endless-level1') {
+      return filterLevel1Cards(filteredCards)
+    }
+    if (mode === 'endless-level5') {
+      return filterBelowMaxLevel(filteredCards)
+    }
+    if (mode === '3-rounds') {
+      const focusSelected = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
+      return repeatCards(focusSelected, LOOP_COUNT)
+    }
+    return selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
+  }
+
   // App-specific actions
   function startGame(settings: GameSettings, mode: SessionMode = 'standard', forceReset = false) {
     // If forceReset is true, always start a new game (user clicked Start button)
@@ -103,7 +121,6 @@ export function useGameStore() {
     // Initialize base cards on first game start (if no cards exist)
     const existingCards = storageLoadCards()
     if (existingCards.length === 0) {
-      // First time user clicks Start - initialize base cards
       initializeCards()
     }
 
@@ -129,22 +146,7 @@ export function useGameStore() {
       filteredCards = filterCardsBySelection(allAvailableCards, selectArray, rangeSet)
     }
 
-    let selectedCards: Card[]
-
-    if (mode === 'endless-level1') {
-      // Endless Level 1: filter all Level 1 cards from the filtered pool
-      selectedCards = filterLevel1Cards(filteredCards)
-    } else if (mode === 'endless-level5') {
-      // Endless Level 5: filter all cards below MAX_LEVEL
-      selectedCards = filterBelowMaxLevel(filteredCards)
-    } else if (mode === '3-rounds') {
-      // 3 Rounds: select cards via focus logic, then repeat each LOOP_COUNT times
-      const focusSelected = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
-      selectedCards = repeatCards(focusSelected, LOOP_COUNT)
-    } else {
-      // Standard mode: existing behavior
-      selectedCards = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
-    }
+    const selectedCards = selectCardsByMode(filteredCards, mode, settings)
 
     // Use centralized game state flow to store settings + selected cards
     initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
@@ -165,7 +167,7 @@ export function useGameStore() {
 
   function handleAnswer(result: AnswerStatus, answerTime: number) {
     const card = currentCard.value
-    if (!card || !baseStore.gameSettings.value) return
+    if (!(card && baseStore.gameSettings.value)) return
 
     if (result === 'correct' || result === 'close') {
       // difficultyPoints is the smaller factor of the multiplication (e.g. 3 for 7x3)

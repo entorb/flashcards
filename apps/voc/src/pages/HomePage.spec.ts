@@ -1,11 +1,9 @@
-import { mount } from '@vue/test-utils'
-import { computed, ref } from 'vue'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
-import HomePage from './HomePage.vue'
-
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { computed, ref } from 'vue'
+import { createMemoryHistory, createRouter } from 'vue-router'
+import HomePage from './HomePage.vue'
 
 // Default mock cards with level 1 (enables all modes)
 const mockCards = ref([{ voc: 'hello', de: 'hallo', level: 1, time: 60 }])

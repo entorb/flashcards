@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SessionMode } from '@flashcards/shared'
-import { TEXT_DE, filterBelowMaxLevel, filterLevel1Cards } from '@flashcards/shared'
+import { filterBelowMaxLevel, filterLevel1Cards, TEXT_DE } from '@flashcards/shared'
 import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -49,7 +49,7 @@ const languageOptions = [
   { label: TEXT_DE.voc.direction.de_voc, value: 'de-voc' as const }
 ]
 
-onMounted(async () => {
+onMounted(() => {
   // Load last settings if available
   const lastSettings = loadSettings()
   if (lastSettings) {
@@ -152,7 +152,9 @@ function goToInfo() {
             side
             style="min-width: 100px"
           >
-            <div class="text-subtitle2">{{ TEXT_DE.voc.decks.title }}</div>
+            <div class="text-subtitle2">
+              {{ TEXT_DE.voc.decks.title }}
+            </div>
           </q-item-section>
           <q-item-section>
             <q-select
@@ -173,7 +175,9 @@ function goToInfo() {
             side
             style="min-width: 100px"
           >
-            <div class="text-subtitle2">{{ TEXT_DE.shared.words.mode }}</div>
+            <div class="text-subtitle2">
+              {{ TEXT_DE.shared.words.mode }}
+            </div>
           </q-item-section>
           <q-item-section>
             <div class="row q-gutter-xs">
@@ -189,7 +193,9 @@ function goToInfo() {
                 class="col"
                 @click="!option.disable && (settings.mode = option.value)"
               >
-                <q-tooltip v-if="option.tooltip">{{ option.tooltip }}</q-tooltip>
+                <q-tooltip v-if="option.tooltip">
+                  {{ option.tooltip }}
+                </q-tooltip>
               </q-btn>
             </div>
           </q-item-section>
@@ -201,7 +207,9 @@ function goToInfo() {
             side
             style="min-width: 100px"
           >
-            <div class="text-subtitle2">{{ TEXT_DE.shared.words.direction }}</div>
+            <div class="text-subtitle2">
+              {{ TEXT_DE.shared.words.direction }}
+            </div>
           </q-item-section>
           <q-item-section>
             <q-btn-toggle
@@ -220,7 +228,9 @@ function goToInfo() {
             side
             style="min-width: 100px"
           >
-            <div class="text-subtitle2">{{ TEXT_DE.shared.words.focus }}</div>
+            <div class="text-subtitle2">
+              {{ TEXT_DE.shared.words.focus }}
+            </div>
           </q-item-section>
           <q-item-section>
             <HomeFocusSelector

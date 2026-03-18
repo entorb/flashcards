@@ -1,8 +1,8 @@
 import {
   answerCopyCardCorrectly,
-  startCopyGameMode,
   playThroughAndVerifyGameOver,
   seedTestCards,
+  startCopyGameMode,
   TEST_CARD_COUNT
 } from '../support/test-helpers'
 

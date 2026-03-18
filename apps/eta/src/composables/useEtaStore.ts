@@ -1,8 +1,8 @@
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import { calculateRegression, predictRemainingTime } from '@/services/regression'
-import { loadSession, saveSession, clearSession } from '@/services/storage'
-import type { SessionData, MeasurementPoint, TimeEstimate } from '@/types'
+import { clearSession, loadSession, saveSession } from '@/services/storage'
+import type { MeasurementPoint, SessionData, TimeEstimate } from '@/types'
 
 const sessionData = ref<SessionData | null>(null)
 

@@ -3,16 +3,16 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck, GameSettings } from '../types'
 import {
-  loadDecks,
-  saveDecks,
-  loadCards,
-  saveCards,
-  loadSettings,
-  saveSettings,
-  setGameResult,
-  getGameResult,
   clearGameResult,
-  incrementDailyGames
+  getGameResult,
+  incrementDailyGames,
+  loadCards,
+  loadDecks,
+  loadSettings,
+  saveCards,
+  saveDecks,
+  saveSettings,
+  setGameResult
 } from './storage'
 
 // ---------------------------------------------------------------------------

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { formatDuration, formatClockTime, getTimeDiffSeconds } from './timeFormatters'
+import { formatClockTime, formatDuration, getTimeDiffSeconds } from './timeFormatters'
 
 describe('formatDuration', () => {
   it('should format seconds as MM:SS', () => {

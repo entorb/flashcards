@@ -1,9 +1,8 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import type { BaseCard } from '../types'
 import CardsManPage from './CardsManPage.vue'
 
@@ -126,7 +125,7 @@ describe('CardsManPage (shared)', () => {
     expect(router.push).toHaveBeenCalledWith('/decks-edit')
   })
 
-  it('Escape key triggers navigation to /', async () => {
+  it('Escape key triggers navigation to /', () => {
     const store = makeMockStore()
     mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))

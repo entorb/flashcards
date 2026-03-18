@@ -1,8 +1,8 @@
 import {
   answerCurrentCardCorrectly,
-  startTypingGameMode,
   playThroughAndVerifyGameOver,
   seedTestCards,
+  startTypingGameMode,
   TEST_CARD_COUNT
 } from '../support/test-helpers'
 

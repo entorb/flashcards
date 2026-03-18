@@ -35,7 +35,9 @@ const emit = defineEmits<{ back: [] }>()
       <template v-if="totalCardsOverride !== undefined">
         {{ totalCardsOverride }}
       </template>
-      <template v-else> {{ currentIndex + 1 }} / {{ totalCards }} </template>
+      <template v-else>
+        {{ currentIndex + 1 }} / {{ totalCards }}
+      </template>
     </div>
   </div>
 </template>
