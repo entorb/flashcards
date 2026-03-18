@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FocusType, SessionMode } from '@flashcards/shared'
-import { TEXT_DE, filterBelowMaxLevel, filterLevel1Cards } from '@flashcards/shared'
+import { filterBelowMaxLevel, filterLevel1Cards, TEXT_DE } from '@flashcards/shared'
 import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -170,7 +170,9 @@ function toggleSquares() {
     <template #config>
       <!-- Select Rows -->
       <div class="q-mb-sm">
-        <div class="text-subtitle2 q-mb-xs">{{ TEXT_DE.multiply.selection }}</div>
+        <div class="text-subtitle2 q-mb-xs">
+          {{ TEXT_DE.multiply.selection }}
+        </div>
         <div class="row q-gutter-xs">
           <q-btn
             v-for="option in selectOptions"
@@ -183,7 +185,9 @@ function toggleSquares() {
             :data-cy="`table-selection-button-${option}`"
             @click="toggleSelect(option)"
           >
-            <div class="text-body1">{{ option }}</div>
+            <div class="text-body1">
+              {{ option }}
+            </div>
           </q-btn>
           <q-btn
             :outline="!isSquaresSelected"
@@ -194,7 +198,9 @@ function toggleSquares() {
             data-cy="table-selection-button-squares"
             @click="toggleSquares"
           >
-            <div class="text-body1">{{ TEXT_DE.multiply.selectionSquares }}</div>
+            <div class="text-body1">
+              {{ TEXT_DE.multiply.selectionSquares }}
+            </div>
           </q-btn>
         </div>
       </div>

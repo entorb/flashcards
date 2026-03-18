@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, ref } from 'vue'
-import { vi } from 'vitest'
 import { useGameTimer } from './useGameTimer'
 
 // Helper: mount useGameTimer inside a minimal component so Vue lifecycle hooks work

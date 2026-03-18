@@ -5,8 +5,8 @@
 
 import { type Ref, ref } from 'vue'
 
-import { MAX_LEVEL, MIN_LEVEL, MAX_TIME } from '../constants'
-import { type PointsBreakdown } from '../services/scoring'
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '../constants'
+import type { PointsBreakdown } from '../services/scoring'
 import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from '../types'
 
 /**

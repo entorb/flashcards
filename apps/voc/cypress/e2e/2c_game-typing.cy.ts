@@ -29,7 +29,7 @@ describe('VOC Typing Mode Game - DE to Voc', () => {
             answerToType = 'xxx wrong answer'
           } else if (strategy === 'close' && card) {
             const correctAnswer = card.voc.split('/')[0].trim()
-            answerToType = `x${correctAnswer.substring(1)}`
+            answerToType = `x${correctAnswer.slice(1)}`
           } else {
             answerToType = card ? card.voc.split('/')[0].trim() : 'test'
           }

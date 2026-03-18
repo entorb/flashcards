@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { GameStateFlowConfig } from './useGameStateFlow'
 import {
   clearGameSessionData,
   getGameCards,
@@ -8,7 +9,6 @@ import {
   transferGameResultsWithBonuses,
   updateGameStats
 } from './useGameStateFlow'
-import type { GameStateFlowConfig } from './useGameStateFlow'
 
 interface TestCard {
   id: number

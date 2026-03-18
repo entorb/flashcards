@@ -3,13 +3,13 @@
  */
 
 import {
+  type AnswerStatus,
   levenshteinDistance,
   MAX_TIME,
   MIN_LEVEL,
   normalizeWhitespace,
   parseLevel,
-  sanitizeBaseCard,
-  type AnswerStatus
+  sanitizeBaseCard
 } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '@/constants'

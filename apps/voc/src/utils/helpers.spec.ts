@@ -1,7 +1,7 @@
 // cspell:disable
-import { describe, expect, it } from 'vitest'
 
 import { levenshteinDistance, MAX_TIME } from '@flashcards/shared'
+import { describe, expect, it } from 'vitest'
 
 import { normalizeString, parseCardsFromText, validateTypingAnswer } from './helpers'
 
@@ -215,7 +215,7 @@ describe('helpers - Card Text Parsing', () => {
     })
 
     it('should parse multiple cards', () => {
-      const text = 'apple\tApfel\n' + 'banana\tBanane\t3\n' + 'cherry\tKirsche'
+      const text = 'apple\tApfel\nbanana\tBanane\t3\ncherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
     })
@@ -233,26 +233,26 @@ describe('helpers - Card Text Parsing', () => {
 
   describe('Header handling', () => {
     it('should skip header line containing "voc" and "de"', () => {
-      const text = 'voc\tde\tlevel\n' + 'apple\tApfel\t1'
+      const text = 'voc\tde\tlevel\napple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
       expect(result!.cards[0]!.voc).toBe('apple')
     })
 
     it('should skip header with lowercase "voc" and "de"', () => {
-      const text = 'voc\tde\tlevel\n' + 'apple\tApfel\t1'
+      const text = 'voc\tde\tlevel\napple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
     })
 
     it('should skip header with mixed case', () => {
-      const text = 'Voc\tDE\tLevel\n' + 'apple\tApfel\t1'
+      const text = 'Voc\tDE\tLevel\napple\tApfel\t1'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
     })
 
     it('should not skip first line if it does not contain "Voc" and "de"', () => {
-      const text = 'apple\tApfel\t1\n' + 'banana\tBanane\t2'
+      const text = 'apple\tApfel\t1\nbanana\tBanane\t2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
@@ -320,27 +320,27 @@ describe('helpers - Card Text Parsing', () => {
 
   describe('Invalid card filtering', () => {
     it('should skip lines with empty English field', () => {
-      const text = 'apple\tApfel\n' + '\tBanane\n' + 'cherry\tKirsche'
+      const text = 'apple\tApfel\n\tBanane\ncherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
       expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
     })
 
     it('should skip lines with empty German field', () => {
-      const text = 'apple\tApfel\n' + 'banana\t\n' + 'cherry\tKirsche'
+      const text = 'apple\tApfel\nbanana\t\ncherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
       expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
     })
 
     it('should skip lines with only whitespace in fields', () => {
-      const text = 'apple\tApfel\n' + '  \t  \n' + 'cherry\tKirsche'
+      const text = 'apple\tApfel\n  \t  \ncherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
 
     it('should skip lines with less than 2 fields (after splitting)', () => {
-      const text = 'apple\tApfel\n' + 'banana\t\n' + 'cherry\tKirsche'
+      const text = 'apple\tApfel\nbanana\t\ncherry\tKirsche'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
       expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
@@ -349,7 +349,7 @@ describe('helpers - Card Text Parsing', () => {
 
   describe('Different delimiters in single parse', () => {
     it('should parse semicolon-delimited cards correctly', () => {
-      const text = 'voc;de;level\n' + 'apple;Apfel;1\n' + 'banana;Banane;2'
+      const text = 'voc;de;level\napple;Apfel;1\nbanana;Banane;2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
       expect(result!.cards[0]!.voc).toBe('apple')
@@ -357,14 +357,14 @@ describe('helpers - Card Text Parsing', () => {
     })
 
     it('should parse comma-delimited cards correctly', () => {
-      const text = 'apple,Apfel,1\n' + 'banana,Banane,2'
+      const text = 'apple,Apfel,1\nbanana,Banane,2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
       expect(result!.cards[0]!.voc).toBe('apple')
     })
 
     it('should parse slash-delimited cards correctly', () => {
-      const text = 'apple/Apfel/1\n' + 'banana/Banane/2'
+      const text = 'apple/Apfel/1\nbanana/Banane/2'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
       expect(result!.cards[0]!.voc).toBe('apple')
@@ -373,7 +373,7 @@ describe('helpers - Card Text Parsing', () => {
 
   describe('Return value validation', () => {
     it('should return null if no valid cards are found', () => {
-      const text = '\t\n' + '\t\n' + '\t'
+      const text = '\t\n\t\n\t'
       const result = parseCardsFromText(text)
       expect(result).toBeNull()
     })
@@ -401,13 +401,13 @@ describe('helpers - Card Text Parsing', () => {
     })
 
     it('should handle empty lines in input', () => {
-      const text = 'apple\tApfel\n' + '\n' + 'banana\tBanane'
+      const text = 'apple\tApfel\n\nbanana\tBanane'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
 
     it('should handle Windows line endings (CRLF)', () => {
-      const text = 'apple\tApfel\r\n' + 'banana\tBanane\r\n'
+      const text = 'apple\tApfel\r\nbanana\tBanane\r\n'
       // JavaScript's trim() and split('\n') will handle \r correctly
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
@@ -430,15 +430,14 @@ describe('helpers - Card Text Parsing', () => {
 
   describe('Real-world scenarios', () => {
     it('should parse TSV export format', () => {
-      const text =
-        'voc\tde\tlevel\n' + 'apple\tApfel\t1\n' + 'banana\tBanane\t2\n' + 'cherry\tKirsche\t3'
+      const text = 'voc\tde\tlevel\napple\tApfel\t1\nbanana\tBanane\t2\ncherry\tKirsche\t3'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
       expect(result?.delimiter).toBe('\t')
     })
 
     it('should parse CSV export format', () => {
-      const text = 'apple,Apfel,1\n' + 'banana,Banane,2\n' + 'cherry,Kirsche,3'
+      const text = 'apple,Apfel,1\nbanana,Banane,2\ncherry,Kirsche,3'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
       expect(result?.delimiter).toBe(',')
@@ -456,7 +455,7 @@ describe('helpers - Card Text Parsing', () => {
     })
 
     it('should handle import with only some cards having levels', () => {
-      const text = 'apple\tApfel\t2\n' + 'banana\tBanane\n' + 'cherry\tKirsche\t4'
+      const text = 'apple\tApfel\t2\nbanana\tBanane\ncherry\tKirsche\t4'
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
       expect(result!.cards[0]!.level).toBe(2)

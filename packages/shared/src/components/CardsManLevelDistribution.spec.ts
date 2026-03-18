@@ -1,7 +1,6 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import type { BaseCard } from '../types'
 import CardsManLevelDistribution from './CardsManLevelDistribution.vue'
 
@@ -50,7 +49,7 @@ describe('CardsManLevelDistribution', () => {
     const badge2 = badges[2]
     const badge3 = badges[3]
     const badge4 = badges[4]
-    if (!badge0 || !badge1 || !badge2 || !badge3 || !badge4) {
+    if (!(badge0 && badge1 && badge2 && badge3 && badge4)) {
       throw new Error('Expected 5 level badges')
     }
     // Each badge contains the count in a text-h5 div
@@ -109,7 +108,7 @@ describe('CardsManLevelDistribution', () => {
     const thirdBadge = badges[2]
     expect(firstBadge).toBeDefined()
     expect(thirdBadge).toBeDefined()
-    if (!firstBadge || !thirdBadge) {
+    if (!(firstBadge && thirdBadge)) {
       throw new Error('Expected non-selected badges to exist')
     }
     expect(firstBadge.attributes('style')).toContain('3px solid transparent')

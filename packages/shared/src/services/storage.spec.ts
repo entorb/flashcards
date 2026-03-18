@@ -2,11 +2,15 @@ import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  createAppGameStorage,
+  createGamePersistence,
+  createGameResultOperations,
   createHistoryOperations,
   createStatsOperations,
   incrementDailyGames,
   loadJSON,
   loadSessionJSON,
+  migrateStorageKeys,
   saveJSON,
   saveSessionJSON,
   selectCardsByFocus
@@ -345,8 +349,8 @@ describe('saveJSON / loadJSON — property tests', () => {
       fc.property(
         fc.record({
           gamesPlayed: fc.integer({ min: 0, max: 1000 }),
-          points: fc.integer({ min: 0, max: 100000 }),
-          correctAnswers: fc.integer({ min: 0, max: 10000 })
+          points: fc.integer({ min: 0, max: 100_000 }),
+          correctAnswers: fc.integer({ min: 0, max: 10_000 })
         }),
         stats => {
           localStorage.clear()
@@ -371,7 +375,7 @@ describe('saveJSON / loadJSON — property tests', () => {
         fc.array(
           fc.record({
             date: fc.string({ minLength: 10, maxLength: 10 }),
-            points: fc.integer({ min: 0, max: 10000 }),
+            points: fc.integer({ min: 0, max: 10_000 }),
             correctAnswers: fc.integer({ min: 0, max: 100 })
           }),
           { minLength: 0, maxLength: 20 }
@@ -395,13 +399,6 @@ describe('saveJSON / loadJSON — property tests', () => {
 // ============================================================================
 // createGamePersistence
 // ============================================================================
-
-import {
-  createGamePersistence,
-  createGameResultOperations,
-  createAppGameStorage,
-  migrateStorageKeys
-} from './storage'
 
 describe('createGamePersistence', () => {
   it('saveSettings / loadSettings round-trip', () => {

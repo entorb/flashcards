@@ -3,7 +3,7 @@ import { InfoPage } from '@flashcards/shared/pages'
 import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { POINTS_MODE_BLIND, POINTS_MODE_TYPING, LANGUAGE_BONUS_DE_VOC } from '../constants'
+import { LANGUAGE_BONUS_DE_VOC, POINTS_MODE_BLIND, POINTS_MODE_TYPING } from '../constants'
 
 const router = useRouter()
 

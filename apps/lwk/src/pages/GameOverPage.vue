@@ -10,8 +10,8 @@ import {
   clearGameState,
   getGameResult,
   incrementDailyGames,
-  saveHistory,
-  saveGameStats
+  saveGameStats,
+  saveHistory
 } from '../services/storage'
 
 const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()

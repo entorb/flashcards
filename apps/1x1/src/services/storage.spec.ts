@@ -1,6 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-
 import { MAX_TIME, MIN_LEVEL, MIN_TIME } from '@flashcards/shared'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { DEFAULT_RANGE, STORAGE_KEYS } from '../constants'
 import type { Card, GameSettings } from '../types'

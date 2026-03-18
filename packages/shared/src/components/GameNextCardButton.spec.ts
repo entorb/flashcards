@@ -1,8 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import { BUTTON_DISABLE_DURATION } from '../constants'
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import GameNextCardButton from './GameNextCardButton.vue'
 
 const mountOptions = {

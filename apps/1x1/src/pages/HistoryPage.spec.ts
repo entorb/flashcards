@@ -1,13 +1,12 @@
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
 import {
   quasarDirectives,
   quasarMocks,
   quasarProvide,
   quasarStubs
 } from '@flashcards/shared/test-utils'
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { initializeCards } from '@/services/storage'
 import type { GameHistory } from '@/types'
 import HistoryPage from './HistoryPage.vue'

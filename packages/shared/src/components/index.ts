@@ -1,12 +1,12 @@
 // Shared Vue components
 // Export your shared components here
 
+export { default as CardsManPage } from '../pages/CardsManPage.vue'
 export { default as AboutSection } from './AboutSection.vue'
 export { default as AppFooter } from './AppFooter.vue'
 export { default as CardManActions } from './CardsManActions.vue'
-export { default as CardsListOfCards } from './CardsManListOfCards.vue'
 export { default as CardsManLevelDistribution } from './CardsManLevelDistribution.vue'
-export { default as CardsManPage } from '../pages/CardsManPage.vue'
+export { default as CardsListOfCards } from './CardsManListOfCards.vue'
 export { default as GameAnswerFeedback } from './GameAnswerFeedback.vue'
 export { default as GameFeedbackNegative } from './GameFeedbackNegative.vue'
 export { default as GameHeader } from './GameHeader.vue'

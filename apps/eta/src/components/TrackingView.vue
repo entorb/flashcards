@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { TEXT_DE } from '@flashcards/shared'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import { useEtaStore } from '@/composables/useEtaStore'
 import {
   calculateTimePerTask as calcTimePerTask,
   calculateTotalRuntime
 } from '@/utils/measurementCalculations'
-import { formatDuration, formatClockTime } from '@/utils/timeFormatters'
+import { formatClockTime, formatDuration } from '@/utils/timeFormatters'
 
 import HourglassIcon from './HourglassIcon.vue'
 
@@ -35,11 +35,10 @@ const isInputValid = computed(() => {
     return (
       inputValue.value > currentCompleted.value && inputValue.value <= sessionData.value.totalTasks
     )
-  } else {
-    // In remaining mode: must be >= 0 and < current remaining
-    const currentRemaining = sessionData.value.totalTasks - currentCompleted.value
-    return inputValue.value >= 0 && inputValue.value < currentRemaining
   }
+  // In remaining mode: must be >= 0 and < current remaining
+  const currentRemaining = sessionData.value.totalTasks - currentCompleted.value
+  return inputValue.value >= 0 && inputValue.value < currentRemaining
 })
 
 function handleSubmit() {
@@ -59,13 +58,13 @@ function handleSubmit() {
 
 function handlePlusOne() {
   // If there's input, use that value; otherwise add 1
-  if (inputValue.value !== null) {
-    handleSubmit()
-  } else {
+  if (inputValue.value === null) {
     const nextValue = store.currentCompleted.value + 1
     if (store.addMeasurement(nextValue)) {
       inputValue.value = null
     }
+  } else {
+    handleSubmit()
   }
 }
 
@@ -276,8 +275,7 @@ const tableData = computed(() => {
         style="min-width: 60px; min-height: 60px"
         data-cy="btn-plus-one"
         @click="handlePlusOne"
-      >
-      </q-btn>
+      />
     </div>
 
     <!-- Measurement Table and Chart -->
@@ -367,7 +365,9 @@ const tableData = computed(() => {
             <template v-if="props.row.timePerTask !== null">
               {{ props.row.timePerTask }} s
             </template>
-            <template v-else> - </template>
+            <template v-else>
+              -
+            </template>
           </q-td>
         </template>
         <template #body-cell-bar="props">

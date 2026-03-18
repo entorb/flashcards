@@ -4,12 +4,12 @@ import { join } from 'node:path'
 import { defineConfig, mergeConfig, normalizePath } from 'vite'
 
 import {
+  type AppConfig,
   baseViteConfig,
   getQuasarPlugin,
-  getVueRouterPlugin,
   getVitePwaPlugin,
   getVuePlugin,
-  type AppConfig
+  getVueRouterPlugin
 } from './vite.config.base'
 
 export function createAppViteConfig(config: AppConfig) {
