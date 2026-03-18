@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { STORAGE_KEYS } from '@/constants'
 import type { SessionData } from '@/types'
 
-import { loadSession, saveSession, clearSession, hasActiveSession } from './storage'
+import { clearSession, hasActiveSession, loadSession, saveSession } from './storage'
 
 describe('storage service', () => {
   beforeEach(() => {

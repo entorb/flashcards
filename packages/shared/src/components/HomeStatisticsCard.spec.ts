@@ -1,7 +1,6 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import HomeStatisticsCard from './HomeStatisticsCard.vue'
 
 const mountOptions = {

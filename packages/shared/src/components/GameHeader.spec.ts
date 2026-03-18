@@ -1,8 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import GameHeader from './GameHeader.vue'
 
 const mountOptions = {

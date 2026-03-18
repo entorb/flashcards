@@ -1,6 +1,6 @@
 import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
+import { PROD_HOSTNAME, STATS_PENDING_STORAGE_KEY } from '../constants'
 import {
   calculateDailyBonuses,
   formatDate,
@@ -10,7 +10,6 @@ import {
   levenshteinDistance,
   roundTime
 } from '../utils/helper'
-import { PROD_HOSTNAME, STATS_PENDING_STORAGE_KEY } from '../constants'
 
 describe('getFocusText', () => {
   it('returns weak text for "weak"', () => {

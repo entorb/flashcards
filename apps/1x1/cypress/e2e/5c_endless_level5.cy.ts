@@ -1,7 +1,7 @@
 import {
   answerCurrentCardCorrectly,
-  startGameModeWithTable6,
-  playThroughAndVerifyGameOver
+  playThroughAndVerifyGameOver,
+  startGameModeWithTable6
 } from '../support/test-helpers'
 
 describe('1x1 Endless Level 5 mode', () => {

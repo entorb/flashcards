@@ -20,8 +20,7 @@ defineProps<Props>()
             status === 'close' ? 'text-warning text-weight-bold' : 'text-negative text-weight-bold'
           "
           style="text-decoration: line-through; text-decoration-thickness: 3px"
-          >{{ userAnswer }}</span
-        >
+        >{{ userAnswer }}</span>
         <q-icon
           name="arrow_forward"
           size="sm"

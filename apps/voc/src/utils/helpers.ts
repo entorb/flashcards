@@ -1,10 +1,10 @@
 import {
+  type AnswerStatus,
   levenshteinDistance,
   MAX_TIME,
   normalizeWhitespace,
   parseLevel,
-  sanitizeBaseCard,
-  type AnswerStatus
+  sanitizeBaseCard
 } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '../constants'
@@ -35,7 +35,7 @@ export function validateTypingAnswer(
   if (language === 'de-voc') {
     const answersWithoutTo = possibleAnswers
       .filter(ans => ans.startsWith('to '))
-      .map(ans => ans.substring(3))
+      .map(ans => ans.slice(3))
     possibleAnswers.push(...answersWithoutTo)
   }
 
@@ -56,6 +56,14 @@ export function validateTypingAnswer(
   return 'incorrect'
 }
 
+function detectDelimiter(line: string): string | null {
+  if (line.includes('\t')) return '\t'
+  if (line.includes(';')) return ';'
+  if (line.includes(',')) return ','
+  if (line.includes('/')) return '/'
+  return null
+}
+
 /**
  * Parses text input with various delimiters (tab, semicolon, comma, slash)
  * Extracts pure parsing logic for card imports
@@ -69,13 +77,9 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
 
   const lines = text.trim().split('\n')
   const firstLine = lines[0] ?? ''
-  let delimiter: string
-  if (firstLine.includes('\t')) delimiter = '\t'
-  else if (firstLine.includes(';')) delimiter = ';'
-  else if (firstLine.includes(',')) delimiter = ','
-  else if (firstLine.includes('/')) delimiter = '/'
-  else {
-    return null // No valid delimiter found
+  const delimiter = detectDelimiter(firstLine)
+  if (delimiter === null) {
+    return null
   }
 
   const newCards: Card[] = []

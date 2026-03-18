@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import {
   type AnswerStatus,
-  MAX_TIME,
-  TEXT_DE,
   isEndlessMode,
+  MAX_TIME,
+  shuffleArray,
+  TEXT_DE,
   useGameNavigation,
   useGameTimer,
   useKeyboardContinue
 } from '@flashcards/shared'
-import { shuffleArray } from '@flashcards/shared'
 import {
   GameHeader,
   GameInputSubmit,
@@ -81,12 +81,12 @@ function getFeedbackType(status: AnswerStatus | null): 'simple' | 'close' | 'typ
 
 // Compute question and answer based on language direction
 const question = computed(() => {
-  if (!gameSettings.value || !currentCard.value) return ''
+  if (!(gameSettings.value && currentCard.value)) return ''
   return gameSettings.value.language === 'voc-de' ? currentCard.value.voc : currentCard.value.de
 })
 
 const correctAnswer = computed(() => {
-  if (!gameSettings.value || !currentCard.value) return ''
+  if (!(gameSettings.value && currentCard.value)) return ''
   return gameSettings.value.language === 'voc-de' ? currentCard.value.de : currentCard.value.voc
 })
 
@@ -98,7 +98,7 @@ const targetLang = computed(() => {
 const displayTime = computed(() => {
   const settings = gameSettings.value
   const card = currentCard.value
-  if (!settings || !card) return MAX_TIME
+  if (!(settings && card)) return MAX_TIME
 
   if (settings.mode === 'multiple-choice') {
     return MAX_TIME // Don't show time for multiple-choice
@@ -252,8 +252,7 @@ onUnmounted(() => {
                   <span
                     class="text-warning text-weight-bold"
                     style="text-decoration: line-through; text-decoration-thickness: 2px"
-                    >{{ feedbackData.userInput }}</span
-                  >
+                  >{{ feedbackData.userInput }}</span>
                   <q-icon
                     name="arrow_forward"
                     size="sm"
@@ -269,8 +268,7 @@ onUnmounted(() => {
                   <span
                     class="text-negative text-weight-bold"
                     style="text-decoration: line-through; text-decoration-thickness: 2px"
-                    >{{ feedbackData.userInput }}</span
-                  >
+                  >{{ feedbackData.userInput }}</span>
                   <q-icon
                     name="arrow_forward"
                     size="sm"

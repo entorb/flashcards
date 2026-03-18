@@ -1,9 +1,9 @@
 // Feature: game-modes-endless-and-loops, Property 6
 // **Validates: Requirements 7.1, 7.2**
-import * as fc from 'fast-check'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { SessionMode } from '@flashcards/shared'
+import * as fc from 'fast-check'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Card } from '@/types'
 

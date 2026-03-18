@@ -9,7 +9,7 @@ import {
   useCardFiltering,
   useResetCards
 } from '@flashcards/shared'
-import { CardsManLevelDistribution, CardsListOfCards } from '@flashcards/shared/components'
+import { CardsListOfCards, CardsManLevelDistribution } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -188,7 +188,7 @@ function goHome() {
       <div class="text-h6">
         {{ TEXT_DE.multiply.cards.title }}
       </div>
-      <div style="width: 40px"></div>
+      <div style="width: 40px" />
     </div>
 
     <!-- Content -->
@@ -229,7 +229,7 @@ function goHome() {
               :style="{ gridTemplateColumns: `40px repeat(${xValues.length}, 1fr)` }"
             >
               <!-- Header row with X values -->
-              <div class="grid-header"></div>
+              <div class="grid-header" />
               <div
                 v-for="x in xValues"
                 :key="`header-${x}`"
@@ -244,7 +244,9 @@ function goHome() {
                 :key="`row-${y}`"
               >
                 <!-- Y label -->
-                <div class="grid-header text-center text-weight-bold">{{ y }}</div>
+                <div class="grid-header text-center text-weight-bold">
+                  {{ y }}
+                </div>
 
                 <!-- Cells for each X value -->
                 <div
@@ -259,7 +261,9 @@ function goHome() {
                       L{{ (y < x ? getCard(x, y) : getCard(y, x)).level }}
                     </div>
                     <!-- Question and Answer -->
-                    <div class="cell-answer q-my-xs">{{ y }}x{{ x }}<br />= {{ x * y }}</div>
+                    <div class="cell-answer q-my-xs">
+                      {{ y }}x{{ x }}<br />= {{ x * y }}
+                    </div>
                     <!-- Time -->
                     <div class="text-caption text-weight-medium">
                       {{ (y < x ? getCard(x, y) : getCard(y, x)).time.toFixed(1) }}s

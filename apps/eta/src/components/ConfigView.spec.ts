@@ -1,7 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import ConfigView from './ConfigView.vue'
 
 // Mock shared package
 vi.mock('@flashcards/shared', async importOriginal => {
@@ -30,8 +30,6 @@ const mockStore = {
 vi.mock('@/composables/useEtaStore', () => ({
   useEtaStore: () => mockStore
 }))
-
-import ConfigView from './ConfigView.vue'
 
 const mountOptions = {
   global: {

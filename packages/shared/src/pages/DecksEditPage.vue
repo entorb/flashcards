@@ -156,8 +156,10 @@ function handleRenameKeydown(event: KeyboardEvent) {
       >
         <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
       </q-btn>
-      <div class="text-h6">{{ TEXT_DE[appPrefix].decks.editDecksTitle }}</div>
-      <div style="width: 40px"></div>
+      <div class="text-h6">
+        {{ TEXT_DE[appPrefix].decks.editDecksTitle }}
+      </div>
+      <div style="width: 40px" />
     </div>
 
     <!-- Add new deck button -->
@@ -222,9 +224,9 @@ function handleRenameKeydown(event: KeyboardEvent) {
         <template v-else>
           <q-item-section>
             <q-item-label>{{ deck.name }}</q-item-label>
-            <q-item-label caption
-              >{{ deck.cards.length }} {{ appPrefix === 'lwk' ? 'Wörter' : 'Karten' }}</q-item-label
-            >
+            <q-item-label caption>
+              {{ deck.cards.length }} {{ appPrefix === 'lwk' ? 'Wörter' : 'Karten' }}
+            </q-item-label>
           </q-item-section>
           <q-item-section side>
             <div class="row q-gutter-sm">

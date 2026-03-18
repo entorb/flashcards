@@ -9,7 +9,7 @@ import { useEtaStore } from './composables/useEtaStore'
 const store = useEtaStore()
 const showInfo = ref(false)
 
-const showConfig = computed(() => !store.isSessionActive.value && !showInfo.value)
+const showConfig = computed(() => !(store.isSessionActive.value || showInfo.value))
 const showTracking = computed(() => store.isSessionActive.value && !showInfo.value)
 
 function goToInfo() {

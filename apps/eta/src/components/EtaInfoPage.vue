@@ -30,8 +30,9 @@ defineEmits<{
         <q-toolbar-title
           class="text-center"
           data-cy="info-page-title"
-          >{{ TEXT_DE.eta.info.title }}</q-toolbar-title
         >
+          {{ TEXT_DE.eta.info.title }}
+        </q-toolbar-title>
         <q-btn
           flat
           round

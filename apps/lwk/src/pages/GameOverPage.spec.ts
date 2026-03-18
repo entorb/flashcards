@@ -1,8 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { STORAGE_KEYS } from '@/constants'
 import GameOverPage from './GameOverPage.vue'
 

@@ -1,5 +1,7 @@
 Abschreiben
 accesscounts
+Activedescendant
+Autofocus
 accessoires
 adaptivem
 Adaptives
@@ -42,6 +44,7 @@ erstellen
 Erstes
 Falsch
 falsche
+Focusable
 Fokus
 freut
 garten
@@ -110,6 +113,7 @@ nach
 neue
 niedrige
 Noch
+Noninteractive
 NOSONAR
 nutzbar
 organisiert
@@ -135,6 +139,7 @@ Schreiben
 Schriftfarbe
 Schule
 Schwache
+Shouty
 seinem
 Setze
 setzt
@@ -157,6 +162,7 @@ Stufe
 Stufen
 stufigem
 stufiges
+Tabindex
 Tages
 Tagesstatistik
 Technologie

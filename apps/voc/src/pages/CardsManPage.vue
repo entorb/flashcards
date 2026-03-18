@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
 import type { BaseCard } from '@flashcards/shared'
+import { TEXT_DE } from '@flashcards/shared'
 import { CardsManPage } from '@flashcards/shared/components'
 
 import { useGameStore } from '../composables/useGameStore'

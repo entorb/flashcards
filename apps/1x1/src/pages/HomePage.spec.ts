@@ -1,10 +1,9 @@
+import { MAX_LEVEL, MIN_LEVEL } from '@flashcards/shared'
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
-import { MIN_LEVEL, MAX_LEVEL } from '@flashcards/shared'
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import type { Card } from '@/types'
 import HomePage from './HomePage.vue'
 

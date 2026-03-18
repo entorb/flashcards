@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TEXT_DE, helperStatsDataWrite } from '@flashcards/shared'
+import { helperStatsDataWrite, TEXT_DE } from '@flashcards/shared'
 import { AppFooter, HomePwaInstallInfo } from '@flashcards/shared/components'
 import { ref } from 'vue'
 

@@ -1,8 +1,8 @@
 import {
   answerBlindCard,
-  verifyPostGameStats,
   seedTestCards,
-  TEST_CARD_COUNT
+  TEST_CARD_COUNT,
+  verifyPostGameStats
 } from '../support/test-helpers'
 
 describe('VOC Blind Mode Game - DE to Voc', () => {
