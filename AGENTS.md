@@ -11,8 +11,10 @@
 ## Commands
 
 ```bash
-# Validation (run after changes)
+# Validation (run after all changes)
 pnpm run check                # format + lint + types + spell + test
+
+# Validation via E2E tests (run after adding new features)
 pnpm run cy:run               # all Cypress E2E tests
 pnpm run cy:run:{app}         # E2E for one app (1x1, voc, lwk, eta)
 
@@ -23,8 +25,8 @@ pnpm run cy:run:{app} -- --spec "cypress/e2e/{spec}.cy.ts" 2>&1
 pnpm --filter {app} run lint 2>&1
 pnpm --filter {app} run test 2>&1
 
-# Formatting (auto-fix)
-pnpm run format
+# Biome lint (auto-fix, including unsafe fixes)
+pnpx @biomejs/biome lint --write --unsafe .
 ```
 
 Commit only after `pnpm run check` and `pnpm run cy:run` pass. Commit header only, no body.
@@ -151,6 +153,9 @@ Each app defines a `GAME_STATE_FLOW_CONFIG` in `src/constants.ts` mapping storag
 5. **Stub by alias**: When a component is imported as `import FoxIcon from './FoxMascot.vue'`, stub as `FoxIcon` not `FoxMascot`.
 6. **BASE_PATH** must be defined in both `src/constants.ts` AND hardcoded in `vite.config.ts`.
 7. **`unicorn/prefer-string-replace-all`** — IDE (VS Code) may suggest `replaceAll()` but the ESLint config doesn't have this rule. Using `eslint-disable-next-line` for it causes a lint error ("Definition for rule not found"). Just use `.replace()` with `/g` flag.
+8. **Never** prefix Vue `<script setup>` variables with `_` to suppress biome `noUnusedVariables` — Vue templates reference bindings by their original names, so `_emit` breaks `@click="emit(...)"`. The proper fix is in `biome.json`: `noUnusedImports` and `noUnusedVariables` are set to `"off"` for `**/*.vue` files because biome cannot see Vue template usage.
+9. **Never** run biome `--write` with `noUnusedImports`/`noUnusedVariables` enabled on `.vue` files — biome doesn't parse `<template>`, so it deletes imports and variables that are actually used in templates. This silently breaks components at runtime. The `biome.json` override for `**/*.vue` prevents this.
+10. **Biome `noDelete` conflicts with `exactOptionalPropertyTypes`** — biome auto-fixes `delete obj.prop` to `obj.prop = undefined`, but with `exactOptionalPropertyTypes: true` in tsconfig, assigning `undefined` to an optional property (`prop?: T`) is a TS2412 error. Use `biome-ignore lint/performance/noDelete` comments to keep `delete` statements.
 
 ## PWA Config
 
