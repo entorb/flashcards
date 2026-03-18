@@ -1,8 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import type { BaseGameHistory } from '../types'
 import HistoryPage from './HistoryPage.vue'
 
@@ -157,7 +156,7 @@ describe('HistoryPage (shared)', () => {
     expect(router.push).toHaveBeenCalledWith('/')
   })
 
-  it('Escape key navigates to /', async () => {
+  it('Escape key navigates to /', () => {
     const router = createMockRouter()
     vi.spyOn(router, 'push')
     mount(HistoryPage, {

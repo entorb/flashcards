@@ -1,7 +1,6 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import type { BaseCard } from '../types'
 import DecksEditPage from './DecksEditPage.vue'
 

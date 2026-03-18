@@ -47,8 +47,7 @@ defineSlots<{
         color="grey-6"
         data-cy="info-button"
         @click="$emit('goToInfo')"
-      >
-      </q-btn>
+      />
     </div>
 
     <!-- Mascot and Statistics -->

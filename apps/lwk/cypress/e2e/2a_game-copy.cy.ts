@@ -1,8 +1,8 @@
 import {
   answerCopyCard,
   seedTestCards,
-  verifyPostGameStats,
-  TEST_CARD_COUNT
+  TEST_CARD_COUNT,
+  verifyPostGameStats
 } from '../support/test-helpers'
 
 describe('LWK Copy Mode Game', () => {

@@ -5,12 +5,12 @@
 
 import type { GameResult, SessionMode } from '@flashcards/shared'
 import {
+  createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
-  createAppGameStorage,
-  saveJSON,
-  loadJSON
+  loadJSON,
+  saveJSON
 } from '@flashcards/shared'
 
 import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'

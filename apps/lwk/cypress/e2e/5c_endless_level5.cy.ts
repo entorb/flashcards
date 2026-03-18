@@ -1,8 +1,8 @@
 import {
   answerCopyCardCorrectly,
-  startCopyGameMode,
   playThroughAndVerifyGameOver,
-  seedTestCards
+  seedTestCards,
+  startCopyGameMode
 } from '../support/test-helpers'
 
 describe('LWK Endless Level 5 mode', () => {

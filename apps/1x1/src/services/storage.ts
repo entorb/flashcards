@@ -5,15 +5,15 @@
 
 import type { GameResult, GameStats, SessionMode } from '@flashcards/shared'
 import {
+  createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
-  createAppGameStorage,
   loadJSON,
-  saveJSON,
   MAX_TIME,
   MIN_LEVEL,
-  MIN_TIME
+  MIN_TIME,
+  saveJSON
 } from '@flashcards/shared'
 
 import { DEFAULT_RANGE, STORAGE_KEYS } from '@/constants'

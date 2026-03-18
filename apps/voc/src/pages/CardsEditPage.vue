@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TEXT_DE, MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace } from '@flashcards/shared'
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace, TEXT_DE } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -189,7 +189,9 @@ function onCardChange() {
       >
         <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
       </q-btn>
-      <h2 class="q-ma-none text-h6">{{ TEXT_DE.voc.cards.editCardsTitle }}</h2>
+      <h2 class="q-ma-none text-h6">
+        {{ TEXT_DE.voc.cards.editCardsTitle }}
+      </h2>
       <div style="width: 40px" />
     </div>
 
@@ -237,17 +239,23 @@ function onCardChange() {
           <!-- Header Row -->
           <q-item class="bg-grey-2">
             <q-item-section style="flex: 0 0 40%">
-              <q-item-label class="text-weight-bold">{{
-                TEXT_DE.shared.words.vocable
-              }}</q-item-label>
+              <q-item-label class="text-weight-bold">
+                {{
+                  TEXT_DE.shared.words.vocable
+                }}
+              </q-item-label>
             </q-item-section>
             <q-item-section style="flex: 0 0 40%">
-              <q-item-label class="text-weight-bold">{{
-                TEXT_DE.shared.words.german
-              }}</q-item-label>
+              <q-item-label class="text-weight-bold">
+                {{
+                  TEXT_DE.shared.words.german
+                }}
+              </q-item-label>
             </q-item-section>
             <q-item-section style="flex: 0 0 20%">
-              <q-item-label class="text-weight-bold">{{ TEXT_DE.shared.words.level }}</q-item-label>
+              <q-item-label class="text-weight-bold">
+                {{ TEXT_DE.shared.words.level }}
+              </q-item-label>
             </q-item-section>
           </q-item>
 

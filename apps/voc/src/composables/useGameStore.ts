@@ -1,47 +1,47 @@
 import {
   type AnswerStatus,
+  calculatePointsBreakdown,
   createBaseGameStore,
+  filterBelowMaxLevel,
+  filterLevel1Cards,
+  handleNextCard,
+  initializeGameFlow,
+  isEndlessMode,
+  LOOP_COUNT,
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
   MIN_TIME,
-  initializeGameFlow,
-  calculatePointsBreakdown,
-  roundTime,
-  useDeckManagement,
-  filterLevel1Cards,
-  filterBelowMaxLevel,
   repeatCards,
-  LOOP_COUNT,
-  handleNextCard,
-  isEndlessMode,
-  type SessionMode
+  roundTime,
+  type SessionMode,
+  useDeckManagement
 } from '@flashcards/shared'
 import { computed, ref } from 'vue'
 
 import {
-  INITIAL_CARDS,
+  DEFAULT_DECKS,
   GAME_STATE_FLOW_CONFIG,
+  INITIAL_CARDS,
   POINTS_MODE_BLIND,
-  POINTS_MODE_TYPING,
-  DEFAULT_DECKS
+  POINTS_MODE_TYPING
 } from '../constants'
 import { selectCardsForRound } from '../services/cardSelector'
 import {
   loadCards,
+  loadDecks,
   loadGameStats,
   loadHistory,
+  loadSettings,
   saveCards,
+  saveDecks,
   saveGameStats,
   saveHistory,
+  saveSettings,
   clearGameState as storageClearGameState,
   loadGameState as storageLoadGameState,
   saveGameState as storageSaveGameState,
-  setGameResult as storageSetGameResult,
-  loadDecks,
-  saveDecks,
-  loadSettings,
-  saveSettings
+  setGameResult as storageSetGameResult
 } from '../services/storage'
 import type { Card, GameHistory, GameSettings } from '../types'
 
@@ -173,42 +173,52 @@ export function useGameStore() {
     saveCurrentGameState()
   }
 
+  function getDifficultyPoints(mode: GameSettings['mode']): number {
+    switch (mode) {
+      case 'blind':
+        return POINTS_MODE_BLIND
+      case 'typing':
+        return POINTS_MODE_TYPING
+      case 'multiple-choice':
+        return 1
+      default: {
+        const _exhaustive: never = mode
+        console.error('Unexpected game mode:', _exhaustive)
+        return 1
+      }
+    }
+  }
+
+  function updateVocCardLevelAndTime(
+    card: Card,
+    result: AnswerStatus,
+    answerTime?: number
+  ): Partial<Card> {
+    const updates: Partial<Card> = {}
+    if (result === 'correct') {
+      updates.level = Math.min(MAX_LEVEL, card.level + 1)
+    } else if (result === 'incorrect') {
+      updates.level = Math.max(MIN_LEVEL, card.level - 1)
+    }
+    if (result === 'correct' && answerTime !== undefined) {
+      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
+      updates.time = roundTime(clampedTime)
+    }
+    return updates
+  }
+
   function handleAnswer(result: AnswerStatus, answerTime?: number) {
     const currentCard = baseStore.gameCards.value[baseStore.currentCardIndex.value]
-    if (!currentCard || !baseStore.gameSettings.value) return
+    if (!(currentCard && baseStore.gameSettings.value)) return
 
-    // Calculate points using shared scoring logic
-    // Determine mode multiplier
-    const difficultyPoints = (() => {
-      switch (baseStore.gameSettings.value.mode) {
-        case 'blind':
-          return POINTS_MODE_BLIND
-        case 'typing':
-          return POINTS_MODE_TYPING
-        case 'multiple-choice':
-          return 1
-        default: {
-          // Exhaustive check: TypeScript will error if a new mode is added but not handled
-          const _exhaustive: never = baseStore.gameSettings.value.mode
-          console.error('Unexpected game mode:', _exhaustive)
-          return 1 // Fallback to multiple-choice points
-        }
-      }
-    })()
-
-    // Calculate language bonus
+    const difficultyPoints = getDifficultyPoints(baseStore.gameSettings.value.mode)
     const languageBonus =
       result === 'correct' && baseStore.gameSettings.value.language === 'de-voc' ? 1 : 0
-
-    // Determine time bonus
-    const isBeatTime =
+    const timeBonus =
       result === 'correct' &&
       answerTime !== undefined &&
       answerTime < MAX_TIME &&
       answerTime < currentCard.time
-
-    const timeBonus = isBeatTime
-    const closeAdjustment = result === 'close'
 
     const pointsBreakdown =
       result === 'incorrect'
@@ -225,48 +235,23 @@ export function useGameStore() {
             difficultyPoints,
             level: currentCard.level,
             timeBonus,
-            closeAdjustment,
+            closeAdjustment: result === 'close',
             languageBonus
           })
 
     baseStore.handleAnswerBase(result, pointsBreakdown)
 
-    // Update card level and time
-    baseStore.allCards.value = baseStore.allCards.value.map(card => {
-      if (card.voc === currentCard.voc) {
-        const updates: Partial<Card> = {}
-
-        // Update level
-        if (result === 'correct') {
-          updates.level = Math.min(MAX_LEVEL, card.level + 1)
-        } else if (result === 'incorrect') {
-          updates.level = Math.max(MIN_LEVEL, card.level - 1)
-        }
-
-        // Update time (only on correct answers)
-        if (result === 'correct' && answerTime !== undefined) {
-          const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-          updates.time = roundTime(clampedTime)
-        }
-
-        return { ...card, ...updates }
-      }
-      return card
-    })
+    // Update card level and time in allCards
+    const updates = updateVocCardLevelAndTime(currentCard, result, answerTime)
+    baseStore.allCards.value = baseStore.allCards.value.map(card =>
+      card.voc === currentCard.voc ? { ...card, ...updates } : card
+    )
 
     // Also update the in-memory gameCards entry (needed for endless mode card removal check)
-    if (result === 'correct') {
-      currentCard.level = Math.min(MAX_LEVEL, currentCard.level + 1)
-      if (answerTime !== undefined) {
-        const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-        currentCard.time = roundTime(clampedTime)
-      }
-    } else if (result === 'incorrect') {
-      currentCard.level = Math.max(MIN_LEVEL, currentCard.level - 1)
-    }
+    if (updates.level !== undefined) currentCard.level = updates.level
+    if (updates.time !== undefined) currentCard.time = updates.time
 
-    // Explicitly save cards on every answer because the watcher in the base store
-    // doesn't seem to fire consistently. This is a workaround to ensure data is saved.
+    // Explicitly save cards on every answer
     saveCards(baseStore.allCards.value)
 
     // Save game state to sessionStorage for page reload persistence

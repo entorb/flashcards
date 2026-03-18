@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
+import { computed, onMounted, onUnmounted, type Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import {
@@ -11,7 +11,7 @@ import {
 } from '../components/index'
 import { useCardFiltering } from '../composables/useCardFiltering'
 import { useResetCards } from '../composables/useResetCards'
-import { MAX_LEVEL, MIN_LEVEL, MAX_TIME } from '../constants'
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { BaseCard } from '../types'
 
@@ -25,7 +25,7 @@ interface Props {
   getDecks: () => { name: string; cards: BaseCard[] }[]
   switchDeck: (name: string) => void
   loadSettings: () => { deck?: string } | null
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: Shared component accepts different GameSettings types from voc/lwk apps
   saveSettings: (settings: any) => void
   store: {
     allCards: Ref<BaseCard[]>
@@ -107,9 +107,9 @@ function handleMoveClick() {
 function handleResetCards() {
   showResetDialog(() => {
     props.store.moveAllCards(1)
-    props.store.allCards.value.forEach((card: BaseCard) => {
+    for (const card of props.store.allCards.value) {
       card.time = MAX_TIME
-    })
+    }
   })
 }
 
@@ -140,7 +140,7 @@ function handleResetCardsToDefaultSet() {
       <div class="text-h6">
         {{ title }}
       </div>
-      <div style="width: 40px"></div>
+      <div style="width: 40px" />
     </div>
 
     <!-- Info Banner -->
@@ -156,7 +156,7 @@ function handleResetCardsToDefaultSet() {
       </template>
       <div class="text-body2">
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <span v-html="bannerHtml"></span>
+        <span v-html="bannerHtml" />
       </div>
     </q-banner>
 

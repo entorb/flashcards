@@ -1,8 +1,7 @@
 import {
   answerCurrentCardCorrectly,
-  startTypingGameMode,
   playThroughAndVerifyGameOver,
-  seedTestCards
+  startTypingGameMode
 } from '../support/test-helpers'
 
 describe('VOC Endless Level 5 mode', () => {

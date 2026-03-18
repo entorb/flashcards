@@ -1,6 +1,6 @@
-import { TEXT_DE, migrateStorageKeys } from '@flashcards/shared'
-import { Dialog, Notify, Quasar } from 'quasar'
 import { registerSW } from 'virtual:pwa-register'
+import { migrateStorageKeys, TEXT_DE } from '@flashcards/shared'
+import { Dialog, Notify, Quasar } from 'quasar'
 import { createApp } from 'vue'
 
 import App from './App.vue'

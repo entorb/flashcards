@@ -1,9 +1,9 @@
 // Feature: game-modes-endless-and-loops, Property 2
 // **Validates: Requirements 3.2, 3.3**
-import * as fc from 'fast-check'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MIN_LEVEL } from '@flashcards/shared'
+import * as fc from 'fast-check'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Card } from '@/types'
 
@@ -85,38 +85,36 @@ const level1CardsArb = fc
   .map(n => Array.from({ length: n }, (_, i) => makeLevel1Card(`${i + 3}x${i + 3}`)))
 
 describe('useGameStore - Endless mode correct/incorrect card removal (Property 2)', () => {
-  it(
-    'correct answer removes the answered card, reducing count by 1',
-    { timeout: 30_000 },
-    async () => {
-      await fc.assert(
-        fc.asyncProperty(level1CardsArb, async cards => {
-          vi.resetModules()
-          const store = await setupEndlessMocks(cards)
+  it('correct answer removes the answered card, reducing count by 1', {
+    timeout: 30_000
+  }, async () => {
+    await fc.assert(
+      fc.asyncProperty(level1CardsArb, async cards => {
+        vi.resetModules()
+        const store = await setupEndlessMocks(cards)
 
-          store.startGame({ select: 'all', focus: 'medium' }, 'endless-level1', true)
+        store.startGame({ select: 'all', focus: 'medium' }, 'endless-level1', true)
 
-          const countBefore = store.gameCards.value.length
-          expect(countBefore).toBe(cards.length)
+        const countBefore = store.gameCards.value.length
+        expect(countBefore).toBe(cards.length)
 
-          const answeredCard = store.currentCard.value
-          expect(answeredCard).not.toBeNull()
+        const answeredCard = store.currentCard.value
+        expect(answeredCard).not.toBeNull()
 
-          // Answer correctly — card level gets promoted via mock updateCard
-          store.handleAnswer('correct', 5)
+        // Answer correctly — card level gets promoted via mock updateCard
+        store.handleAnswer('correct', 5)
 
-          // nextCard should detect the promoted card and remove it
-          store.nextCard()
+        // nextCard should detect the promoted card and remove it
+        store.nextCard()
 
-          expect(store.gameCards.value).toHaveLength(countBefore - 1)
-          // The removed card should no longer be in gameCards
-          const remaining = store.gameCards.value.map(c => c.question)
-          expect(remaining).not.toContain(answeredCard?.question)
-        }),
-        { numRuns: 100 }
-      )
-    }
-  )
+        expect(store.gameCards.value).toHaveLength(countBefore - 1)
+        // The removed card should no longer be in gameCards
+        const remaining = store.gameCards.value.map(c => c.question)
+        expect(remaining).not.toContain(answeredCard?.question)
+      }),
+      { numRuns: 100 }
+    )
+  })
 
   it('incorrect answer keeps the card, count stays the same', async () => {
     await fc.assert(

@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as fc from 'fast-check'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MAX_TIME, MIN_LEVEL } from '../constants'
-import { createBaseGameStore } from './useBaseGameStore'
-import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from '../types'
 import type { PointsBreakdown } from '../services/scoring'
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from '../types'
+import { createBaseGameStore } from './useBaseGameStore'
 
 // ─── Mock helpers ────────────────────────────────────────────────────────────
 
@@ -606,7 +606,8 @@ describe('useBaseGameStore', () => {
 
             // Answer each card exactly once (real game flow: one answer per card)
             for (let i = 0; i < totalCards; i++) {
-              const result = i % 3 === 0 ? 'correct' : i % 3 === 1 ? 'incorrect' : 'close'
+              const answerResults: AnswerStatus[] = ['correct', 'incorrect', 'close']
+              const result = answerResults[i % 3] ?? 'close'
               store.handleAnswerBase(result, makeBreakdown(result === 'correct' ? 5 : 0))
             }
 

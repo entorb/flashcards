@@ -1,11 +1,10 @@
-import { mount } from '@vue/test-utils'
-import { ref } from 'vue'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import HistoryPage from './HistoryPage.vue'
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import type { GameHistory } from '../types'
+import HistoryPage from './HistoryPage.vue'
 
 // Stub the shared HistoryPage so we can inspect props without running its full logic
 const { SharedHistoryPageStub } = vi.hoisted(() => ({

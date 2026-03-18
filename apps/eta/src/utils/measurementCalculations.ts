@@ -53,7 +53,7 @@ export function calculateTimePerTask(
  * Calculate total runtime from session start to last measurement
  */
 export function calculateTotalRuntime(sessionData: SessionData): number | null {
-  if (!sessionData.measurements.length) {
+  if (sessionData.measurements.length === 0) {
     return null
   }
 

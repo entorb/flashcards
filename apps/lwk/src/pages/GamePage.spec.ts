@@ -1,9 +1,8 @@
-import { mount } from '@vue/test-utils'
-import { ref } from 'vue'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import type { Card, GameSettings } from '@/types'
 import GamePage from './GamePage.vue'
 
@@ -409,7 +408,7 @@ describe('GamePage', () => {
       await wrapper.vm.$nextTick()
 
       // Advance past the full countdown duration
-      vi.advanceTimersByTime(10000)
+      vi.advanceTimersByTime(10_000)
       await wrapper.vm.$nextTick()
 
       expect(vm.countdown).toBe(0)

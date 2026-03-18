@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TEXT_DE, MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace } from '@flashcards/shared'
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace, TEXT_DE } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -151,7 +151,7 @@ function onCardChange() {
 }
 
 function getLevelOptions() {
-  const options = []
+  const options: { label: string; value: number }[] = []
   for (let i = MIN_LEVEL; i <= MAX_LEVEL; i++) {
     options.push({ label: i.toString(), value: i })
   }
@@ -176,7 +176,9 @@ function getLevelOptions() {
       >
         <q-tooltip>{{ TEXT_DE.shared.nav.backToHome }}</q-tooltip>
       </q-btn>
-      <h2 class="q-ma-none text-h6">{{ TEXT_DE.lwk.cards.editCardsTitle }}</h2>
+      <h2 class="q-ma-none text-h6">
+        {{ TEXT_DE.lwk.cards.editCardsTitle }}
+      </h2>
       <div style="width: 40px" />
     </div>
 

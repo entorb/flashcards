@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-
-import { useEtaStore } from './useEtaStore'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { calculateRegression, predictRemainingTime } from '@/services/regression'
+import { clearSession, loadSession, saveSession } from '@/services/storage'
 import type { SessionData } from '@/types'
+import { useEtaStore } from './useEtaStore'
 
 // Mock the services
 vi.mock('@/services/regression', () => ({
@@ -14,9 +15,6 @@ vi.mock('@/services/storage', () => ({
   saveSession: vi.fn(),
   clearSession: vi.fn()
 }))
-
-import { calculateRegression, predictRemainingTime } from '@/services/regression'
-import { loadSession, saveSession, clearSession } from '@/services/storage'
 
 describe('useEtaStore', () => {
   beforeEach(() => {

@@ -1,8 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import type { Card } from '@/types'
 import CardsManPage from './CardsManPage.vue'
 
@@ -133,7 +132,7 @@ describe('1x1 CardsManPage', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('renders back button', async () => {
+    it('renders back button', () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="back-button"]').exists()).toBe(true)
@@ -245,19 +244,19 @@ describe('1x1 CardsManPage', () => {
   })
 
   describe('feature toggles', () => {
-    it('renders feature-1x2-toggle button', async () => {
+    it('renders feature-1x2-toggle button', () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="feature-1x2-toggle"]').exists()).toBe(true)
     })
 
-    it('renders feature-1x12-toggle button', async () => {
+    it('renders feature-1x12-toggle button', () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="feature-1x12-toggle"]').exists()).toBe(true)
     })
 
-    it('renders feature-1x20-toggle button', async () => {
+    it('renders feature-1x20-toggle button', () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="feature-1x20-toggle"]').exists()).toBe(true)

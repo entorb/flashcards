@@ -1,8 +1,7 @@
+import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createMemoryHistory } from 'vue-router'
-
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import DecksEditPage from './DecksEditPage.vue'
 
 // Mock useQuasar for notify/dialog

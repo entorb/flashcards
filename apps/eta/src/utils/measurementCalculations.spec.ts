@@ -1,7 +1,6 @@
-import { describe, it, expect } from 'vitest'
-
-import { calculateTimePerTask, calculateTotalRuntime } from './measurementCalculations'
+import { describe, expect, it } from 'vitest'
 import type { MeasurementPoint, SessionData } from '@/types'
+import { calculateTimePerTask, calculateTotalRuntime } from './measurementCalculations'
 
 describe('calculateTimePerTask', () => {
   it('should return null for invalid index', () => {
