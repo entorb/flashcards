@@ -17,6 +17,7 @@ import {
   type SessionMode,
   useDeckManagement
 } from '@flashcards/shared'
+import { shuffleArray } from '@flashcards/shared/utils'
 import { computed, ref } from 'vue'
 
 import {
@@ -184,10 +185,10 @@ export function useGameStore() {
 
     if (mode === 'endless-level1') {
       // Endless Level 1: filter all Level 1 cards from the current pool (respecting deck selection)
-      selectedCards = filterLevel1Cards(baseStore.allCards.value)
+      selectedCards = shuffleArray(filterLevel1Cards(baseStore.allCards.value))
     } else if (mode === 'endless-level5') {
       // Endless Level 5: filter all cards below MAX_LEVEL
-      selectedCards = filterBelowMaxLevel(baseStore.allCards.value)
+      selectedCards = shuffleArray(filterBelowMaxLevel(baseStore.allCards.value))
     } else if (mode === '3-rounds') {
       // 3 Rounds: select cards via focus logic, then repeat each LOOP_COUNT times
       const focusSelected = selectCardsForRound(baseStore.allCards.value, settings.focus)
