@@ -30,6 +30,7 @@ import {
   initializeCards,
   parseCardQuestion,
   clearGameState as storageClearGameState,
+  resetCards as storageResetCards,
   getGameConfig as storageGetGameConfig,
   loadCards as storageLoadCards,
   loadGameState as storageLoadGameState,
@@ -282,7 +283,9 @@ export function useGameStore() {
   }
 
   function resetCards() {
-    baseStore.resetAllCards()
+    storageClearGameState()
+    storageResetCards()
+    baseStore.allCards.value = storageLoadCards()
   }
 
   // Computed
