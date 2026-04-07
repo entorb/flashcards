@@ -117,6 +117,31 @@ export const BG_COLORS = {
   lightGrey: '#f8f9fa'
 }
 
+// --- Time Colors ---
+
+/**
+ * Time-based colors for card response speed visualization (from green=fast to red=slow)
+ * Used by CardsManPage to color-code card response times
+ */
+export const TIME_COLORS = {
+  veryFast: '#2e7d32', // green-800
+  fast: '#558b2f', // light-green-800
+  medium: '#f57f17', // yellow-800
+  slow: '#e65100', // orange-900
+  verySlow: '#c62828' // red-800
+}
+
+/**
+ * Thresholds for time color transitions (normalized 0-1)
+ * Used with TIME_COLORS to determine which color to apply based on relative response time
+ */
+export const TIME_COLOR_THRESHOLDS = {
+  veryFast: 0.2,
+  fast: 0.4,
+  medium: 0.6,
+  slow: 0.8
+}
+
 // --- Game Modes ---
 
 /**

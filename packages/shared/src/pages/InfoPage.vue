@@ -11,7 +11,7 @@ import {
 import { TEXT_DE } from '../text-de'
 
 defineProps<{
-  appName: '1x1' | 'lwk' | 'voc'
+  appName: '1x1' | 'div' | 'lwk' | 'voc'
   pointsModeHidden?: number
   pointsModeBlind?: number
   pointsModeTyping?: number
@@ -74,6 +74,9 @@ defineEmits<{
           </p>
           <p v-else-if="appName === 'lwk'">
             {{ TEXT_DE.shared.info.cardDescriptionLwk }}
+          </p>
+          <p v-else-if="appName === 'div'">
+            {{ TEXT_DE.shared.info.cardDescriptionDiv }}
           </p>
         </div>
 
@@ -268,6 +271,13 @@ defineEmits<{
               {{
                 TEXT_DE.voc.info.modeTyping.replace('{points}', (pointsModeTyping ?? 8).toString())
               }}
+            </li>
+          </ul>
+        </div>
+        <div v-else-if="appName === 'div'">
+          <ul class="q-pl-md q-mt-sm">
+            <li>
+              {{ TEXT_DE.divide.info.difficulty }}
             </li>
           </ul>
         </div>

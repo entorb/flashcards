@@ -11,6 +11,7 @@ export const TEXT_DE = {
   appTitle_1x1: "Vyvit's 1x1 Spiel",
   appTitle_voc: "Rabat's Wortspiel",
   appTitle_lwk: "Eisi's Lernwörter",
+  appTitle_div: "Diva's Divisions-Spiel",
 
   shared: {
     footer: {
@@ -68,6 +69,7 @@ export const TEXT_DE = {
       cardDescription1x1: 'Eine Karte ist eine Rechenaufgabe (z.B. 3×4=12).',
       cardDescriptionVoc: 'Eine Karte ist ein Wort mit Übersetzung.',
       cardDescriptionLwk: 'Eine Karte ist ein Lernwort zum Üben der Rechtschreibung.',
+      cardDescriptionDiv: 'Eine Karte ist eine Divisionsaufgabe (z.B. 18:3=6).',
       levelSystemTitle: 'Level-System',
       levelSystem:
         'Jede Karte hat ein Level von 1 (unbekannt) bis 5 (sicher). Richtige Antworten erhöhen das Level, falsche verringern es.',
@@ -145,6 +147,14 @@ export const TEXT_DE = {
       threeRounds: '3 Runden',
       noLevel1Cards: 'Keine Karten auf Level 1',
       noCardsBelow5: 'Alle Karten bereits auf Level 5'
+    }
+  },
+
+  // Div App specific
+  divide: {
+    selection: 'Teiler',
+    info: {
+      difficulty: 'Division: 18:3 -> 3'
     }
   },
 
