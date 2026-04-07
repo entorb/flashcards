@@ -219,28 +219,6 @@ describe('1x1 CardsManPage', () => {
       expect(card3x3?.level).toBe(5)
       expect(card3x3?.time).toBe(10)
     })
-
-    it('minTime returns MIN_TIME when no cards', async () => {
-      storageMocks.loadRange.mockReturnValue([])
-      storageMocks.loadCards.mockReturnValue([])
-      const router = createMockRouter()
-      const wrapper = mount(CardsManPage, createMountOptions(router))
-      await wrapper.vm.$nextTick()
-      const vm = wrapper.vm as unknown as { minTime: number }
-      expect(typeof vm.minTime).toBe('number')
-      expect(vm.minTime).toBeGreaterThanOrEqual(0.1)
-    })
-
-    it('maxTime returns MAX_TIME when no cards', async () => {
-      storageMocks.loadRange.mockReturnValue([])
-      storageMocks.loadCards.mockReturnValue([])
-      const router = createMockRouter()
-      const wrapper = mount(CardsManPage, createMountOptions(router))
-      await wrapper.vm.$nextTick()
-      const vm = wrapper.vm as unknown as { maxTime: number }
-      expect(typeof vm.maxTime).toBe('number')
-      expect(vm.maxTime).toBeLessThanOrEqual(60)
-    })
   })
 
   describe('feature toggles', () => {

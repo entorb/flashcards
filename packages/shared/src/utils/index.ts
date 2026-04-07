@@ -4,3 +4,4 @@
 export * from './cardSelection.js'
 export * from './gameModeUtils.js'
 export * from './helper.js'
+export * from './timeColor.js'
