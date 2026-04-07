@@ -8,10 +8,10 @@
 
 export const TEXT_DE = {
   // App titles (used in vite.config.ts manifests)
-  appTitle_1x1: "Vyvit's 1x1 Spiel",
-  appTitle_voc: "Rabat's Wortspiel",
+  appTitle_1x1: "Vyvit's 1x1",
+  appTitle_voc: "Rabat's Vokabeln",
   appTitle_lwk: "Eisi's Lernwörter",
-  appTitle_div: "Diva's Divisions-Spiel",
+  appTitle_div: "Diva's Division",
 
   shared: {
     footer: {

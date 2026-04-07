@@ -4,7 +4,7 @@ import { createAppViteConfig } from '../../vite.config.factory'
 
 export default createAppViteConfig({
   basePath: 'fc-div',
-  appTitle: "Diva's Divisions-Spiel",
+  appTitle: "Diva's Division",
   description: 'Division üben mit Diva dem Huhn und ihrem Lernkastensystem',
   themeColor: '#DAA520',
   serverPort: 5177,
