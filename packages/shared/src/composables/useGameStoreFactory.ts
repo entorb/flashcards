@@ -16,6 +16,7 @@ import type {
   GameStats,
   SessionMode
 } from '../types'
+import { shuffleArray } from '../utils/cardSelection'
 import {
   filterBelowMaxLevel,
   filterLevel1Cards,
@@ -85,16 +86,16 @@ function selectCardsByMode<TCard extends BaseCard, TSettings extends { focus: st
   maxCards: number
 ): TCard[] {
   if (mode === 'endless-level1') {
-    return filterLevel1Cards(filteredCards)
+    return shuffleArray(filterLevel1Cards(filteredCards))
   }
   if (mode === 'endless-level5') {
-    return filterBelowMaxLevel(filteredCards)
+    return shuffleArray(filterBelowMaxLevel(filteredCards))
   }
   if (mode === '3-rounds') {
     const focusSelected = selectForRound(filteredCards, settings.focus, maxCards)
-    return repeatCards(focusSelected, LOOP_COUNT)
+    return shuffleArray(repeatCards(focusSelected, LOOP_COUNT))
   }
-  return selectForRound(filteredCards, settings.focus, maxCards)
+  return shuffleArray(selectForRound(filteredCards, settings.focus, maxCards))
 }
 
 /**
