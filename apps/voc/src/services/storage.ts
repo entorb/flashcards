@@ -84,9 +84,9 @@ function migrateCardTimeFields(card: LegacyCard): Card {
   // If card already has time field, remove old fields
   if (card.time !== undefined) {
     const cleanCard = { ...card }
-    // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes forbids assigning undefined
+    // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
     delete cleanCard.time_blind
-    // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes forbids assigning undefined
+    // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
     delete cleanCard.time_typing
     return cleanCard as unknown as Card
   }
@@ -95,9 +95,9 @@ function migrateCardTimeFields(card: LegacyCard): Card {
   const timeValue = card.time_typing ?? card.time_blind ?? MAX_TIME
 
   const cleanCard = { ...card }
-  // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes forbids assigning undefined
+  // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
   delete cleanCard.time_blind
-  // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes forbids assigning undefined
+  // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
   delete cleanCard.time_typing
   return { ...cleanCard, time: timeValue } as unknown as Card
 }
