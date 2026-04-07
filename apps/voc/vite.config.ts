@@ -4,7 +4,7 @@ import { createAppViteConfig } from '../../vite.config.factory'
 
 export default createAppViteConfig({
   basePath: 'fc-voc',
-  appTitle: "Rabat's Wortspiel",
+  appTitle: "Rabat's Vokabeln",
   description: 'Vokabeln üben mit Rabat dem Fuchs und seinem Lernkastensystem',
   themeColor: '#f97316',
   serverPort: 5174,
