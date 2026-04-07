@@ -75,6 +75,40 @@ function addDeck(name: string): boolean {
   return true
 }
 
+function getDifficultyPoints(mode: GameSettings['mode']): number {
+  switch (mode) {
+    case 'blind':
+      return POINTS_MODE_BLIND
+    case 'typing':
+      return POINTS_MODE_TYPING
+    case 'multiple-choice':
+      return 1
+    default: {
+      const _exhaustive: never = mode
+      console.error('Unexpected game mode:', _exhaustive)
+      return 1
+    }
+  }
+}
+
+function updateVocCardLevelAndTime(
+  card: Card,
+  result: AnswerStatus,
+  answerTime?: number
+): Partial<Card> {
+  const updates: Partial<Card> = {}
+  if (result === 'correct') {
+    updates.level = Math.min(MAX_LEVEL, card.level + 1)
+  } else if (result === 'incorrect') {
+    updates.level = Math.max(MIN_LEVEL, card.level - 1)
+  }
+  if (result === 'correct' && answerTime !== undefined) {
+    const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
+    updates.time = roundTime(clampedTime)
+  }
+  return updates
+}
+
 export function useGameStore() {
   // Initialize store on first use
   baseStore.initializeStore()
@@ -171,40 +205,6 @@ export function useGameStore() {
 
     // Save initial game state to sessionStorage for page reload persistence
     saveCurrentGameState()
-  }
-
-  function getDifficultyPoints(mode: GameSettings['mode']): number {
-    switch (mode) {
-      case 'blind':
-        return POINTS_MODE_BLIND
-      case 'typing':
-        return POINTS_MODE_TYPING
-      case 'multiple-choice':
-        return 1
-      default: {
-        const _exhaustive: never = mode
-        console.error('Unexpected game mode:', _exhaustive)
-        return 1
-      }
-    }
-  }
-
-  function updateVocCardLevelAndTime(
-    card: Card,
-    result: AnswerStatus,
-    answerTime?: number
-  ): Partial<Card> {
-    const updates: Partial<Card> = {}
-    if (result === 'correct') {
-      updates.level = Math.min(MAX_LEVEL, card.level + 1)
-    } else if (result === 'incorrect') {
-      updates.level = Math.max(MIN_LEVEL, card.level - 1)
-    }
-    if (result === 'correct' && answerTime !== undefined) {
-      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-      updates.time = roundTime(clampedTime)
-    }
-    return updates
   }
 
   function handleAnswer(result: AnswerStatus, answerTime?: number) {
