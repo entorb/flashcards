@@ -66,24 +66,3 @@ export const MAX_CARDS_PER_GAME = 10
  * - index.html (meta name="theme-color" content)
  */
 export const THEME_COLOR = '#8B6F47'
-
-/**
- * CardsPage: Time colors (from green=fast to red=slow)
- */
-export const TIME_COLORS = {
-  veryFast: '#2e7d32', // green-800
-  fast: '#558b2f', // light-green-800
-  medium: '#f57f17', // yellow-800
-  slow: '#e65100', // orange-900
-  verySlow: '#c62828' // red-800
-}
-
-/**
- * CardsPage: Thresholds for time color transitions (normalized 0-1)
- */
-export const TIME_COLOR_THRESHOLDS = {
-  veryFast: 0.2,
-  fast: 0.4,
-  medium: 0.6,
-  slow: 0.8
-}
