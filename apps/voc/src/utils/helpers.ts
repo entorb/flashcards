@@ -56,12 +56,23 @@ export function validateTypingAnswer(
   return 'incorrect'
 }
 
-function detectDelimiter(line: string): string | null {
-  if (line.includes('\t')) return '\t'
-  if (line.includes(';')) return ';'
-  if (line.includes(',')) return ','
-  if (line.includes('/')) return '/'
+/**
+ * Detect the delimiter used in the first line of text
+ */
+function detectDelimiter(firstLine: string): string | null {
+  if (firstLine.includes('\t')) return '\t'
+  if (firstLine.includes(';')) return ';'
+  if (firstLine.includes(',')) return ','
+  if (firstLine.includes('/')) return '/'
   return null
+}
+
+/**
+ * Check if a line is a header row (contains both 'voc' and 'de')
+ */
+function isHeaderLine(line: string): boolean {
+  const lower = line.toLowerCase()
+  return lower.includes('voc') && lower.includes('de')
 }
 
 /**
@@ -84,8 +95,8 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
 
   const newCards: Card[] = []
   for (const [index, line] of lines.entries()) {
-    if (index === 0 && line.toLowerCase().includes('voc') && line.toLowerCase().includes('de')) {
-      continue // Skip header
+    if (index === 0 && isHeaderLine(line)) {
+      continue
     }
 
     const parts = line.split(delimiter)
