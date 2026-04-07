@@ -190,19 +190,12 @@ describe('GamePage', () => {
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as unknown as {
-        userAnswer: number | null
-        submitAnswer: () => void
-        showFeedback: boolean
-        answerStatus: string | null
-      }
-      vm.userAnswer = 9 // correct answer for 3×3
-      vm.submitAnswer()
+      await wrapper.find('[data-cy="answer-input"]').setValue('9')
+      await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
-      expect(vm.showFeedback).toBe(true)
-      expect(vm.answerStatus).toBe('correct')
       expect(mocks.handleAnswer).toHaveBeenCalledWith('correct', expect.any(Number))
+      expect(wrapper.find('[data-cy="next-card-button"]').exists()).toBe(true)
     })
 
     it('shows feedback with incorrect status when answer is wrong', async () => {
@@ -211,19 +204,12 @@ describe('GamePage', () => {
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as unknown as {
-        userAnswer: number | null
-        submitAnswer: () => void
-        showFeedback: boolean
-        answerStatus: string | null
-      }
-      vm.userAnswer = 5 // wrong answer for 3×3
-      vm.submitAnswer()
+      await wrapper.find('[data-cy="answer-input"]').setValue('5')
+      await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
-      expect(vm.showFeedback).toBe(true)
-      expect(vm.answerStatus).toBe('incorrect')
       expect(mocks.handleAnswer).toHaveBeenCalledWith('incorrect', expect.any(Number))
+      expect(wrapper.find('[data-cy="feedback-negative"]').exists()).toBe(true)
     })
 
     it('does not submit when userAnswer is null', async () => {
@@ -232,16 +218,10 @@ describe('GamePage', () => {
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as unknown as {
-        userAnswer: number | null
-        submitAnswer: () => void
-        showFeedback: boolean
-      }
-      vm.userAnswer = null
-      vm.submitAnswer()
+      // Click submit without entering a value
+      await wrapper.find('[data-cy="submit-answer-button"]').trigger('click')
       await wrapper.vm.$nextTick()
 
-      expect(vm.showFeedback).toBe(false)
       expect(mocks.handleAnswer).not.toHaveBeenCalled()
     })
   })
@@ -269,12 +249,8 @@ describe('GamePage', () => {
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as unknown as {
-        userAnswer: number | null
-        submitAnswer: () => void
-      }
-      vm.userAnswer = 9
-      vm.submitAnswer()
+      await wrapper.find('[data-cy="answer-input"]').setValue('9')
+      await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-cy="next-card-button"]').exists()).toBe(true)
@@ -286,12 +262,8 @@ describe('GamePage', () => {
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as unknown as {
-        userAnswer: number | null
-        submitAnswer: () => void
-      }
-      vm.userAnswer = 9
-      vm.submitAnswer()
+      await wrapper.find('[data-cy="answer-input"]').setValue('9')
+      await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-cy="answer-input"]').exists()).toBe(false)
@@ -303,12 +275,8 @@ describe('GamePage', () => {
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as unknown as {
-        userAnswer: number | null
-        submitAnswer: () => void
-      }
-      vm.userAnswer = 5
-      vm.submitAnswer()
+      await wrapper.find('[data-cy="answer-input"]').setValue('5')
+      await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-cy="feedback-negative"]').exists()).toBe(true)

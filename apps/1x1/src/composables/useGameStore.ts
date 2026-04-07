@@ -1,22 +1,5 @@
-import {
-  type AnswerStatus,
-  calculatePointsBreakdown,
-  createBaseGameStore,
-  filterBelowMaxLevel,
-  filterLevel1Cards,
-  handleNextCard,
-  initializeGameFlow,
-  isEndlessMode,
-  LOOP_COUNT,
-  MAX_LEVEL,
-  MAX_TIME,
-  MIN_LEVEL,
-  MIN_TIME,
-  repeatCards,
-  roundTime,
-  type SessionMode
-} from '@flashcards/shared'
-import { computed, ref } from 'vue'
+import type { FocusType } from '@flashcards/shared'
+import { createGameStoreFactory } from '@flashcards/shared'
 
 import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from '@/constants'
 import {
@@ -30,13 +13,13 @@ import {
   initializeCards,
   parseCardQuestion,
   clearGameState as storageClearGameState,
-  resetCards as storageResetCards,
   getGameConfig as storageGetGameConfig,
   loadCards as storageLoadCards,
   loadGameState as storageLoadGameState,
   loadGameStats as storageLoadGameStats,
   loadHistory as storageLoadHistory,
   loadRange as storageLoadRange,
+  resetCards as storageResetCards,
   saveGameState as storageSaveGameState,
   saveGameStats as storageSaveGameStats,
   saveHistory as storageSaveHistory,
@@ -46,274 +29,70 @@ import {
 } from '@/services/storage'
 import type { Card, GameHistory, GameSettings } from '@/types'
 
-// Create base store with shared state and logic
-const baseStore = createBaseGameStore<Card, GameHistory, GameSettings>({
-  loadCards: storageLoadCards,
-  loadHistory: storageLoadHistory,
-  saveHistory: storageSaveHistory,
-  loadGameStats: storageLoadGameStats,
-  saveGameStats: storageSaveGameStats
-  // Note: No saveCards for 1x1, updates are handled by updateCard
-})
-
-export function useGameStore() {
-  // Initialize store on first use
-  baseStore.initializeStore()
-
-  // Load game config from storage
-  const savedConfig = storageGetGameConfig()
-  if (savedConfig && !baseStore.gameSettings.value) {
-    baseStore.gameSettings.value = savedConfig
-  }
-
-  // Track initial card count for endless mode (where gameCards shrinks)
-  const initialCardCount = ref(0)
-
-  // Restore game state if page was reloaded during a game
-  // Only restore if there was an active game saved
-  const savedGameState = storageLoadGameState()
-  if (savedGameState && savedGameState.gameCards.length > 0) {
-    baseStore.gameCards.value = savedGameState.gameCards
-    baseStore.currentCardIndex.value = savedGameState.currentCardIndex
-    baseStore.points.value = savedGameState.points
-    baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
-    baseStore.sessionMode.value = savedGameState.sessionMode ?? 'standard'
-    initialCardCount.value = savedGameState.initialCardCount ?? savedGameState.gameCards.length
-  }
-
-  // Helper function to save current game state to sessionStorage
-  function saveCurrentGameState() {
-    storageSaveGameState({
-      gameCards: baseStore.gameCards.value,
-      currentCardIndex: baseStore.currentCardIndex.value,
-      points: baseStore.points.value,
-      correctAnswersCount: baseStore.correctAnswersCount.value,
-      sessionMode: baseStore.sessionMode.value,
-      initialCardCount: initialCardCount.value
-    })
-  }
-
-  function selectCardsByMode(
-    filteredCards: Card[],
-    mode: SessionMode,
-    settings: GameSettings
-  ): Card[] {
-    if (mode === 'endless-level1') {
-      return filterLevel1Cards(filteredCards)
+export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettings>({
+  storage: {
+    loadCards: (...args) => storageLoadCards(...args),
+    loadHistory: (...args) => storageLoadHistory(...args),
+    saveHistory: (...args) => {
+      storageSaveHistory(...args)
+    },
+    loadGameStats: (...args) => storageLoadGameStats(...args),
+    saveGameStats: (...args) => {
+      storageSaveGameStats(...args)
+    },
+    getGameConfig: (...args) => storageGetGameConfig(...args),
+    setGameConfig: (...args) => {
+      storageSetGameConfig(...args)
+    },
+    loadRange: (...args) => storageLoadRange(...args),
+    getVirtualCardsForRange: (...args) => getVirtualCardsForRange(...args),
+    initializeCards: (...args) => initializeCards(...args),
+    saveGameState: (...args) => {
+      storageSaveGameState(...args)
+    },
+    loadGameState: (...args) => storageLoadGameState(...args),
+    clearGameState: (...args) => {
+      storageClearGameState(...args)
+    },
+    setGameResult: (...args) => {
+      storageSetGameResult(...args)
+    },
+    updateCard: (...args) => {
+      storageUpdateCard(...args)
+    },
+    resetCards: (...args) => {
+      storageResetCards(...args)
     }
-    if (mode === 'endless-level5') {
-      return filterBelowMaxLevel(filteredCards)
-    }
-    if (mode === '3-rounds') {
-      const focusSelected = selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
-      return repeatCards(focusSelected, LOOP_COUNT)
-    }
-    return selectCardsForRound(filteredCards, settings.focus, MAX_CARDS_PER_GAME)
-  }
-
-  // App-specific actions
-  function startGame(settings: GameSettings, mode: SessionMode = 'standard', forceReset = false) {
-    // If forceReset is true, always start a new game (user clicked Start button)
-    // Otherwise, only start if there are no cards (handles page reload recovery)
-    if (!forceReset && baseStore.gameCards.value.length > 0) {
-      return
-    }
-
-    // Initialize base cards on first game start (if no cards exist)
-    const existingCards = storageLoadCards()
-    if (existingCards.length === 0) {
-      initializeCards()
-    }
-
-    storageSetGameConfig(settings)
-    baseStore.gameSettings.value = settings
-    baseStore.resetGameState()
-    baseStore.sessionMode.value = mode
-
-    // Get virtual cards for current range (includes non-existent cards with defaults)
-    const range = storageLoadRange()
-    const allAvailableCards = getVirtualCardsForRange(range)
+  },
+  filterCards: (allCards, settings, range) => {
     const rangeSet = new Set(range)
-
-    // Filter cards based on selection type
-    let filteredCards: Card[]
-
     if (settings.select === 'x²') {
-      filteredCards = filterCardsSquares(allAvailableCards, rangeSet)
-    } else if (settings.select === 'all') {
-      filteredCards = filterCardsAll(allAvailableCards, rangeSet)
-    } else {
-      const selectArray = Array.isArray(settings.select) ? settings.select : []
-      filteredCards = filterCardsBySelection(allAvailableCards, selectArray, rangeSet)
+      return filterCardsSquares(allCards, rangeSet)
     }
-
-    const selectedCards = selectCardsByMode(filteredCards, mode, settings)
-
-    // Use centralized game state flow to store settings + selected cards
-    initializeGameFlow(GAME_STATE_FLOW_CONFIG, settings, selectedCards)
-
-    baseStore.gameCards.value = selectedCards
-    initialCardCount.value = selectedCards.length
-
-    // Save initial game state for reload recovery
-    storageSaveGameState({
-      gameCards: baseStore.gameCards.value,
-      currentCardIndex: 0,
-      points: 0,
-      correctAnswersCount: 0,
-      sessionMode: mode,
-      initialCardCount: selectedCards.length
-    })
-  }
-
-  function handleAnswer(result: AnswerStatus, answerTime: number) {
-    const card = currentCard.value
-    if (!(card && baseStore.gameSettings.value)) return
-
-    if (result === 'correct' || result === 'close') {
-      // difficultyPoints is the smaller factor of the multiplication (e.g. 3 for 7x3)
-      const { x, y } = parseCardQuestion(card.question)
-      const difficultyPoints = result === 'correct' ? Math.min(x, y) : 0
-
-      const pointsBreakdown = calculatePointsBreakdown({
-        difficultyPoints,
-        level: card.level,
-        // no timeBonus for first answer on a card
-        timeBonus: card.time < MAX_TIME && answerTime <= card.time,
-        closeAdjustment: result === 'close'
-      })
-
-      baseStore.handleAnswerBase(result, pointsBreakdown)
+    if (settings.select === 'all') {
+      return filterCardsAll(allCards, rangeSet)
     }
-
-    if (result === 'correct' || result === 'close') {
-      const newLevel = Math.min(card.level + 1, MAX_LEVEL)
-      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-      // Update in-memory card level (needed for endless mode card removal check)
-      card.level = newLevel
-      card.time = roundTime(clampedTime)
-      storageUpdateCard(card.question, {
-        level: newLevel,
-        time: card.time
-      })
-    } else {
-      // result === 'incorrect'
-      const newLevel = Math.max(card.level - 1, MIN_LEVEL)
-      card.level = newLevel
-      storageUpdateCard(card.question, {
-        level: newLevel
-      })
-    }
-
-    // Save game state after answer
-    saveCurrentGameState()
-  }
-
-  // Wrap nextCard to save state and handle endless mode
-  const baseNextCard = baseStore.nextCard
-  function nextCard() {
-    const isGameOver = handleNextCard(
-      baseStore.gameCards,
-      baseStore.currentCardIndex,
-      baseStore.sessionMode.value,
-      baseNextCard,
-      (c: Card) => c.question
-    )
-
-    if (!isGameOver) {
-      saveCurrentGameState()
-    }
-    return isGameOver
-  }
-
-  function finishGame() {
-    if (!baseStore.gameSettings.value) return
-
-    const settingsForHistory = { ...baseStore.gameSettings.value }
-    const range = storageLoadRange()
+    const selectArray = Array.isArray(settings.select) ? settings.select : []
+    return filterCardsBySelection(allCards, selectArray, rangeSet)
+  },
+  getDifficultyPoints: card => {
+    const { x, y } = parseCardQuestion(card.question)
+    return Math.min(x, y)
+  },
+  selectCardsForRound: (cards, focus, count) =>
+    selectCardsForRound(cards, focus as FocusType, count),
+  buildHistorySettings: (settings, range) => {
+    const settingsForHistory = { ...settings }
     const rangeSet = new Set(range)
-
-    // If all values in current range are selected, show as 'all'
     if (
-      Array.isArray(baseStore.gameSettings.value.select) &&
-      baseStore.gameSettings.value.select.length === range.length &&
-      baseStore.gameSettings.value.select.every(num => rangeSet.has(num))
+      Array.isArray(settings.select) &&
+      settings.select.length === range.length &&
+      settings.select.every(num => rangeSet.has(num))
     ) {
       settingsForHistory.select = 'all'
     }
-
-    const historyEntry: GameHistory = {
-      date: new Date().toISOString(),
-      settings: settingsForHistory,
-      points: baseStore.points.value,
-      correctAnswers: baseStore.correctAnswersCount.value
-    }
-
-    // Update history and stats in memory only - GameOverPage will save to localStorage
-    baseStore.history.value = [...baseStore.history.value, historyEntry]
-    baseStore.gameStats.value.gamesPlayed++
-    // points and correctAnswers already persisted per-answer in handleAnswerBase
-
-    // Save game result to sessionStorage for GameOverPage
-    // For endless mode, gameCards is empty at game end, so use initialCardCount
-    const totalCards = isEndlessMode(baseStore.sessionMode.value)
-      ? initialCardCount.value
-      : baseStore.gameCards.value.length
-    storageSetGameResult({
-      points: baseStore.points.value,
-      correctAnswers: baseStore.correctAnswersCount.value,
-      totalCards
-    })
-
-    // Clear game state from sessionStorage
-    storageClearGameState()
-
-    // Clear session mode
-    baseStore.sessionMode.value = 'standard'
-
-    // Reset in-memory game state to prevent "11/10" bug when starting a new game
-    baseStore.resetGameState()
-  }
-
-  function discardGame() {
-    // Clear game state from sessionStorage when user abandons the game
-    storageClearGameState()
-    // Reset game state in memory (delegated to base store, which also resets sessionMode)
-    baseStore.discardGame()
-  }
-
-  function resetCards() {
-    storageClearGameState()
-    storageResetCards()
-    baseStore.allCards.value = storageLoadCards()
-  }
-
-  // Computed
-  const currentCard = computed(() => {
-    return baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null
-  })
-
-  return {
-    // State (from base store)
-    allCards: baseStore.allCards,
-    gameCards: baseStore.gameCards,
-    gameSettings: baseStore.gameSettings,
-    sessionMode: baseStore.sessionMode,
-    currentCardIndex: baseStore.currentCardIndex,
-    points: baseStore.points,
-    correctAnswersCount: baseStore.correctAnswersCount,
-    history: baseStore.history,
-    gameStats: baseStore.gameStats,
-    currentCard,
-    lastPointsBreakdown: baseStore.lastPointsBreakdown,
-
-    // Actions
-    startGame,
-    handleAnswer,
-    nextCard,
-    finishGame,
-    discardGame,
-    resetCards,
-    moveAllCards: baseStore.moveAllCards
-  }
-}
+    return settingsForHistory
+  },
+  gameStateFlowConfig: GAME_STATE_FLOW_CONFIG,
+  maxCardsPerGame: MAX_CARDS_PER_GAME
+})

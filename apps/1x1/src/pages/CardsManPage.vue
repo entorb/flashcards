@@ -3,18 +3,17 @@ import type { BaseCard } from '@flashcards/shared'
 import {
   BG_COLORS,
   LEVEL_COLORS,
-  MAX_TIME,
-  MIN_TIME,
   TEXT_DE,
   useCardFiltering,
   useResetCards
 } from '@flashcards/shared'
 import { CardsListOfCards, CardsManLevelDistribution } from '@flashcards/shared/components'
+import { getTimeTextColor } from '@flashcards/shared/utils'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '@/composables/useGameStore'
-import { DEFAULT_RANGE, TIME_COLOR_THRESHOLDS, TIME_COLORS } from '@/constants'
+import { DEFAULT_RANGE } from '@/constants'
 import {
   createDefaultCard,
   loadCards,
@@ -81,15 +80,6 @@ function getCardKey(card: BaseCard): string {
   return c.question
 }
 
-const minTime = computed(() => {
-  if (cardsInRange.value.length === 0) return MIN_TIME
-  return Math.max(MIN_TIME, Math.min(...cardsInRange.value.map(c => c.time)))
-})
-const maxTime = computed(() => {
-  if (cardsInRange.value.length === 0) return MAX_TIME
-  return Math.min(MAX_TIME, Math.max(...cardsInRange.value.map(c => c.time)))
-})
-
 // Get Y values to display based on current range
 const yValues = computed(() => range.value)
 
@@ -120,32 +110,13 @@ function getCard(y: number, x: number): Card {
   return createDefaultCard(y, x)
 }
 
-function getTimeTextColor(time: number): string {
-  if (cardsInRange.value.length === 0) return '#666666'
-
-  const min = minTime.value
-  const max = maxTime.value
-  const range = max - min
-
-  if (range === 0) return TIME_COLORS.veryFast
-
-  const normalized = (time - min) / range
-
-  // Green (fast) to Red (slow) using thresholds
-  if (normalized < TIME_COLOR_THRESHOLDS.veryFast) return TIME_COLORS.veryFast
-  if (normalized < TIME_COLOR_THRESHOLDS.fast) return TIME_COLORS.fast
-  if (normalized < TIME_COLOR_THRESHOLDS.medium) return TIME_COLORS.medium
-  if (normalized < TIME_COLOR_THRESHOLDS.slow) return TIME_COLORS.slow
-  return TIME_COLORS.verySlow
-}
-
 function getCellStyle(y: number, x: number): Record<string, string> {
   // NOSONAR: Intentional symmetric access pattern for multiplication table (swap indices by design)
   const card = y < x ? getCard(x, y) : getCard(y, x)
 
   return {
     backgroundColor: LEVEL_COLORS[card.level] ?? BG_COLORS.disabled,
-    color: getTimeTextColor(card.time)
+    color: getTimeTextColor(card.time, cardsInRange.value)
   }
 }
 
