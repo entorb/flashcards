@@ -9,6 +9,9 @@ This repository hosts the code of three educational apps, implementing flashcard
 <a href="https://entorb.net/1x1/">1×1 Trainer</a>
 </th>
 <th align="center">
+<a href="https://entorb.net/fc-div/">Division</a>
+</th>
+<th align="center">
 <a href="https://entorb.net/voc/">Vokabeltrainer</a>
 </th>
 <th align="center">
@@ -24,6 +27,11 @@ This repository hosts the code of three educational apps, implementing flashcard
 <td align="center">
 <a href="https://entorb.net/1x1/">
 <img src="apps/1x1/assets/icon.svg" alt="1×1 Murmeltier" width="120">
+</a>
+</td>
+<td align="center">
+<a href="https://entorb.net/fc-div/">
+<img src="apps/div/assets/icon.svg" alt="Division Huhn" width="120">
 </a>
 </td>
 <td align="center">
@@ -62,7 +70,6 @@ This repository hosts the code of three educational apps, implementing flashcard
 - Quasar Framework, no custom styles
 - Typescript with strict rules
 - Biome (formatting + linting)
-- ESLint
 - Vitest unit tests
 - Cypress E2E test
 - [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_flashcards&branch=main) for
@@ -75,6 +82,7 @@ This repository hosts the code of three educational apps, implementing flashcard
 pnpm install             # Install all dependencies
 pnpm dev                 # Run both apps in parallel
 pnpm dev:1x1             # Run only 1x1 app
+pnpm dev:div             # Run only div app
 pnpm dev:voc             # Run only voc app
 pnpm dev:lwk             # Run only lwk app
 pnpm dev:eta             # Run only eta app
@@ -82,6 +90,7 @@ pnpm dev:eta             # Run only eta app
 # Build
 pnpm build               # Build all apps
 pnpm build:1x1           # Build only 1x1 app
+pnpm build:div           # Build only div app
 pnpm build:voc           # Build only voc app
 pnpm build:lwk           # Build only lwk app
 pnpm build:eta           # Build only eta app
@@ -89,6 +98,7 @@ pnpm build:eta           # Build only eta app
 # Preview
 pnpm preview             # Preview all apps in parallel
 pnpm preview:1x1         # Preview only 1x1 app
+pnpm preview:div         # Preview only div app
 pnpm preview:voc         # Preview only voc app
 pnpm preview:lwk         # Preview only lwk app
 pnpm preview:eta         # Preview only eta app
@@ -109,12 +119,14 @@ pnpm run test
 
 # Testing Cypress E2E Tests
 pnpm run cy:open:1x1
+pnpm run cy:open:div
 pnpm run cy:open:voc
 pnpm run cy:open:lwk
 pnpm run cy:open:eta
 # headless
 pnpm run cy:run
 pnpm run cy:run:1x1
+pnpm run cy:run:div
 pnpm run cy:run:voc
 pnpm run cy:run:lwk
 pnpm run cy:run:eta

@@ -3,6 +3,7 @@
 **pnpm workspace** with Vue 3 / Quasar / TypeScript educational apps sharing common code.
 
 - **[apps/1x1](apps/1x1/AGENTS.md)** — Multiplication tables
+- **[apps/div](apps/div/AGENTS.md)** — Division training
 - **[apps/voc](apps/voc/AGENTS.md)** — Vocabulary learning
 - **[apps/lwk](apps/lwk/AGENTS.md)** — Spelling trainer
 - **[apps/eta](apps/eta/AGENTS.md)** — Homework time estimator
@@ -92,6 +93,7 @@ Commit only after `pnpm run check` and `pnpm run cy:run` pass. Commit header onl
 flashcards/
 ├── apps/
 │   ├── 1x1/              # Port 5173/4173
+│   ├── div/              # Port 5177/4177
 │   ├── voc/              # Port 5174/4174
 │   ├── lwk/              # Port 5175/4175
 │   └── eta/              # Port 5176/4176
