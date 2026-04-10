@@ -135,86 +135,55 @@ function goToInfo() {
     </template>
 
     <template #config>
-      <q-list>
-        <!-- Deck Selection -->
-        <q-item class="q-px-none q-mb-sm">
-          <q-item-section
-            side
-            style="min-width: 100px"
-          >
-            <div class="text-subtitle2">
-              {{ TEXT_DE.lwk.decks.title }}
-            </div>
-          </q-item-section>
-          <q-item-section>
-            <q-select
-              v-model="settings.deck"
-              outlined
-              dense
-              :options="deckOptions"
-              emit-value
-              map-options
-              data-cy="deck-select"
-              @update:model-value="handleDeckChange"
-            />
-          </q-item-section>
-        </q-item>
+      <!-- Deck Selection -->
+      <div class="q-mb-sm">
+        <div class="text-subtitle2 q-mb-xs">
+          {{ TEXT_DE.lwk.decks.title }}
+        </div>
+        <q-select
+          v-model="settings.deck"
+          outlined
+          dense
+          :options="deckOptions"
+          emit-value
+          map-options
+          data-cy="deck-select"
+          @update:model-value="handleDeckChange"
+        />
+      </div>
 
-        <!-- Mode Selection -->
-        <q-item class="q-px-none q-mb-sm">
-          <q-item-section
-            side
-            style="min-width: 100px"
+      <!-- Mode Selection -->
+      <div class="q-mb-sm">
+        <div class="text-subtitle2 q-mb-xs">
+          {{ TEXT_DE.shared.words.mode }}
+        </div>
+        <div
+          class="row q-gutter-xs"
+          data-cy="mode-selector"
+        >
+          <q-btn
+            v-for="option in modeOptions"
+            :key="option.value"
+            :label="option.label"
+            :icon="option.icon"
+            :disable="option.disable"
+            :outline="settings.mode !== option.value"
+            :unelevated="settings.mode === option.value"
+            :color="settings.mode === option.value ? 'primary' : 'grey-7'"
+            no-caps
+            class="col"
+            :data-cy="`mode-option-${option.value}`"
+            @click="!option.disable && (settings.mode = option.value)"
           >
-            <div class="text-subtitle2">
-              {{ TEXT_DE.shared.words.mode }}
-            </div>
-          </q-item-section>
-          <q-item-section>
-            <div
-              class="row q-gutter-xs"
-              data-cy="mode-selector"
-            >
-              <q-btn
-                v-for="option in modeOptions"
-                :key="option.value"
-                :label="option.label"
-                :icon="option.icon"
-                :disable="option.disable"
-                :outline="settings.mode !== option.value"
-                :unelevated="settings.mode === option.value"
-                :color="settings.mode === option.value ? 'primary' : 'grey-7'"
-                no-caps
-                class="col"
-                :data-cy="`mode-option-${option.value}`"
-                @click="!option.disable && (settings.mode = option.value)"
-              >
-                <q-tooltip v-if="option.tooltip">
-                  {{ option.tooltip }}
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </q-item-section>
-        </q-item>
+            <q-tooltip v-if="option.tooltip">
+              {{ option.tooltip }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </div>
 
-        <!-- Focus Selection -->
-        <q-item class="q-px-none">
-          <q-item-section
-            side
-            style="min-width: 100px"
-          >
-            <div class="text-subtitle2">
-              {{ TEXT_DE.shared.words.focus }}
-            </div>
-          </q-item-section>
-          <q-item-section>
-            <HomeFocusSelector
-              v-model="settings.focus"
-              hide-label
-            />
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <!-- Focus Selection -->
+      <HomeFocusSelector v-model="settings.focus" />
     </template>
     <template #extra-buttons>
       <div class="row q-gutter-sm q-mb-sm">
