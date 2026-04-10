@@ -1,0 +1,30 @@
+{
+  "include": [
+    "../../cypress.config.base.ts",
+    "../../packages/shared/src/**/*.ts",
+    "../../packages/shared/src/**/*.vue",
+    "../../vite.config.base.ts",
+    "../../vite.config.factory.ts",
+    "cypress.config.ts",
+    "src/constants.ts",
+    "src/types.ts",
+    "vite.config.ts"
+  ],
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "composite": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2020",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@flashcards/shared": ["../../packages/shared/src/index.ts"],
+      "@flashcards/shared/components": ["../../packages/shared/src/components/index.ts"]
+    }
+  }
+}
