@@ -12,6 +12,7 @@ export const TEXT_DE = {
   appTitle_voc: "Rabat's Vokabeln",
   appTitle_lwk: "Eisi's Lernwörter",
   appTitle_div: "Diva's Division",
+  appTitle_pum: "Plumi's Plus & Minus",
 
   shared: {
     footer: {
@@ -70,6 +71,7 @@ export const TEXT_DE = {
       cardDescriptionVoc: 'Eine Karte ist ein Wort mit Übersetzung.',
       cardDescriptionLwk: 'Eine Karte ist ein Lernwort zum Üben der Rechtschreibung.',
       cardDescriptionDiv: 'Eine Karte ist eine Divisionsaufgabe (z.B. 18:3=6).',
+      cardDescriptionPum: 'Eine Karte ist eine Plus- oder Minusaufgabe (z.B. 7+3=10).',
       levelSystemTitle: 'Level-System',
       levelSystem:
         'Jede Karte hat ein Level von 1 (unbekannt) bis 5 (sicher). Richtige Antworten erhöhen das Level, falsche verringern es.',
@@ -155,6 +157,23 @@ export const TEXT_DE = {
     selection: 'Teiler',
     info: {
       difficulty: 'Division: 18:3 -> 3'
+    }
+  },
+
+  // PlusMinus App specific
+  plusMinus: {
+    selection: {
+      operations: 'Rechenart',
+      difficulties: 'Schwierigkeit',
+      plus: '+',
+      minus: '−',
+      simple: '1',
+      medium: '2',
+      advanced: '3'
+    },
+    info: {
+      cardDescription: 'Eine Karte ist eine Plus- oder Minusaufgabe (z.B. 7+3=10).',
+      difficulty: 'Plus/Minus: 7+3 → 3, 15-8 → 8+2'
     }
   },
 
