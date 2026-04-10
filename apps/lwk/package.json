@@ -1,0 +1,32 @@
+{
+  "name": "lwk",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24.2.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "check": "run-p format lint types spell test",
+    "cy:open": "cypress open --e2e",
+    "cy:run": "cypress run --e2e --quiet",
+    "dev": "vite",
+    "format": "biome check --write .",
+    "lint": "eslint . --cache --cache-location .cache/eslintcache --cache-strategy content --fix",
+    "preview": "vite preview",
+    "run": "run-s build preview",
+    "spell": "cspell --cache --quiet \"src/**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",
+    "test:cov": "vitest --watch=false --coverage",
+    "test": "vitest --watch=false",
+    "types": "vue-tsc --build"
+  },
+  "dependencies": {
+    "@flashcards/shared": "workspace:*",
+    "@quasar/extras": "^1.18.0",
+    "quasar": "^2.19.3",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4",
+    "workbox-window": "^7.4.0"
+  }
+}
