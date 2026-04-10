@@ -36,7 +36,7 @@ export const answerCurrentCardCorrectly = (): void => {
         const trimmed = questionText.trim()
         const card = cards.find(c => c.voc === trimmed)
         const correctAnswer = card ? card.de.split('/')[0].trim() : ''
-        cy.get('[data-cy="answer-input"]').clear()
+        cy.get('[data-cy="answer-input"]', { timeout: 10000 }).clear()
         cy.get('[data-cy="answer-input"]').type(correctAnswer)
         cy.get('[data-cy="submit-answer-button"]').click()
         cy.get('[data-cy="points-breakdown-total"]')
