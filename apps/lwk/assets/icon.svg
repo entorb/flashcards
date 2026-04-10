@@ -6,6 +6,8 @@
   aria-labelledby="eisi-title"
 >
   <title id="eisi-title">Eisi the Ice Bear - Smiling</title>
+  <!-- White background -->
+  <rect x="20" y="20" width="60" height="55" fill="#FFFFFF"/>
   <g>
     <!-- Head -->
     <circle
