@@ -96,7 +96,6 @@ export const TEXT_DE = {
       aboutShare: 'Gerne teilen'
     },
     scoring: {
-      title: 'Scoring-Regeln',
       basePointsTitle: 'Levelpunkte',
       basePointsLevel1: 'Level 1: 5 Punkte',
       basePointsLevel2: 'Level 2: 4 Punkte',
@@ -172,7 +171,6 @@ export const TEXT_DE = {
       advanced: '3'
     },
     info: {
-      cardDescription: 'Eine Karte ist eine Plus- oder Minusaufgabe (z.B. 7+3=10).',
       difficulty: 'Plus/Minus: 7+3 → 3, 15-8 → 8+2'
     }
   },
@@ -270,9 +268,7 @@ export const TEXT_DE = {
       hidden: 'Verdeckt',
       tooGoodForCopy: 'Dafür bist du zu gut'
     },
-    game: {
-      timeBonus: 'Geschwindigkeits-Bonus!'
-    },
+    game: {},
     home: {},
     cards: {
       header:
@@ -305,9 +301,7 @@ export const TEXT_DE = {
       addDeck: 'Kiste hinzufügen',
       deckNamePlaceholder: 'Kisten-Name'
     },
-    gameOver: {
-      points: 'Punkte:'
-    },
+    gameOver: {},
     info: {
       modeCopyInfo: 'Abschreiben: Level 1-2 (zum Üben)',
       modeHiddenInfo: 'Verdeckt: Wort kurz merken, dann schreiben',
