@@ -249,7 +249,4 @@ function handleResetCardsToDefaultSet() {
   padding-bottom: 100px !important;
 }
 
-.deck-selector-card {
-  border-left: 4px solid var(--q-primary);
-}
 </style>
