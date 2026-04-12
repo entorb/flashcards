@@ -70,15 +70,3 @@ export function clearSession(): void {
     console.error('Failed to clear session:', error)
   }
 }
-
-/**
- * Check if an active session exists in localStorage
- */
-export function hasActiveSession(): boolean {
-  try {
-    return globalThis.localStorage.getItem(STORAGE_KEYS.SESSION) !== null
-  } catch (error) {
-    console.error('Failed to check active session:', error)
-    return false
-  }
-}
