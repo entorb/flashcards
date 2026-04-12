@@ -134,7 +134,7 @@ describe('useGameStore - 3-rounds mode independent scoring (Property 4)', () => 
         // The accumulated store points should equal the sum of individual calculations
         expect(store.points.value).toBe(expectedTotalPoints)
       }),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   })
 })

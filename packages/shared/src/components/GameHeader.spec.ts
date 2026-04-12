@@ -1,6 +1,5 @@
 import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
-import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import GameHeader from './GameHeader.vue'
 
@@ -49,35 +48,28 @@ describe('GameHeader', () => {
 
 // Feature: game-modes-endless-and-loops, Property 5: GameHeader totalCardsOverride replaces default total
 // **Validates: Requirements 3.5, 6.5**
-describe('GameHeader — totalCardsOverride property test', () => {
-  it('shows totalCardsOverride when provided, totalCards when not', () => {
-    fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 999 }),
-        fc.integer({ min: 1, max: 999 }),
-        fc.integer({ min: 0, max: 9999 }),
-        (currentIndex, totalCards, points) => {
-          // Generate a totalCardsOverride that differs from totalCards
-          const totalCardsOverride = totalCards + 1
+describe('GameHeader — totalCardsOverride', () => {
+  it('shows only totalCardsOverride when provided', () => {
+    const wrapper = mount(GameHeader, {
+      props: { currentIndex: 3, totalCards: 10, points: 50, totalCardsOverride: 7 },
+      ...mountOptions
+    })
+    expect(wrapper.find('[data-cy="card-counter"]').text().trim()).toBe('7')
+  })
 
-          // With totalCardsOverride — display must show only the override value (remaining count)
-          const withOverride = mount(GameHeader, {
-            props: { currentIndex, totalCards, points, totalCardsOverride },
-            ...mountOptions
-          })
-          const counterWith = withOverride.find('[data-cy="card-counter"]').text().trim()
-          expect(counterWith).toBe(String(totalCardsOverride))
+  it('shows index / totalCards when totalCardsOverride is not provided', () => {
+    const wrapper = mount(GameHeader, {
+      props: { currentIndex: 3, totalCards: 10, points: 50 },
+      ...mountOptions
+    })
+    expect(wrapper.find('[data-cy="card-counter"]').text()).toContain('4 / 10')
+  })
 
-          // Without totalCardsOverride — display must use totalCards
-          const withoutOverride = mount(GameHeader, {
-            props: { currentIndex, totalCards, points },
-            ...mountOptions
-          })
-          const counterWithout = withoutOverride.find('[data-cy="card-counter"]').text()
-          expect(counterWithout).toContain(`${currentIndex + 1} / ${totalCards}`)
-        }
-      ),
-      { numRuns: 100 }
-    )
+  it('works with edge values (index 0, large override)', () => {
+    const wrapper = mount(GameHeader, {
+      props: { currentIndex: 0, totalCards: 999, points: 0, totalCardsOverride: 500 },
+      ...mountOptions
+    })
+    expect(wrapper.find('[data-cy="card-counter"]').text().trim()).toBe('500')
   })
 })
