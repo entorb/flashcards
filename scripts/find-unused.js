@@ -467,7 +467,13 @@ function stripComments(content) {
   result = result.replace(/\/\*[\s\S]*?\*\//g, '')
 
   // Remove HTML comments (<!-- ... -->)
-  result = result.replace(/<!--[\s\S]*?-->/g, '')
+  // Repeat until stable to avoid incomplete multi-character sanitization
+  // where removing one match can create a new "<!--" sequence.
+  let previous
+  do {
+    previous = result
+    result = result.replace(/<!--[\s\S]*?-->/g, '')
+  } while (result !== previous)
 
   return result
 }
