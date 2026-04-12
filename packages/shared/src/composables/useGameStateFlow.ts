@@ -72,20 +72,6 @@ export function removeCardFromGame<TCard>(config: GameStateFlowConfig, cardIndex
 }
 
 /**
- * Update game statistics in session state
- * Called from GamePage as user plays
- */
-export function updateGameStats(
-  config: GameStateFlowConfig,
-  points: number,
-  correctAnswers: number,
-  totalCards: number
-): void {
-  const result: GameResult = { points, correctAnswers, totalCards }
-  saveSessionJSON(config.gameResultKey, result)
-}
-
-/**
  * Transfer game results from sessionStorage to localStorage with bonuses
  * Called from GameOverPage onMounted
  *
@@ -149,15 +135,6 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
     totalPoints: finalPoints,
     dailyInfo
   }
-}
-
-/**
- * Clear all game session data from sessionStorage
- * Called from GameOverPage when navigating home
- */
-export function clearGameSessionData(config: GameStateFlowConfig): void {
-  globalThis.sessionStorage.removeItem(config.selectedCardsKey)
-  globalThis.sessionStorage.removeItem(config.gameResultKey)
 }
 
 /**

@@ -1,13 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { GameStateFlowConfig } from './useGameStateFlow'
 import {
-  clearGameSessionData,
   getGameCards,
   getLastGameSettings,
   initializeGameFlow,
   removeCardFromGame,
-  transferGameResultsWithBonuses,
-  updateGameStats
+  transferGameResultsWithBonuses
 } from './useGameStateFlow'
 
 interface TestCard {
@@ -134,60 +132,6 @@ describe('useGameStateFlow', () => {
     })
   })
 
-  describe('updateGameStats', () => {
-    it('saves game result to sessionStorage', () => {
-      updateGameStats(config, 42, 3, 5)
-      const stored = sessionStorage.getItem(config.gameResultKey)
-      expect(stored).not.toBeNull()
-      const result = JSON.parse(stored!)
-      expect(result).toEqual({ points: 42, correctAnswers: 3, totalCards: 5 })
-    })
-
-    it('overwrites previous result on repeated calls', () => {
-      updateGameStats(config, 10, 1, 5)
-      updateGameStats(config, 80, 4, 5)
-      const stored = sessionStorage.getItem(config.gameResultKey)
-      const result = JSON.parse(stored!)
-      expect(result.points).toBe(80)
-      expect(result.correctAnswers).toBe(4)
-    })
-
-    it('saves zero values correctly', () => {
-      updateGameStats(config, 0, 0, 0)
-      const stored = sessionStorage.getItem(config.gameResultKey)
-      const result = JSON.parse(stored!)
-      expect(result).toEqual({ points: 0, correctAnswers: 0, totalCards: 0 })
-    })
-  })
-
-  describe('clearGameSessionData', () => {
-    it('removes selected cards key from sessionStorage', () => {
-      initializeGameFlow(config, sampleSettings, sampleCards)
-      updateGameStats(config, 10, 2, 3)
-      clearGameSessionData(config)
-      expect(sessionStorage.getItem(config.selectedCardsKey)).toBeNull()
-    })
-
-    it('removes game result key from sessionStorage', () => {
-      initializeGameFlow(config, sampleSettings, sampleCards)
-      updateGameStats(config, 10, 2, 3)
-      clearGameSessionData(config)
-      expect(sessionStorage.getItem(config.gameResultKey)).toBeNull()
-    })
-
-    it('does not affect localStorage', () => {
-      initializeGameFlow(config, sampleSettings, sampleCards)
-      clearGameSessionData(config)
-      expect(localStorage.getItem(config.settingsKey)).not.toBeNull()
-    })
-
-    it('is safe to call when keys are already absent', () => {
-      expect(() => {
-        clearGameSessionData(config)
-      }).not.toThrow()
-    })
-  })
-
   describe('getLastGameSettings', () => {
     it('returns stored settings from localStorage', () => {
       initializeGameFlow(config, sampleSettings, sampleCards)
@@ -245,6 +189,19 @@ describe('transferGameResultsWithBonuses', () => {
     sessionStorage.clear()
   })
 
+  /** Seed a game result into sessionStorage (replaces removed updateGameStats) */
+  function seedGameResult(
+    cfg: GameStateFlowConfig,
+    points: number,
+    correctAnswers: number,
+    totalCards: number
+  ): void {
+    sessionStorage.setItem(
+      cfg.gameResultKey,
+      JSON.stringify({ points, correctAnswers, totalCards })
+    )
+  }
+
   it('throws when no game result in sessionStorage', () => {
     const saveHistory = vi.fn()
     const saveStats = vi.fn()
@@ -255,7 +212,7 @@ describe('transferGameResultsWithBonuses', () => {
   })
 
   it('returns firstGame bonus on first game of the day', () => {
-    updateGameStats(transferConfig, 10, 3, 5)
+    seedGameResult(transferConfig, 10, 3, 5)
     const saveHistory = vi.fn()
     const saveStats = vi.fn()
     const entry: TestHistory = { date: '2024-01-01', points: 0, correctAnswers: 3, totalCards: 5 }
@@ -281,7 +238,7 @@ describe('transferGameResultsWithBonuses', () => {
       JSON.stringify({ date: today, gamesPlayed: 4 })
     )
 
-    updateGameStats(transferConfig, 20, 4, 5)
+    seedGameResult(transferConfig, 20, 4, 5)
     const saveHistory = vi.fn()
     const saveStats = vi.fn()
     const entry: TestHistory = { date: '2024-01-01', points: 0, correctAnswers: 4, totalCards: 5 }
@@ -300,7 +257,7 @@ describe('transferGameResultsWithBonuses', () => {
   })
 
   it('calls saveHistory and saveStats with updated data', () => {
-    updateGameStats(transferConfig, 30, 5, 5)
+    seedGameResult(transferConfig, 30, 5, 5)
     const saveHistory = vi.fn()
     const saveStats = vi.fn()
     const entry: TestHistory = { date: '2024-01-02', points: 0, correctAnswers: 5, totalCards: 5 }
@@ -329,7 +286,7 @@ describe('transferGameResultsWithBonuses', () => {
       transferConfig.historyKey,
       JSON.stringify([{ date: '2024-01-01', points: 10, correctAnswers: 2, totalCards: 5 }])
     )
-    updateGameStats(transferConfig, 15, 3, 5)
+    seedGameResult(transferConfig, 15, 3, 5)
     const saveHistory = vi.fn()
     const saveStats = vi.fn()
     const entry: TestHistory = { date: '2024-01-02', points: 0, correctAnswers: 3, totalCards: 5 }
@@ -341,7 +298,7 @@ describe('transferGameResultsWithBonuses', () => {
   })
 
   it('mutates historyEntry.points to include bonus', () => {
-    updateGameStats(transferConfig, 10, 2, 5)
+    seedGameResult(transferConfig, 10, 2, 5)
     const saveHistory = vi.fn()
     const saveStats = vi.fn()
     const entry: TestHistory = { date: '2024-01-01', points: 0, correctAnswers: 2, totalCards: 5 }
