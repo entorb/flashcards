@@ -24,19 +24,21 @@ const emit = defineEmits<{
   'update:modelValue': [value: string[]]
 }>()
 
+function emitSelection(values: string[]) {
+  emit('update:modelValue', values)
+}
+
 function toggle(value: string) {
   const allValues = props.buttons.map(b => b.value)
   const current = props.modelValue
   const allSelected = allValues.every(v => current.includes(v))
 
   if (allSelected) {
-    emit('update:modelValue', [value])
-  } else if (current.includes(value) && current.length === 1) {
-    emit('update:modelValue', [...allValues])
+    emitSelection([value])
   } else if (current.includes(value)) {
-    emit('update:modelValue', [...allValues])
+    emitSelection([...allValues])
   } else {
-    emit('update:modelValue', [...current, value])
+    emitSelection([...current, value])
   }
 }
 </script>
