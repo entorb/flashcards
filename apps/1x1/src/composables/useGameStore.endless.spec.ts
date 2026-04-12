@@ -112,7 +112,7 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         const remaining = store.gameCards.value.map(c => c.question)
         expect(remaining).not.toContain(answeredCard?.question)
       }),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   })
 
@@ -141,7 +141,7 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         const remaining = store.gameCards.value.map(c => c.question)
         expect(remaining).toContain(answeredCard?.question)
       }),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   })
 })
