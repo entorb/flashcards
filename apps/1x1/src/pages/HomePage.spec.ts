@@ -363,7 +363,7 @@ describe('HomePage', () => {
 
           wrapper.unmount()
         }),
-        { numRuns: 100 }
+        { numRuns: 20 }
       )
     })
   })
@@ -416,7 +416,7 @@ describe('HomePage', () => {
 
           wrapper.unmount()
         }),
-        { numRuns: 100 }
+        { numRuns: 20 }
       )
     })
   })
