@@ -1,6 +1,4 @@
 // Shared test utilities for Vitest setup
-import { config } from '@vue/test-utils'
-import { Quasar } from 'quasar'
 import { vi } from 'vitest'
 
 // Create in-memory storage implementation for localStorage and sessionStorage
@@ -31,20 +29,6 @@ export class LocalStorageMock implements Storage {
   setItem(key: string, value: string): void {
     this.store.set(key, value)
   }
-}
-
-// Configure Quasar for tests
-export function installQuasarPlugin() {
-  config.global.plugins.unshift([
-    Quasar,
-    {
-      // Provide minimal config needed for SSR/testing
-      config: {},
-      components: {},
-      directives: {},
-      plugins: {}
-    }
-  ])
 }
 
 // Stub Quasar components for faster tests
@@ -284,12 +268,4 @@ export const quasarMocks: QuasarMock = {
 // Provide map for Quasar injection keys
 export const quasarProvide: Record<string, unknown> = {
   _q_: quasarMocks.$q
-}
-
-// Suppress Vue warnings about unresolved components in tests
-export function suppressComponentWarnings(): void {
-  vi.spyOn(console, 'warn').mockImplementation((...args) => {
-    if (typeof args[0] === 'string' && args[0].includes('Failed to resolve component')) return
-    console.warn(...args)
-  })
 }

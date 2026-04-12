@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { STORAGE_KEYS } from '@/constants'
 import type { SessionData } from '@/types'
 
-import { clearSession, hasActiveSession, loadSession, saveSession } from './storage'
+import { clearSession, loadSession, saveSession } from './storage'
 
 describe('storage service', () => {
   beforeEach(() => {
@@ -152,24 +152,6 @@ describe('storage service', () => {
       clearSession()
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to clear session:', expect.any(Error))
-    })
-  })
-
-  describe('hasActiveSession', () => {
-    it('should return true when session exists', () => {
-      const sessionData = {
-        totalTasks: 10,
-        startTime: '2024-01-01T10:00:00.000Z',
-        measurements: []
-      }
-
-      globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionData))
-
-      expect(hasActiveSession()).toBe(true)
-    })
-
-    it('should return false when no session exists', () => {
-      expect(hasActiveSession()).toBe(false)
     })
   })
 })

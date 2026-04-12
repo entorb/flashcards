@@ -262,22 +262,6 @@ export function incrementDailyGames(): { isFirstGame: boolean; gamesPlayedToday:
   return gameStorage.incrementDailyGames()
 }
 
-// Game Settings (for reload recovery)
-
-/**
- * Save current game settings to session storage for reload recovery
- */
-export function saveGameSettings(settings: GameSettings): void {
-  gamePersistence.saveSettings(settings)
-}
-
-/**
- * Load game settings from session storage
- */
-export function loadGameSettings(): GameSettings | null {
-  return gamePersistence.loadSettings()
-}
-
 // Game State (for reload recovery)
 
 /**
