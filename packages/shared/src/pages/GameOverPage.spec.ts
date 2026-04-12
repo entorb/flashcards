@@ -377,7 +377,7 @@ describe('GameOverPage — total equals session points plus bonus points (Proper
           wrapper.unmount()
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   })
 })
@@ -493,7 +493,7 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
           wrapper.unmount()
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   })
 })

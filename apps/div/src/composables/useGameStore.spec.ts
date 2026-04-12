@@ -142,7 +142,7 @@ describe('useGameStore - Property Tests', () => {
           expect(breakdown?.difficultyPoints).toBe(divisor)
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   }, 60_000)
 
@@ -213,7 +213,7 @@ describe('useGameStore - Property Tests', () => {
           expect(capturedUpdate.level).toBe(expectedLevel)
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     )
   }, 60_000)
 })

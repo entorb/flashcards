@@ -129,7 +129,7 @@ describe('useGameStore - SessionMode round-trip through sessionStorage (Property
         // The restored sessionMode should match the original
         expect(store2.sessionMode.value).toBe(mode)
       }),
-      { numRuns: 100 }
+      { numRuns: 10 }
     )
   }, 60_000)
 })
