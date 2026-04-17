@@ -22,6 +22,7 @@ ignorePaths:
   - 'cspell.config.yaml'
   - 'dist'
   - 'package*.json'
+  - 'pnpm-workspace.yaml'
   - 'scripts/**'
   - 'src/assets/'
   - 'TODO.md'

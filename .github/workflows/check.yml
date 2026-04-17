@@ -58,6 +58,9 @@ jobs:
       - name: Run spell checker
         run: pnpm run spell
 
+      - name: Run audit
+        run: pnpm audit
+
       - name: Run unit tests
         run: pnpm run test:cov
 
