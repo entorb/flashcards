@@ -2,7 +2,7 @@ name: Update
 
 on:
   schedule:
-    - cron: "51 5 12 * *" # At 05:51 on 12th day-of-month
+    - cron: "51 5 1 * *"
   workflow_dispatch: # Manual trigger
 
 permissions:
