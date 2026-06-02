@@ -2,6 +2,11 @@ packages:
   - apps/*
   - packages/*
 
+allowBuilds:
+  '@parcel/watcher': true
+  cypress: true
+  esbuild: true
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - cypress
