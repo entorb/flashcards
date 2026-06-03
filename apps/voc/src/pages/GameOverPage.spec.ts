@@ -52,7 +52,7 @@ describe('voc GameOverPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div>Home</div>' } },
+        { path: '/', name: '/HomePage', component: { template: '<div>Home</div>' } },
         {
           path: '/game-over',
           name: '/GameOverPage',

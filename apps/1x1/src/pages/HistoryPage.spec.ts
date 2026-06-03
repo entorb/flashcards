@@ -183,7 +183,7 @@ describe('1x1 HistoryPage', () => {
     await router.isReady()
 
     await wrapper.find('[data-cy="back-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('Escape key navigates to home', async () => {
@@ -195,7 +195,7 @@ describe('1x1 HistoryPage', () => {
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await Promise.resolve()
 
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('loads history and range on mount', async () => {

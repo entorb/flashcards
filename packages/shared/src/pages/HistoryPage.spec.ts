@@ -12,7 +12,7 @@ interface TestHistory extends BaseGameHistory {
 const createMockRouter = () =>
   createRouter({
     history: createMemoryHistory(),
-    routes: [{ path: '/', component: { template: '<div />' } }]
+    routes: [{ path: '/', name: '/HomePage', component: { template: '<div />' } }]
   })
 
 const formatDetails = vi.fn((item: BaseGameHistory) => {
@@ -153,7 +153,7 @@ describe('HistoryPage (shared)', () => {
       ...mountOptions(router)
     })
     await wrapper.find('[data-cy="back-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('Escape key navigates to /', () => {
@@ -169,7 +169,7 @@ describe('HistoryPage (shared)', () => {
       ...mountOptions(router)
     })
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('renders points for each history entry', async () => {

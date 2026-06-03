@@ -154,7 +154,7 @@ describe('1x1 CardsManPage', () => {
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
       await wrapper.find('[data-cy="back-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith('/')
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
 
     it('Escape key navigates to home', async () => {
@@ -164,7 +164,7 @@ describe('1x1 CardsManPage', () => {
       await router.isReady()
       globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await Promise.resolve()
-      expect(router.push).toHaveBeenCalledWith('/')
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
 
     it('other keys do not navigate', async () => {

@@ -31,8 +31,8 @@ const createMockRouter = () =>
   createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', component: { template: '<div />' } },
-      { path: '/game-over', component: { template: '<div />' } }
+      { path: '/', name: '/HomePage', component: { template: '<div />' } },
+      { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
     ]
   })
 
@@ -114,7 +114,7 @@ describe('GameOverPage (shared)', () => {
     })
     await new Promise(resolve => setTimeout(resolve, 0))
 
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('uses last history entry when getGameResult returns null', async () => {
@@ -222,7 +222,7 @@ describe('GameOverPage (shared)', () => {
 
     expect(storageFunctions.clearGameResult).toHaveBeenCalled()
     expect(storageFunctions.clearGameState).toHaveBeenCalled()
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('Enter key triggers goHome', async () => {
@@ -243,7 +243,7 @@ describe('GameOverPage (shared)', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
 
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('Escape key triggers goHome', async () => {
@@ -264,7 +264,7 @@ describe('GameOverPage (shared)', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
 
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('renders correct answers and total cards', async () => {

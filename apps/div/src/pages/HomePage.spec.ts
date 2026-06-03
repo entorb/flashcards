@@ -42,7 +42,7 @@ describe('HomePage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
         { path: '/game', name: '/GamePage', component: { template: '<div />' } },
         { path: '/history', name: '/HistoryPage', component: { template: '<div />' } },
         { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },

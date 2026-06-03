@@ -135,7 +135,7 @@ describe('GamePage', () => {
       vi.spyOn(router, 'push')
       mount(GamePage, createMountOptions(router))
       await Promise.resolve()
-      expect(router.push).toHaveBeenCalledWith('/')
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
 
     it('does not redirect when game cards are present', async () => {
@@ -238,7 +238,7 @@ describe('GamePage', () => {
       await wrapper.vm.$nextTick()
 
       expect(mocks.discardGame).toHaveBeenCalled()
-      expect(router.push).toHaveBeenCalledWith({ name: '/' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
   })
 

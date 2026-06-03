@@ -41,8 +41,8 @@ describe('voc DecksEditPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } },
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
         { path: '/decks-edit', name: '/decks-edit', component: { template: '<div />' } }
       ]
     })

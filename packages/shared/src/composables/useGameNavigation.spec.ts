@@ -7,7 +7,7 @@ function makeOptions(nextCardResult = false) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/', component: { template: '<div />' } },
+      { path: '/', name: '/HomePage', component: { template: '<div />' } },
       { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
     ]
   })
@@ -83,7 +83,7 @@ describe('useGameNavigation', () => {
 
       handleGoHome()
 
-      expect(options.router.push).toHaveBeenCalledWith({ name: '/' })
+      expect(options.router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
 
     it('calls stopTimer', () => {

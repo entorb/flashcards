@@ -62,7 +62,7 @@ describe('lwk GameOverPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
         { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
       ]
     })
