@@ -12,23 +12,23 @@ rm -f pnpm-lock.yaml
 rm -rf packages/shared/node_modules
 rm -f packages/shared/pnpm-lock.yaml
 for app in 1x1 div eta lwk pum voc; do
-  rm -rf $app/node_modules
-  rm -f $app/pnpm-lock.yaml
+  rm -rf apps/$app/node_modules
+  rm -f apps/$app/pnpm-lock.yaml
 done
 
 echo === updating root packages ===
-pnpm up
+pnpm up -L
 pnpm exec biome migrate --write
 
 echo === updating shared packages ===
 cd packages/shared
-pnpm up
+pnpm up -L
 cd ../..
 
 for app in 1x1 div eta lwk pum voc; do
   echo === updating $app packages ===
   cd apps/$app
-  pnpm up
+  pnpm up -L
   cd ../..
 done
 

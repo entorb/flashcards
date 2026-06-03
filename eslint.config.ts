@@ -3,7 +3,6 @@ import tsParser from '@typescript-eslint/parser'
 import pluginCypress from 'eslint-plugin-cypress'
 import pluginImport from 'eslint-plugin-import'
 import sonarjs from 'eslint-plugin-sonarjs'
-import pluginVitest from 'eslint-plugin-vitest'
 import pluginVue from 'eslint-plugin-vue'
 import pluginVueA11y from 'eslint-plugin-vuejs-accessibility'
 import globals from 'globals'
@@ -369,11 +368,9 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      import: pluginImport,
-      vitest: pluginVitest
+      import: pluginImport
     },
     rules: {
-      ...pluginVitest.configs.recommended.rules,
       // Relaxed TypeScript rules for tests
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
@@ -395,15 +392,7 @@ export default [
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-identical-functions': 'off',
       'sonarjs/slow-regex': 'off',
-      'sonarjs/todo-tag': 'off',
-      // Vitest-specific rules
-      'vitest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
-      'vitest/expect-expect': ['warn', { assertFunctionNames: ['expect', 'fc.assert'] }],
-      'vitest/no-disabled-tests': 'warn',
-      'vitest/no-focused-tests': 'error',
-      'vitest/prefer-to-be': 'error',
-      'vitest/prefer-to-have-length': 'error',
-      'vitest/valid-expect': 'error'
+      'sonarjs/todo-tag': 'off'
     }
   },
 
