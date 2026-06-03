@@ -147,7 +147,7 @@ describe('voc DecksEditPage', () => {
       globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('removes keydown listener on unmount', async () => {
