@@ -61,7 +61,7 @@ function handleGoBack() {
   }
 
   importCards(editingCards.value)
-  router.push('/cards')
+  router.push({ name: '/CardsManPage' })
 }
 
 function handleKeyDown(event: KeyboardEvent) {

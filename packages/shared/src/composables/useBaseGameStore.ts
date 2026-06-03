@@ -111,7 +111,7 @@ export function createBaseGameStore<
     currentCardIndex.value = 0
     points.value = 0
     correctAnswersCount.value = 0
-    gameSettings.value = null as unknown as TSettings
+    gameSettings.value = null
     sessionMode.value = 'standard'
   }
 

@@ -136,7 +136,7 @@ function handleKeyDown(event: KeyboardEvent) {
 onMounted(() => {
   // Redirect home if there's no game in progress and no settings
   if (props.store.gameCards.value.length === 0 && !props.store.gameSettings.value) {
-    router.push('/')
+    router.push({ name: '/HomePage' })
   }
   globalThis.addEventListener('keydown', handleKeyDown)
 })
