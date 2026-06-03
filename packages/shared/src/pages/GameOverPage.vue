@@ -90,7 +90,7 @@ onMounted(async () => {
   // No result found, redirect to home
   if (!result.value) {
     if (router) {
-      router.push('/')
+      router.push({ name: '/HomePage' })
     } else {
       globalThis.location.href = `/${props.basePath}/`
     }
@@ -138,7 +138,7 @@ function goHome() {
   props.storageFunctions.clearGameState()
 
   if (router) {
-    router.push('/')
+    router.push({ name: '/HomePage' })
   } else {
     globalThis.location.href = `/${props.basePath}/`
   }

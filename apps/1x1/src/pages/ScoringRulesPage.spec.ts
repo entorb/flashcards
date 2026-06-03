@@ -9,7 +9,7 @@ describe('1x1 InfoPage', () => {
   const createRouter_ = () =>
     createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/', name: '/', component: { template: '<div />' } }]
+      routes: [{ path: '/', name: '/HomePage', component: { template: '<div />' } }]
     })
 
   const createMountOptions = (router: ReturnType<typeof createRouter_>) => ({
@@ -59,7 +59,7 @@ describe('1x1 InfoPage', () => {
     // Emit the back event from the stubbed shared component
     const sharedPage = wrapper.findComponent({ name: 'InfoPage' })
     await sharedPage.vm.$emit('back')
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('Escape key navigates to /', async () => {
@@ -68,7 +68,7 @@ describe('1x1 InfoPage', () => {
     mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('non-Escape key does not navigate', async () => {
@@ -122,7 +122,7 @@ describe('1x1 InfoPage', () => {
       const wrapper = mount(InfoPage, createFullMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="back-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith('/')
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
   })
 })

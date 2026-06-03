@@ -108,7 +108,7 @@ describe('CardsManPage (shared)', () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     await wrapper.find('[data-cy="back-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('edit-cards button navigates to editCardsRoute', async () => {
@@ -129,7 +129,7 @@ describe('CardsManPage (shared)', () => {
     const store = makeMockStore()
     mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('handleMoveClick is triggered by CardManActions move-click event', async () => {

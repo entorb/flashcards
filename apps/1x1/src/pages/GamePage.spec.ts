@@ -47,9 +47,9 @@ describe('GamePage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/game', name: '/game', component: { template: '<div />' } },
-        { path: '/game-over', name: '/game-over', component: { template: '<div />' } }
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
+        { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
       ]
     })
 
@@ -135,7 +135,7 @@ describe('GamePage', () => {
       vi.spyOn(router, 'push')
       mount(GamePage, createMountOptions(router))
       await Promise.resolve()
-      expect(router.push).toHaveBeenCalledWith('/')
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
 
     it('does not redirect when game cards are present', async () => {
@@ -238,7 +238,7 @@ describe('GamePage', () => {
       await wrapper.vm.$nextTick()
 
       expect(mocks.discardGame).toHaveBeenCalled()
-      expect(router.push).toHaveBeenCalledWith({ name: '/' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
     })
   })
 

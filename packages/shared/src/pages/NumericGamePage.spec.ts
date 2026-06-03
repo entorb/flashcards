@@ -10,8 +10,8 @@ const createMockRouter = () =>
   createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', component: { template: '<div />' } },
-      { path: '/game', component: { template: '<div />' } }
+      { path: '/', name: '/HomePage', component: { template: '<div />' } },
+      { path: '/game', name: '/GamePage', component: { template: '<div />' } }
     ]
   })
 
@@ -98,6 +98,6 @@ describe('NumericGamePage (shared)', () => {
       }
     })
 
-    expect(pushSpy).toHaveBeenCalledWith('/')
+    expect(pushSpy).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 })

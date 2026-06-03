@@ -8,7 +8,11 @@ import type { Card } from '@/types'
 import HomePage from './HomePage.vue'
 
 const mocks = vi.hoisted(() => ({
-  loadGameStats: vi.fn(() => ({ gamesPlayed: 5, points: 100, correctAnswers: 42 })),
+  loadGameStats: vi.fn(() => ({
+    gamesPlayed: 5,
+    points: 100,
+    correctAnswers: 42
+  })),
   loadSettings: vi.fn(() => null as null | { select: number[] | string; focus: string }),
   loadRange: vi.fn(() => [3, 4, 5, 6, 7, 8, 9]),
   saveSettings: vi.fn(),
@@ -45,11 +49,15 @@ describe('HomePage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/game', name: '/game', component: { template: '<div />' } },
-        { path: '/history', name: '/history', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } },
-        { path: '/info', name: '/info', component: { template: '<div />' } }
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
+        {
+          path: '/history',
+          name: '/HistoryPage',
+          component: { template: '<div />' }
+        },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
+        { path: '/info', name: '/InfoPage', component: { template: '<div />' } }
       ]
     })
 
@@ -88,7 +96,11 @@ describe('HomePage', () => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
-    mocks.loadGameStats.mockReturnValue({ gamesPlayed: 5, points: 100, correctAnswers: 42 })
+    mocks.loadGameStats.mockReturnValue({
+      gamesPlayed: 5,
+      points: 100,
+      correctAnswers: 42
+    })
     mocks.loadSettings.mockReturnValue(null)
     mocks.loadRange.mockReturnValue([3, 4, 5, 6, 7, 8, 9])
   })
@@ -138,7 +150,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/game' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/GamePage' })
     })
 
     it('saves settings when start game is clicked', async () => {
@@ -242,7 +254,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="go-to-history-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/history' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/HistoryPage' })
     })
 
     it('navigates to /cards when go-to-cards is triggered', async () => {
@@ -251,7 +263,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="go-to-cards-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('navigates to /info when go-to-info is triggered', async () => {
@@ -260,7 +272,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="go-to-info-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/info' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/InfoPage' })
     })
   })
 

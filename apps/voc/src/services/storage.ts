@@ -99,7 +99,7 @@ function migrateCardTimeFields(card: LegacyCard): Card {
   delete cleanCard.time_blind
   // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
   delete cleanCard.time_typing
-  return { ...cleanCard, time: timeValue } as unknown as Card
+  return { ...cleanCard, time: timeValue }
 }
 
 /**

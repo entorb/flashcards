@@ -64,8 +64,8 @@ describe('pum CardsManPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } }
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } }
       ]
     })
 
@@ -119,7 +119,7 @@ describe('pum CardsManPage', () => {
     const wrapper = mount(CardsManPage, createMountOptions(router))
     await router.isReady()
     await wrapper.find('[data-cy="back-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('Escape key navigates to home', async () => {
@@ -129,7 +129,7 @@ describe('pum CardsManPage', () => {
     await router.isReady()
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await Promise.resolve()
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('removes keydown listener on unmount', async () => {

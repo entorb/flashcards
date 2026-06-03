@@ -8,7 +8,7 @@ import { POINTS_MODE_HIDDEN } from '../constants'
 const router = useRouter()
 
 const handleBack = () => {
-  router.push('/')
+  router.push({ name: '/HomePage' })
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
