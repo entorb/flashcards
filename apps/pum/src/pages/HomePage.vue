@@ -25,8 +25,16 @@ const difficulties = ref<Difficulty[]>([...DEFAULT_DIFFICULTIES])
 const focus = ref<FocusType>('weak')
 
 const operationButtons = [
-  { value: 'plus', label: TEXT_DE.plusMinus.selection.plus, dataCy: 'operation-button-plus' },
-  { value: 'minus', label: TEXT_DE.plusMinus.selection.minus, dataCy: 'operation-button-minus' }
+  {
+    value: 'plus',
+    label: TEXT_DE.plusMinus.selection.plus,
+    dataCy: 'operation-button-plus'
+  },
+  {
+    value: 'minus',
+    label: TEXT_DE.plusMinus.selection.minus,
+    dataCy: 'operation-button-minus'
+  }
 ]
 
 const difficultyButtons = [
@@ -93,19 +101,19 @@ function startGameWithMode(mode: SessionMode) {
   }
   saveSettings(gameConfig)
   storeStartGame(gameConfig, mode, true)
-  router.push({ name: '/game' })
+  router.push({ name: '/GamePage' })
 }
 
 function goToHistory() {
-  router.push({ name: '/history' })
+  router.push({ name: '/HistoryPage' })
 }
 
 function goToCards() {
-  router.push({ name: '/cards' })
+  router.push({ name: '/CardsManPage' })
 }
 
 function goToInfo() {
-  router.push({ name: '/info' })
+  router.push({ name: '/InfoPage' })
 }
 </script>
 

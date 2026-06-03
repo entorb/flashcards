@@ -49,7 +49,7 @@ describe('pum GameOverPage', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/game-over', name: '/game-over', component: { template: '<div />' } }
+        { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
       ]
     })
 

@@ -63,8 +63,8 @@ const createMockRouter = () =>
     history: createMemoryHistory(),
     routes: [
       { path: '/', name: '/', component: { template: '<div />' } },
-      { path: '/game', name: '/game', component: { template: '<div />' } },
-      { path: '/game-over', name: '/game-over', component: { template: '<div />' } }
+      { path: '/game', name: '/GamePage', component: { template: '<div />' } },
+      { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
     ]
   })
 
@@ -458,7 +458,7 @@ describe('GamePage', () => {
       await wrapper.vm.$nextTick()
 
       expect(mocks.finishGame).toHaveBeenCalled()
-      expect(router.push).toHaveBeenCalledWith({ name: '/game-over' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/GameOverPage' })
     })
 
     it('calls discardGame and navigates to / when back button clicked', async () => {

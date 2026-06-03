@@ -8,7 +8,7 @@ import { LANGUAGE_BONUS_DE_VOC, POINTS_MODE_BLIND, POINTS_MODE_TYPING } from '..
 const router = useRouter()
 
 const handleBack = () => {
-  router.push('/')
+  router.push({ name: '/HomePage' })
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {

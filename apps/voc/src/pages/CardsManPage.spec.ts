@@ -41,9 +41,7 @@ vi.mock('@flashcards/shared/components', () => ({
 }))
 
 // Mock store
-const mockAllCards = ref<BaseCard[]>([
-  { level: 1, time: 60 } as BaseCard & { voc: string; de: string }
-])
+const mockAllCards = ref<BaseCard[]>([{ level: 1, time: 60 }])
 const mockMoveAllCards = vi.fn()
 const mockResetCards = vi.fn()
 const mockGetDecks = vi.fn(() => [{ name: 'en', cards: mockAllCards.value }])
@@ -87,7 +85,7 @@ describe('voc CardsManPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockAllCards.value = [{ level: 1, time: 60 } as BaseCard & { voc: string; de: string }]
+    mockAllCards.value = [{ level: 1, time: 60 }]
   })
 
   describe('mounting', () => {

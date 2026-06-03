@@ -157,7 +157,7 @@ describe('voc CardsEditPage', () => {
       await wrapper.vm.$nextTick()
 
       expect(mockImportCards).toHaveBeenCalledOnce()
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
     })
 
     it('shows notification and does not navigate when a card has empty voc', async () => {
@@ -252,7 +252,7 @@ describe('voc CardsEditPage', () => {
       globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
     })
 
     it('removes keydown listener on unmount', async () => {

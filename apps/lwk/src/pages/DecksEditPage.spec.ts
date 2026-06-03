@@ -141,7 +141,7 @@ describe('lwk DecksEditPage', () => {
       await wrapper.find('[data-cy="back-button"]').trigger('click')
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
     })
   })
 
@@ -267,7 +267,7 @@ describe('lwk DecksEditPage', () => {
       globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
     })
 
     it('removes keydown listener on unmount', async () => {

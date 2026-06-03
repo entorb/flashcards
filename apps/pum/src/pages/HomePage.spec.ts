@@ -40,10 +40,10 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/game', name: '/game', component: { template: '<div />' } },
-        { path: '/history', name: '/history', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } },
-        { path: '/info', name: '/info', component: { template: '<div />' } }
+        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
+        { path: '/history', name: '/HistoryPage', component: { template: '<div />' } },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
+        { path: '/info', name: '/InfoPage', component: { template: '<div />' } }
       ]
     })
 

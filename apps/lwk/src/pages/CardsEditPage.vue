@@ -42,7 +42,7 @@ function handleGoBack() {
     card.word = normalizeWhitespace(card.word)
   }
   importCards(editingCards.value)
-  router.push('/cards')
+  router.push({ name: '/CardsManPage' })
 }
 
 function handleKeyDown(event: KeyboardEvent) {

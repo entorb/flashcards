@@ -29,7 +29,7 @@ describe('1x1 HistoryPage', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/', name: '/', component: { template: '<div>Home</div>' } },
-        { path: '/history', name: '/history', component: { template: '<div>History</div>' } }
+        { path: '/history', name: '/HistoryPage', component: { template: '<div>History</div>' } }
       ]
     })
 

@@ -19,7 +19,7 @@ describe('pum HistoryPage', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/history', name: '/history', component: { template: '<div />' } }
+        { path: '/history', name: '/HistoryPage', component: { template: '<div />' } }
       ]
     })
 

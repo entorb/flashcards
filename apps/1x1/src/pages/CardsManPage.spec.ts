@@ -86,8 +86,8 @@ function createMockRouter() {
   return createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/', component: { template: '<div>Home</div>' } },
-      { path: '/cards', name: '/cards', component: { template: '<div>Cards</div>' } }
+      { path: '/', name: '/HomePage', component: { template: '<div>Home</div>' } },
+      { path: '/cards', name: '/CardsManPage', component: { template: '<div>Cards</div>' } }
     ]
   })
 }

@@ -44,7 +44,7 @@ describe('voc HistoryPage', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/', name: '/', component: { template: '<div>Home</div>' } },
-        { path: '/history', name: '/history', component: { template: '<div>History</div>' } }
+        { path: '/history', name: '/HistoryPage', component: { template: '<div>History</div>' } }
       ]
     })
 
@@ -334,13 +334,13 @@ describe('voc HistoryPage', () => {
   describe('back button navigation', () => {
     it('navigates to / when back button is clicked', async () => {
       const router = createMockRouter()
-      await router.push('/history')
+      await router.push({ name: '/HistoryPage' })
       vi.spyOn(router, 'push')
 
       const wrapper = mount(HistoryPage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      // The shared HistoryPage handles back navigation via router.push('/')
+      // The shared HistoryPage handles back navigation via router.push({ name: '/HomePage' })
       // We verify the router is available and the component mounts correctly
       expect(wrapper.find('[data-cy="shared-history-page"]').exists()).toBe(true)
     })

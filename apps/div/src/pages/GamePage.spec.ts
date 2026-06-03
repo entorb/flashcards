@@ -48,8 +48,8 @@ describe('GamePage', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/game', name: '/game', component: { template: '<div />' } },
-        { path: '/game-over', name: '/game-over', component: { template: '<div />' } }
+        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
+        { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
       ]
     })
 

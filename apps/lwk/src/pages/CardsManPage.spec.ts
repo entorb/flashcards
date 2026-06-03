@@ -45,7 +45,7 @@ vi.mock('@flashcards/shared/components', () => ({
 // Store mock
 // ---------------------------------------------------------------------------
 
-const mockAllCards = ref<BaseCard[]>([{ level: 1, time: 60 } as BaseCard])
+const mockAllCards = ref<BaseCard[]>([{ level: 1, time: 60 }])
 const mockMoveAllCards = vi.fn()
 const mockResetCards = vi.fn()
 const mockGetDecks = vi.fn(() => [{ name: 'LWK_1', cards: mockAllCards.value }])
@@ -93,7 +93,7 @@ describe('lwk CardsManPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockAllCards.value = [{ level: 1, time: 60 } as BaseCard]
+    mockAllCards.value = [{ level: 1, time: 60 }]
     mockGetDecks.mockReturnValue([{ name: 'LWK_1', cards: mockAllCards.value }])
   })
 
