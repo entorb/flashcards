@@ -12,7 +12,7 @@ function getNamingPattern() {
 }
 
 function handleBack() {
-  router.push('/CardsManPage')
+  router.push({ name: '/CardsManPage' })
 }
 </script>
 

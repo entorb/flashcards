@@ -28,7 +28,7 @@ describe('1x1 HistoryPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div>Home</div>' } },
+        { path: '/', name: '/HomePage', component: { template: '<div>Home</div>' } },
         { path: '/history', name: '/HistoryPage', component: { template: '<div>History</div>' } }
       ]
     })
