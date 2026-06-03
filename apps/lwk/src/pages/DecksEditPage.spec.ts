@@ -141,7 +141,7 @@ describe('lwk DecksEditPage', () => {
       await wrapper.find('[data-cy="back-button"]').trigger('click')
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
   })
 
