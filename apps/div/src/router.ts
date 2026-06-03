@@ -5,32 +5,32 @@ export const router = createRouter({
   routes: [
     {
       path: '/',
-      name: '/',
+      name: '/HomePage',
       component: async () => import('./pages/HomePage.vue')
     },
     {
       path: '/game',
-      name: '/game',
+      name: '/GamePage',
       component: async () => import('./pages/GamePage.vue')
     },
     {
       path: '/game-over',
-      name: '/game-over',
+      name: '/GameOverPage',
       component: async () => import('./pages/GameOverPage.vue')
     },
     {
       path: '/history',
-      name: '/history',
+      name: '/HistoryPage',
       component: async () => import('./pages/HistoryPage.vue')
     },
     {
       path: '/cards',
-      name: '/cards',
+      name: '/CardsManPage',
       component: async () => import('./pages/CardsManPage.vue')
     },
     {
       path: '/info',
-      name: '/info',
+      name: '/InfoPage',
       component: async () => import('./pages/InfoPage.vue')
     }
   ]

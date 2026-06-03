@@ -56,7 +56,7 @@ const cardsToShow = computed(() => {
 })
 
 function handleGoBack() {
-  router.push('/')
+  router.push({ name: '/HomePage' })
 }
 
 function handleKeyDown(event: KeyboardEvent) {

@@ -80,7 +80,7 @@ function toggleExtended() {
 }
 
 function goHome() {
-  router.push('/')
+  router.push({ name: '/HomePage' })
 }
 </script>
 

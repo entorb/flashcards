@@ -53,9 +53,9 @@ describe('lwk CardsEditPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } },
-        { path: '/cards-edit', name: '/cards-edit', component: { template: '<div />' } }
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
+        { path: '/cards-edit', name: '/CardsEditPage', component: { template: '<div />' } }
       ]
     })
 
@@ -173,7 +173,7 @@ describe('lwk CardsEditPage', () => {
       await wrapper.vm.$nextTick()
 
       expect(mockImportCards).toHaveBeenCalledOnce()
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('shows notification and does not navigate when a card has empty word', async () => {
@@ -235,7 +235,7 @@ describe('lwk CardsEditPage', () => {
       globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('removes keydown listener on unmount', async () => {

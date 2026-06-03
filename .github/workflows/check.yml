@@ -25,6 +25,8 @@ jobs:
           fetch-depth: 0 # for SonarQube
 
       - uses: gitleaks/gitleaks-action@v2
+      # only on main, as creds are required
+        if: github.ref == 'refs/heads/main'
 
       - uses: pnpm/action-setup@v5
         with:
