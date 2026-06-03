@@ -45,7 +45,7 @@ vi.mock('@flashcards/shared/components', () => ({
 // Store mock
 // ---------------------------------------------------------------------------
 
-const mockAllCards = ref<BaseCard[]>([{ level: 1, time: 60 } as BaseCard])
+const mockAllCards = ref<BaseCard[]>([{ level: 1, time: 60 }])
 const mockMoveAllCards = vi.fn()
 const mockResetCards = vi.fn()
 const mockGetDecks = vi.fn(() => [{ name: 'LWK_1', cards: mockAllCards.value }])
@@ -75,10 +75,10 @@ describe('lwk CardsManPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } },
-        { path: '/cards-edit', name: '/cards-edit', component: { template: '<div />' } },
-        { path: '/decks', name: '/decks', component: { template: '<div />' } }
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
+        { path: '/cards-edit', name: '/CardsEditPage', component: { template: '<div />' } },
+        { path: '/decks', name: '/DecksEditPage', component: { template: '<div />' } }
       ]
     })
 
@@ -93,7 +93,7 @@ describe('lwk CardsManPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockAllCards.value = [{ level: 1, time: 60 } as BaseCard]
+    mockAllCards.value = [{ level: 1, time: 60 }]
     mockGetDecks.mockReturnValue([{ name: 'LWK_1', cards: mockAllCards.value }])
   })
 

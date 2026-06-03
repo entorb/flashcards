@@ -40,11 +40,11 @@ const createMockRouter = () =>
   createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/', component: { template: '<div />' } },
-      { path: '/game', name: '/game', component: { template: '<div />' } },
-      { path: '/history', name: '/history', component: { template: '<div />' } },
-      { path: '/cards', name: '/cards', component: { template: '<div />' } },
-      { path: '/info', name: '/info', component: { template: '<div />' } }
+      { path: '/', name: '/HomePage', component: { template: '<div />' } },
+      { path: '/game', name: '/GamePage', component: { template: '<div />' } },
+      { path: '/history', name: '/HistoryPage', component: { template: '<div />' } },
+      { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
+      { path: '/info', name: '/InfoPage', component: { template: '<div />' } }
     ]
   })
 
@@ -149,7 +149,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/game' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/GamePage' })
     })
 
     it('history button navigates to /history', async () => {
@@ -158,7 +158,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="go-to-history-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/history' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/HistoryPage' })
     })
 
     it('cards button navigates to /cards', async () => {
@@ -167,7 +167,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="go-to-cards-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('info button navigates to /info', async () => {
@@ -176,7 +176,7 @@ describe('HomePage', () => {
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="go-to-info-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/info' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/InfoPage' })
     })
   })
 

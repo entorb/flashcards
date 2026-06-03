@@ -41,8 +41,8 @@ describe('voc DecksEditPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div />' } },
-        { path: '/cards', name: '/cards', component: { template: '<div />' } },
+        { path: '/', name: '/HomePage', component: { template: '<div />' } },
+        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
         { path: '/decks-edit', name: '/decks-edit', component: { template: '<div />' } }
       ]
     })
@@ -133,7 +133,7 @@ describe('voc DecksEditPage', () => {
       await wrapper.find('[data-cy="back-button"]').trigger('click')
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
   })
 
@@ -147,7 +147,7 @@ describe('voc DecksEditPage', () => {
       globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
       await wrapper.vm.$nextTick()
 
-      expect(router.push).toHaveBeenCalledWith('/cards')
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('removes keydown listener on unmount', async () => {

@@ -8,7 +8,7 @@ describe('pum InfoPage', () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/', name: '/', component: { template: '<div />' } }]
+      routes: [{ path: '/', name: '/HomePage', component: { template: '<div />' } }]
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -52,7 +52,7 @@ describe('pum InfoPage', () => {
     mount(InfoPage, createMountOptions(router))
     await Promise.resolve()
     globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    expect(router.push).toHaveBeenCalledWith('/')
+    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
   })
 
   it('non-Escape key does not navigate', async () => {

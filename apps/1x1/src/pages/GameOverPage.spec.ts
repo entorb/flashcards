@@ -55,8 +55,12 @@ describe('1x1 GameOverPage', () => {
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/', component: { template: '<div>Home</div>' } },
-        { path: '/game-over', name: '/game-over', component: { template: '<div>GameOver</div>' } }
+        { path: '/', name: '/HomePage', component: { template: '<div>Home</div>' } },
+        {
+          path: '/game-over',
+          name: '/GameOverPage',
+          component: { template: '<div>GameOver</div>' }
+        }
       ]
     })
 

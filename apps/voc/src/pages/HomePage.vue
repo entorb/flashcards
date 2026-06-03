@@ -107,7 +107,7 @@ const hasBelowMaxLevelCards = computed(() => filterBelowMaxLevel(allCards.value)
 function startGameWithMode(mode: SessionMode) {
   saveSettings(settings.value)
   startGameStore(settings.value, mode)
-  router.push({ name: '/game' })
+  router.push({ name: '/GamePage' })
 }
 
 function startGame() {
@@ -115,15 +115,15 @@ function startGame() {
 }
 
 function goToHistory() {
-  router.push({ name: '/history' })
+  router.push({ name: '/HistoryPage' })
 }
 
 function goToCards() {
-  router.push({ name: '/cards' })
+  router.push({ name: '/CardsManPage' })
 }
 
 function goToInfo() {
-  router.push({ name: '/info' })
+  router.push({ name: '/InfoPage' })
 }
 </script>
 

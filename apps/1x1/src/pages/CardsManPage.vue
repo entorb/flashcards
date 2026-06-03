@@ -135,7 +135,7 @@ function toggleExtendedFeature(feature: 'feature1x2' | 'feature1x12' | 'feature1
 }
 
 function goHome() {
-  router.push('/')
+  router.push({ name: '/HomePage' })
 }
 </script>
 
