@@ -173,7 +173,7 @@ describe('lwk CardsEditPage', () => {
       await wrapper.vm.$nextTick()
 
       expect(mockImportCards).toHaveBeenCalledOnce()
-      expect(router.push).toHaveBeenCalledWith({ name: '/cards' })
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
     })
 
     it('shows notification and does not navigate when a card has empty word', async () => {
