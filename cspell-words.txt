@@ -1,8 +1,7 @@
 Abschreiben
 accesscounts
-Activedescendant
-Autofocus
 accessoires
+Activedescendant
 adaptivem
 Adaptives
 Aktion
@@ -13,6 +12,7 @@ Antworten
 Aufgaben
 ausgestattet
 Auswahl
+Autofocus
 beherrscht
 bekleidet
 Belohnungen
@@ -100,6 +100,7 @@ Lernwörter
 Lernwortkiste
 Lernwortkisten
 Leveln
+lintignore
 löscht
 Maskotchen
 Maskottchen
@@ -143,10 +144,10 @@ Schreiben
 Schriftfarbe
 Schule
 Schwache
-Shouty
 seinem
 Setze
 setzt
+Shouty
 sich
 sicher
 sichere
@@ -207,8 +208,8 @@ werden
 wird
 Woher
 Wohin
-Wortspiel
 Wörter
+Wortspiel
 wurden
 Yivit
 Zurück
