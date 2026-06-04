@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "ignore": ["**/route-map.d.ts", "**/typed-router.d.ts"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.sh"]
+    },
+    "apps/*": {
+      "project": ["src/**/*.ts", "src/**/*.vue"]
+    },
+    "packages/*": {
+      "project": ["src/**/*.ts", "src/**/*.vue"]
+    }
+  }
+}
