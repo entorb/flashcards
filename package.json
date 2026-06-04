@@ -51,7 +51,8 @@
     "spell": "cspell --cache --quiet \"**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",
     "test:cov": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" test:cov",
     "test": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" test",
-    "types": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" types"
+    "types": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" types",
+    "knip": "knip"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",
@@ -75,6 +76,7 @@
     "globals": "^17.6.0",
     "jiti": "^2.7.0",
     "jsdom": "^29.1.1",
+    "knip": "^6.14.1",
     "npm-run-all2": "^9.0.0",
     "sass": "^1.99.0",
     "typescript": "^6.0.3",
