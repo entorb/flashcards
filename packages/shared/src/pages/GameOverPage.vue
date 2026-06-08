@@ -11,6 +11,7 @@ import {
 } from '../index'
 import { TEXT_DE } from '../text-de'
 
+/** @lintignore */
 export interface StorageFunctions<T extends BaseGameHistory> {
   getGameResult: () => GameResult | null
   clearGameResult: () => void
@@ -20,6 +21,7 @@ export interface StorageFunctions<T extends BaseGameHistory> {
   saveHistory: (history: T[]) => void
 }
 
+/** @lintignore */
 export interface Props<T extends BaseGameHistory> {
   storageFunctions: StorageFunctions<T>
   bonusConfig: DailyBonusConfig
