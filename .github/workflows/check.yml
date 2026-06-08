@@ -63,9 +63,8 @@ jobs:
       - name: Run unit tests
         run: pnpm run test:cov
 
-      # TODO: activate after fixing findings, and add to pnpm run check as well
-      # - name: Run dead code
-      #   run: pnpm knip
+      - name: Run dead code
+        run: pnpm knip
 
       - name: Fix lcov paths for SonarCloud
         run: |
