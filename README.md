@@ -6,29 +6,29 @@ This repository hosts the code of three educational apps, implementing flashcard
 <thead>
 <tr>
 <th align="center">
-<a href="https://entorb.net/1x1/">1×1 Trainer</a>
+<a href="https://entorb.net/fc-1x1/">1×1 Trainer</a>
 </th>
 <th align="center">
 <a href="https://entorb.net/fc-div/">Division</a>
 </th>
 <th align="center">
-<a href="https://entorb.net/voc/">Vokabeltrainer</a>
+<a href="https://entorb.net/fc-voc/">Vokabeltrainer</a>
 </th>
 <th align="center">
-<a href="https://entorb.net/lwk/">Lernwörter</a>
+<a href="https://entorb.net/fc-lwk/">Lernwörter</a>
 </th>
 <th align="center">
 <a href="https://entorb.net/fc-pum/">Plus & Minus</a>
 </th>
 <th align="center">
-<a href="https://entorb.net/eta/">Hausi-Timer</a>
+<a href="https://entorb.net/fc-eta/">Hausi-Timer</a>
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="center">
-<a href="https://entorb.net/1x1/">
+<a href="https://entorb.net/fc-1x1/">
 <img src="apps/1x1/assets/icon.svg" alt="1×1 Murmeltier" width="120">
 </a>
 </td>
@@ -38,12 +38,12 @@ This repository hosts the code of three educational apps, implementing flashcard
 </a>
 </td>
 <td align="center">
-<a href="https://entorb.net/voc/">
+<a href="https://entorb.net/fc-voc/">
 <img src="apps/voc/assets/icon.svg" alt="Vokabeltrainer Fuchs" width="120">
 </a>
 </td>
 <td align="center">
-<a href="https://entorb.net/lwk/">
+<a href="https://entorb.net/fc-lwk/">
 <img src="apps/lwk/assets/icon.svg" alt="Lernwörter Eisbär" width="120">
 </a>
 </td>
@@ -53,7 +53,7 @@ This repository hosts the code of three educational apps, implementing flashcard
 </a>
 </td>
 <td align="center">
-<a href="https://entorb.net/eta/">
+<a href="https://entorb.net/fc-eta/">
 <img src="apps/eta/assets/icon.svg" alt="Hausi-Timer" width="120">
 </a>
 </td>

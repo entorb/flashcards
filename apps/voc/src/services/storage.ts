@@ -192,13 +192,6 @@ export function saveHistory(history: GameHistory[]): void {
   historyOps.save(history)
 }
 
-/**
- * Add a single game entry to history
- */
-export function addHistory(history: GameHistory): void {
-  historyOps.add(history)
-}
-
 // Settings
 
 /**
@@ -235,13 +228,6 @@ export function loadGameStats(): GameStats {
  */
 export function saveGameStats(stats: GameStats): void {
   statsOps.save(stats)
-}
-
-/**
- * Update statistics after a game
- */
-export function updateStatistics(points: number, correctAnswers: number): void {
-  statsOps.update(points, correctAnswers)
 }
 
 // Game Storage Factory - Consolidates result/state/daily operations
@@ -306,18 +292,4 @@ export function getGameResult(): GameResult | null {
  */
 export function clearGameResult(): void {
   gameStorage.clearGameResult()
-}
-
-// Reset All
-
-/**
- * Reset all stored data (cards, history, settings, stats, daily stats)
- */
-export function resetAll(): void {
-  localStorage.removeItem(STORAGE_KEYS.CARDS)
-  localStorage.removeItem(STORAGE_KEYS.HISTORY)
-  localStorage.removeItem(STORAGE_KEYS.SETTINGS)
-  localStorage.removeItem(STORAGE_KEYS.STATS)
-  localStorage.removeItem(STORAGE_KEYS.DAILY_STATS)
-  gamePersistence.clearAll()
 }

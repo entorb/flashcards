@@ -130,10 +130,6 @@ export function saveHistory(history: GameHistory[]): void {
   historyOps.save(history)
 }
 
-export function addHistory(entry: GameHistory): void {
-  historyOps.add(entry)
-}
-
 // ============================================================================
 // Statistics
 // ============================================================================
@@ -152,10 +148,6 @@ export function loadGameStats() {
 
 export function saveGameStats(stats: typeof DEFAULT_STATS) {
   statsOps.save(stats)
-}
-
-export function updateStatistics(points: number, correctAnswers: number) {
-  return statsOps.update(points, correctAnswers)
 }
 
 // ============================================================================
@@ -181,7 +173,6 @@ export function saveSettings(settings: GameSettings): void {
 // ============================================================================
 
 export const saveGameConfig = gamePersistence.saveSettings
-export const loadGameConfig = gamePersistence.loadSettings
 export const clearGameConfig = gamePersistence.clearSettings
 export const saveGameState = gamePersistence.saveState
 export const loadGameState = gamePersistence.loadState

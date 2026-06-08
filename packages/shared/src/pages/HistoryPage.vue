@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { TEXT_DE } from '../text-de'
 import type { BaseGameHistory } from '../types'
 
+/** @lintignore */
 export interface Props<T extends BaseGameHistory> {
   history: T[]
   formatDetails: (item: T) => string
