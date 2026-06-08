@@ -69,14 +69,6 @@ export const POINTS_MODE_HIDDEN = 4
 
 // --- Color Scheme ---
 
-/**
- * Theme color for PWA and browser chrome
- * CRITICAL: Must also be updated in:
- * - vite.config.ts (themeColor property)
- * - index.html (meta name="theme-color" content)
- */
-export const THEME_COLOR = '#00bcd4'
-
 // --- Default Data ---
 
 /**

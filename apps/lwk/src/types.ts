@@ -3,12 +3,7 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type {
-  BaseCard,
-  BaseGameHistory,
-  FocusType,
-  GameState as SharedGameState
-} from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, FocusType } from '@flashcards/shared'
 
 // ============================================================================
 // App-Specific Types
@@ -40,13 +35,4 @@ export interface GameSettings {
 export interface GameHistory extends BaseGameHistory {
   settings: GameSettings
   totalCards?: number
-}
-
-// Game State (extends shared GameState)
-
-export interface GameState extends SharedGameState {
-  settings: GameSettings
-  currentCard: Card | null
-  showWord: boolean // Whether word is currently visible
-  countdown: number // Countdown timer for hidden mode (0-3 seconds)
 }

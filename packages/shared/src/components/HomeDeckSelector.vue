@@ -7,6 +7,7 @@ import { onMounted, ref } from 'vue'
 
 import type { BaseCard } from '../types'
 
+/** @lintignore */
 export interface DeckSelectorProps<
   T extends { name: string; cards: BaseCard[] },
   S extends { deck?: string }

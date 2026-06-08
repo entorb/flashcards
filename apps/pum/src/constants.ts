@@ -5,10 +5,9 @@
 import type { GameStateFlowConfig } from '@flashcards/shared'
 import type { Difficulty, Operation } from './types'
 
-export { TIME_COLOR_THRESHOLDS, TIME_COLORS } from '@flashcards/shared'
-
 /**
  * Base path for the pum app — used in routing, PWA config, and database
+ * @lintignore
  */
 export const BASE_PATH = 'fc-pum'
 
@@ -55,22 +54,16 @@ export const MAX_CARDS_PER_GAME = 10
 
 // --- Color Scheme ---
 
-/**
- * Theme color for PWA and browser chrome
- * CRITICAL: Must also be updated in:
- * - vite.config.ts (themeColor property)
- * - index.html (meta name="theme-color" content)
- */
-export const THEME_COLOR = '#607D8B'
-
 // --- Default Settings ---
 
 /**
  * Default operations — all operations selected
+ * @lintignore
  */
 export const DEFAULT_OPERATIONS: Operation[] = ['plus', 'minus']
 
 /**
  * Default difficulties — all difficulties selected
+ * @lintignore
  */
 export const DEFAULT_DIFFICULTIES: Difficulty[] = ['simple', 'medium', 'advanced']
