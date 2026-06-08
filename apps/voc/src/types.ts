@@ -3,19 +3,14 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type {
-  BaseCard,
-  BaseGameHistory,
-  FocusType,
-  GameState as SharedGameState
-} from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, FocusType } from '@flashcards/shared'
 
 // ============================================================================
 // App-Specific Types
 // ============================================================================
 
-export type GameMode = 'multiple-choice' | 'blind' | 'typing'
-export type Direction = 'voc-de' | 'de-voc'
+type GameMode = 'multiple-choice' | 'blind' | 'typing'
+type Direction = 'voc-de' | 'de-voc'
 
 // Card Definition (extends BaseCard)
 export interface Card extends BaseCard {
@@ -43,10 +38,4 @@ export interface GameSettings {
 export interface GameHistory extends BaseGameHistory {
   settings: GameSettings
   totalCards?: number // Optional for compatibility, but should be set by finishGame
-}
-
-// Game State (extends shared GameState)
-
-export interface GameState extends SharedGameState {
-  cards: Card[] // Strongly typed with app-specific Card
 }

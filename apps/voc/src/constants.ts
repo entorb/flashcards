@@ -58,14 +58,6 @@ export const LEVENSHTEIN_THRESHOLD = 2
 
 // --- Color Scheme ---
 
-/**
- * Theme color for PWA and browser chrome
- * CRITICAL: Must also be updated in:
- * - vite.config.ts (themeColor property)
- * - index.html (meta name="theme-color" content)
- */
-export const THEME_COLOR = '#f97316'
-
 // --- Game Scoring ---
 
 /**

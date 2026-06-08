@@ -1,8 +1,11 @@
+import { createRequire } from 'node:module'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import Vue from '@vitejs/plugin-vue'
 import type { UserConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import VueRouter from 'vue-router/vite'
+
+const require = createRequire(import.meta.url)
 
 export interface AppConfig {
   basePath: string
@@ -26,6 +29,13 @@ export const baseViteConfig: UserConfig = {
 
   optimizeDeps: {
     include: ['vue', 'vue-router', 'quasar']
+  },
+
+  resolve: {
+    alias: {
+      // workbox-window has no `exports` field; rolldown (Vite 8) needs an explicit alias
+      'workbox-window': require.resolve('workbox-window/build/workbox-window.prod.es5.mjs')
+    }
   }
 }
 

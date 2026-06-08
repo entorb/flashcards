@@ -3,12 +3,7 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type {
-  BaseCard,
-  BaseGameHistory,
-  FocusType,
-  GameState as SharedGameState
-} from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, FocusType } from '@flashcards/shared'
 
 // ============================================================================
 // Operations and Difficulties
@@ -42,12 +37,4 @@ export interface GameSettings {
 
 export interface GameHistory extends BaseGameHistory {
   settings: GameSettings
-}
-
-// ============================================================================
-// Game State (extends shared GameState)
-// ============================================================================
-
-export interface GameState extends SharedGameState {
-  cards: Card[] // Strongly typed with app-specific Card
 }

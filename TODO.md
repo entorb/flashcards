@@ -47,10 +47,8 @@ non-functional requirements:
 
 Matomo ids for div and pum
 
-## eta
-
 ## lwk
 
-## pum
-
 ## voc
+
+## eta
