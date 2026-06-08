@@ -173,27 +173,22 @@ export function getDifficultyFromQuestion(question: string): Difficulty {
 
 export const {
   loadCards,
-  saveCards,
   updateCard,
   resetCards,
   loadHistory,
   saveHistory,
-  addHistory,
   loadGameStats,
   saveGameStats,
-  updateStatistics,
   setGameConfig,
   getGameConfig,
   setGameResult,
-  getGameResult,
-  clearGameResult,
-  incrementDailyGames,
   saveGameState,
   loadGameState,
   clearGameState,
-  loadRange,
-  saveRange,
-  loadSettings,
-  saveSettings,
-  resetAll
+  loadRange
 } = factory
+
+// Only used in .vue page files (É knip can’t trace @/ alias from .vue scripts)
+/** @lintignore */
+export const { getGameResult, clearGameResult, incrementDailyGames, loadSettings, saveSettings } =
+  factory

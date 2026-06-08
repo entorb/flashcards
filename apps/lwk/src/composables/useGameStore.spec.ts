@@ -18,13 +18,6 @@ const storageMocks = vi.hoisted(() => ({
     } | null
   >(() => ({ mode: 'copy', focus: 'weak', deck: 'LWK_1' })),
   saveSettings: vi.fn(),
-  loadGameConfig: vi.fn<
-    () => {
-      mode: 'copy' | 'hidden'
-      focus: 'weak' | 'medium' | 'strong' | 'slow'
-      deck: string
-    } | null
-  >(() => ({ mode: 'copy', focus: 'weak', deck: 'LWK_1' })),
   saveGameConfig: vi.fn(),
   loadHistory: vi.fn(() => []),
   saveHistory: vi.fn(),

@@ -213,22 +213,24 @@ export const {
   resetCards,
   loadHistory,
   saveHistory,
-  addHistory,
   loadGameStats,
   saveGameStats,
-  updateStatistics,
   setGameConfig,
   getGameConfig,
   setGameResult,
-  getGameResult,
-  clearGameResult,
-  incrementDailyGames,
   saveGameState,
   loadGameState,
   clearGameState,
-  loadRange,
+  loadRange
+} = factory
+
+// Only used in .vue page files (knip can’t trace @/ alias from .vue scripts)
+/** @lintignore */
+export const {
+  getGameResult,
+  clearGameResult,
+  incrementDailyGames,
   saveRange,
   loadSettings,
-  saveSettings,
-  resetAll
+  saveSettings
 } = factory

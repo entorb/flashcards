@@ -4,8 +4,6 @@
 
 import type { GameStateFlowConfig } from '@flashcards/shared'
 
-export { TIME_COLOR_THRESHOLDS, TIME_COLORS } from '@flashcards/shared'
-
 /**
  * Base path for the div app — used in routing, PWA config, and database
  */
@@ -59,11 +57,3 @@ export const DEFAULT_RANGE = [2, 3, 4, 5, 6, 7, 8, 9]
 export const MAX_CARDS_PER_GAME = 10
 
 // --- Color Scheme ---
-
-/**
- * Theme color for PWA and browser chrome
- * CRITICAL: Must also be updated in:
- * - vite.config.ts (themeColor property)
- * - index.html (meta name="theme-color" content)
- */
-export const THEME_COLOR = '#DAA520'
