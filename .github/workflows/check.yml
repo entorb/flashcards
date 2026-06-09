@@ -71,7 +71,7 @@ jobs:
           # Vitest generates lcov SF: paths relative to each app (e.g. SF:src/pages/Foo.vue).
           # SonarCloud resolves them relative to the project root, causing 0% coverage.
           # Prefix each SF: path with the app/package directory.
-          for dir in apps/1x1 apps/voc apps/lwk apps/eta packages/shared; do
+          for dir in apps/* packages/shared; do
             lcov="$dir/coverage/lcov.info"
             [ -f "$lcov" ] && sed -i "s|^SF:src/|SF:$dir/src/|" "$lcov"
           done

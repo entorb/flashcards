@@ -2,6 +2,10 @@
   "files": [],
   "references": [
     { "path": "./apps/1x1" },
+    { "path": "./apps/div" },
+    { "path": "./apps/eta" },
+    { "path": "./apps/lwk" },
+    { "path": "./apps/pum" },
     { "path": "./apps/voc" },
     { "path": "./packages/shared" }
   ]
