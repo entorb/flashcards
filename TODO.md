@@ -22,6 +22,13 @@ Feedback und Verbesserungsvorschläge sehr gerne, aber bitte über die Kontakt-S
 
 ## Tech
 
+### Test lib
+
+@vue/test-utils -> @testing-library/vue
+
+Verdict: Testing Library is considered best practice for most Vue apps. It produces more maintainable tests that survive refactoring. VTU remains useful for library authors needing fine-grained control.
+That said — migrating 100+ tests across 6 apps is significant effort. Our current overrides work and all checks pass. Worth doing if you're already planning a test rewrite, but not justified just to eliminate the js-beautify dep.
+
 ## Git Hist cleanup
 
 - todo-lwk.md
