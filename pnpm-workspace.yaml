@@ -56,6 +56,10 @@ minimumReleaseAgeExclude:
   - '@esbuild/win32-ia32@0.28.1'
   - '@esbuild/win32-x64@0.28.1'
 
+peerDependencyRules:
+  allowedVersions:
+    "eslint-plugin-import>eslint": ">=10"
+
 overrides:
   minimatch@>=10.0.0 <10.2.1: '>=10.2.1'
   minimatch@>=10.0.0 <10.2.3: '>=10.2.3'
