@@ -16,7 +16,7 @@ export function useGameTimer(trigger: Ref<unknown>, maxTime?: number) {
   let timerInterval: ReturnType<typeof setInterval> | null = null
 
   function stopTimer() {
-    if (timerInterval) {
+    if (timerInterval !== null) {
       clearInterval(timerInterval)
       timerInterval = null
     }

@@ -69,7 +69,7 @@ export function useCountdownTimer(options: UseCountdownTimerOptions = {}) {
    * Stop the countdown timer
    */
   function stop() {
-    if (countdownInterval) {
+    if (countdownInterval !== null) {
       clearInterval(countdownInterval)
       countdownInterval = null
     }
