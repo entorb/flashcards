@@ -63,10 +63,10 @@ export function useAnswerFeedback(options: UseAnswerFeedbackOptions = {}) {
    * Clear all timers and reset countdown values
    */
   function clearTimers() {
-    if (autoCloseTimer) clearTimeout(autoCloseTimer)
-    if (autoCloseCountdownInterval) clearInterval(autoCloseCountdownInterval)
-    if (buttonDisableTimer) clearTimeout(buttonDisableTimer)
-    if (buttonDisableCountdownInterval) clearInterval(buttonDisableCountdownInterval)
+    if (autoCloseTimer !== null) clearTimeout(autoCloseTimer)
+    if (autoCloseCountdownInterval !== null) clearInterval(autoCloseCountdownInterval)
+    if (buttonDisableTimer !== null) clearTimeout(buttonDisableTimer)
+    if (buttonDisableCountdownInterval !== null) clearInterval(buttonDisableCountdownInterval)
 
     autoCloseTimer = null
     autoCloseCountdownInterval = null
