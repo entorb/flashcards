@@ -6,7 +6,7 @@ cd $(dirname $0)/..
 # exit upon error
 set -e
 
-echo === deleting old node_modules and lock ===
+echo === delete old node_modules and lock ===
 rm -rf node_modules
 rm -f pnpm-lock.yaml
 rm -rf packages/shared/node_modules
@@ -16,11 +16,11 @@ for app in 1x1 div eta lwk pum voc; do
   rm -f apps/$app/pnpm-lock.yaml
 done
 
-echo === updating root packages ===
+echo === update root packages ===
 pnpm up -L
 pnpm exec biome migrate --write
 
-echo === updating shared packages ===
+echo === update shared packages ===
 cd packages/shared
 pnpm up -L
 cd ../..
@@ -32,10 +32,23 @@ for app in 1x1 div eta lwk pum voc; do
   cd ../..
 done
 
+if ! pnpm audit; then
+  echo === fix audit findings ===
+  pnpm audit --fix update
+  pnpm audit --fix override
+fi
 
 echo === check ===
 pnpm run check
 
+if [ -n "$(git status --porcelain)" ]; then
+  echo === git push ===
+  git add .
+  git commit -m "package update and pnpm audit findings"
+  git push
+fi
+
+echo === Cypress ===
 # start dev server in background, bypassing pnpm wrapper to remove warning upon killing process
 pnpm run dev &
 # ./node_modules/.bin/vite > /dev/null 2>&1 &
@@ -56,4 +69,4 @@ done
 kill $DEV_PID
 wait $DEV_PID 2>/dev/null || true
 
-echo "DONE"
+echo "update DONE, not yet deployed"
