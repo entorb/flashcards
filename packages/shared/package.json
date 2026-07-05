@@ -20,13 +20,13 @@
     "types": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "quasar": "^2.19.3",
-    "vue": "^3.5.35",
+    "quasar": "^2.20.1",
+    "vue": "^3.5.38",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "fast-check": "^4.8.0",
     "typescript": "^6.0.3",
-    "vue-tsc": "^3.3.3"
+    "vue-tsc": "^3.3.5"
   }
 }
