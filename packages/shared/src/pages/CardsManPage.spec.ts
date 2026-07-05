@@ -233,4 +233,35 @@ describe('CardsManPage (shared)', () => {
       }).not.toThrow()
     })
   })
+
+  // ─── duplicateKeys — detects duplicate cards ────────────────────────────
+
+  describe('duplicateKeys', () => {
+    it('returns empty set when all cards have unique keys', async () => {
+      const store = makeMockStore()
+      const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
+      await wrapper.vm.$nextTick()
+      const vm = wrapper.vm as unknown as { duplicateKeys: Set<string> }
+      expect(vm.duplicateKeys.size).toBe(0)
+    })
+
+    it('detects duplicate cards based on getCardKey', async () => {
+      const cards: BaseCard[] = [
+        { level: 1, time: 60 },
+        { level: 1, time: 60 }, // same key as first
+        { level: 2, time: 30 },
+        { level: 1, time: 60 } // same key as first
+      ]
+      const store = {
+        allCards: ref<BaseCard[]>(cards),
+        moveAllCards: vi.fn(),
+        resetCards: vi.fn()
+      }
+      const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
+      await wrapper.vm.$nextTick()
+      const vm = wrapper.vm as unknown as { duplicateKeys: Set<string> }
+      expect(vm.duplicateKeys.size).toBe(1)
+      expect(vm.duplicateKeys.has('1-60')).toBe(true)
+    })
+  })
 })
