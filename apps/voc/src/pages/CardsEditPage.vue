@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace, TEXT_DE } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
@@ -17,8 +17,10 @@ const editingCards = ref<Card[]>([])
 const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
 
 onMounted(() => {
-  // Initialize with a copy of current cards
-  editingCards.value = allCards.value.map(card => ({ ...card }))
+  // Initialize with a copy of current cards, sorted alphabetically
+  editingCards.value = allCards.value
+    .map(card => ({ ...card }))
+    .sort((a, b) => a.voc.localeCompare(b.voc))
   globalThis.addEventListener('keydown', handleKeyDown)
 })
 
@@ -58,6 +60,19 @@ function handleGoBack() {
   for (const card of editingCards.value) {
     card.voc = normalizeWhitespace(card.voc)
     card.de = normalizeWhitespace(card.de)
+  }
+
+  // Reject duplicates (vocable must be unique per deck)
+  const seen = new Set<string>()
+  for (const card of editingCards.value) {
+    if (seen.has(card.voc)) {
+      $q.notify({
+        type: 'negative',
+        message: TEXT_DE.voc.cards.validationDuplicate.replace('{word}', card.voc)
+      })
+      return
+    }
+    seen.add(card.voc)
   }
 
   importCards(editingCards.value)
@@ -154,6 +169,13 @@ function addNewCard() {
     level: MIN_LEVEL,
     time: MAX_TIME
   })
+  void nextTick(() => {
+    const index = editingCards.value.length - 1
+    const input = document.querySelector<HTMLInputElement>(`[data-cy="card-voc-${index}"] input`)
+    if (!input) return
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    input.focus()
+  })
 }
 
 function removeCard(index: number) {
@@ -165,6 +187,25 @@ function removeCard(index: number) {
     return
   }
   editingCards.value.splice(index, 1)
+}
+
+function checkDuplicateVoc(index: number) {
+  const card = editingCards.value[index]
+  // biome-ignore lint/complexity/useOptionalChain: optional chain prevents TS narrowing
+  if (!(card && card.voc.trim())) return
+  const normalized = normalizeWhitespace(card.voc)
+  for (let i = 0; i < editingCards.value.length; i++) {
+    if (i === index) continue
+    const other = editingCards.value[i]
+    if (!other) continue
+    if (normalizeWhitespace(other.voc) === normalized) {
+      $q.notify({
+        type: 'warning',
+        message: TEXT_DE.voc.cards.validationDuplicate.replace('{word}', card.voc.trim())
+      })
+      return
+    }
+  }
 }
 
 function onCardChange() {
@@ -273,6 +314,7 @@ function onCardChange() {
                 :placeholder="TEXT_DE.voc.cards.vocPlaceholder"
                 :data-cy="`card-voc-${index}`"
                 @update:model-value="onCardChange"
+                @blur="checkDuplicateVoc(index)"
               />
             </q-item-section>
             <q-item-section style="flex: 0 0 40%">
@@ -315,6 +357,17 @@ function onCardChange() {
           </q-item>
         </q-list>
       </div>
+
+      <!-- Add card bottom -->
+      <q-btn
+        outline
+        color="primary"
+        icon="add"
+        :label="TEXT_DE.voc.cards.addNewCard"
+        no-caps
+        data-cy="add-card-bottom-button"
+        @click="addNewCard"
+      />
     </div>
   </q-page>
 </template>

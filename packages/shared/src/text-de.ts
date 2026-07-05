@@ -41,7 +41,8 @@ export const TEXT_DE = {
       rename: 'Umbenennen',
       delete: 'Löschen',
       legendBackground: 'Hintergrund: Level (Rot=1 → Grün=5)',
-      legendTextColor: 'Schriftfarbe: Zeit (Grün=schnell → Rot=langsam)'
+      legendTextColor: 'Schriftfarbe: Zeit (Grün=schnell → Rot=langsam)',
+      duplicateWarning: 'Karte bereits vorhanden'
     },
     words: {
       cards: 'Karten',
@@ -231,6 +232,7 @@ export const TEXT_DE = {
       dePlaceholder: 'Deutsch',
       validationEnEmpty: 'Das englische Wort darf nicht leer sein.',
       validationDeEmpty: 'Das deutsche Wort darf nicht leer sein.',
+      validationDuplicate: 'Die Vokabel "{word}" ist bereits vorhanden.',
       moveAllTitle: 'Alle verschieben',
       reset: 'Zurücksetzen'
     },
@@ -286,6 +288,7 @@ export const TEXT_DE = {
       addNewCard: 'Neues Wort',
       wordPlaceholder: 'Wort',
       validationWordEmpty: 'Das Wort darf nicht leer sein.',
+      validationDuplicate: 'Das Wort "{word}" ist bereits vorhanden.',
       noCardsYet: 'Noch keine Wörter vorhanden',
       moveAllTitle: 'Alle verschieben'
     },

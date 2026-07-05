@@ -189,6 +189,45 @@ describe('voc CardsEditPage', () => {
     })
   })
 
+  // ─── Duplicate prevention ──────────────────────────────────────────────
+
+  describe('duplicate prevention', () => {
+    it('shows notification and does not save when duplicate vocs exist', async () => {
+      mockAllCards.value = [
+        { voc: 'hello', de: 'hallo', level: 1, time: 60 },
+        { voc: 'hello', de: 'hey', level: 2, time: 30 }
+      ]
+      const router = createMockRouter()
+      vi.spyOn(router, 'push')
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: 'negative' }))
+      expect(mockImportCards).not.toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
+    })
+
+    it('allows saving when all vocs are unique', async () => {
+      mockAllCards.value = [
+        { voc: 'hello', de: 'hallo', level: 1, time: 60 },
+        { voc: 'world', de: 'Welt', level: 2, time: 30 }
+      ]
+      const router = createMockRouter()
+      vi.spyOn(router, 'push')
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(mockImportCards).toHaveBeenCalledOnce()
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
+    })
+  })
+
   describe('adding a new card', () => {
     it('appends an empty card when add button is clicked', async () => {
       const router = createMockRouter()
