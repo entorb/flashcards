@@ -7,6 +7,16 @@ allowBuilds:
   cypress: true
   esbuild: true
 
+publicHoistPattern:
+  - '*vue*'
+  - '*vite*'
+  - '*quasar*'
+  - '*eslint*'
+  - '*typescript*'
+  - '@types/*'
+  - '*esbuild*'
+  - '*rollup*'
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - cypress
