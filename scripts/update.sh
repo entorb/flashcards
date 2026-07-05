@@ -6,6 +6,27 @@ cd $(dirname $0)/..
 # exit upon error
 set -e
 
+echo === brew: update pnpm and node ===
+echo "Update Node and pnpm via brew? [y/N]"
+read -r REPLY
+if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
+  brew update
+  brew upgrade node@24
+  brew upgrade pnpm
+
+  # update package.json with new versions
+  NODE_VER=$(node --version | sed 's/v//')
+  PNPM_VER=$(pnpm --version)
+  PNPM_MANAGER="pnpm@$PNPM_VER"
+  node -e "
+    const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
+    pkg.packageManager = '$PNPM_MANAGER';
+    pkg.engines.node = '>=$NODE_VER';
+    pkg.engines.pnpm = '>=$PNPM_VER';
+    require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+  "
+fi
+
 echo === delete old node_modules and lock ===
 rm -rf node_modules
 rm -f pnpm-lock.yaml
