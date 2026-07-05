@@ -55,6 +55,19 @@ const cardsToShow = computed(() => {
   return filteredCards.value
 })
 
+const duplicateKeys = computed(() => {
+  const keyCount = new Map<string, number>()
+  for (const card of props.store.allCards.value) {
+    const key = props.getCardKey(card)
+    keyCount.set(key, (keyCount.get(key) ?? 0) + 1)
+  }
+  const result = new Set<string>()
+  for (const [key, count] of keyCount) {
+    if (count > 1) result.add(key)
+  }
+  return result
+})
+
 function handleGoBack() {
   router.push({ name: '/HomePage' })
 }
@@ -231,6 +244,7 @@ function handleResetCardsToDefaultSet() {
         :selected-level="selectedLevel"
         :get-label="getCardLabel"
         :get-key="getCardKey"
+        :duplicate-keys="duplicateKeys"
       />
 
       <CardManActions

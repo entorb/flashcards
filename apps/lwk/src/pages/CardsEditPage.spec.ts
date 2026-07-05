@@ -191,6 +191,45 @@ describe('lwk CardsEditPage', () => {
     })
   })
 
+  // ─── Duplicate prevention ──────────────────────────────────────────────
+
+  describe('duplicate prevention', () => {
+    it('shows notification and does not save when duplicate words exist', async () => {
+      mockAllCards.value = [
+        { word: 'Jahr', level: 1, time: 60 },
+        { word: 'Jahr', level: 2, time: 30 }
+      ]
+      const router = createMockRouter()
+      vi.spyOn(router, 'push')
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: 'negative' }))
+      expect(mockImportCards).not.toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
+    })
+
+    it('allows saving when all words are unique', async () => {
+      mockAllCards.value = [
+        { word: 'Jahr', level: 1, time: 60 },
+        { word: 'Haus', level: 2, time: 30 }
+      ]
+      const router = createMockRouter()
+      vi.spyOn(router, 'push')
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(mockImportCards).toHaveBeenCalledOnce()
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
+    })
+  })
+
   // ─── Add card ─────────────────────────────────────────────────────────────
 
   describe('adding a new card', () => {
