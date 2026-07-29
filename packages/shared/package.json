@@ -20,7 +20,7 @@
     "types": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "quasar": "^2.20.1",
+    "quasar": "^2.22.0",
     "vue": "^3.5.38",
     "vue-router": "^5.1.0"
   },

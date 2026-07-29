@@ -24,7 +24,7 @@
   "dependencies": {
     "@flashcards/shared": "workspace:*",
     "@quasar/extras": "^2.0.1",
-    "quasar": "^2.20.1",
+    "quasar": "^2.22.0",
     "vue": "^3.5.38"
   }
 }
