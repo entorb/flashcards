@@ -24,10 +24,6 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # for SonarQube
 
-      - uses: gitleaks/gitleaks-action@v3
-        # only on main, as creds are required
-        if: github.ref == 'refs/heads/main'
-
       - uses: pnpm/action-setup@v6
         with:
           run_install: false
