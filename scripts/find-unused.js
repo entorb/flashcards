@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 // run via
 // pnpm run find-unused
 
