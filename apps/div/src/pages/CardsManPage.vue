@@ -155,4 +155,3 @@ function goHome() {
     </div>
   </q-page>
 </template>
-
