@@ -27,3 +27,7 @@ ignorePaths:
   - 'src/assets/'
   - 'TODO.md'
   - 'www/index.html'
+  - 'biome.json'
+  - 'pnpm-lock.yaml'
+  - 'pnpm-workspace.yaml'
+  - '*.svg'

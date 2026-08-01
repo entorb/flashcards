@@ -24,6 +24,9 @@ jobs:
           node-version: 24
           cache: "pnpm"
 
+      - name: Run prek pre-commit
+        uses: j178/prek-action@v2
+
       - name: Install dependencies
         run: pnpm install
 

@@ -37,6 +37,15 @@ jobs:
           node-version: 24
           cache: "pnpm"
 
+      - name: Run prek pre-commit
+        uses: j178/prek-action@v2
+
+      - name: Run markdownlint
+        run: npm exec markdownlint-cli2 "**/*.md"
+
+      - name: Run cspell
+        run: npm exec cspell-cli --gitignore --unique --silent .
+
       - name: Install dependencies
         run: pnpm install
 
