@@ -445,8 +445,13 @@ function findCSSClassUsage(className, files, styleFile) {
 
       // If this is the style file (Vue file), only search the template/script, not the style block
       if (file === styleFile) {
-        // Remove the <style> block to avoid matching the class definition itself
-        content = content.replaceAll(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        // Remove the <style> block to avoid matching the class definition itself.
+        // Loop until stable: a single pass can leave an unclosed <style> behind
+        let previous
+        do {
+          previous = content
+          content = content.replaceAll(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        } while (content !== previous)
       }
 
       // Strip comments to avoid false positives
@@ -478,7 +483,12 @@ function stripComments(content) {
   result = result.replaceAll(/\/\*[\s\S]*?\*\//g, '')
 
   // Remove HTML comments (<!-- ... -->)
-  result = result.replaceAll(/<!--[\s\S]*?-->/g, '')
+  // Loop until stable: a single pass can leave a partial <!-- behind
+  let previous
+  do {
+    previous = result
+    result = result.replaceAll(/<!--[\s\S]*?-->/g, '')
+  } while (result !== previous)
 
   return result
 }
