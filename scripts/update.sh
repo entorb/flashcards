@@ -38,6 +38,7 @@ for app in 1x1 div eta lwk pum voc; do
 done
 
 echo === update root packages ===
+pnpm self-update
 pnpm up -L
 pnpm exec biome migrate --write
 
@@ -55,8 +56,8 @@ done
 
 if ! pnpm audit; then
   echo === fix audit findings ===
-  pnpm audit --fix update
   pnpm audit --fix override
+  pnpm audit --fix update
 fi
 
 echo === check ===
