@@ -43,7 +43,7 @@ jobs:
         run: npm exec cspell-cli --gitignore --unique --silent .
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       # - name: Run formatter
       #   run: pnpm run format

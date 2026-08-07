@@ -28,7 +28,7 @@ jobs:
         uses: j178/prek-action@v3.0.0
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Update Vite, etc.
         run: pnpm up vite cspell eslint vue-tsc @biomejs/biome
