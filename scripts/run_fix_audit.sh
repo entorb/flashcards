@@ -6,5 +6,5 @@ cd $(dirname $0)/..
 # exit upon error
 set -e
 
-pnpm audit --fix override
 pnpm audit --fix update
+pnpm audit --fix override
