@@ -11,15 +11,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   check:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v7
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0 # for SonarQube
@@ -34,13 +36,16 @@ jobs:
           cache: "pnpm"
 
       - name: Run prek pre-commit
-        uses: j178/prek-action@v3.0.0
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
 
-      - name: Run markdownlint
-        run: npm exec markdownlint-cli2 "**/*.md"
+      - name: Run md lint
+        uses: rvben/rumdl@4997ff07b63c7a54d6a495ebcd3ce7f23ee1173f # v0.2.55
 
-      - name: Run cspell
-        run: npm exec cspell-cli --gitignore --unique --silent .
+      - name: Run CSpell
+        uses: streetsidesoftware/cspell-action@de2a73e963e7443969755b648a1008f77033c5b2 # v8.4.0
+        with:
+          files: '**/*'
+          incremental_files_only: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
