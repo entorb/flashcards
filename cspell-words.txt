@@ -135,6 +135,7 @@ Restzeit
 Richtig
 Richtige
 Runden
+rumdl
 Räume
 Sachen
 sammeln
