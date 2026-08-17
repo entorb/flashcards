@@ -17,8 +17,8 @@
     "preview": "vite preview",
     "run": "run-s build preview",
     "spell": "cspell --cache --quiet \"src/**/*.{txt,md,html,js,ts,vue,json,yml,py}\"",
-    "test:cov": "vitest --watch=false --coverage",
-    "test": "vitest --watch=false",
+    "test:cov": "vitest --watch=false --silent=passed-only --coverage",
+    "test": "vitest --watch=false --silent=passed-only --reporter=minimal",
     "types": "vue-tsc --build"
   },
   "dependencies": {
