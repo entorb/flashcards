@@ -1,6 +1,7 @@
 # Flashcards Apps
 
 This repository hosts the code of three educational apps, implementing flashcard-based learning for school kids. Hosted at <https://entorb.net/flashcards/>:
+<!-- rumdl-disable no-inline-html -->
 
 <table>
 <thead>
