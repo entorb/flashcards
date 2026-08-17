@@ -2,7 +2,6 @@
 $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
 version: '0.2'
 useCache: true
-cacheLocation: ./.cache/
 useGitignore: true
 dictionaryDefinitions:
   - name: cspell-words
@@ -10,24 +9,23 @@ dictionaryDefinitions:
     addWords: true
 dictionaries:
   - cspell-words
-language: en-US # de-DE
-# import:
-#   - "@cspell/dict-de-de"
+language: en-US
 ignorePaths:
   - '.*.js'
   - '.*.ts'
   - '.*'
   - '*.spec.ts'
+  - '*.svg'
+  - 'biome.json'
   - 'build'
+  - 'cspell-words.txt'
   - 'cspell.config.yaml'
   - 'dist'
   - 'package*.json'
+  - 'pnpm-lock.yaml'
+  - 'pnpm-workspace.yaml'
   - 'pnpm-workspace.yaml'
   - 'scripts/**'
   - 'src/assets/'
   - 'TODO.md'
   - 'www/index.html'
-  - 'biome.json'
-  - 'pnpm-lock.yaml'
-  - 'pnpm-workspace.yaml'
-  - '*.svg'
