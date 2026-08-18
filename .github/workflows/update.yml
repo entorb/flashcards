@@ -1,0 +1,54 @@
+---
+name: Update
+
+on:
+  schedule:
+    - cron: "51 5 1 * *"
+  workflow_dispatch:  # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Run prek pre-commit
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece  # v3.0.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Update Vite, etc.
+        run: pnpm up vite cspell eslint vue-tsc @biomejs/biome
+
+      - name: Migrate Biome config
+        run: pnpm exec biome migrate --write
+
+      - name: Run code checks
+        run: pnpm run check
+
+      - name: Commit changes if any
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            git config --local user.name "GitHub Action"
+            git config --local user.email "action@github.com"
+            git add pnpm-lock.yaml
+            git commit -m "Lock" || true
+            git add package.json biome.json
+            git commit -m "Auto-Update Vite, etc." || true
+            git push
+          fi

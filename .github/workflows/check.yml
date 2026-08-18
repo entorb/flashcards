@@ -1,0 +1,112 @@
+---
+name: Check Code
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0  # for SonarQube
+
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e  # v3.0.0
+
+      - name: cleanup after Gitleaks
+        run: rm -rf results.sarif
+
+      - name: Run prek pre-commit
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece  # v3.0.0
+
+      - name: Run md lint
+        uses: rvben/rumdl@4997ff07b63c7a54d6a495ebcd3ce7f23ee1173f  # v0.2.55
+
+      - name: Run CSpell
+        uses: streetsidesoftware/cspell-action@de2a73e963e7443969755b648a1008f77033c5b2  # v8.4.0
+        with:
+          files: '**/*'
+          incremental_files_only: false
+
+      - name: yaml lint
+        run: |
+          npx -y @owenlamont/ryl@0.21.0 check -d '{extends: default, rules: {line-length: disable, truthy: disable}, ignore: [pnpm-lock.yaml]}' .
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # - name: Run formatter
+      #   run: pnpm run format
+      # - name: Setup Biome
+      #   uses: biomejs/setup-biome@v2
+      #   with:
+      #     version: latest
+
+      - name: Run Biome
+        run: pnpm exec biome ci .
+
+      - name: Run linter
+        run: pnpm run lint
+
+      - name: Run types
+        run: pnpm run types
+
+      - name: Run spell checker
+        run: pnpm run spell
+
+      - name: Run unit tests
+        run: pnpm run test:cov
+
+      - name: Run dead code
+        run: pnpm knip
+
+      - name: Fix lcov paths for SonarCloud
+        run: |
+          # Vitest generates lcov SF: paths relative to each app (e.g. SF:src/pages/Foo.vue).
+          # SonarCloud resolves them relative to the project root, causing 0% coverage.
+          # Prefix each SF: path with the app/package directory.
+          for dir in apps/* packages/shared; do
+            lcov="$dir/coverage/lcov.info"
+            [ -f "$lcov" ] && sed -i "s|^SF:src/|SF:$dir/src/|" "$lcov"
+          done
+
+      # - name: Run Cypress
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     # build: pnpx vite build
+      #     start: pnpx vite dev
+
+      # manual run SonarQube to obtain coverage report
+      # requires https://sonarcloud.io/project/analysis_method?id=entorb_meeting-meter -> False
+      - uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Run audit
+        run: pnpm audit --prod
