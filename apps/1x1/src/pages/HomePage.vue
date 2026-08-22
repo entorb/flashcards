@@ -43,8 +43,15 @@ const isNumberSelected = computed(() => (num: number) => {
   return select.value.includes(num)
 })
 
-// Check if x² is selected
-const isSquaresSelected = computed(() => select.value === 'x²')
+// Check if x² is selected (also shown as selected when all rows are selected,
+// since the squares are included in the rows)
+const allRowsSelected = computed(() => {
+  if (!Array.isArray(select.value)) return false
+  const selected = select.value
+  return selectOptions.value.length > 0 && selectOptions.value.every(opt => selected.includes(opt))
+})
+
+const isSquaresSelected = computed(() => select.value === 'x²' || allRowsSelected.value)
 
 // Compute filtered cards for the current selection
 const basePool = computed(() => {
