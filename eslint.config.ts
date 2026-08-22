@@ -58,7 +58,6 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      ...(sonarjs.configs.recommended.rules ?? {}),
       // Type safety
       // '@typescript-eslint/consistent-type-imports' — covered by Biome useImportType
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -109,13 +108,10 @@ export default [
       ],
       // 'prefer-template' — covered by Biome useTemplate
       'require-atomic-updates': 'error',
-      // SonarJS
+      // SonarJS — explicit rules only; recommended config adds ~100 rules incl. irrelevant security rules
       'sonarjs/cognitive-complexity': ['warn', 20],
-      'sonarjs/no-commented-code': 'off', // Slow rule (~56% of lint time) — caught by SonarCloud in CI
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
-      'sonarjs/no-identical-functions': 'warn',
-      'sonarjs/pseudo-random': 'off',
-      'sonarjs/todo-tag': 'off'
+      'sonarjs/no-identical-functions': 'warn'
     }
   },
 
@@ -195,13 +191,10 @@ export default [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
-      // SonarJS
+      // SonarJS — explicit rules only; recommended config adds ~100 rules incl. irrelevant security rules
       'sonarjs/cognitive-complexity': ['warn', 20],
-      'sonarjs/no-commented-code': 'off', // Slow rule — caught by SonarCloud in CI
       'sonarjs/no-duplicate-string': ['warn', { threshold: 4 }],
       'sonarjs/no-identical-functions': 'warn',
-      'sonarjs/pseudo-random': 'off',
-      'sonarjs/todo-tag': 'off',
       // Vue 3 Composition API best practices
       'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       'vue/block-order': ['error', { order: ['script', 'template', 'style'] }],
@@ -382,8 +375,6 @@ export default [
       'sonarjs/cognitive-complexity': 'off',
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-identical-functions': 'off',
-      'sonarjs/slow-regex': 'off',
-      'sonarjs/todo-tag': 'off',
       // Vitest-specific rules
       'vitest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
       'vitest/expect-expect': ['warn', { assertFunctionNames: ['expect', 'fc.assert'] }],
@@ -433,9 +424,7 @@ export default [
       // Relaxed SonarJS for E2E tests
       'sonarjs/cognitive-complexity': 'off',
       'sonarjs/no-duplicate-string': 'off',
-      'sonarjs/no-identical-functions': 'off',
-      'sonarjs/slow-regex': 'off',
-      'sonarjs/todo-tag': 'off'
+      'sonarjs/no-identical-functions': 'off'
     }
   }
 ]
