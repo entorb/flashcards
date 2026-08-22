@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { CardLevel, FocusType, SessionMode } from '@flashcards/shared'
+import { ALL_LEVELS, filterByLevels, TEXT_DE } from '@flashcards/shared'
 import {
-  ALL_LEVELS,
-  filterBelowMaxLevel,
-  filterByLevels,
-  filterLevel1Cards,
-  TEXT_DE
-} from '@flashcards/shared'
-import { HomeFocusSelector, HomeLevelSelector, HomePageLayout } from '@flashcards/shared/components'
+  HomeFocusSelector,
+  HomeGameModeButtons,
+  HomeLevelSelector,
+  HomePageLayout
+} from '@flashcards/shared/components'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -70,12 +69,6 @@ const basePool = computed(() => {
 
 // Cards matching the selected levels
 const levelFilteredCards = computed(() => filterByLevels(basePool.value, levels.value))
-
-const hasLevel1Cards = computed(() => filterLevel1Cards(levelFilteredCards.value).length > 0)
-
-const hasBelowMaxLevelCards = computed(
-  () => filterBelowMaxLevel(levelFilteredCards.value).length > 0
-)
 
 onMounted(() => {
   // Load range configuration
@@ -239,47 +232,10 @@ function toggleSquares() {
       <HomeFocusSelector v-model="focus" />
     </template>
     <template #extra-buttons>
-      <div class="row q-gutter-sm q-mb-sm">
-        <q-btn
-          color="positive"
-          size="lg"
-          class="col"
-          icon="all_inclusive"
-          :disable="!hasLevel1Cards"
-          data-cy="start-endless-level1"
-          @click="startGameWithMode('endless-level1')"
-        >
-          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.endlessLevel1 }}</span>
-          <q-tooltip v-if="!hasLevel1Cards">
-            {{ TEXT_DE.shared.gameModes.noLevel1Cards }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn
-          color="positive"
-          size="lg"
-          class="col"
-          icon="looks_3"
-          :disable="levelFilteredCards.length === 0"
-          data-cy="start-three-rounds"
-          @click="startGameWithMode('3-rounds')"
-        >
-          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.threeRounds }}</span>
-        </q-btn>
-        <q-btn
-          color="positive"
-          size="lg"
-          class="col"
-          icon="military_tech"
-          :disable="!hasBelowMaxLevelCards"
-          data-cy="start-endless-level5"
-          @click="startGameWithMode('endless-level5')"
-        >
-          &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.endlessLevel5 }}</span>
-          <q-tooltip v-if="!hasBelowMaxLevelCards">
-            {{ TEXT_DE.shared.gameModes.noCardsBelow5 }}
-          </q-tooltip>
-        </q-btn>
-      </div>
+      <HomeGameModeButtons
+        :cards="levelFilteredCards"
+        @start="startGameWithMode"
+      />
     </template>
   </HomePageLayout>
 </template>
