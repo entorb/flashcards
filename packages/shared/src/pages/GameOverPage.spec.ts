@@ -49,6 +49,7 @@ interface TestHistory extends BaseGameHistory {
 function makeStorageFunctions(gameResult: GameResult | null = null) {
   return {
     getGameResult: vi.fn(() => gameResult),
+    setGameResult: vi.fn(),
     clearGameResult: vi.fn(),
     clearGameState: vi.fn(),
     incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 2 })),
@@ -286,6 +287,97 @@ describe('GameOverPage (shared)', () => {
 
     expect(wrapper.find('[data-cy="correct-answers-count"]').text()).toContain('7')
     expect(wrapper.find('[data-cy="total-questions-count"]').text()).toContain('10')
+  })
+
+  it('skips bonus application when result is already flagged as processed', async () => {
+    const router = createMockRouter()
+    const result: GameResult = {
+      points: 42,
+      correctAnswers: 8,
+      totalCards: 10,
+      bonusesApplied: true
+    }
+    const storageFunctions = makeStorageFunctions(result)
+
+    const wrapper = mount(GameOverPage, {
+      props: makeProps(storageFunctions),
+      global: {
+        mocks: quasarMocks,
+        plugins: [router],
+        provide: quasarProvide,
+        stubs: { ...quasarStubs }
+      }
+    })
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    expect(wrapper.find('[data-cy="final-points"]').exists()).toBe(true)
+    expect(storageFunctions.incrementDailyGames).not.toHaveBeenCalled()
+    expect(storageFunctions.saveGameStats).not.toHaveBeenCalled()
+    expect(storageFunctions.saveHistory).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('marks a fresh result as processed so a remount cannot double-apply bonuses', async () => {
+    const router = createMockRouter()
+    const result: GameResult = { points: 42, correctAnswers: 8, totalCards: 10 }
+    const storageFunctions = makeStorageFunctions(result)
+
+    // First mount — original visit after finishing the game
+    const first = mount(GameOverPage, {
+      props: makeProps(storageFunctions),
+      global: {
+        mocks: quasarMocks,
+        plugins: [router],
+        provide: quasarProvide,
+        stubs: { ...quasarStubs }
+      }
+    })
+    await new Promise(resolve => setTimeout(resolve, 0))
+    first.unmount()
+
+    expect(storageFunctions.incrementDailyGames).toHaveBeenCalledOnce()
+    expect(storageFunctions.setGameResult).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ points: 42, totalCards: 10, bonusesApplied: true }))
+
+    // Second mount — simulates reload/back-navigation with the flagged result
+    storageFunctions.getGameResult.mockReturnValue({ ...result, bonusesApplied: true })
+    const second = mount(GameOverPage, {
+      props: makeProps(storageFunctions),
+      global: {
+        mocks: quasarMocks,
+        plugins: [router],
+        provide: quasarProvide,
+        stubs: { ...quasarStubs }
+      }
+    })
+    await new Promise(resolve => setTimeout(resolve, 0))
+    second.unmount()
+
+    expect(storageFunctions.incrementDailyGames).toHaveBeenCalledOnce()
+  })
+
+  it('history-reconstructed results are display-only and never re-apply bonuses', async () => {
+    const router = createMockRouter()
+    const storageFunctions = makeStorageFunctions(null)
+    const history: TestHistory[] = [
+      { date: '2024-01-01', points: 20, correctAnswers: 5, totalCards: 10 }
+    ]
+
+    const wrapper = mount(GameOverPage, {
+      props: makeProps(storageFunctions, history),
+      global: {
+        mocks: quasarMocks,
+        plugins: [router],
+        provide: quasarProvide,
+        stubs: { ...quasarStubs }
+      }
+    })
+    await new Promise(resolve => setTimeout(resolve, 0))
+
+    expect(wrapper.find('[data-cy="final-points"]').exists()).toBe(true)
+    expect(storageFunctions.incrementDailyGames).not.toHaveBeenCalled()
+    expect(storageFunctions.saveGameStats).not.toHaveBeenCalled()
+    expect(storageFunctions.saveHistory).not.toHaveBeenCalled()
+    wrapper.unmount()
   })
 })
 
