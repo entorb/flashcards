@@ -38,11 +38,10 @@ That said — migrating 100+ tests across 6 apps is significant effort. Our curr
 
 non-functional requirements:
 
-- adjust AGENTS.md if needed, to prevent repeated problems
 - ensure unit test coverage is above 80%
 - is there more code that should me harmonized to the shared package, if so move (DRY)
 - afterwards run
-    pnpm run check
+    scripts/run_checks.sh
     and fix all issues, errors and warnings
 - finally run
     pnpm run cy:run

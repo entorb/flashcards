@@ -40,7 +40,6 @@ Key constants: `CARDS`, `HISTORY`, `STATS`, `SETTINGS`, `SELECTED_CARDS`, `GAME_
 - Scoring difficulty: divisor value (number after `:` in question)
 - Level factor: `6 - level`, time bonus: +5 if beating record
 - Correct: level +1 (max 5), time updated. Wrong: level -1 (min 1)
-- Card selection: weighted by focus (`weak`/`medium`/`strong`/`slow`)
 - Lazy-loading: cards created on first answer
 - Filtering: by divisor only (number after `:`)
 

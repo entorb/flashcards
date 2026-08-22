@@ -38,7 +38,6 @@ Key constants: `CARDS`, `HISTORY`, `STATS`, `SETTINGS`, `SELECTED_CARDS`, `GAME_
 - Extended ranges: `1x2` (adds 2×2..2×9), `1x12` (adds 11/12), `1x20` (adds 13..20, auto-enables 1x12)
 - Scoring difficulty: `min(x, y)`, level factor: `6 - level`, time bonus: +5 if beating record
 - Correct: level +1 (max 5), time updated. Wrong: level -1 (min 1)
-- Card selection: weighted by focus (`weak`/`medium`/`strong`/`slow`)
 - Lazy-loading: cards created on first answer
 - Range filtering: OR logic (x OR y in selected range)
 

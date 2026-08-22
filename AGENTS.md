@@ -85,6 +85,12 @@ Export paths: `.`, `./components`, `./pages`, `./layouts`, `./utils`, `./test-ut
 
 Key helpers in `gameModeUtils.ts`: `isEndlessMode()`, `handleNextCard()`, `endlessNextCard()`, `endlessLevel5NextCard()`, `filterLevel1Cards()`, `filterBelowMaxLevel()`, `avoidConsecutiveRepeat()`, `repeatCards()`
 
+## Focus Options
+
+`FocusType`: `'weak' | 'medium' | 'strong' | 'slow'` (selection algorithm supports all four).
+
+Shared `HomeFocusSelector` UI currently offers only `weak`/`slow` (`medium`/`strong` commented out).
+
 ## Game State Flow
 
 All game apps (1x1, voc, lwk, div, pum) via `useGameStateFlow` (from `@flashcards/shared`):
