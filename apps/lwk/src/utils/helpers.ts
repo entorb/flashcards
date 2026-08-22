@@ -8,8 +8,7 @@ import {
   MAX_TIME,
   MIN_LEVEL,
   normalizeWhitespace,
-  parseLevel,
-  sanitizeBaseCard
+  parseLevel
 } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '@/constants'
@@ -94,13 +93,11 @@ function parseNewlineOnlyCards(lines: string[]): { cards: Card[]; delimiter: str
   for (const line of lines) {
     const word = normalizeWhitespace(line)
     if (word.length > 0 && !isHeaderLine(line, 0)) {
-      newCards.push(
-        sanitizeBaseCard({
-          word,
-          level: MIN_LEVEL,
-          time: MAX_TIME
-        })
-      )
+      newCards.push({
+        word,
+        level: MIN_LEVEL,
+        time: MAX_TIME
+      })
     }
   }
 
@@ -125,5 +122,5 @@ function parseCardFromLine(line: string, delimiter: string): Card | null {
   }
 
   const level = parseLevel(parts[1])
-  return sanitizeBaseCard({ word, level, time: MAX_TIME })
+  return { word, level, time: MAX_TIME }
 }

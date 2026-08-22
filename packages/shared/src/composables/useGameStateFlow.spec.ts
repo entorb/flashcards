@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { GameStateFlowConfig } from './useGameStateFlow'
 import {
   getGameCards,
-  getLastGameSettings,
   initializeGameFlow,
   removeCardFromGame,
   transferGameResultsWithBonuses
@@ -129,30 +128,6 @@ describe('useGameStateFlow', () => {
       expect(() => {
         removeCardFromGame<TestCard>(config, 99)
       }).toThrow()
-    })
-  })
-
-  describe('getLastGameSettings', () => {
-    it('returns stored settings from localStorage', () => {
-      initializeGameFlow(config, sampleSettings, sampleCards)
-      const result = getLastGameSettings<TestSettings>(config, {
-        focus: 'strong',
-        maxCards: 20,
-        deck: 'default'
-      })
-      expect(result).toEqual(sampleSettings)
-    })
-
-    it('returns fallback when key is missing', () => {
-      const fallback: TestSettings = { focus: 'strong', maxCards: 20, deck: 'default' }
-      const result = getLastGameSettings<TestSettings>(config, fallback)
-      expect(result).toEqual(fallback)
-    })
-
-    it('returns fallback when localStorage is empty', () => {
-      const fallback: TestSettings = { focus: 'weak', maxCards: 5, deck: 'LWK_1' }
-      const result = getLastGameSettings<TestSettings>(config, fallback)
-      expect(result).toBe(fallback)
     })
   })
 })
