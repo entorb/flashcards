@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card } from '@/types'
+import type { Card, GameSettings } from '@/types'
 import HomePage from './HomePage.vue'
 
 const mocks = vi.hoisted(() => ({
@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
     points: 100,
     correctAnswers: 42
   })),
-  loadSettings: vi.fn(() => null as null | { select: number[] | string; focus: string }),
+  loadSettings: vi.fn(() => null as null | GameSettings),
   loadRange: vi.fn(() => [3, 4, 5, 6, 7, 8, 9]),
   saveSettings: vi.fn(),
   initializeCards: vi.fn(),
@@ -128,7 +128,11 @@ describe('HomePage', () => {
     })
 
     it('loads saved settings on mount when available', async () => {
-      mocks.loadSettings.mockReturnValue({ select: [3, 5], focus: 'strong' })
+      mocks.loadSettings.mockReturnValue({
+        select: [3, 5],
+        focus: 'strong',
+        levels: [1, 2, 3, 4, 5]
+      })
       const router = createMockRouter()
       mount(HomePage, createMountOptions(router))
       await Promise.resolve()
@@ -278,7 +282,11 @@ describe('HomePage', () => {
 
   describe('settings persistence', () => {
     it('applies saved focus setting on mount', async () => {
-      mocks.loadSettings.mockReturnValue({ select: [3, 5], focus: 'strong' })
+      mocks.loadSettings.mockReturnValue({
+        select: [3, 5],
+        focus: 'strong',
+        levels: [1, 2, 3, 4, 5]
+      })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -287,7 +295,7 @@ describe('HomePage', () => {
     })
 
     it('applies saved select setting on mount', async () => {
-      mocks.loadSettings.mockReturnValue({ select: [4, 6], focus: 'weak' })
+      mocks.loadSettings.mockReturnValue({ select: [4, 6], focus: 'weak', levels: [1, 2, 3, 4, 5] })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -305,13 +313,17 @@ describe('HomePage', () => {
     })
 
     it('passes saved config to saveSettings on start game', async () => {
-      mocks.loadSettings.mockReturnValue({ select: [3, 5], focus: 'strong' })
+      mocks.loadSettings.mockReturnValue({
+        select: [3, 5],
+        focus: 'strong',
+        levels: [1, 2, 3, 4, 5]
+      })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
       expect(mocks.saveSettings).toHaveBeenCalledWith(
-        expect.objectContaining({ select: [3, 5], focus: 'strong' })
+        expect.objectContaining({ select: [3, 5], focus: 'strong', levels: [1, 2, 3, 4, 5] })
       )
     })
   })

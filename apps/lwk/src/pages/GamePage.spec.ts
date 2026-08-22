@@ -125,7 +125,13 @@ function withCopyCard(overrides: Partial<GameSettings> = {}) {
   storeState.currentCard.value = card
   storeState.gameCards.value = [card]
   storeState.currentCardIndex.value = 0
-  storeState.gameSettings.value = { mode: 'copy', focus: 'weak', deck: 'LWK_1', ...overrides }
+  storeState.gameSettings.value = {
+    mode: 'copy',
+    focus: 'weak',
+    levels: [1, 2, 3, 4, 5],
+    deck: 'LWK_1',
+    ...overrides
+  }
 }
 
 function withHiddenCard(overrides: Partial<GameSettings> = {}) {
@@ -133,7 +139,13 @@ function withHiddenCard(overrides: Partial<GameSettings> = {}) {
   storeState.currentCard.value = card
   storeState.gameCards.value = [card]
   storeState.currentCardIndex.value = 0
-  storeState.gameSettings.value = { mode: 'hidden', focus: 'weak', deck: 'LWK_1', ...overrides }
+  storeState.gameSettings.value = {
+    mode: 'hidden',
+    focus: 'weak',
+    levels: [1, 2, 3, 4, 5],
+    deck: 'LWK_1',
+    ...overrides
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -192,7 +204,12 @@ describe('GamePage', () => {
       storeState.currentCard.value = SAMPLE_CARDS[0]!
       storeState.gameCards.value = [...SAMPLE_CARDS]
       storeState.currentCardIndex.value = 1
-      storeState.gameSettings.value = { mode: 'copy', focus: 'weak', deck: 'LWK_1' }
+      storeState.gameSettings.value = {
+        mode: 'copy',
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
+        deck: 'LWK_1'
+      }
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()

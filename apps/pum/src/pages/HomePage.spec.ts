@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => ({
   loadSettings: vi.fn(() => null as null | GameSettings),
   loadCards: vi.fn((): Card[] => []),
   saveSettings: vi.fn(),
-  initializeCards: vi.fn(),
+  initializeCards: vi.fn((): Card[] => []),
   startGame: vi.fn()
 }))
 
@@ -111,7 +111,8 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       mocks.loadSettings.mockReturnValue({
         operations: ['plus'],
         difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -125,7 +126,8 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       mocks.loadSettings.mockReturnValue({
         operations: ['plus'],
         difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -162,7 +164,8 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       mocks.loadSettings.mockReturnValue({
         operations: ['plus', 'minus'],
         difficulties: ['medium'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -176,7 +179,8 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       mocks.loadSettings.mockReturnValue({
         operations: ['plus', 'minus'],
         difficulties: ['simple'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -191,7 +195,8 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       mocks.loadSettings.mockReturnValue({
         operations: ['plus', 'minus'],
         difficulties: ['simple', 'medium'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))

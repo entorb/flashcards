@@ -93,7 +93,11 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         vi.resetModules()
         const store = await setupEndlessMocks(cards)
 
-        store.startGame({ select: 'all', focus: 'medium' }, 'endless-level1', true)
+        store.startGame(
+          { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] },
+          'endless-level1',
+          true
+        )
 
         const countBefore = store.gameCards.value.length
         expect(countBefore).toBe(cards.length)
@@ -122,7 +126,11 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         vi.resetModules()
         const store = await setupEndlessMocks(cards)
 
-        store.startGame({ select: 'all', focus: 'medium' }, 'endless-level1', true)
+        store.startGame(
+          { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] },
+          'endless-level1',
+          true
+        )
 
         const countBefore = store.gameCards.value.length
         expect(countBefore).toBe(cards.length)

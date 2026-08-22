@@ -69,7 +69,7 @@ const duplicateKeys = computed(() => {
 })
 
 function handleGoBack() {
-  router.push({ name: '/HomePage' })
+  void router.push({ name: '/HomePage' })
 }
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -87,11 +87,11 @@ onUnmounted(() => {
 })
 
 function handleEditCards() {
-  router.push(props.editCardsRoute)
+  void router.push(props.editCardsRoute)
 }
 
 function handleEditDecks() {
-  router.push(props.editDecksRoute)
+  void router.push(props.editDecksRoute)
 }
 
 function handleMoveClick() {

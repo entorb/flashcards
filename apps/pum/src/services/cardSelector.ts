@@ -1,22 +1,23 @@
 import type { FocusType } from '@flashcards/shared'
-import { selectCardsByFocus } from '@flashcards/shared'
+import { filterByLevels, selectCardsByFocus } from '@flashcards/shared'
 
 import { getDifficultyFromQuestion, getOperationFromQuestion } from '@/services/storage'
 import type { Card, GameSettings } from '@/types'
 
 /**
- * Filter cards by selected operations AND difficulties (intersection).
- * Only cards matching both a selected operation and a selected difficulty are returned.
+ * Filter cards by selected operations AND difficulties (intersection),
+ * then by selected card levels.
  */
 export function filterCards(cards: Card[], settings: GameSettings): Card[] {
   const opSet = new Set(settings.operations)
   const diffSet = new Set(settings.difficulties)
 
-  return cards.filter(card => {
+  const selected = cards.filter(card => {
     const op = getOperationFromQuestion(card.question)
     const diff = getDifficultyFromQuestion(card.question)
     return opSet.has(op) && diffSet.has(diff)
   })
+  return filterByLevels(selected, settings.levels)
 }
 
 /**

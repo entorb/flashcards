@@ -113,6 +113,7 @@ describe('GamePage', () => {
     storeState.gameSettings.value = {
       mode: 'typing',
       focus: 'weak',
+      levels: [1, 2, 3, 4, 5],
       language: 'voc-de',
       deck: 'en',
       ...overrides
@@ -128,6 +129,7 @@ describe('GamePage', () => {
     storeState.gameSettings.value = {
       mode: 'multiple-choice',
       focus: 'weak',
+      levels: [1, 2, 3, 4, 5],
       language: 'voc-de',
       deck: 'en'
     }
@@ -143,6 +145,7 @@ describe('GamePage', () => {
     storeState.gameSettings.value = {
       mode: 'blind',
       focus: 'weak',
+      levels: [1, 2, 3, 4, 5],
       language: 'voc-de',
       deck: 'en'
     }
@@ -205,6 +208,7 @@ describe('GamePage', () => {
       storeState.gameSettings.value = {
         mode: 'typing',
         focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
         language: 'voc-de',
         deck: 'en'
       }

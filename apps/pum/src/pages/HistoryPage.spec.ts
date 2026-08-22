@@ -73,13 +73,23 @@ describe('pum HistoryPage', () => {
         date: '2024-01-15T10:00:00.000Z',
         points: 42,
         correctAnswers: 8,
-        settings: { operations: ['plus'], difficulties: ['simple'], focus: 'weak' }
+        settings: {
+          operations: ['plus'],
+          difficulties: ['simple'],
+          focus: 'weak',
+          levels: [1, 2, 3, 4, 5]
+        }
       },
       {
         date: '2024-01-14T09:00:00.000Z',
         points: 30,
         correctAnswers: 6,
-        settings: { operations: ['minus'], difficulties: ['medium'], focus: 'medium' }
+        settings: {
+          operations: ['minus'],
+          difficulties: ['medium'],
+          focus: 'medium',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
@@ -103,7 +113,8 @@ describe('pum HistoryPage', () => {
         settings: {
           operations: ['plus', 'minus'],
           difficulties: ['simple', 'advanced'],
-          focus: 'weak'
+          focus: 'weak',
+          levels: [1, 2, 3, 4, 5]
         }
       }
     ]

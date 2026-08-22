@@ -5,6 +5,7 @@ import {
   MIN_TIME,
   PROD_HOSTNAME,
   STATS_PENDING_STORAGE_KEY,
+  TIME_BUCKET_BOUNDS,
   WEB_STATS_URL
 } from '../constants'
 import { TEXT_DE } from '../text-de'
@@ -327,4 +328,16 @@ export function sanitizeBaseCard<T extends { level?: number; time?: number }>(
   const level = Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, card.level ?? MIN_LEVEL))
   const time = Math.max(MIN_TIME, Math.min(MAX_TIME, card.time ?? MAX_TIME))
   return { ...card, level, time }
+}
+
+/**
+ * Map an answer time to its histogram bucket index (0-4).
+ * Buckets: <5s, <10s, <15s, <20s, >=20s — each excludes the previous one
+ * (see TIME_BUCKET_BOUNDS). Times >= the last bound (incl. MAX_TIME sentinel) → 4.
+ */
+export function getTimeBucketIndex(time: number): number {
+  for (let i = 0; i < TIME_BUCKET_BOUNDS.length; i++) {
+    if (time < TIME_BUCKET_BOUNDS[i]) return i
+  }
+  return TIME_BUCKET_BOUNDS.length
 }

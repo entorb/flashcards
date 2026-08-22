@@ -3,7 +3,7 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, FocusType } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
 
 // ============================================================================
 // App-Specific Types
@@ -26,9 +26,8 @@ export interface CardDeck {
 
 // Game Configuration
 
-export interface GameSettings {
+export interface GameSettings extends BaseGameSettings {
   mode: GameMode
-  focus: FocusType // 'weak', 'medium', 'strong', or 'slow'
   language: Direction
   deck?: string // Optional deck name (for future compatibility)
 }

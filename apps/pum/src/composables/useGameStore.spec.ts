@@ -90,7 +90,8 @@ describe('useGameStore - startGame', () => {
     store.startGame({
       operations: ['plus'],
       difficulties: ['simple'],
-      focus: 'medium'
+      focus: 'medium',
+      levels: [1, 2, 3, 4, 5]
     })
 
     expect(filterCards).toHaveBeenCalled()
@@ -104,7 +105,8 @@ describe('useGameStore - answerCard', () => {
       getGameConfig: vi.fn(() => ({
         operations: ['plus'],
         difficulties: ['simple'],
-        focus: 'medium'
+        focus: 'medium',
+        levels: [1, 2, 3, 4, 5]
       })),
       loadGameState: vi.fn(() => ({
         gameCards: [{ question: '3+3', answer: 6, level: 1, time: 60 }],
@@ -123,7 +125,8 @@ describe('useGameStore - answerCard', () => {
       getGameConfig: vi.fn(() => ({
         operations: ['plus'],
         difficulties: ['simple'],
-        focus: 'medium'
+        focus: 'medium',
+        levels: [1, 2, 3, 4, 5]
       })),
       loadGameState: vi.fn(() => ({
         gameCards: [{ question: '3+3', answer: 6, level: 1, time: 60 }],

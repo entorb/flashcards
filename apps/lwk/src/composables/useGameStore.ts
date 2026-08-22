@@ -8,6 +8,7 @@ import {
   calculatePointsBreakdown,
   createBaseGameStore,
   filterBelowMaxLevel,
+  filterByLevels,
   filterLevel1Cards,
   handleNextCard,
   initializeGameFlow,
@@ -145,20 +146,22 @@ export function useGameStore() {
     baseStore.sessionMode.value = mode
 
     let selectedCards: Card[]
+    // Respect the selected card levels
+    const pool = filterByLevels(baseStore.allCards.value, settings.levels)
 
     if (mode === 'endless-level1') {
       // Endless Level 1: filter all Level 1 cards from the current pool (respecting deck selection)
-      selectedCards = shuffleArray(filterLevel1Cards(baseStore.allCards.value))
+      selectedCards = shuffleArray(filterLevel1Cards(pool))
     } else if (mode === 'endless-level5') {
       // Endless Level 5: filter all cards below MAX_LEVEL
-      selectedCards = shuffleArray(filterBelowMaxLevel(baseStore.allCards.value))
+      selectedCards = shuffleArray(filterBelowMaxLevel(pool))
     } else if (mode === '3-rounds') {
       // 3 Rounds: select cards via focus logic, then repeat each LOOP_COUNT times
-      const focusSelected = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
+      const focusSelected = selectCards(pool, settings.mode, settings.focus)
       selectedCards = repeatCards(focusSelected, LOOP_COUNT)
     } else {
       // Standard mode: existing behavior
-      selectedCards = selectCards(baseStore.allCards.value, settings.mode, settings.focus)
+      selectedCards = selectCards(pool, settings.mode, settings.focus)
     }
 
     // Use centralized game state flow to store settings + selected cards

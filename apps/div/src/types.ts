@@ -3,7 +3,7 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, FocusType } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
 
 // ============================================================================
 // Card Definition (extends BaseCard)
@@ -18,9 +18,8 @@ export interface Card extends BaseCard {
 // Game Configuration
 // ============================================================================
 
-export interface GameSettings {
+export interface GameSettings extends BaseGameSettings {
   select: number[] // Selected divisors from 2-9, e.g. [2, 3, 5] — always number[], no 'all' or 'x²'
-  focus: FocusType // 'weak', 'medium', 'strong', or 'slow'
 }
 
 // ============================================================================

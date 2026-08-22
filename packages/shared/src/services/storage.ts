@@ -3,8 +3,8 @@
  * Common patterns used by both 1x1 and voc apps
  */
 
-import { MAX_LEVEL } from '../constants'
-import type { DailyStats } from '../types'
+import { ALL_LEVELS, MAX_LEVEL } from '../constants'
+import type { CardLevel, DailyStats } from '../types'
 import { weightedRandomSelection } from '../utils'
 
 /**
@@ -186,7 +186,10 @@ export function removeSessionJSON(key: string): void {
  * @param stateKey - Storage key for game state
  * @returns Object with methods to manage game settings and state
  */
-export function createGamePersistence<TSettings, TState>(settingsKey: string, stateKey: string) {
+export function createGamePersistence<TSettings extends { levels?: CardLevel[] }, TState>(
+  settingsKey: string,
+  stateKey: string
+) {
   return {
     // Game Settings operations
     saveSettings: (settings: TSettings) => {
@@ -196,7 +199,11 @@ export function createGamePersistence<TSettings, TState>(settingsKey: string, st
       const stored = globalThis.sessionStorage.getItem(settingsKey)
       if (stored === null || stored === '') return null
       try {
-        return JSON.parse(stored) as TSettings
+        const parsed = JSON.parse(stored) as TSettings
+        // Older persisted configs may lack the levels key — default to all levels
+        const legacy = parsed as Omit<TSettings, 'levels'> & { levels?: CardLevel[] }
+        legacy.levels ??= [...ALL_LEVELS]
+        return parsed
       } catch {
         return null
       }

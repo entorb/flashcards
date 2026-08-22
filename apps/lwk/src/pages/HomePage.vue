@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import type { SessionMode } from '@flashcards/shared'
-import { filterBelowMaxLevel, filterLevel1Cards, TEXT_DE } from '@flashcards/shared'
-import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
+import {
+  ALL_LEVELS,
+  filterBelowMaxLevel,
+  filterByLevels,
+  filterLevel1Cards,
+  TEXT_DE
+} from '@flashcards/shared'
+import { HomeFocusSelector, HomeLevelSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -17,12 +23,18 @@ const { gameStats, startGame: startGameStore, getDecks, switchDeck, allCards } =
 const settings = ref<GameSettings>({
   mode: 'copy',
   focus: 'weak',
-  deck: '' // Will be set in onMounted
+  deck: '', // Will be set in onMounted
+  levels: [...ALL_LEVELS]
 })
 
 const deckOptions = ref<{ label: string; value: string }[]>([])
 
-const hasLevel1Or2Cards = ref<boolean>(true)
+// Cards matching the selected levels
+const levelFilteredCards = computed(() => filterByLevels(allCards.value, settings.value.levels))
+
+const hasLevel1Or2Cards = computed<boolean>(() =>
+  levelFilteredCards.value.some(card => card.level < 3)
+)
 
 const modeOptions = computed(() => [
   {
@@ -63,7 +75,6 @@ onMounted(() => {
     switchDeck(settings.value.deck)
   }
 
-  checkLevel1Or2Cards()
   ensureValidMode()
 })
 
@@ -71,12 +82,7 @@ function handleDeckChange(deckName: string) {
   settings.value.deck = deckName
   switchDeck(deckName)
   saveSettings(settings.value)
-  checkLevel1Or2Cards()
   ensureValidMode()
-}
-
-function checkLevel1Or2Cards() {
-  hasLevel1Or2Cards.value = allCards.value.some(card => card.level < 3)
 }
 
 function ensureValidMode() {
@@ -86,9 +92,13 @@ function ensureValidMode() {
   }
 }
 
-const hasLevel1CardsForEndless = computed(() => filterLevel1Cards(allCards.value).length > 0)
+const hasLevel1CardsForEndless = computed(
+  () => filterLevel1Cards(levelFilteredCards.value).length > 0
+)
 
-const hasBelowMaxLevelCards = computed(() => filterBelowMaxLevel(allCards.value).length > 0)
+const hasBelowMaxLevelCards = computed(
+  () => filterBelowMaxLevel(levelFilteredCards.value).length > 0
+)
 
 function startGameWithMode(mode: SessionMode) {
   // Clear any previous game state before starting new game
@@ -96,7 +106,7 @@ function startGameWithMode(mode: SessionMode) {
   clearGameConfig()
   saveSettings(settings.value)
   startGameStore(settings.value, mode)
-  router.push({ name: '/GamePage' })
+  void router.push({ name: '/GamePage' })
 }
 
 function startGame() {
@@ -104,15 +114,15 @@ function startGame() {
 }
 
 function goToHistory() {
-  router.push({ name: '/HistoryPage' })
+  void router.push({ name: '/HistoryPage' })
 }
 
 function goToCards() {
-  router.push({ name: '/CardsManPage' })
+  void router.push({ name: '/CardsManPage' })
 }
 
 function goToInfo() {
-  router.push({ name: '/InfoPage' })
+  void router.push({ name: '/InfoPage' })
 }
 </script>
 
@@ -121,7 +131,7 @@ function goToInfo() {
     :app-title="TEXT_DE.appTitle_lwk"
     :base-path="BASE_PATH"
     :statistics="gameStats"
-    :disable-start-button="allCards.length === 0"
+    :disable-start-button="levelFilteredCards.length === 0"
     @start-game="startGame"
     @go-to-cards="goToCards"
     @go-to-history="goToHistory"
@@ -182,6 +192,13 @@ function goToInfo() {
         </div>
       </div>
 
+      <!-- Level Selection -->
+      <HomeLevelSelector
+        v-model="settings.levels"
+        :cards="allCards"
+        class="q-mb-sm"
+      />
+
       <!-- Focus Selection -->
       <HomeFocusSelector v-model="settings.focus" />
     </template>
@@ -206,7 +223,7 @@ function goToInfo() {
           size="lg"
           class="col"
           icon="looks_3"
-          :disable="allCards.length === 0"
+          :disable="levelFilteredCards.length === 0"
           data-cy="start-three-rounds"
           @click="startGameWithMode('3-rounds')"
         >

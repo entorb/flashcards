@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BaseCard } from '@flashcards/shared'
-import { TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
+import { ALL_LEVELS, TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
 import { CardsListOfCards, CardsManLevelDistribution } from '@flashcards/shared/components'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -48,7 +48,8 @@ const filteredBySettings = computed(() =>
   filterCards(cards.value, {
     operations: selectedOperations.value,
     difficulties: selectedDifficulties.value,
-    focus: 'weak'
+    focus: 'weak',
+    levels: [...ALL_LEVELS]
   })
 )
 
@@ -107,7 +108,7 @@ function resetCardsHandler() {
 }
 
 function goHome() {
-  router.push({ name: '/HomePage' })
+  void router.push({ name: '/HomePage' })
 }
 </script>
 

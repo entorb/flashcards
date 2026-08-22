@@ -79,13 +79,13 @@ describe('1x1 HistoryPage', () => {
         date: '2024-01-15T10:00:00.000Z',
         points: 42,
         correctAnswers: 8,
-        settings: { select: [3, 4, 5], focus: 'weak' }
+        settings: { select: [3, 4, 5], focus: 'weak', levels: [1, 2, 3, 4, 5] }
       },
       {
         date: '2024-01-14T09:00:00.000Z',
         points: 30,
         correctAnswers: 6,
-        settings: { select: 'all', focus: 'medium' }
+        settings: { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] }
       }
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
@@ -107,7 +107,7 @@ describe('1x1 HistoryPage', () => {
         date: '2024-01-15T10:00:00.000Z',
         points: 42,
         correctAnswers: 8,
-        settings: { select: [3, 4, 5], focus: 'weak' }
+        settings: { select: [3, 4, 5], focus: 'weak', levels: [1, 2, 3, 4, 5] }
       }
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
@@ -127,7 +127,7 @@ describe('1x1 HistoryPage', () => {
         date: '2024-01-15T10:00:00.000Z',
         points: 42,
         correctAnswers: 8,
-        settings: { select: 'all', focus: 'medium' }
+        settings: { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] }
       }
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
@@ -146,7 +146,7 @@ describe('1x1 HistoryPage', () => {
         date: '2024-01-15T10:00:00.000Z',
         points: 99,
         correctAnswers: 10,
-        settings: { select: [3, 4], focus: 'strong' }
+        settings: { select: [3, 4], focus: 'strong', levels: [1, 2, 3, 4, 5] }
       }
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
@@ -164,7 +164,7 @@ describe('1x1 HistoryPage', () => {
         date: '2024-01-15T10:00:00.000Z',
         points: 50,
         correctAnswers: 7,
-        settings: { select: [5, 6], focus: 'slow' }
+        settings: { select: [5, 6], focus: 'slow', levels: [1, 2, 3, 4, 5] }
       }
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)

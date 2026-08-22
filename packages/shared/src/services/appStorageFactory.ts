@@ -4,8 +4,8 @@
  * Each app provides app-specific config (storage keys, default range, card creation).
  */
 
-import { MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
-import type { BaseCard, GameResult, GameStats, SessionMode } from '../types'
+import { ALL_LEVELS, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
+import type { BaseCard, CardLevel, GameResult, GameStats, SessionMode } from '../types'
 
 import {
   createAppGameStorage,
@@ -50,7 +50,7 @@ export interface AppGameState<TCard> {
 export function createAppStorageFactory<
   TCard extends BaseCard & { question: string },
   THistory,
-  TSettings
+  TSettings extends { levels?: CardLevel[] }
 >(config: AppStorageConfig<TCard>) {
   const { storageKeys, defaultRange, appLabel, createCardFromQuestion } = config
 
@@ -241,7 +241,14 @@ export function createAppStorageFactory<
   // ── Settings (localStorage) ─────────────────────────────────────────
 
   function loadSettings(): TSettings | null {
-    return loadJSON<TSettings | null>(storageKeys.SETTINGS, null)
+    const parsed = loadJSON<TSettings | null>(storageKeys.SETTINGS, null)
+    if (!parsed) {
+      return null
+    }
+    // Older persisted settings may lack the levels key — default to all levels
+    const legacy = parsed as Omit<TSettings, 'levels'> & { levels?: CardLevel[] }
+    legacy.levels ??= [...ALL_LEVELS]
+    return parsed
   }
 
   function saveSettings(settings: TSettings): void {

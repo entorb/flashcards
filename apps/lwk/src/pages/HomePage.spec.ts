@@ -198,7 +198,12 @@ describe('HomePage', () => {
 
     it('loads saved settings on mount when deck is valid', async () => {
       const { loadSettings } = await import('@/services/storage')
-      vi.mocked(loadSettings).mockReturnValue({ mode: 'hidden', focus: 'strong', deck: 'LWK_1' })
+      vi.mocked(loadSettings).mockReturnValue({
+        mode: 'hidden',
+        focus: 'strong',
+        levels: [1, 2, 3, 4, 5],
+        deck: 'LWK_1'
+      })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -209,7 +214,12 @@ describe('HomePage', () => {
 
     it('ignores saved settings when saved deck no longer exists', async () => {
       const { loadSettings } = await import('@/services/storage')
-      vi.mocked(loadSettings).mockReturnValue({ mode: 'hidden', focus: 'strong', deck: 'MISSING' })
+      vi.mocked(loadSettings).mockReturnValue({
+        mode: 'hidden',
+        focus: 'strong',
+        levels: [1, 2, 3, 4, 5],
+        deck: 'MISSING'
+      })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -328,7 +338,7 @@ describe('HomePage', () => {
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
       expect(mockStartGame).toHaveBeenCalledWith(
-        expect.objectContaining({ mode: 'copy', focus: 'weak' }),
+        expect.objectContaining({ mode: 'copy', focus: 'weak', levels: [1, 2, 3, 4, 5] }),
         'standard'
       )
     })

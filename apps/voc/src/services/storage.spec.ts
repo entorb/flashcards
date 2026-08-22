@@ -95,14 +95,25 @@ describe('Deck Storage', () => {
     })
 
     it('should return deck name from settings', () => {
-      saveSettings({ mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: 'fr' })
+      saveSettings({
+        mode: 'multiple-choice',
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
+        language: 'voc-de',
+        deck: 'fr'
+      })
 
       const deckName = getCurrentDeckName()
       expect(deckName).toBe('fr')
     })
 
     it('should return default when settings exist but deck is not set', () => {
-      saveSettings({ mode: 'multiple-choice', focus: 'weak', language: 'voc-de' })
+      saveSettings({
+        mode: 'multiple-choice',
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
+        language: 'voc-de'
+      })
 
       const deckName = getCurrentDeckName()
       expect(deckName).toBe('en')
@@ -122,7 +133,13 @@ describe('Deck Storage', () => {
         }
       ]
       saveDecks(testDecks)
-      saveSettings({ mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: 'fr' })
+      saveSettings({
+        mode: 'multiple-choice',
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
+        language: 'voc-de',
+        deck: 'fr'
+      })
 
       const cards = loadCards()
       expect(cards).toHaveLength(1)
@@ -140,6 +157,7 @@ describe('Deck Storage', () => {
       saveSettings({
         mode: 'multiple-choice',
         focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
         language: 'voc-de',
         deck: 'nonexistent'
       })
@@ -163,7 +181,13 @@ describe('Deck Storage', () => {
         }
       ]
       saveDecks(testDecks)
-      saveSettings({ mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: 'fr' })
+      saveSettings({
+        mode: 'multiple-choice',
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
+        language: 'voc-de',
+        deck: 'fr'
+      })
 
       const newCards: Card[] = [
         // cspell:disable-next-line
@@ -189,6 +213,7 @@ describe('Deck Storage', () => {
       saveSettings({
         mode: 'multiple-choice',
         focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
         language: 'voc-de',
         deck: 'nonexistent'
       })

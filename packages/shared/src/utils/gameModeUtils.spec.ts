@@ -11,6 +11,7 @@ import {
   endlessLevel5NextCard,
   endlessNextCard,
   filterBelowMaxLevel,
+  filterByLevels,
   filterLevel1Cards,
   handleNextCard,
   repeatCards
@@ -49,6 +50,40 @@ describe('filterLevel1Cards — property tests', () => {
       }),
       { numRuns: 100 }
     )
+  })
+})
+
+describe('filterByLevels', () => {
+  it('returns exactly the cards whose level is in the selection', () => {
+    fc.assert(
+      fc.property(
+        fc.array(baseCardArb, { minLength: 0, maxLength: 50 }),
+        fc.subarray([
+          ...Array.from({ length: MAX_LEVEL - MIN_LEVEL + 1 }, (_, i) => MIN_LEVEL + i)
+        ]),
+        (cards, levels) => {
+          const result = filterByLevels(cards, levels)
+
+          // Every returned card's level must be selected
+          for (const card of result) {
+            expect(levels).toContain(card.level)
+          }
+
+          // Result matches a manual filter, preserving order and references
+          const expected = cards.filter(card => levels.includes(card.level))
+          expect(result).toEqual(expected)
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+
+  it('empty selection matches nothing', () => {
+    const cards: BaseCard[] = [
+      { level: 1, time: 60 },
+      { level: 3, time: 60 }
+    ]
+    expect(filterByLevels(cards, [])).toEqual([])
   })
 })
 

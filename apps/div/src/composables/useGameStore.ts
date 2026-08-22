@@ -1,5 +1,5 @@
 import type { FocusType } from '@flashcards/shared'
-import { createGameStoreFactory } from '@flashcards/shared'
+import { createGameStoreFactory, filterByLevels } from '@flashcards/shared'
 
 import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from '@/constants'
 import { filterCardsByDivisor, selectCardsForRound } from '@/services/cardSelector'
@@ -59,7 +59,8 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
       storageResetCards(...args)
     }
   },
-  filterCards: (allCards, settings) => filterCardsByDivisor(allCards, settings.select),
+  filterCards: (allCards, settings) =>
+    filterByLevels(filterCardsByDivisor(allCards, settings.select), settings.levels),
   getDifficultyPoints: card => {
     const { divisor } = parseCardQuestion(card.question)
     return divisor

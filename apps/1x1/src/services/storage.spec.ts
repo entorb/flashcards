@@ -37,7 +37,7 @@ import {
 // ---------------------------------------------------------------------------
 
 const SAMPLE_CARD: Card = { question: '3x3', answer: 9, level: 1, time: 60 }
-const SAMPLE_SETTINGS: GameSettings = { select: [3, 4, 5], focus: 'weak' }
+const SAMPLE_SETTINGS: GameSettings = { select: [3, 4, 5], focus: 'weak', levels: [1, 2, 3, 4, 5] }
 
 // ---------------------------------------------------------------------------
 // Tests

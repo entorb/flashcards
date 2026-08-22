@@ -2,6 +2,8 @@
  * Shared constants used across all flashcards apps
  */
 
+import type { CardLevel } from './types'
+
 /**
  * localStorage key for caching pending stats writes when offline
  */
@@ -33,6 +35,22 @@ export const MIN_LEVEL = 1
  * Maximum difficulty level for cards
  */
 export const MAX_LEVEL = 5
+
+/**
+ * All difficulty levels in ascending order.
+ * Typed as an exact 5-tuple of CardLevel so the compiler flags any drift
+ * from the CardLevel union in types.ts.
+ */
+export const ALL_LEVELS: readonly [CardLevel, CardLevel, CardLevel, CardLevel, CardLevel] = [
+  1, 2, 3, 4, 5
+]
+
+// Validate at import time: ALL_LEVELS must match the MIN_LEVEL/MAX_LEVEL range
+if (ALL_LEVELS.length !== MAX_LEVEL - MIN_LEVEL + 1 || ALL_LEVELS[0] !== MIN_LEVEL) {
+  throw new Error(
+    `ALL_LEVELS ${ALL_LEVELS.join(',')} does not match levels ${MIN_LEVEL}-${MAX_LEVEL}`
+  )
+}
 
 // --- Card Timing ---
 
@@ -141,6 +159,22 @@ export const TIME_COLOR_THRESHOLDS = {
   medium: 0.6,
   slow: 0.8
 }
+
+/**
+ * Upper bounds (seconds) of the answer-time histogram buckets shown on CardsManPage.
+ * Buckets: <5s, <10s, <15s, <20s, >=20s — each excludes the previous one.
+ * Cards with time = MAX_TIME (never answered correctly) fall into the last bucket.
+ */
+export const TIME_BUCKET_BOUNDS: readonly number[] = [5, 10, 15, 20]
+
+/** Tile background colors per time bucket, green (fast) → red (slow) */
+export const TIME_BUCKET_COLORS: readonly string[] = [
+  TIME_COLORS.veryFast,
+  TIME_COLORS.fast,
+  TIME_COLORS.medium,
+  TIME_COLORS.slow,
+  TIME_COLORS.verySlow
+]
 
 // --- Game Modes ---
 

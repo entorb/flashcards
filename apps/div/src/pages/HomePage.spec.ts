@@ -3,12 +3,12 @@ import { mount } from '@vue/test-utils'
 import fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card } from '@/types'
+import type { Card, GameSettings } from '@/types'
 import HomePage from './HomePage.vue'
 
 const mocks = vi.hoisted(() => ({
   loadGameStats: vi.fn(() => ({ gamesPlayed: 5, points: 100, correctAnswers: 42 })),
-  loadSettings: vi.fn(() => null as null | { select: number[]; focus: string }),
+  loadSettings: vi.fn(() => null as null | GameSettings),
   loadRange: vi.fn(() => [2, 3, 4, 5, 6, 7, 8, 9]),
   saveSettings: vi.fn(),
   initializeCards: vi.fn(),
@@ -144,7 +144,7 @@ describe('HomePage', () => {
     })
 
     it('clicking an unselected number adds it to the selection', async () => {
-      mocks.loadSettings.mockReturnValue({ select: [2, 3], focus: 'weak' })
+      mocks.loadSettings.mockReturnValue({ select: [2, 3], focus: 'weak', levels: [1, 2, 3, 4, 5] })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -242,7 +242,11 @@ describe('HomePage', () => {
     it('only [D] selected + tap D → all', async () => {
       await fc.assert(
         fc.asyncProperty(divisorArb, async d => {
-          mocks.loadSettings.mockReturnValue({ select: [d], focus: 'weak' })
+          mocks.loadSettings.mockReturnValue({
+            select: [d],
+            focus: 'weak',
+            levels: [1, 2, 3, 4, 5]
+          })
           const router = createMockRouter()
           const wrapper = mount(HomePage, createPropertyMountOptions(router))
           await wrapper.vm.$nextTick()
@@ -268,7 +272,11 @@ describe('HomePage', () => {
 
       await fc.assert(
         fc.asyncProperty(subsetWithoutD, async ([d, subset]) => {
-          mocks.loadSettings.mockReturnValue({ select: [...subset], focus: 'weak' })
+          mocks.loadSettings.mockReturnValue({
+            select: [...subset],
+            focus: 'weak',
+            levels: [1, 2, 3, 4, 5]
+          })
           const router = createMockRouter()
           const wrapper = mount(HomePage, createPropertyMountOptions(router))
           await wrapper.vm.$nextTick()

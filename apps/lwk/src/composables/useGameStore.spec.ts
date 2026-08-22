@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { GameSettings } from '@/types'
 import { useGameStore } from './useGameStore'
 
 // ---------------------------------------------------------------------------
@@ -10,13 +11,12 @@ const storageMocks = vi.hoisted(() => ({
   saveDecks: vi.fn(),
   loadCards: vi.fn(() => [{ word: 'Jahr', level: 1, time: 60 }]),
   saveCards: vi.fn(),
-  loadSettings: vi.fn<
-    () => {
-      mode: 'copy' | 'hidden'
-      focus: 'weak' | 'medium' | 'strong' | 'slow'
-      deck: string
-    } | null
-  >(() => ({ mode: 'copy', focus: 'weak', deck: 'LWK_1' })),
+  loadSettings: vi.fn<() => GameSettings | null>(() => ({
+    mode: 'copy',
+    focus: 'weak',
+    levels: [1, 2, 3, 4, 5],
+    deck: 'LWK_1'
+  })),
   saveSettings: vi.fn(),
   saveGameConfig: vi.fn(),
   loadHistory: vi.fn(() => []),
@@ -32,11 +32,7 @@ const storageMocks = vi.hoisted(() => ({
         correctAnswersCount: number
         showWord: boolean
         countdown: number
-        gameSettings: {
-          mode: 'copy' | 'hidden'
-          focus: 'weak' | 'medium' | 'strong' | 'slow'
-          deck: string
-        } | null
+        gameSettings: GameSettings | null
       }
   ),
   saveGameState: vi.fn(),
@@ -54,8 +50,18 @@ vi.mock('../services/cardSelector', () => ({
 // Helpers
 // ---------------------------------------------------------------------------
 
-const COPY_SETTINGS = { mode: 'copy' as const, focus: 'weak' as const, deck: 'LWK_1' }
-const HIDDEN_SETTINGS = { mode: 'hidden' as const, focus: 'weak' as const, deck: 'LWK_1' }
+const COPY_SETTINGS: GameSettings = {
+  mode: 'copy',
+  focus: 'weak',
+  deck: 'LWK_1',
+  levels: [1, 2, 3, 4, 5]
+}
+const HIDDEN_SETTINGS: GameSettings = {
+  mode: 'hidden',
+  focus: 'weak',
+  deck: 'LWK_1',
+  levels: [1, 2, 3, 4, 5]
+}
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -438,8 +444,18 @@ describe('useGameStore', () => {
           { name: 'LWK_2', cards: [{ word: 'März', level: 2, time: 45 }] }
         ])
       storageMocks.loadSettings
-        .mockReturnValueOnce({ mode: 'copy' as const, focus: 'weak' as const, deck: 'LWK_2' })
-        .mockReturnValueOnce({ mode: 'copy' as const, focus: 'weak' as const, deck: 'LWK_1' })
+        .mockReturnValueOnce({
+          mode: 'copy',
+          focus: 'weak',
+          deck: 'LWK_2',
+          levels: [1, 2, 3, 4, 5]
+        })
+        .mockReturnValueOnce({
+          mode: 'copy',
+          focus: 'weak',
+          deck: 'LWK_1',
+          levels: [1, 2, 3, 4, 5]
+        })
       store = useGameStore()
       store.removeDeck('LWK_2')
       // Should have switched to LWK_1

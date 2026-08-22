@@ -130,7 +130,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 onMounted(() => {
   if (!currentCard.value) {
-    router.push({ name: '/HomePage' })
+    void router.push({ name: '/HomePage' })
     return
   }
 

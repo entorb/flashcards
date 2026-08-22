@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import type { SessionMode } from '@flashcards/shared'
-import { filterBelowMaxLevel, filterLevel1Cards, TEXT_DE } from '@flashcards/shared'
-import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
+import {
+  ALL_LEVELS,
+  filterBelowMaxLevel,
+  filterByLevels,
+  filterLevel1Cards,
+  TEXT_DE
+} from '@flashcards/shared'
+import { HomeFocusSelector, HomeLevelSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -20,13 +26,22 @@ const settings = ref<GameSettings>({
   mode: MODE_MULTIPLE_CHOICE,
   focus: 'weak',
   language: 'voc-de',
-  deck: 'en'
+  deck: 'en',
+  levels: [...ALL_LEVELS]
 })
 
 const deckOptions = ref<{ label: string; value: string }[]>([])
 
-const hasLevel1Cards = ref<boolean>(true)
-const hasLevel1Or2Cards = ref<boolean>(true)
+// Cards matching the selected levels
+const levelFilteredCards = computed(() => filterByLevels(allCards.value, settings.value.levels))
+
+const hasLevel1Cards = computed<boolean>(() =>
+  levelFilteredCards.value.some(card => card.level === 1)
+)
+
+const hasLevel1Or2Cards = computed<boolean>(() =>
+  levelFilteredCards.value.some(card => card.level === 1 || card.level === 2)
+)
 
 const modeOptions = computed(() => [
   {
@@ -62,31 +77,19 @@ onMounted(() => {
     label: deck.name,
     value: deck.name
   }))
-  // Check if current deck has level 1 cards
-  checkLevel1Cards()
+  // Ensure the selected mode is available for the current cards/levels
+  ensureValidMode()
 })
 
-// Watch allCards to update hasLevel1Cards whenever cards change
-watch(
-  allCards,
-  () => {
-    checkLevel1Cards()
-  },
-  { deep: true }
-)
+// Watch level-filtered pool to update mode availability whenever cards or levels change
+watch(levelFilteredCards, () => {
+  ensureValidMode()
+})
 
 function handleDeckChange(deckName: string) {
   settings.value.deck = deckName
   switchDeck(deckName)
-  checkLevel1Cards()
-  // ensureValidMode is called within checkLevel1Cards
-}
-
-function checkLevel1Cards() {
-  // Use allCards from store which reflects the current deck's cards
-  hasLevel1Cards.value = allCards.value.some(card => card.level === 1)
-  hasLevel1Or2Cards.value = allCards.value.some(card => card.level === 1 || card.level === 2)
-  ensureValidMode()
+  // ensureValidMode is called via the levelFilteredCards watcher
 }
 
 function ensureValidMode() {
@@ -100,14 +103,18 @@ function ensureValidMode() {
   }
 }
 
-const hasLevel1CardsForEndless = computed(() => filterLevel1Cards(allCards.value).length > 0)
+const hasLevel1CardsForEndless = computed(
+  () => filterLevel1Cards(levelFilteredCards.value).length > 0
+)
 
-const hasBelowMaxLevelCards = computed(() => filterBelowMaxLevel(allCards.value).length > 0)
+const hasBelowMaxLevelCards = computed(
+  () => filterBelowMaxLevel(levelFilteredCards.value).length > 0
+)
 
 function startGameWithMode(mode: SessionMode) {
   saveSettings(settings.value)
   startGameStore(settings.value, mode)
-  router.push({ name: '/GamePage' })
+  void router.push({ name: '/GamePage' })
 }
 
 function startGame() {
@@ -115,15 +122,15 @@ function startGame() {
 }
 
 function goToHistory() {
-  router.push({ name: '/HistoryPage' })
+  void router.push({ name: '/HistoryPage' })
 }
 
 function goToCards() {
-  router.push({ name: '/CardsManPage' })
+  void router.push({ name: '/CardsManPage' })
 }
 
 function goToInfo() {
-  router.push({ name: '/InfoPage' })
+  void router.push({ name: '/InfoPage' })
 }
 </script>
 
@@ -132,6 +139,7 @@ function goToInfo() {
     :app-title="TEXT_DE.appTitle_voc"
     :base-path="BASE_PATH"
     :statistics="gameStats"
+    :disable-start-button="levelFilteredCards.length === 0"
     @start-game="startGame"
     @go-to-cards="goToCards"
     @go-to-history="goToHistory"
@@ -199,6 +207,13 @@ function goToInfo() {
           :options="languageOptions"
         />
       </div>
+
+      <!-- Level Selection -->
+      <HomeLevelSelector
+        v-model="settings.levels"
+        :cards="allCards"
+        class="q-mb-sm"
+      />
 
       <!-- Focus Selection -->
       <HomeFocusSelector v-model="settings.focus" />

@@ -336,7 +336,9 @@ describe('GameOverPage (shared)', () => {
     first.unmount()
 
     expect(storageFunctions.incrementDailyGames).toHaveBeenCalledOnce()
-    expect(storageFunctions.setGameResult).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ points: 42, totalCards: 10, bonusesApplied: true }))
+    expect(storageFunctions.setGameResult).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ points: 42, totalCards: 10, bonusesApplied: true })
+    )
 
     // Second mount — simulates reload/back-navigation with the flagged result
     storageFunctions.getGameResult.mockReturnValue({ ...result, bonusesApplied: true })

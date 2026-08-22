@@ -1,5 +1,7 @@
 import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ALL_LEVELS } from '../constants'
+import type { CardLevel } from '../types'
 
 import {
   createAppGameStorage,
@@ -402,16 +404,25 @@ describe('saveJSON / loadJSON — property tests', () => {
 
 describe('createGamePersistence', () => {
   it('saveSettings / loadSettings round-trip', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>(
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
       'gp-settings',
       'gp-state'
     )
-    ops.saveSettings({ mode: 'copy' })
-    expect(ops.loadSettings()).toEqual({ mode: 'copy' })
+    ops.saveSettings({ mode: 'copy', levels: [1] })
+    expect(ops.loadSettings()).toEqual({ mode: 'copy', levels: [1] })
+  })
+
+  it('loadSettings fills missing levels with all levels (legacy config)', () => {
+    sessionStorage.setItem('gp-settings-legacy', JSON.stringify({ mode: 'copy' }))
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-settings-legacy',
+      'gp-state-legacy'
+    )
+    expect(ops.loadSettings()).toEqual({ mode: 'copy', levels: [...ALL_LEVELS] })
   })
 
   it('loadSettings returns null when key missing', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>(
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
       'gp-settings2',
       'gp-state2'
     )
@@ -420,7 +431,7 @@ describe('createGamePersistence', () => {
 
   it('loadSettings returns null for invalid JSON', () => {
     sessionStorage.setItem('gp-settings3', 'not-json')
-    const ops = createGamePersistence<{ mode: string }, { index: number }>(
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
       'gp-settings3',
       'gp-state3'
     )
@@ -428,38 +439,56 @@ describe('createGamePersistence', () => {
   })
 
   it('saveState / loadState round-trip', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>('gp-s4', 'gp-state4')
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-s4',
+      'gp-state4'
+    )
     ops.saveState({ index: 3 })
     expect(ops.loadState()).toEqual({ index: 3 })
   })
 
   it('loadState returns null when key missing', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>('gp-s5', 'gp-state5')
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-s5',
+      'gp-state5'
+    )
     expect(ops.loadState()).toBeNull()
   })
 
   it('loadState returns null for invalid JSON', () => {
     sessionStorage.setItem('gp-state6', 'bad')
-    const ops = createGamePersistence<{ mode: string }, { index: number }>('gp-s6', 'gp-state6')
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-s6',
+      'gp-state6'
+    )
     expect(ops.loadState()).toBeNull()
   })
 
   it('clearSettings removes the key', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>('gp-s7', 'gp-state7')
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-s7',
+      'gp-state7'
+    )
     ops.saveSettings({ mode: 'hidden' })
     ops.clearSettings()
     expect(ops.loadSettings()).toBeNull()
   })
 
   it('clearState removes the key', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>('gp-s8', 'gp-state8')
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-s8',
+      'gp-state8'
+    )
     ops.saveState({ index: 5 })
     ops.clearState()
     expect(ops.loadState()).toBeNull()
   })
 
   it('clearAll removes both keys', () => {
-    const ops = createGamePersistence<{ mode: string }, { index: number }>('gp-s9', 'gp-state9')
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-s9',
+      'gp-state9'
+    )
     ops.saveSettings({ mode: 'copy' })
     ops.saveState({ index: 1 })
     ops.clearAll()

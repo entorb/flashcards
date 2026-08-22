@@ -75,7 +75,7 @@ describe('lwk HistoryPage', () => {
     date,
     points,
     correctAnswers,
-    settings: { mode, focus: 'weak', deck: 'LWK_1' }
+    settings: { mode, focus: 'weak', levels: [1, 2, 3, 4, 5], deck: 'LWK_1' }
   })
 
   beforeEach(() => {
@@ -181,7 +181,7 @@ describe('lwk HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'copy', focus: 'strong', deck: 'LWK_1' }
+        settings: { mode: 'copy', focus: 'strong', levels: [1, 2, 3, 4, 5], deck: 'LWK_1' }
       }
       const result = formatDetails(entry)
       // Should contain focus-related text
@@ -198,7 +198,7 @@ describe('lwk HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'copy', focus: 'weak', deck: 'LWK_2' }
+        settings: { mode: 'copy', focus: 'weak', levels: [1, 2, 3, 4, 5], deck: 'LWK_2' }
       }
       const result = formatDetails(entry)
       expect(result).toContain('LWK_2')
@@ -214,7 +214,7 @@ describe('lwk HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'copy', focus: 'weak' }
+        settings: { mode: 'copy', focus: 'weak', levels: [1, 2, 3, 4, 5] }
       }
       const result = formatDetails(entry)
       // No deck → no deck segment

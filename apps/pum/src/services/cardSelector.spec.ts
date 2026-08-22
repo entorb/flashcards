@@ -19,7 +19,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus'],
         difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       for (const card of filtered) {
@@ -32,7 +33,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['minus'],
         difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       for (const card of filtered) {
@@ -45,7 +47,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus', 'minus'],
         difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       expect(filtered).toHaveLength(420)
@@ -59,7 +62,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus', 'minus'],
         difficulties: ['simple'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       expect(filtered).toHaveLength(110) // 55 plus + 55 minus
@@ -69,7 +73,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus', 'minus'],
         difficulties: ['medium'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       expect(filtered).toHaveLength(200) // 100 plus + 100 minus
@@ -79,7 +84,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus', 'minus'],
         difficulties: ['advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       expect(filtered).toHaveLength(110) // 55 plus + 55 minus
@@ -93,7 +99,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus'],
         difficulties: ['simple'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       expect(filtered).toHaveLength(55)
@@ -106,7 +113,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['minus'],
         difficulties: ['medium'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       const filtered = filterCards(allCards, settings)
       expect(filtered).toHaveLength(100)
@@ -123,7 +131,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: [],
         difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       expect(filterCards(allCards, settings)).toHaveLength(0)
     })
@@ -132,7 +141,8 @@ describe('pum cardSelector — unit tests', () => {
       const settings: GameSettings = {
         operations: ['plus', 'minus'],
         difficulties: [],
-        focus: 'weak'
+        focus: 'weak',
+        levels: [1, 2, 3, 4, 5]
       }
       expect(filterCards(allCards, settings)).toHaveLength(0)
     })

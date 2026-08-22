@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import type { FocusType, SessionMode } from '@flashcards/shared'
-import { filterBelowMaxLevel, filterLevel1Cards, TEXT_DE } from '@flashcards/shared'
-import { HomeFocusSelector, HomePageLayout } from '@flashcards/shared/components'
+import type { CardLevel, FocusType, SessionMode } from '@flashcards/shared'
+import {
+  ALL_LEVELS,
+  filterBelowMaxLevel,
+  filterByLevels,
+  filterLevel1Cards,
+  TEXT_DE
+} from '@flashcards/shared'
+import { HomeFocusSelector, HomeLevelSelector, HomePageLayout } from '@flashcards/shared/components'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -25,6 +31,7 @@ const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 const select = ref<SelectionType>([...DEFAULT_RANGE])
 const focus = ref<FocusType>('weak')
 const range = ref<number[]>([...DEFAULT_RANGE])
+const levels = ref<CardLevel[]>([...ALL_LEVELS])
 
 // Compute available selection options based on current range
 const selectOptions = computed<number[]>(() => range.value)
@@ -40,7 +47,7 @@ const isNumberSelected = computed(() => (num: number) => {
 const isSquaresSelected = computed(() => select.value === 'x²')
 
 // Compute filtered cards for the current selection
-const selectedCards = computed(() => {
+const basePool = computed(() => {
   const currentRange = range.value
   const allAvailableCards = getVirtualCardsForRange(currentRange)
   const rangeSet = new Set(currentRange)
@@ -54,9 +61,14 @@ const selectedCards = computed(() => {
   return filterCardsAll(allAvailableCards, rangeSet)
 })
 
-const hasLevel1Cards = computed(() => filterLevel1Cards(selectedCards.value).length > 0)
+// Cards matching the selected levels
+const levelFilteredCards = computed(() => filterByLevels(basePool.value, levels.value))
 
-const hasBelowMaxLevelCards = computed(() => filterBelowMaxLevel(selectedCards.value).length > 0)
+const hasLevel1Cards = computed(() => filterLevel1Cards(levelFilteredCards.value).length > 0)
+
+const hasBelowMaxLevelCards = computed(
+  () => filterBelowMaxLevel(levelFilteredCards.value).length > 0
+)
 
 onMounted(() => {
   // Load range configuration
@@ -67,6 +79,7 @@ onMounted(() => {
   if (savedSettings) {
     select.value = savedSettings.select
     focus.value = savedSettings.focus
+    levels.value = savedSettings.levels
   } else {
     // Set default select to all values in current range
     select.value = [...range.value]
@@ -76,6 +89,7 @@ onMounted(() => {
   if (gameSettings.value) {
     select.value = gameSettings.value.select
     focus.value = gameSettings.value.focus
+    levels.value = gameSettings.value.levels
   }
 
   // Reload stats from storage in case they were updated during a game
@@ -89,23 +103,24 @@ function startGame() {
 function startGameWithMode(mode: SessionMode) {
   const gameConfig = {
     select: select.value,
-    focus: focus.value
+    focus: focus.value,
+    levels: [...levels.value]
   }
   saveSettings(gameConfig)
   storeStartGame(gameConfig, mode, true)
-  router.push({ name: '/GamePage' })
+  void router.push({ name: '/GamePage' })
 }
 
 function goToHistory() {
-  router.push({ name: '/HistoryPage' })
+  void router.push({ name: '/HistoryPage' })
 }
 
 function goToCards() {
-  router.push({ name: '/CardsManPage' })
+  void router.push({ name: '/CardsManPage' })
 }
 
 function goToInfo() {
-  router.push({ name: '/InfoPage' })
+  void router.push({ name: '/InfoPage' })
 }
 
 function toggleSelect(option: number) {
@@ -154,6 +169,7 @@ function toggleSquares() {
     :app-title="TEXT_DE.appTitle_1x1"
     :base-path="BASE_PATH"
     :statistics="gameStats"
+    :disable-start-button="levelFilteredCards.length === 0"
     @start-game="startGame"
     @go-to-cards="goToCards"
     @go-to-history="goToHistory"
@@ -204,6 +220,13 @@ function toggleSquares() {
           </q-btn>
         </div>
       </div>
+
+      <!-- Level Selection -->
+      <HomeLevelSelector
+        v-model="levels"
+        :cards="basePool"
+        class="q-mb-sm"
+      />
 
       <!-- Focus Selection -->
       <HomeFocusSelector v-model="focus" />

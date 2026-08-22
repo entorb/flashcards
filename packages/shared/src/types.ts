@@ -29,6 +29,21 @@ export interface BaseCard {
 export type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
 
 /**
+ * Card difficulty level (1 = unknown, 5 = mastered)
+ * Must stay in sync with MIN_LEVEL / MAX_LEVEL in constants.ts
+ */
+export type CardLevel = 1 | 2 | 3 | 4 | 5
+
+/**
+ * Base game settings shared by all apps
+ * Apps extend with their app-specific selection options
+ */
+export interface BaseGameSettings {
+  focus: FocusType // Learning focus strategy
+  levels: CardLevel[] // Selected card levels; defaults to all levels
+}
+
+/**
  * Common AnswerStatus for all apps
  * Result of evaluating a user's answer
  */
