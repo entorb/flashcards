@@ -88,12 +88,12 @@ describe('useCardFiltering', () => {
       expect(filteredCards.value.map(card => card.time)).toEqual([5])
     })
 
-    it('includes MAX_TIME sentinel (never answered) in >=20s bucket', () => {
+    it('excludes MAX_TIME sentinel (never answered) from >=20s bucket', () => {
       const { filteredCards, handleTimeBucketClick } = useCardFiltering(() =>
         makeCardsWithTimes([2, 60, 60])
       )
       handleTimeBucketClick(4)
-      expect(filteredCards.value).toHaveLength(2)
+      expect(filteredCards.value).toHaveLength(0)
     })
 
     it('toggles selectedTimeBucket back to null when same bucket clicked again', () => {
