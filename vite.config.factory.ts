@@ -10,7 +10,7 @@ import {
   getVitePwaPlugin,
   getVuePlugin,
   getVueRouterPlugin
-} from './vite.config.base'
+} from './vite.config.base.js'
 
 export function createAppViteConfig(config: AppConfig) {
   // Ensure basePath is valid: non-empty and contains no slashes
