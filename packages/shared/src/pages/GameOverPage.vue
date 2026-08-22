@@ -157,7 +157,7 @@ function goHome() {
   props.storageFunctions.clearGameState()
 
   if (router) {
-    router.push({ name: '/HomePage' })
+    void router.push({ name: '/HomePage' })
   } else {
     globalThis.location.href = `/${props.basePath}/`
   }

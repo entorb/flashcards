@@ -98,7 +98,11 @@ describe('useGameStore - 3-rounds mode independent scoring (Property 4)', () => 
         vi.resetModules()
         const store = await setup3RoundsMocks(cards)
 
-        store.startGame({ select: 'all', focus: 'medium' }, '3-rounds', true)
+        store.startGame(
+          { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] },
+          '3-rounds',
+          true
+        )
 
         const totalAppearances = cards.length * LOOP_COUNT
         expect(store.gameCards.value).toHaveLength(totalAppearances)

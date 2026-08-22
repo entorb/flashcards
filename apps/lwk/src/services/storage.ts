@@ -3,8 +3,9 @@
  * Handles localStorage operations for decks, cards, history, settings, and stats
  */
 
-import type { GameResult, SessionMode } from '@flashcards/shared'
+import type { CardLevel, GameResult, SessionMode } from '@flashcards/shared'
 import {
+  ALL_LEVELS,
   createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
@@ -152,13 +153,20 @@ export function saveGameStats(stats: typeof DEFAULT_STATS) {
 
 // ============================================================================
 // Settings
+
+/** Persisted shape: older entries may lack the levels key added later */
+type StoredGameSettings = Omit<GameSettings, 'levels'> & { levels?: CardLevel[] }
 // ============================================================================
 
 /**
- * Load game settings
+ * Load game settings (older persisted settings without levels default to all levels)
  */
 export function loadSettings(): GameSettings | null {
-  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null)
+  const parsed = loadJSON<StoredGameSettings | null>(STORAGE_KEYS.SETTINGS, null)
+  if (!parsed) {
+    return null
+  }
+  return { ...parsed, levels: parsed.levels ?? [...ALL_LEVELS] }
 }
 
 /**

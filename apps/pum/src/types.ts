@@ -3,7 +3,7 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, FocusType } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
 
 // ============================================================================
 // Operations and Difficulties
@@ -25,10 +25,9 @@ export interface Card extends BaseCard {
 // Game Configuration
 // ============================================================================
 
-export interface GameSettings {
+export interface GameSettings extends BaseGameSettings {
   operations: Operation[] // ['plus'] or ['minus'] or ['plus', 'minus']
   difficulties: Difficulty[] // ['simple'] or ['simple', 'medium'] etc.
-  focus: FocusType // 'weak', 'medium', 'strong', or 'slow'
 }
 
 // ============================================================================

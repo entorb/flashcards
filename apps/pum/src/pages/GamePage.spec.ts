@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card } from '@/types'
+import type { Card, GameSettings } from '@/types'
 import GamePage from './GamePage.vue'
 
 const mocks = vi.hoisted(() => ({
@@ -19,7 +19,7 @@ const storeState = {
   currentCardIndex: ref(0),
   points: ref(0),
   currentCard: ref<Card | null>(null),
-  gameSettings: ref<{ operations: string[]; difficulties: string[]; focus: string } | null>(null),
+  gameSettings: ref<GameSettings | null>(null),
   lastPointsBreakdown: ref(null),
   sessionMode: ref<SessionMode>('standard')
 }
@@ -80,7 +80,8 @@ describe('pum GamePage', () => {
     storeState.gameSettings.value = {
       operations: ['plus'],
       difficulties: ['simple'],
-      focus: 'weak'
+      focus: 'weak',
+      levels: [1, 2, 3, 4, 5]
     }
     storeState.currentCardIndex.value = 0
   }

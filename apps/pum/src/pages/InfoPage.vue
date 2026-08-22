@@ -9,7 +9,7 @@ const router = useRouter()
 const appName = 'pum'
 
 const handleBack = () => {
-  router.push({ name: '/HomePage' })
+  void router.push({ name: '/HomePage' })
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {

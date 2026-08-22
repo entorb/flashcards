@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const handleBack = () => {
-  router.push({ name: '/HomePage' })
+  void router.push({ name: '/HomePage' })
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {

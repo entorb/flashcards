@@ -50,7 +50,7 @@ onUnmounted(() => {
 })
 
 function goHome() {
-  router.push({ name: '/HomePage' })
+  void router.push({ name: '/HomePage' })
 }
 </script>
 

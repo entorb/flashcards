@@ -23,6 +23,7 @@ const MOCK_DECKS: CardDeck[] = [
 const DEFAULT_SETTINGS: GameSettings = {
   mode: 'multiple-choice',
   focus: 'medium',
+  levels: [1, 2, 3, 4, 5],
   language: 'voc-de',
   deck: 'en'
 }
@@ -90,6 +91,7 @@ describe('useGameStore - initialization', () => {
     const savedSettings: GameSettings = {
       mode: 'typing',
       focus: 'weak',
+      levels: [1, 2, 3, 4, 5],
       language: 'de-voc',
       deck: 'de'
     }

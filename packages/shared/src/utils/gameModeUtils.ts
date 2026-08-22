@@ -25,6 +25,15 @@ export function filterBelowMaxLevel<T extends BaseCard>(cards: T[]): T[] {
 }
 
 /**
+ * Filter cards whose level is one of the selected levels (empty selection matches nothing)
+ */
+export function filterByLevels<T extends BaseCard>(cards: T[], levels: number[]): T[] {
+  if (levels.length === 0) return []
+  const levelSet = new Set(levels)
+  return cards.filter(card => levelSet.has(card.level))
+}
+
+/**
  * Create a repeated card list for 3-rounds mode, shuffled
  */
 export function repeatCards<T>(cards: T[], count: number): T[] {

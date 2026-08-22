@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card } from '@/types'
+import type { Card, GameSettings } from '@/types'
 import GamePage from './GamePage.vue'
 
 // Hoisted mock functions (plain vi.fn, no refs here)
@@ -21,7 +21,7 @@ const storeState = {
   currentCardIndex: ref(0),
   points: ref(0),
   currentCard: ref<Card | null>(null),
-  gameSettings: ref<{ select: number[]; focus: string } | null>(null),
+  gameSettings: ref<GameSettings | null>(null),
   lastPointsBreakdown: ref(null),
   sessionMode: ref<SessionMode>('standard')
 }
@@ -101,7 +101,7 @@ describe('GamePage', () => {
     const card: Card = { question: '3x3', answer: 9, level: 1, time: 60 }
     storeState.currentCard.value = card
     storeState.gameCards.value = [card]
-    storeState.gameSettings.value = { select: [3], focus: 'weak' }
+    storeState.gameSettings.value = { select: [3], focus: 'weak', levels: [1, 2, 3, 4, 5] }
     storeState.currentCardIndex.value = 0
   }
 

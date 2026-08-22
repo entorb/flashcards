@@ -34,7 +34,12 @@ const SAMPLE_DECKS: CardDeck[] = [
   }
 ]
 
-const SAMPLE_SETTINGS: GameSettings = { mode: 'copy', focus: 'weak', deck: DEFAULT_DECKS[0]!.name }
+const SAMPLE_SETTINGS: GameSettings = {
+  mode: 'copy',
+  focus: 'weak',
+  levels: [1, 2, 3, 4, 5],
+  deck: DEFAULT_DECKS[0]!.name
+}
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -114,7 +119,7 @@ describe('lwk storage service', () => {
 
     it('returns empty array when deck not found', () => {
       saveDecks(SAMPLE_DECKS)
-      saveSettings({ mode: 'copy', focus: 'weak', deck: 'MISSING' })
+      saveSettings({ mode: 'copy', focus: 'weak', levels: [1, 2, 3, 4, 5], deck: 'MISSING' })
       const cards = loadCards()
       expect(cards).toEqual([])
     })
@@ -164,7 +169,12 @@ describe('lwk storage service', () => {
     })
 
     it('preserves all settings fields', () => {
-      const settings: GameSettings = { mode: 'hidden', focus: 'strong', deck: 'LWK_2' }
+      const settings: GameSettings = {
+        mode: 'hidden',
+        focus: 'strong',
+        levels: [1, 2, 3, 4, 5],
+        deck: 'LWK_2'
+      }
       saveSettings(settings)
       const loaded = loadSettings()
       expect(loaded?.mode).toBe('hidden')

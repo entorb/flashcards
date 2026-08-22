@@ -108,6 +108,7 @@ describe('voc HistoryPage', () => {
       settings: {
         mode: 'multiple-choice',
         focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
         language: 'voc-de',
         deck: 'en'
       }
@@ -166,7 +167,13 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: 'en' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'voc-de',
+          deck: 'en',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       const result = formatDetails(entry)
       expect(result).toContain('Multiple Choice')
@@ -183,7 +190,7 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'blind', focus: 'weak', language: 'voc-de' }
+        settings: { mode: 'blind', focus: 'weak', language: 'voc-de', levels: [1, 2, 3, 4, 5] }
       }
       const result = formatDetails(entry)
       expect(result).toContain('Blind')
@@ -200,7 +207,7 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'typing', focus: 'weak', language: 'voc-de' }
+        settings: { mode: 'typing', focus: 'weak', language: 'voc-de', levels: [1, 2, 3, 4, 5] }
       }
       const result = formatDetails(entry)
       expect(result).toContain('Schreiben')
@@ -217,7 +224,12 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'multiple-choice', focus: 'strong', language: 'voc-de' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'strong',
+          language: 'voc-de',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       const result = formatDetails(entry)
       expect(result).toContain('Starke')
@@ -234,7 +246,13 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: 'fr' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'voc-de',
+          deck: 'fr',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       const result = formatDetails(entry)
       expect(result).toContain('fr')
@@ -251,7 +269,13 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'multiple-choice', focus: 'weak', language: 'voc-de', deck: '' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'voc-de',
+          deck: '',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       const result = formatDetails(entry)
       // deck is empty string → falsy → no deck segment
@@ -280,7 +304,12 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10.7,
         correctAnswers: 5,
-        settings: { mode: 'multiple-choice', focus: 'weak', language: 'voc-de' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'voc-de',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       expect(getPoints(entry)).toBe(11)
     })
@@ -296,7 +325,12 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10.4,
         correctAnswers: 5,
-        settings: { mode: 'multiple-choice', focus: 'weak', language: 'voc-de' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'voc-de',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       expect(getPoints(entry)).toBe(10)
     })
@@ -325,7 +359,12 @@ describe('voc HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 7,
-        settings: { mode: 'multiple-choice', focus: 'weak', language: 'voc-de' }
+        settings: {
+          mode: 'multiple-choice',
+          focus: 'weak',
+          language: 'voc-de',
+          levels: [1, 2, 3, 4, 5]
+        }
       }
       expect(getCorrectAnswers(entry)).toBe('7')
     })

@@ -233,6 +233,7 @@ describe('HomePage', () => {
       vi.mocked(loadSettings).mockReturnValue({
         mode: 'typing',
         focus: 'strong',
+        levels: [1, 2, 3, 4, 5],
         language: 'de-voc',
         deck: 'en'
       })
@@ -296,13 +297,11 @@ describe('HomePage', () => {
 
       const vm = wrapper.vm as unknown as {
         settings: { mode: string }
-        checkLevel1Cards: () => void
       }
       vm.settings.mode = 'multiple-choice'
 
       // Simulate cards moving to level 2 (no level-1 cards, but level-2 exists)
       mockCards.value = [{ voc: 'hello', de: 'hallo', level: 2, time: 60 }]
-      vm.checkLevel1Cards()
       await wrapper.vm.$nextTick()
 
       expect(vm.settings.mode).toBe('blind')
@@ -317,13 +316,11 @@ describe('HomePage', () => {
 
       const vm = wrapper.vm as unknown as {
         settings: { mode: string }
-        checkLevel1Cards: () => void
       }
       vm.settings.mode = 'blind'
 
       // Simulate all cards moving to level 3+
       mockCards.value = [{ voc: 'hello', de: 'hallo', level: 3, time: 60 }]
-      vm.checkLevel1Cards()
       await wrapper.vm.$nextTick()
 
       expect(vm.settings.mode).toBe('typing')
@@ -335,6 +332,7 @@ describe('HomePage', () => {
       vi.mocked(loadSettings).mockReturnValue({
         mode: 'typing',
         focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
         language: 'voc-de',
         deck: 'en'
       })
@@ -360,6 +358,7 @@ describe('HomePage', () => {
       vi.mocked(loadSettings).mockReturnValue({
         mode: 'typing',
         focus: 'weak',
+        levels: [1, 2, 3, 4, 5],
         language: 'de-voc',
         deck: 'en'
       })

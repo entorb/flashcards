@@ -1,5 +1,5 @@
 import type { FocusType } from '@flashcards/shared'
-import { createGameStoreFactory } from '@flashcards/shared'
+import { createGameStoreFactory, filterByLevels } from '@flashcards/shared'
 
 import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from '@/constants'
 import {
@@ -66,14 +66,16 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
   },
   filterCards: (allCards, settings, range) => {
     const rangeSet = new Set(range)
+    let selected: Card[]
     if (settings.select === 'x²') {
-      return filterCardsSquares(allCards, rangeSet)
+      selected = filterCardsSquares(allCards, rangeSet)
+    } else if (settings.select === 'all') {
+      selected = filterCardsAll(allCards, rangeSet)
+    } else {
+      const selectArray = Array.isArray(settings.select) ? settings.select : []
+      selected = filterCardsBySelection(allCards, selectArray, rangeSet)
     }
-    if (settings.select === 'all') {
-      return filterCardsAll(allCards, rangeSet)
-    }
-    const selectArray = Array.isArray(settings.select) ? settings.select : []
-    return filterCardsBySelection(allCards, selectArray, rangeSet)
+    return filterByLevels(selected, settings.levels)
   },
   getDifficultyPoints: card => {
     const { x, y } = parseCardQuestion(card.question)

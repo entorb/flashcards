@@ -76,7 +76,7 @@ describe('useGameStore - SessionMode round-trip through sessionStorage (Property
         // Phase 1: Start a game — this persists sessionMode via saveGameState
         const { useGameStore: useStore1 } = await import('./useGameStore')
         const store1 = useStore1()
-        store1.startGame({ select: 'all', focus: 'medium' }, mode, true)
+        store1.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] }, mode, true)
 
         // Verify saveGameState was called with the correct sessionMode
         expect(savedState).not.toBeNull()
