@@ -1,3 +1,4 @@
+import { MAX_TIME } from '@flashcards/shared'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Reset modules before each test to get a fresh singleton baseStore
@@ -385,6 +386,19 @@ describe('useGameStore - handleAnswer', () => {
     expect(updateCard).toHaveBeenCalledWith(
       card.question,
       expect.objectContaining({ level: expect.any(Number) })
+    )
+  })
+
+  it('calls updateCard with MAX_TIME for incorrect answer', async () => {
+    const store = await setupMocks()
+    const { updateCard } = await import('@/services/storage')
+    store.startGame({ select: 'all', focus: 'medium' })
+    const card = store.currentCard.value!
+
+    store.handleAnswer('incorrect', 5)
+    expect(updateCard).toHaveBeenCalledWith(
+      card.question,
+      expect.objectContaining({ time: MAX_TIME })
     )
   })
 

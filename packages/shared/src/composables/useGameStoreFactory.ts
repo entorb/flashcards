@@ -122,7 +122,8 @@ function handleIncorrectAnswer<TCard extends BaseCard & { question: string }>(
 ): void {
   const newLevel = Math.max(card.level - 1, MIN_LEVEL)
   card.level = newLevel
-  updateCard(card.question, { level: newLevel } as Partial<TCard>)
+  card.time = MAX_TIME
+  updateCard(card.question, { level: newLevel, time: MAX_TIME } as Partial<TCard>)
 }
 
 /**

@@ -1,3 +1,4 @@
+import { MAX_TIME } from '@flashcards/shared'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Card, CardDeck, GameSettings } from '../types'
@@ -293,6 +294,16 @@ describe('useGameStore - handleAnswer (multiple-choice mode)', () => {
     store.handleAnswer('incorrect', 5)
     const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
     expect(updatedCard?.level).toBe(Math.max(1, initialLevel - 1))
+  })
+
+  it('resets card time to MAX_TIME for incorrect answer', async () => {
+    const store = await setupMocks()
+    store.startGame(DEFAULT_SETTINGS)
+    const card = store.currentCard.value!
+
+    store.handleAnswer('incorrect', 5)
+    const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
+    expect(updatedCard?.time).toBe(MAX_TIME)
   })
 
   it('saves cards after answer', async () => {

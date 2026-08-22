@@ -474,12 +474,20 @@ describe('useGameStore', () => {
       expect(store.points.value).toBeGreaterThan(pointsBefore)
     })
 
-    it('does not update time on incorrect answer', () => {
-      store.allCards.value = [{ word: 'Jahr', level: 1, time: 30 }]
+    it('resets time to MAX_TIME on incorrect answer (hidden mode)', async () => {
+      const { selectCards } = await import('../services/cardSelector')
+      vi.mocked(selectCards).mockReturnValue([{ word: 'Jahr', level: 1, time: 30 }])
       store.startGame(HIDDEN_SETTINGS)
-      const timeBefore = store.allCards.value[0]!.time
       store.handleAnswer('incorrect', 5)
-      expect(store.allCards.value[0]!.time).toBe(timeBefore)
+      expect(store.currentCard.value?.time).toBe(60)
+    })
+
+    it('does not update time on incorrect answer in copy mode', async () => {
+      const { selectCards } = await import('../services/cardSelector')
+      vi.mocked(selectCards).mockReturnValue([{ word: 'Jahr', level: 1, time: 30 }])
+      store.startGame(COPY_SETTINGS)
+      store.handleAnswer('incorrect', 5)
+      expect(store.currentCard.value?.time).toBe(30)
     })
   })
 
