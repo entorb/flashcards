@@ -102,6 +102,7 @@ function updateVocCardLevelAndTime(
     updates.level = Math.min(MAX_LEVEL, card.level + 1)
   } else if (result === 'incorrect') {
     updates.level = Math.max(MIN_LEVEL, card.level - 1)
+    updates.time = MAX_TIME
   }
   if (result === 'correct' && answerTime !== undefined) {
     const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))

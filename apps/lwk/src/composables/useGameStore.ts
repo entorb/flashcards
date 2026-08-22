@@ -180,6 +180,9 @@ export function useGameStore() {
       updates.level = Math.min(MAX_LEVEL, card.level + 1)
     } else if (result === 'incorrect') {
       updates.level = Math.max(MIN_LEVEL, card.level - 1)
+      if (isHiddenMode) {
+        updates.time = MAX_TIME
+      }
     }
     if (result === 'correct' && isHiddenMode) {
       const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
