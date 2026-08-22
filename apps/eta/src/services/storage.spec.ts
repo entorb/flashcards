@@ -31,15 +31,15 @@ describe('storage service', () => {
 
       const stored = globalThis.localStorage.getItem(STORAGE_KEYS.SESSION)
       expect(stored).not.toBeNull()
-
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        expect(parsed.totalTasks).toBe(10)
-        expect(parsed.startTime).toBe('2024-01-01T10:00:00.000Z')
-        expect(parsed.measurements).toHaveLength(2)
-        expect(parsed.measurements[0].timestamp).toBe('2024-01-01T10:00:00.000Z')
-        expect(parsed.measurements[1].timestamp).toBe('2024-01-01T10:05:00.000Z')
+      if (stored === null) {
+        throw new Error('Session was not saved to localStorage')
       }
+      const parsed = JSON.parse(stored)
+      expect(parsed.totalTasks).toBe(10)
+      expect(parsed.startTime).toBe('2024-01-01T10:00:00.000Z')
+      expect(parsed.measurements).toHaveLength(2)
+      expect(parsed.measurements[0].timestamp).toBe('2024-01-01T10:00:00.000Z')
+      expect(parsed.measurements[1].timestamp).toBe('2024-01-01T10:05:00.000Z')
     })
 
     it('should handle save errors gracefully', () => {

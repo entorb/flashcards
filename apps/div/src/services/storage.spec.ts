@@ -327,11 +327,7 @@ describe('div storage — unit tests', () => {
     it('result is sorted ascending', () => {
       const result = toggleFeature50([...DEFAULT_RANGE])
       for (let i = 1; i < result.length; i++) {
-        const prev = result[i - 1]
-        const curr = result[i]
-        if (prev !== undefined && curr !== undefined) {
-          expect(prev).toBeLessThan(curr)
-        }
+        expect(result[i]).toBeGreaterThan(result[i - 1] ?? Number.NEGATIVE_INFINITY)
       }
     })
 

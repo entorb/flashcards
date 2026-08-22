@@ -234,8 +234,7 @@ describe('useBaseGameStore', () => {
       const { store, saveCards } = makeStore([makeCard(1), makeCard(2)])
       store.initializeStore()
       store.moveAllCards(3)
-      expect(saveCards).toHaveBeenCalledOnce()
-      expect(saveCards).toHaveBeenCalledWith(store.allCards.value)
+      expect(saveCards).toHaveBeenCalledExactlyOnceWith(store.allCards.value)
     })
 
     it('throws when level is below MIN_LEVEL', () => {

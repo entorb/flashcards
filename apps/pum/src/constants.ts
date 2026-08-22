@@ -7,7 +7,6 @@ import type { Difficulty, Operation } from './types'
 
 /**
  * Base path for the pum app — used in routing, PWA config, and database
- * @lintignore
  */
 export const BASE_PATH = 'fc-pum'
 
@@ -58,12 +57,10 @@ export const MAX_CARDS_PER_GAME = 10
 
 /**
  * Default operations — all operations selected
- * @lintignore
  */
 export const DEFAULT_OPERATIONS: Operation[] = ['plus', 'minus']
 
 /**
  * Default difficulties — all difficulties selected
- * @lintignore
  */
 export const DEFAULT_DIFFICULTIES: Difficulty[] = ['simple', 'medium', 'advanced']
