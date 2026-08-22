@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TIME_BUCKET_BOUNDS, TIME_BUCKET_COLORS } from '../constants'
+import { MAX_TIME, TIME_BUCKET_BOUNDS, TIME_BUCKET_COLORS } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { BaseCard } from '../types'
 import { getTimeBucketIndex, getTimeBucketLabel } from '../utils/helper'
@@ -15,10 +15,15 @@ const emit = defineEmits<{
   bucketClick: [bucket: number]
 }>()
 
-const bucketIndices = Array.from({ length: TIME_BUCKET_BOUNDS.length + 1 }, (_, i) => i)
+const bucketIndices = Array.from(
+  { length: TIME_BUCKET_BOUNDS.length + 1 },
+  (_, i) => TIME_BUCKET_BOUNDS.length - i
+)
 
 function getCardCountByBucket(bucket: number): number {
-  return props.cards.filter(card => getTimeBucketIndex(card.time) === bucket).length
+  return props.cards.filter(
+    card => card.time < MAX_TIME && getTimeBucketIndex(card.time) === bucket
+  ).length
 }
 </script>
 

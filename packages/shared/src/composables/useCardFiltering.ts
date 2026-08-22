@@ -1,6 +1,7 @@
 import type { ComputedRef, Ref } from 'vue'
 import { computed, ref } from 'vue'
 
+import { MAX_TIME } from '../constants'
 import type { BaseCard } from '../types'
 import { getTimeBucketIndex } from '../utils/helper'
 
@@ -43,7 +44,9 @@ export function useCardFiltering<T extends BaseCard = BaseCard>(
     }
     if (selectedTimeBucket.value !== null) {
       const bucket = selectedTimeBucket.value
-      return getCards().filter(card => getTimeBucketIndex(card.time) === bucket)
+      return getCards().filter(
+        card => card.time < MAX_TIME && getTimeBucketIndex(card.time) === bucket
+      )
     }
     return []
   })

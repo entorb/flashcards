@@ -30,8 +30,8 @@ describe('CardsTimeHistogram', () => {
     expect(wrapper.findAll('.time-badge')).toHaveLength(5)
   })
 
-  it('shows correct card count per bucket, MAX_TIME sentinel in >=20s', () => {
-    // <5s: 2, <10s: 1, <15s: 1, <20s: 2, >=20s: 3 (incl. two 60s sentinels)
+  it('shows correct card count per bucket, excludes MAX_TIME sentinel (60s)', () => {
+    // <5s: 2, <10s: 1, <15s: 1, <20s: 2, >=20s: 1 (two 60s sentinels excluded)
     const cards = makeCards([1, 4.9, 5, 12, 15, 19.9, 20, 60, 60])
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards },
@@ -39,7 +39,7 @@ describe('CardsTimeHistogram', () => {
     })
     const badges = wrapper.findAll('.time-badge')
     const counts = badges.map(badge => badge.find('.text-h5').text())
-    expect(counts).toEqual(['2', '1', '1', '2', '3'])
+    expect(counts).toEqual(['1', '2', '1', '1', '2'])
   })
 
   it('shows bucket labels', () => {
@@ -48,7 +48,7 @@ describe('CardsTimeHistogram', () => {
       ...mountOptions
     })
     const labels = wrapper.findAll('.time-badge .text-caption').map(label => label.text())
-    expect(labels).toEqual(['<5s', '<10s', '<15s', '<20s', '≥20s'])
+    expect(labels).toEqual(['≥20s', '<20s', '<15s', '<10s', '<5s'])
   })
 
   it('emits bucketClick with correct bucket when tile is clicked', async () => {
@@ -57,11 +57,11 @@ describe('CardsTimeHistogram', () => {
       ...mountOptions
     })
     const badges = wrapper.findAll('.time-badge')
-    const lastBadge = badges[4]
-    if (!lastBadge) {
-      throw new Error('Last badge not found')
+    const firstBadge = badges[0]
+    if (!firstBadge) {
+      throw new Error('First badge not found')
     }
-    await lastBadge.trigger('click')
+    await firstBadge.trigger('click')
     expect(wrapper.emitted('bucketClick')).toEqual([[4]])
   })
 
@@ -70,7 +70,7 @@ describe('CardsTimeHistogram', () => {
       props: { cards: [], selectedBucket: 1 },
       ...mountOptions
     })
-    const selectedBadge = wrapper.findAll('.time-badge')[1]
+    const selectedBadge = wrapper.findAll('.time-badge')[3]
     expect(selectedBadge?.attributes('style')).toContain('3px solid var(--q-primary)')
   })
 
