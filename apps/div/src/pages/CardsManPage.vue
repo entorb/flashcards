@@ -144,7 +144,7 @@ function goHome() {
             <q-btn
               :pressed="range.some(n => n > 9)"
               unelevated
-              label="≤50"
+              label="≥50"
               data-cy="feature-50-toggle"
               :color="range.some(n => n > 9) ? 'primary' : 'grey-5'"
               @click="toggleExtended"
