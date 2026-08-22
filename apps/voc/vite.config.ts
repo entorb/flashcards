@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 
-import { createAppViteConfig } from '../../vite.config.factory.js'
+import { createAppViteConfig } from '../../vite.config.factory.ts'
 
 export default createAppViteConfig({
   basePath: 'fc-voc',

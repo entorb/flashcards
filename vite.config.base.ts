@@ -5,7 +5,9 @@ import type { UserConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import VueRouter from 'vue-router/vite'
 
-const require = createRequire(import.meta.url)
+// Resolve relative to vite-plugin-pwa: workbox-window is its transitive
+// dependency and pnpm does not hoist it to the workspace root
+const pwaRequire = createRequire(import.meta.resolve('vite-plugin-pwa'))
 
 export interface AppConfig {
   basePath: string
@@ -34,7 +36,7 @@ export const baseViteConfig: UserConfig = {
   resolve: {
     alias: {
       // workbox-window has no `exports` field; rolldown (Vite 8) needs an explicit alias
-      'workbox-window': require.resolve('workbox-window/build/workbox-window.prod.es5.mjs')
+      'workbox-window': pwaRequire.resolve('workbox-window/build/workbox-window.prod.es5.mjs')
     }
   }
 }
