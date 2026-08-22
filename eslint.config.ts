@@ -1,5 +1,6 @@
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
+import pluginVitest from '@vitest/eslint-plugin'
 import pluginCypress from 'eslint-plugin-cypress'
 import sonarjs from 'eslint-plugin-sonarjs'
 import pluginVue from 'eslint-plugin-vue'
@@ -287,7 +288,9 @@ export default [
       'vue/valid-define-options': 'error',
       // Accessibility
       ...pluginVueA11y.configs.recommended.rules,
-      'vuejs-accessibility/no-autofocus': 'warn'
+      'vuejs-accessibility/no-autofocus': 'warn',
+      // Allow explicit for/id association (default `every` also demands nesting, impossible for aria-hidden fields)
+      'vuejs-accessibility/label-has-for': ['error', { required: { some: ['nesting', 'id'] } }]
     }
   },
 
@@ -356,9 +359,11 @@ export default [
       }
     },
     plugins: {
-      '@typescript-eslint': tsPlugin
+      '@typescript-eslint': tsPlugin,
+      vitest: pluginVitest
     },
     rules: {
+      ...pluginVitest.configs.recommended.rules,
       // Relaxed TypeScript rules for tests
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
@@ -378,7 +383,15 @@ export default [
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-identical-functions': 'off',
       'sonarjs/slow-regex': 'off',
-      'sonarjs/todo-tag': 'off'
+      'sonarjs/todo-tag': 'off',
+      // Vitest-specific rules
+      'vitest/consistent-test-it': ['error', { fn: 'it', withinDescribe: 'it' }],
+      'vitest/expect-expect': ['warn', { assertFunctionNames: ['expect', 'fc.assert'] }],
+      'vitest/no-disabled-tests': 'warn',
+      'vitest/no-focused-tests': 'error',
+      'vitest/prefer-to-be': 'error',
+      'vitest/prefer-to-have-length': 'error',
+      'vitest/valid-expect': 'error'
     }
   },
 

@@ -5,7 +5,6 @@
 !packages/shared/src/**/*.test.js
 !packages/shared/src/vite-env.d.ts
 *.config.base.d.ts
-*.config.base.js
 *.tsbuildinfo
 .cache/
 .cspellcache
@@ -14,15 +13,13 @@
 .eslintcache
 .github/copilot-instructions.md
 .vite/
+/tmp
 apps/*/cypress/screenshots/
 apps/*/src/**/*.d.ts
 apps/*/src/**/*.js
-CLAUDE.md
 coverage/
 cspell-words-missing.txt
 dist/
-example/
-GEMINI.md
 node_modules/
 packages/shared/src/**/*.d.ts
 packages/shared/src/**/*.js

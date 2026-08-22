@@ -1,10 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "tags": ["-lintignore"],
-  "ignore": ["**/route-map.d.ts"],
   "workspaces": {
     ".": {
-      "entry": ["scripts/*.sh"]
+      "entry": ["scripts/*.sh"],
+      "ignoreDependencies": ["vue-tsc"]
     },
     "apps/*": {
       "project": ["src/**/*.ts", "src/**/*.vue", "!src/**/*.spec.ts"]
@@ -12,5 +12,6 @@
     "packages/*": {
       "project": ["src/**/*.ts", "src/**/*.vue", "!src/**/*.spec.ts"]
     }
-  }
+  },
+  "ignoreDependencies": ["@typescript/native", "workbox-window"]
 }

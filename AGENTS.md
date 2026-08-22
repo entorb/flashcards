@@ -10,43 +10,26 @@
 - **[apps/voc](apps/voc/AGENTS.md)** — Vocabulary learning
 - **[packages/shared](packages/shared/AGENTS.md)** — Common code `@flashcards/shared`
 
-## Caveman speech
+## Checks
 
-Respond like smart caveman. Cut all filler, keep technical substance.
+run after each modification
 
-- Drop articles (a, an, the), filler (just, really, basically, actually).
-- Drop pleasantries (sure, certainly, happy to).
-- No hedging. Fragments fine. Short synonyms.
-- Technical terms stay exact. Code blocks unchanged.
-- Pattern: [thing] [action] [reason].
+- `scripts/chk_js_format.sh`
 
-## Commands
+run before committing
+
+- `scripts/run_checks.sh` (runs all `chk_*.sh` sequentially)
+
+If a check fails → fix → rerun that check only → repeat → final `scripts/run_checks.sh`.
+
+## Cypress E2E Tests
 
 ```bash
-# Full validation (parallel via run-p: format + lint + types + spell + test)
-pnpm run check
-
-# format: pnpm run format  (biome check --write .)
-# lint:   pnpm run lint    (eslint --fix .)
-# types:  pnpm run types
-
-# Single app
-pnpm --filter {app} run lint 2>&1
-pnpm --filter {app} run test 2>&1
-
 # E2E
 pnpm run cy:run              # all apps
 pnpm run cy:run:{app}        # one app (1x1, div, eta, lwk, pum, voc)
 pnpm run cy:run:{app} -- --spec "cypress/e2e/{spec}.cy.ts" 2>&1
-
-# Dead code analysis
-pnpm knip
-
-# Biome unsafe fix
-pnpx @biomejs/biome lint --write --unsafe .
 ```
-
-Commit only after `pnpm run check` + `pnpm run cy:run` pass. Commit header only.
 
 ## Workflow Rules
 

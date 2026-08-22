@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 out=$(mktemp)
 trap 'rm -f "$out"' EXIT INT TERM
 
-pnpm pnpm run test >"$out" 2>&1
+pnpm run test >"$out" 2>&1
 status=$?
 
 if [ $status -ne 0 ]; then

@@ -1,18 +1,19 @@
 #!/bin/sh
 
 # ensure we are in the root dir
-cd $(dirname $0)/..
+cd $(dirname "$0")/..
 
 # exit upon error
 set -e
 
-echo === brew: update pnpm and node ===
+echo "##  brew: update pnpm and node"
 echo "Update Node and pnpm via brew? [y/N]"
 read -r REPLY
 if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
   brew update
   brew upgrade node@24
   brew upgrade pnpm
+  pnpm self-update
 
   # update package.json with new versions
   NODE_VER=$(node --version | sed 's/v//')
@@ -27,7 +28,7 @@ if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
   "
 fi
 
-echo === delete old node_modules and lock ===
+echo "## delete old node_modules and lock"
 rm -rf node_modules
 rm -f pnpm-lock.yaml
 rm -rf packages/shared/node_modules
@@ -37,40 +38,43 @@ for app in 1x1 div eta lwk pum voc; do
   rm -f apps/$app/pnpm-lock.yaml
 done
 
-echo === update root packages ===
+echo "## update root packages"
 pnpm self-update
 pnpm up -L
 pnpm exec biome migrate --write
 
-echo === update shared packages ===
+echo "## update shared packages"
 cd packages/shared
 pnpm up -L
 cd ../..
 
 for app in 1x1 div eta lwk pum voc; do
-  echo === updating $app packages ===
+  echo "## updating $app packages"
   cd apps/$app
   pnpm up -L
   cd ../..
 done
 
 if ! pnpm audit; then
-  echo === fix audit findings ===
+  echo "## fix audit findings"
   pnpm audit --fix update
+fi
+if ! pnpm audit; then
   pnpm audit --fix override
+  pnpm install
 fi
 
-echo === check ===
+echo "## check"
 pnpm run check
 
 if [ -n "$(git status --porcelain)" ]; then
-  echo === git push ===
+  echo "## git push"
   git add .
   git commit -m "package update and pnpm audit findings"
   git push
 fi
 
-echo === Cypress ===
+echo "## Cypress"
 # start dev server in background, bypassing pnpm wrapper to remove warning upon killing process
 pnpm run dev &
 # ./node_modules/.bin/vite > /dev/null 2>&1 &
