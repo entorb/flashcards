@@ -31,7 +31,7 @@ export function isArrayOfCardLevels(value: unknown): boolean {
   return Array.isArray(value) && value.every(isValidCardLevel)
 }
 
-const FOCUS_TYPES = ['weak', 'medium', 'strong', 'slow']
+const FOCUS_TYPES = new Set(['weak', 'medium', 'strong', 'slow'])
 
 /** Base card fields: valid level + finite time */
 export function isValidBaseCard(value: unknown): boolean {
@@ -44,7 +44,7 @@ export function isValidBaseCard(value: unknown): boolean {
 export function isValidBaseSettings(value: unknown): boolean {
   if (!isRecord(value)) return false
   const { focus, levels } = value
-  return typeof focus === 'string' && FOCUS_TYPES.includes(focus) && isArrayOfCardLevels(levels)
+  return typeof focus === 'string' && FOCUS_TYPES.has(focus) && isArrayOfCardLevels(levels)
 }
 
 /** GameStats shape: three numeric counters */

@@ -204,7 +204,7 @@ function goHome() {
         :selected-level="selectedLevel"
         :get-label="getCardLabel"
         :get-key="getCardKey"
-        :title="listTitle"
+        :title="listTitle ?? ''"
       />
 
       <!-- Cards Grid/Matrix -->
