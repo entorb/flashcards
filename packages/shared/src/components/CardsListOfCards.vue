@@ -12,12 +12,12 @@ interface Props {
   getKey: (card: BaseCard) => string
   duplicateKeys?: Set<string>
   /** Overrides the default heading ("Karten"/"Level N") when set */
-  title?: string | undefined
+  // eslint-disable-next-line vue/require-default-prop -- undefined default breaks exactOptionalPropertyTypes
+  title?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  duplicateKeys: () => new Set(),
-  title: undefined
+  duplicateKeys: () => new Set()
 })
 
 function getLevelColor(level: number): string {
@@ -39,7 +39,7 @@ const sortedCards = computed(() => {
           name="collections_bookmark"
           class="q-mr-sm"
         />
-        <span v-if="title !== undefined">
+        <span v-if="title">
           {{ title }} ({{ cardsToShow.length }})
         </span>
         <span v-else-if="selectedLevel === null">

@@ -265,7 +265,7 @@ function handleResetCardsToDefaultSet() {
         :get-label="getCardLabel"
         :get-key="getCardKey"
         :duplicate-keys="duplicateKeys"
-        :title="listTitle"
+        :title="listTitle ?? ''"
       />
 
       <CardManActions

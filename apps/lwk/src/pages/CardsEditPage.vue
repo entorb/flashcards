@@ -30,8 +30,7 @@ onUnmounted(() => {
 
 function handleGoBack() {
   // Validate and auto-save before leaving
-  const invalidCard = editingCards.value.find(card => !card.word.trim())
-  if (invalidCard) {
+  if (editingCards.value.some(card => !card.word.trim())) {
     $q.notify({
       type: 'negative',
       message: TEXT_DE.lwk.cards.validationWordEmpty

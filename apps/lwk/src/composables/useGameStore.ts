@@ -69,6 +69,28 @@ const deckManagement = useDeckManagement<Card, GameSettings>({
 // Main Game Store
 // ============================================================================
 
+function updateCardLevelAndTime(
+  card: Card,
+  result: AnswerStatus,
+  answerTime: number,
+  isHiddenMode: boolean
+): Partial<Card> {
+  const updates: Partial<Card> = {}
+  if (result === 'correct') {
+    updates.level = Math.min(MAX_LEVEL, card.level + 1)
+  } else if (result === 'incorrect') {
+    updates.level = Math.max(MIN_LEVEL, card.level - 1)
+    if (isHiddenMode) {
+      updates.time = MAX_TIME
+    }
+  }
+  if (result === 'correct' && isHiddenMode) {
+    const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
+    updates.time = roundTime(clampedTime)
+  }
+  return updates
+}
+
 export function useGameStore() {
   // Initialize store on first use
   baseStore.initializeStore()
@@ -170,28 +192,6 @@ export function useGameStore() {
     baseStore.gameCards.value = selectedCards
     initialCardCount.value = selectedCards.length
     saveCurrentGameState()
-  }
-
-  function updateCardLevelAndTime(
-    card: Card,
-    result: AnswerStatus,
-    answerTime: number,
-    isHiddenMode: boolean
-  ): Partial<Card> {
-    const updates: Partial<Card> = {}
-    if (result === 'correct') {
-      updates.level = Math.min(MAX_LEVEL, card.level + 1)
-    } else if (result === 'incorrect') {
-      updates.level = Math.max(MIN_LEVEL, card.level - 1)
-      if (isHiddenMode) {
-        updates.time = MAX_TIME
-      }
-    }
-    if (result === 'correct' && isHiddenMode) {
-      const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
-      updates.time = roundTime(clampedTime)
-    }
-    return updates
   }
 
   function handleAnswer(result: AnswerStatus, answerTime: number) {
