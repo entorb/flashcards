@@ -10,12 +10,14 @@
 
 import {
   incrementDailyGames,
+  loadArray,
   loadJSON,
   loadSessionJSON,
   saveJSON,
   saveSessionJSON
 } from '../services/storage'
 import type { DailyBonusConfig, GameResult, GameStats } from '../types'
+import { isValidGameResult, isValidGameStats, isValidHistoryEntry } from '../utils/validators'
 
 export interface GameStateFlowConfig {
   /** localStorage key for game settings */
@@ -53,7 +55,7 @@ export function initializeGameFlow<TSettings, TCard>(
  * Called from GamePage on mount
  */
 export function getGameCards<TCard>(config: GameStateFlowConfig): TCard[] {
-  return loadSessionJSON<TCard[]>(config.selectedCardsKey, [])
+  return loadSessionJSON<TCard[]>(config.selectedCardsKey, [], Array.isArray)
 }
 
 /**
@@ -89,7 +91,7 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
   dailyInfo: { isFirstGame: boolean; gamesPlayedToday: number }
 } {
   // Get game result from sessionStorage
-  const result = loadSessionJSON<GameResult | null>(config.gameResultKey, null)
+  const result = loadSessionJSON<GameResult | null>(config.gameResultKey, null, isValidGameResult)
   if (!result) {
     throw new Error('No game result found in sessionStorage')
   }
@@ -115,13 +117,13 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
   // Mutate provided history entry to include the bonus points
   historyEntry.points = finalPoints
 
-  // Load existing history and append new entry
-  const historyList = loadJSON<THistory[]>(config.historyKey, [])
+  // Load existing history and append new entry (invalid stored entries are dropped)
+  const historyList = loadArray<THistory>(config.historyKey, [], isValidHistoryEntry)
   historyList.push(historyEntry)
 
   // Load and update stats
   const defaultStats: GameStats = { gamesPlayed: 0, points: 0, correctAnswers: 0 }
-  const stats = loadJSON<GameStats>(config.statsKey, defaultStats)
+  const stats = loadJSON<GameStats>(config.statsKey, defaultStats, isValidGameStats)
   stats.gamesPlayed++
   stats.points += finalPoints
   stats.correctAnswers += result.correctAnswers

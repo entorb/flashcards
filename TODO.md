@@ -47,7 +47,23 @@ non-functional requirements:
     pnpm run cy:run
     and fix all issues, errors and warnings
 
+### LevelSelector
+
+for the migration add a TODO: remove at 2027-01-01 comment
+
+for all load from local storage:
+if keys are missing or values not match expected types, fallback to default. This should allow dropping of migration logic
+
+### Time Histogram
+
+For all Apps In CardsManPage below CardsListOfCards add a CardsTimeHistogram, similar UI to CardsManLevelDistribution.
+Sections <5s, <10s, <15s, <20s, >=20s. Each section excludes the one before.
+on Click: display list of cards in that range, similar to CardsListOfCards.
+
 ## 1x1
+
+in HomePage, "Select Rows"
+if all rows are selected, select isSquaresSelected as well, as the squares are included in the rows.
 
 ## div
 

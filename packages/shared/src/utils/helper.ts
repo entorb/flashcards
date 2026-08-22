@@ -10,6 +10,7 @@ import {
 } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { DailyBonusConfig } from '../types'
+import { isNumber, isRecord } from './validators'
 
 /**
  * Get focus type text from focus value
@@ -57,12 +58,19 @@ export const helperStatsDataRead = async (basePath: string): Promise<number> => 
 
 /**
  * Load pending stats counts from localStorage
+ * Entries with non-numeric counts are dropped
  */
 function loadPendingStats(): Record<string, number> {
   try {
     const stored = globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY)
     if (stored === null || stored === '') return {}
-    return JSON.parse(stored) as Record<string, number>
+    const parsed: unknown = JSON.parse(stored)
+    if (!isRecord(parsed)) return {}
+    const pending: Record<string, number> = {}
+    for (const [app, count] of Object.entries(parsed)) {
+      if (isNumber(count)) pending[app] = count
+    }
+    return pending
   } catch {
     return {}
   }
@@ -336,8 +344,29 @@ export function sanitizeBaseCard<T extends { level?: number; time?: number }>(
  * (see TIME_BUCKET_BOUNDS). Times >= the last bound (incl. MAX_TIME sentinel) → 4.
  */
 export function getTimeBucketIndex(time: number): number {
-  for (let i = 0; i < TIME_BUCKET_BOUNDS.length; i++) {
-    if (time < TIME_BUCKET_BOUNDS[i]) return i
+  for (const [index, bound] of TIME_BUCKET_BOUNDS.entries()) {
+    if (time < bound) return index
   }
   return TIME_BUCKET_BOUNDS.length
+}
+
+/**
+ * Label of a time bucket, e.g. "<5s" or "≥20s"
+ * @param bucket - Bucket index (see getTimeBucketIndex)
+ */
+export function getTimeBucketLabel(bucket: number): string {
+  const bound = TIME_BUCKET_BOUNDS[bucket]
+  if (bound !== undefined) {
+    return `<${bound}s`
+  }
+  const lastBound = TIME_BUCKET_BOUNDS[TIME_BUCKET_BOUNDS.length - 1]
+  return `≥${lastBound ?? MAX_TIME}s`
+}
+
+/**
+ * Heading for the card list when filtered by time bucket, e.g. "Zeit <10s"
+ * @param bucket - Bucket index (see getTimeBucketIndex)
+ */
+export function getTimeFilterListTitle(bucket: number): string {
+  return `${TEXT_DE.shared.cards.timeFilterPrefix} ${getTimeBucketLabel(bucket)}`
 }

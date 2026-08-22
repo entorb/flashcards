@@ -7,8 +7,12 @@ import {
   useCardFiltering,
   useResetCards
 } from '@flashcards/shared'
-import { CardsListOfCards, CardsManLevelDistribution } from '@flashcards/shared/components'
-import { getTimeTextColor } from '@flashcards/shared/utils'
+import {
+  CardsListOfCards,
+  CardsManLevelDistribution,
+  CardsTimeHistogram
+} from '@flashcards/shared/components'
+import { getTimeFilterListTitle, getTimeTextColor } from '@flashcards/shared/utils'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -53,9 +57,20 @@ const cardsInRange = computed(() => {
   return virtualCards
 })
 
-const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(
-  () => cardsInRange.value
-)
+const {
+  selectedLevel,
+  selectedTimeBucket,
+  handleLevelClick,
+  handleTimeBucketClick,
+  filteredCards
+} = useCardFiltering(() => cardsInRange.value)
+
+const listTitle = computed(() => {
+  if (selectedTimeBucket.value !== null) {
+    return getTimeFilterListTitle(selectedTimeBucket.value)
+  }
+  return undefined
+})
 
 const sortedFilteredCards = computed(() => {
   const cards = [...filteredCards.value]
@@ -173,14 +188,23 @@ function goHome() {
         @level-click="handleLevelClick"
       />
 
+      <!-- Time Histogram -->
+      <CardsTimeHistogram
+        :cards="cardsInRange"
+        :selected-bucket="selectedTimeBucket"
+        class="q-mb-md"
+        @bucket-click="handleTimeBucketClick"
+      />
+
       <!-- Filtered Cards List -->
       <CardsListOfCards
-        v-if="selectedLevel !== null"
+        v-if="selectedLevel !== null || selectedTimeBucket !== null"
         :all-cards="cardsInRange"
         :cards-to-show="sortedFilteredCards"
         :selected-level="selectedLevel"
         :get-label="getCardLabel"
         :get-key="getCardKey"
+        :title="listTitle"
       />
 
       <!-- Cards Grid/Matrix -->

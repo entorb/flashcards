@@ -27,7 +27,8 @@ src/
 ├── utils/
 │   ├── cardSelection.ts  # Weighted card selection by focus
 │   ├── gameModeUtils.ts  # Endless/3-rounds mode logic
-│   └── helper.ts         # General helpers
+│   ├── helper.ts         # General helpers
+│   └── validators.ts     # Runtime type checks for storage loads (fallback to defaults)
 ├── constants.ts          # MIN/MAX_LEVEL, colors, bonuses
 ├── types.ts              # BaseCard, GameStats, SessionMode, FocusType
 ├── text-de.ts            # All German UI strings
@@ -90,7 +91,9 @@ type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 
 ## Services
 
-**storage.ts**: `loadJSON()`, `saveJSON()`, `loadSessionJSON()`, `saveSessionJSON()`, `createHistoryOperations()`, `createStatsOperations()`, `createAppGameStorage()`, `incrementDailyGames()`
+**storage.ts**: `loadJSON()`, `saveJSON()`, `loadSessionJSON()`, `saveSessionJSON()`, `createHistoryOperations(key, isValidEntry?)`, `createStatsOperations()`, `createAppGameStorage()`, `incrementDailyGames()`. All loaders accept an optional validator `(value: unknown) => boolean`; invalid values fall back to the provided default (`loadArray` drops invalid items instead). No migration shims — corrupt/outdated data self-heals to defaults.
+
+**validators.ts** (`@flashcards/shared/utils`): `isRecord`, `isNumber`, `isString`, `isValidCardLevel`, `isValidBaseCard`, `isValidBaseSettings`, `isValidGameStats`, `isValidDailyStats`, `isValidGameResult`, `isValidHistoryEntry`. Compose these for app-specific shapes (e.g. voc/lwk deck + settings validators in `apps/*/src/services/storage.ts`).
 
 **scoring.ts**: Points calculation with level/mode/time factors.
 

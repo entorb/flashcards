@@ -117,7 +117,7 @@ Exception: **eta** has its own session-based architecture (no game store pattern
 10. **.npmrc hoisting** — vue, vite, quasar, eslint, typescript, @types/*, esbuild, rollup are hoisted to root `node_modules` via `public-hoist-pattern[]`. Shared deps work because of this.
 11. **`unicorn/prefer-string-replace-all`** — ESLint doesn't have this rule; `eslint-disable-next-line` for it errors. Use `.replace()` with `/g` flag.
 12. **Stub by alias** — component imported as `import X from './Y.vue'` → stub key is `X`, not `Y`.
-13. **`migrateStorageKeys()`** — each app's `main.ts` calls `migrateStorageKeys(oldPrefix, newPrefix)` to migrate localStorage from old key format. Don't remove until the TODO date passes.
+13. **Storage loads validate types** — every localStorage/sessionStorage read goes through `loadJSON`/`loadSessionJSON`/`loadArray` (or ops factories) in `packages/shared/src/services/storage.ts` with runtime validators from `@flashcards/shared/utils/validators`. Missing keys, corrupt JSON, or wrong-typed values fall back to defaults (arrays drop invalid items). Do not add blind `JSON.parse(...) as T` casts or legacy migration shims — invalid data self-heals to defaults instead.
 14. **PWA uses Quasar Dialog** — the `updateSW` callback opens `Dialog.create({...})` (not `confirm()`). See pattern in `apps/*/src/main.ts`.
 15. **SonarCloud lcov path fix** — CI runs `sed 's|^SF:src/|SF:$dir/src/|'` on coverage files because Vitest generates relative paths but SonarCloud resolves from project root.
 

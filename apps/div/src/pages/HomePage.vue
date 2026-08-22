@@ -202,6 +202,7 @@ function toggleSelect(option: number) {
           size="lg"
           class="col"
           icon="looks_3"
+          :disable="levelFilteredCards.length === 0"
           data-cy="start-three-rounds"
           @click="startGameWithMode('3-rounds')"
         >

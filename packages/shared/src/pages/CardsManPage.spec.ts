@@ -77,7 +77,10 @@ const plainStubs = {
   ...quasarStubs,
   HomeDeckSelector: { template: '<div />' },
   CardsManLevelDistribution: { template: '<div />' },
-  CardsListOfCards: { template: '<div />' },
+  CardsListOfCards: {
+    props: ['title', 'selectedLevel'],
+    template: '<div class="list-stub">{{ title }}|{{ selectedLevel }}</div>'
+  },
   CardManActions: { template: '<div />' }
 }
 
@@ -231,6 +234,40 @@ describe('CardsManPage (shared)', () => {
       expect(() => {
         vm.handleLevelClick?.(2)
       }).not.toThrow()
+    })
+  })
+
+  describe('handleTimeBucketClick', () => {
+    function mountWithHistogram() {
+      return mount(CardsManPage, {
+        props: makeProps(makeMockStore()),
+        global: {
+          ...globalOpts,
+          stubs: {
+            ...plainStubs,
+            CardsTimeHistogram: {
+              template: '<button data-cy="histogram-stub" @click="$emit(\'bucketClick\', 3)" />'
+            }
+          }
+        }
+      })
+    }
+
+    it('time bucket click shows time-filtered list title', async () => {
+      const wrapper = mountWithHistogram()
+      await wrapper.find('[data-cy="histogram-stub"]').trigger('click')
+      const listStub = wrapper.find('.list-stub')
+      expect(listStub.text()).toContain('Zeit <20s')
+    })
+
+    it('level click after time selection switches the list back to level view', async () => {
+      const wrapper = mountWithHistogram()
+      await wrapper.find('[data-cy="histogram-stub"]').trigger('click')
+      const vm = wrapper.vm as unknown as { handleLevelClick: (level: number) => void }
+      vm.handleLevelClick(2)
+      await wrapper.vm.$nextTick()
+      const listStub = wrapper.find('.list-stub')
+      expect(listStub.text()).not.toContain('Zeit')
     })
   })
 

@@ -11,10 +11,13 @@ interface Props {
   getLabel: (card: BaseCard) => string
   getKey: (card: BaseCard) => string
   duplicateKeys?: Set<string>
+  /** Overrides the default heading ("Karten"/"Level N") when set */
+  title?: string | undefined
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  duplicateKeys: () => new Set()
+  duplicateKeys: () => new Set(),
+  title: undefined
 })
 
 function getLevelColor(level: number): string {
@@ -36,7 +39,10 @@ const sortedCards = computed(() => {
           name="collections_bookmark"
           class="q-mr-sm"
         />
-        <span v-if="selectedLevel === null">
+        <span v-if="title !== undefined">
+          {{ title }} ({{ cardsToShow.length }})
+        </span>
+        <span v-else-if="selectedLevel === null">
           {{ TEXT_DE.shared.words.cards }} ({{ allCards.length }})
         </span>
         <span v-else>

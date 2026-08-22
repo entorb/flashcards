@@ -8,6 +8,10 @@ function makeCards(levels: number[]): BaseCard[] {
   return levels.map(level => ({ level, time: 60 }))
 }
 
+function makeCardsWithTimes(times: number[]): BaseCard[] {
+  return times.map(time => ({ level: 3, time }))
+}
+
 describe('useCardFiltering', () => {
   describe('initial state', () => {
     it('selectedLevel starts as null', () => {
@@ -58,6 +62,90 @@ describe('useCardFiltering', () => {
       handleLevelClick(1)
       handleLevelClick(3)
       expect(selectedLevel.value).toBe(3)
+    })
+  })
+
+  describe('handleTimeBucketClick', () => {
+    it('selectedTimeBucket starts as null', () => {
+      const { selectedTimeBucket } = useCardFiltering(() => makeCardsWithTimes([1, 60]))
+      expect(selectedTimeBucket.value).toBeNull()
+    })
+
+    it('sets selectedTimeBucket to the clicked bucket', () => {
+      const { selectedTimeBucket, handleTimeBucketClick } = useCardFiltering(() =>
+        makeCardsWithTimes([1, 60])
+      )
+      handleTimeBucketClick(0)
+      expect(selectedTimeBucket.value).toBe(0)
+    })
+
+    it('filteredCards returns only cards within the selected time range', () => {
+      const times = [1, 4.9, 5, 12, 15, 19.9, 20, 60]
+      const { filteredCards, handleTimeBucketClick } = useCardFiltering(() =>
+        makeCardsWithTimes(times)
+      )
+      handleTimeBucketClick(1)
+      expect(filteredCards.value.map(card => card.time)).toEqual([5])
+    })
+
+    it('includes MAX_TIME sentinel (never answered) in >=20s bucket', () => {
+      const { filteredCards, handleTimeBucketClick } = useCardFiltering(() =>
+        makeCardsWithTimes([2, 60, 60])
+      )
+      handleTimeBucketClick(4)
+      expect(filteredCards.value).toHaveLength(2)
+    })
+
+    it('toggles selectedTimeBucket back to null when same bucket clicked again', () => {
+      const { selectedTimeBucket, handleTimeBucketClick } = useCardFiltering(() =>
+        makeCardsWithTimes([1, 60])
+      )
+      handleTimeBucketClick(3)
+      expect(selectedTimeBucket.value).toBe(3)
+      handleTimeBucketClick(3)
+      expect(selectedTimeBucket.value).toBeNull()
+    })
+
+    it('switches to a different bucket without toggling off', () => {
+      const { selectedTimeBucket, handleTimeBucketClick } = useCardFiltering(() =>
+        makeCardsWithTimes([1, 60])
+      )
+      handleTimeBucketClick(0)
+      handleTimeBucketClick(4)
+      expect(selectedTimeBucket.value).toBe(4)
+    })
+  })
+
+  describe('level and time filter are mutually exclusive', () => {
+    it('clicking a time bucket clears the selected level', () => {
+      const { selectedLevel, selectedTimeBucket, handleLevelClick, handleTimeBucketClick } =
+        useCardFiltering(() => makeCards([1, 2]))
+      handleLevelClick(2)
+      handleTimeBucketClick(4)
+      expect(selectedLevel.value).toBeNull()
+      expect(selectedTimeBucket.value).toBe(4)
+    })
+
+    it('filteredCards respects the time filter after a level was active', () => {
+      const cards: BaseCard[] = [
+        { level: 2, time: 1 },
+        { level: 3, time: 30 }
+      ]
+      const { filteredCards, handleLevelClick, handleTimeBucketClick } = useCardFiltering(
+        () => cards
+      )
+      handleLevelClick(2)
+      handleTimeBucketClick(4)
+      expect(filteredCards.value.map(card => card.time)).toEqual([30])
+    })
+
+    it('clicking a level clears the selected time bucket', () => {
+      const { selectedLevel, selectedTimeBucket, handleTimeBucketClick, handleLevelClick } =
+        useCardFiltering(() => makeCards([1, 2]))
+      handleTimeBucketClick(0)
+      handleLevelClick(1)
+      expect(selectedTimeBucket.value).toBeNull()
+      expect(selectedLevel.value).toBe(1)
     })
   })
 
