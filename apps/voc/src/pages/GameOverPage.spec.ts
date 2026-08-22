@@ -23,6 +23,7 @@ vi.mock('@flashcards/shared/pages', () => ({
 
 const storageMocks = vi.hoisted(() => ({
   getGameResult: vi.fn(() => null),
+  setGameResult: vi.fn(),
   clearGameResult: vi.fn(),
   clearGameState: vi.fn(),
   incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 1 })),
@@ -32,6 +33,7 @@ const storageMocks = vi.hoisted(() => ({
 
 vi.mock('@/services/storage', () => ({
   getGameResult: storageMocks.getGameResult,
+  setGameResult: storageMocks.setGameResult,
   clearGameResult: storageMocks.clearGameResult,
   clearGameState: storageMocks.clearGameState,
   incrementDailyGames: storageMocks.incrementDailyGames,

@@ -14,6 +14,7 @@ import { TEXT_DE } from '../text-de'
 /** @lintignore */
 export interface StorageFunctions<T extends BaseGameHistory> {
   getGameResult: () => GameResult | null
+  setGameResult?: (result: GameResult) => void
   clearGameResult: () => void
   clearGameState: () => void
   incrementDailyGames: () => { isFirstGame: boolean; gamesPlayedToday: number }
@@ -75,18 +76,50 @@ function hasTotalCards(entry: BaseGameHistory): entry is BaseGameHistory & { tot
   return 'totalCards' in entry && typeof entry.totalCards === 'number'
 }
 
+function reconstructResultFromHistory(): GameResult | null {
+  if (props.gameStoreHistory.length === 0) return null
+  const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
+  if (lastEntry === undefined || !hasTotalCards(lastEntry)) return null
+  return {
+    points: lastEntry.points,
+    correctAnswers: lastEntry.correctAnswers,
+    totalCards: lastEntry.totalCards
+  }
+}
+
+function applyBonusesAndPersist(sessionResult: GameResult) {
+  // Calculate daily bonuses using shared helper
+  const dailyInfo = props.storageFunctions.incrementDailyGames()
+  bonusReasons.value = calculateDailyBonuses(dailyInfo, props.bonusConfig)
+
+  // Add bonus points to in-memory state
+  const totalBonusPoints = bonusReasons.value.reduce((sum, r) => sum + r.points, 0)
+
+  // Update history in memory (last entry)
+  const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
+  if (lastEntry !== undefined) {
+    lastEntry.points += totalBonusPoints
+  }
+
+  // Update stats in memory - props are refs from store, so mutation is intentional
+  // eslint-disable-next-line vue/no-mutating-props
+  props.gameStoreStats.points += totalBonusPoints
+
+  // Save final state to localStorage immediately (don't wait for user navigation)
+  // This ensures data is persisted even if user closes tab or navigates away
+  props.storageFunctions.saveHistory(props.gameStoreHistory)
+  props.storageFunctions.saveGameStats(props.gameStoreStats)
+
+  // Mark as applied so a remount/reload cannot double-apply
+  props.storageFunctions.setGameResult?.({ ...sessionResult, bonusesApplied: true })
+}
+
 onMounted(async () => {
   result.value = props.storageFunctions.getGameResult()
+  const fromSession = result.value !== null
 
-  if (!result.value && props.gameStoreHistory.length > 0) {
-    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
-    if (lastEntry !== undefined && hasTotalCards(lastEntry)) {
-      result.value = {
-        points: lastEntry.points,
-        correctAnswers: lastEntry.correctAnswers,
-        totalCards: lastEntry.totalCards
-      }
-    }
+  if (!result.value) {
+    result.value = reconstructResultFromHistory()
   }
 
   // No result found, redirect to home
@@ -99,30 +132,14 @@ onMounted(async () => {
     return
   }
 
-  // Calculate daily bonuses using shared helper
-  const dailyInfo = props.storageFunctions.incrementDailyGames()
-  const calculatedBonuses = calculateDailyBonuses(dailyInfo, props.bonusConfig)
-  bonusReasons.value = calculatedBonuses
-
-  // Add bonus points to in-memory state
-  const totalBonusPoints = bonusReasons.value.reduce((sum, r) => sum + r.points, 0)
-
-  // Update history in memory (last entry)
-  if (props.gameStoreHistory.length > 0) {
-    const lastEntry = props.gameStoreHistory[props.gameStoreHistory.length - 1]
-    if (lastEntry !== undefined) {
-      lastEntry.points += totalBonusPoints
-    }
+  // Apply bonuses only once per game:
+  // - only for a live session result that is not yet flagged
+  //   (a flagged one was already processed, e.g. page reload while on this page)
+  // - a history-reconstructed result belongs to a finished game whose bonuses
+  //   were already saved during its original GameOverPage visit
+  if (fromSession && !result.value.bonusesApplied) {
+    applyBonusesAndPersist(result.value)
   }
-
-  // Update stats in memory - props are refs from store, so mutation is intentional
-  // eslint-disable-next-line vue/no-mutating-props
-  props.gameStoreStats.points += totalBonusPoints
-
-  // Save final state to localStorage immediately (don't wait for user navigation)
-  // This ensures data is persisted even if user closes tab or navigates away
-  props.storageFunctions.saveHistory(props.gameStoreHistory)
-  props.storageFunctions.saveGameStats(props.gameStoreStats)
 
   globalThis.addEventListener('keydown', handleKeyDown)
   // Update usage stats in DB

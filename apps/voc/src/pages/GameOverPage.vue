@@ -11,7 +11,8 @@ import {
   getGameResult,
   incrementDailyGames,
   saveGameStats,
-  saveHistory
+  saveHistory,
+  setGameResult
 } from '../services/storage'
 
 const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
@@ -21,6 +22,7 @@ const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
   <GameOverPage
     :storage-functions="{
       getGameResult,
+      setGameResult,
       clearGameResult,
       clearGameState,
       incrementDailyGames,

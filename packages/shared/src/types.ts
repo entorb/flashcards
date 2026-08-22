@@ -51,6 +51,8 @@ export interface GameResult {
   points: number
   correctAnswers: number
   totalCards: number
+  /** True once daily bonuses were applied for this result (GameOverPage idempotency guard) */
+  bonusesApplied?: boolean
 }
 
 /**
