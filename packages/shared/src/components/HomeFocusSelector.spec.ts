@@ -16,12 +16,12 @@ describe('HomeFocusSelector', () => {
     vi.clearAllMocks()
   })
 
-  it('renders 4 focus option buttons', () => {
+  it('renders 2 focus option buttons (weak, slow)', () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'medium' },
+      props: { modelValue: 'weak' },
       ...mountOptions
     })
-    expect(wrapper.findAll('button')).toHaveLength(4)
+    expect(wrapper.findAll('button')).toHaveLength(2)
   })
 
   it('clicking a button updates the model value', async () => {
@@ -45,7 +45,7 @@ describe('HomeFocusSelector', () => {
       ...mountOptions
     })
     const buttons = wrapper.findAll('button')
-    const slowButton = buttons[3]
+    const slowButton = buttons[1]
     expect(slowButton).toBeDefined()
     if (!slowButton) {
       throw new Error('Slow button not found')
