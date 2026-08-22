@@ -224,8 +224,7 @@ export const {
   loadRange
 } = factory
 
-// Only used in .vue page files (knip can’t trace @/ alias from .vue scripts)
-/** @lintignore */
+// Only used in .vue page files
 export const {
   getGameResult,
   clearGameResult,
