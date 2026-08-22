@@ -3,36 +3,56 @@
  * Handles localStorage operations for cards, history, settings, and stats
  */
 
-import type { CardLevel, GameResult, GameStats, SessionMode } from '@flashcards/shared'
+import type { GameResult, GameStats, SessionMode } from '@flashcards/shared'
 import {
-  ALL_LEVELS,
   createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
   loadJSON,
-  MAX_TIME,
   saveJSON
 } from '@flashcards/shared'
+import {
+  isRecord,
+  isString,
+  isValidBaseCard,
+  isValidCardLevel,
+  isValidHistoryEntry
+} from '@flashcards/shared/utils'
 
-import { INITIAL_CARDS, STORAGE_KEYS } from '../constants'
+import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
 
-// Legacy types for migration
-interface LegacyCard extends Omit<Card, 'time'> {
-  time_blind?: number
-  time_typing?: number
-  time?: number
-  [key: string]: unknown
+/** Card shape check: voc/de strings + valid BaseCard level/time */
+function isValidCard(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  const { voc, de } = value
+  return isString(voc) && voc.length > 0 && isString(de) && de.length > 0 && isValidBaseCard(value)
 }
 
-interface LegacyCardDeck {
-  name: string
-  cards: LegacyCard[]
-  [key: string]: unknown
+/** Deck shape check: name string + cards array */
+function isValidDeck(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  const { name, cards } = value
+  return isString(name) && name.length > 0 && Array.isArray(cards) && cards.every(isValidCard)
 }
 
-type LegacyStorageData = LegacyCard[] | LegacyCardDeck[]
+/** GameSettings shape check: valid mode/language/focus + optional deck */
+function isValidSettings(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  const { mode, focus, language, deck, levels } = value
+  return (
+    typeof mode === 'string' &&
+    ['multiple-choice', 'blind', 'typing'].includes(mode) &&
+    typeof focus === 'string' &&
+    ['weak', 'medium', 'strong', 'slow'].includes(focus) &&
+    typeof language === 'string' &&
+    ['voc-de', 'de-voc'].includes(language) &&
+    (deck === undefined || isString(deck)) &&
+    Array.isArray(levels) &&
+    levels.every(isValidCardLevel)
+  )
+}
 
 // Game persistence factory for session storage
 interface GameState {
@@ -47,84 +67,39 @@ interface GameState {
 
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
   STORAGE_KEYS.GAME_SETTINGS,
-  STORAGE_KEYS.GAME_STATE
+  STORAGE_KEYS.GAME_STATE,
+  isValidSettings
 )
-
-// Decks
-
-function migrateToDecks(data: LegacyStorageData): CardDeck[] {
-  if (!Array.isArray(data) || data.length === 0) {
-    return [{ name: 'en', cards: INITIAL_CARDS }]
-  }
-
-  // Check if it's already deck structure
-  const firstItem = data[0] as Record<string, unknown> | undefined
-  if (firstItem && 'name' in firstItem && 'cards' in firstItem) {
-    // Validate all decks have required structure
-    const allValid = (data as LegacyCardDeck[]).every(
-      d => typeof d.name === 'string' && d.name.length > 0 && Array.isArray(d.cards)
-    )
-    if (!allValid) {
-      return [{ name: 'en', cards: INITIAL_CARDS }]
-    }
-    // Migrate cards within decks
-    const decks = (data as LegacyCardDeck[]).map(deck => ({
-      ...deck,
-      cards: deck.cards.map(card => migrateCardTimeFields(card))
-    }))
-    return decks
-  }
-
-  // Otherwise treat as new card structure
-  const cards = (data as LegacyCard[]).map(card => migrateCardTimeFields(card))
-  return [{ name: 'en', cards }]
-}
-
-// TODO: Remove this migration function 01.07.2026
-function migrateCardTimeFields(card: LegacyCard): Card {
-  // If card already has time field, remove old fields
-  if (card.time !== undefined) {
-    const cleanCard = { ...card }
-    // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
-    delete cleanCard.time_blind
-    // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
-    delete cleanCard.time_typing
-    return cleanCard as unknown as Card
-  }
-
-  // Use time_typing if it exists (typing mode was more advanced), otherwise time_blind, otherwise default
-  const timeValue = card.time_typing ?? card.time_blind ?? MAX_TIME
-
-  const cleanCard = { ...card }
-  // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
-  delete cleanCard.time_blind
-  // biome-ignore lint/performance/noDelete: exactOptionalPropertyTypes prevents undefined assignment
-  delete cleanCard.time_typing
-  return { ...cleanCard, time: timeValue }
-}
 
 /**
  * Load all card decks from storage
+ * Invalid decks or cards are dropped silently
  */
 export function loadDecks(): CardDeck[] {
   const stored = localStorage.getItem(STORAGE_KEYS.CARDS)
   if (stored === null) {
-    const defaultDecks = [{ name: 'en', cards: INITIAL_CARDS }]
-    saveDecks(defaultDecks)
-    return defaultDecks
+    saveDecks(DEFAULT_DECKS)
+    return DEFAULT_DECKS
   }
   try {
-    const parsed = JSON.parse(stored) as LegacyStorageData
-    const decks = migrateToDecks(parsed)
-    // Save migrated data back to storage
-    if (stored !== JSON.stringify(decks)) {
+    const parsed: unknown = JSON.parse(stored)
+    if (!Array.isArray(parsed)) {
+      saveDecks(DEFAULT_DECKS)
+      return DEFAULT_DECKS
+    }
+    const decks = parsed.filter(isValidDeck) as CardDeck[]
+    if (decks.length === 0) {
+      saveDecks(DEFAULT_DECKS)
+      return DEFAULT_DECKS
+    }
+    // Save back only when invalid decks were dropped
+    if (decks.length !== parsed.length) {
       saveDecks(decks)
     }
     return decks
   } catch {
-    const defaultDecks = [{ name: 'en', cards: INITIAL_CARDS }]
-    saveDecks(defaultDecks)
-    return defaultDecks
+    saveDecks(DEFAULT_DECKS)
+    return DEFAULT_DECKS
   }
 }
 
@@ -177,7 +152,7 @@ export function saveCards(cards: Card[]): void {
 
 // History - Using shared operations
 
-const historyOps = createHistoryOperations<GameHistory>(STORAGE_KEYS.HISTORY)
+const historyOps = createHistoryOperations<GameHistory>(STORAGE_KEYS.HISTORY, isValidHistoryEntry)
 
 /**
  * Load game history
@@ -195,18 +170,12 @@ export function saveHistory(history: GameHistory[]): void {
 
 // Settings
 
-/** Persisted shape: older entries may lack the levels key added later */
-type StoredGameSettings = Omit<GameSettings, 'levels'> & { levels?: CardLevel[] }
-
 /**
- * Load game settings (older persisted settings without levels default to all levels)
+ * Load game settings
+ * @returns Validated settings or null if invalid
  */
 export function loadSettings(): GameSettings | null {
-  const parsed = loadJSON<StoredGameSettings | null>(STORAGE_KEYS.SETTINGS, null)
-  if (!parsed) {
-    return null
-  }
-  return { ...parsed, levels: parsed.levels ?? [...ALL_LEVELS] }
+  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null, isValidSettings)
 }
 
 /**

@@ -36,6 +36,8 @@ export const TEXT_DE = {
     },
     cards: {
       cardsPerLevel: 'Karten pro Level',
+      cardsPerTime: 'Antwortzeiten',
+      timeFilterPrefix: 'Zeit',
       legend: 'Legende',
       edit: 'Bearbeiten',
       rename: 'Umbenennen',

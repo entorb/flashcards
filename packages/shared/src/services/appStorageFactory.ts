@@ -4,14 +4,23 @@
  * Each app provides app-specific config (storage keys, default range, card creation).
  */
 
-import { ALL_LEVELS, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
+import { MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
 import type { BaseCard, CardLevel, GameResult, GameStats, SessionMode } from '../types'
+import {
+  isNumber,
+  isRecord,
+  isString,
+  isValidBaseCard,
+  isValidBaseSettings,
+  isValidHistoryEntry
+} from '../utils/validators'
 
 import {
   createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
+  loadArray,
   loadJSON,
   saveJSON
 } from './storage'
@@ -30,8 +39,9 @@ export interface AppStorageConfig<TCard extends BaseCard> {
     RANGE: string
   }
   defaultRange: number[]
-  appLabel: string
   createCardFromQuestion: (question: string) => TCard
+  /** Extra settings field checks beyond focus/levels (e.g. app-specific mode/select) */
+  isValidSettings?: (value: unknown) => boolean
 }
 
 export interface AppGameState<TCard> {
@@ -52,16 +62,30 @@ export function createAppStorageFactory<
   THistory,
   TSettings extends { levels?: CardLevel[] }
 >(config: AppStorageConfig<TCard>) {
-  const { storageKeys, defaultRange, appLabel, createCardFromQuestion } = config
+  const { storageKeys, defaultRange, createCardFromQuestion } = config
+
+  /** Card shape check: app key fields + valid BaseCard level/time */
+  const isValidStoredCard = (value: unknown): boolean => {
+    if (!(isRecord(value) && isValidBaseCard(value))) return false
+    const { question } = value
+    return isString(question) && question.length > 0
+  }
+
+  /** Range shape check: non-empty array of integers */
+  const isValidRange = (value: unknown): boolean =>
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(item => isNumber(item) && Number.isInteger(item))
 
   // Game persistence factory for session storage
   const gamePersistence = createGamePersistence<TSettings, AppGameState<TCard>>(
     storageKeys.GAME_CONFIG,
-    storageKeys.GAME_STATE
+    storageKeys.GAME_STATE,
+    config.isValidSettings ?? isValidBaseSettings
   )
 
   // History operations
-  const historyOps = createHistoryOperations<THistory>(storageKeys.HISTORY)
+  const historyOps = createHistoryOperations<THistory>(storageKeys.HISTORY, isValidHistoryEntry)
 
   // Stats operations
   const statsOps = createStatsOperations<GameStats>(storageKeys.STATS, {
@@ -80,21 +104,7 @@ export function createAppStorageFactory<
   // ── Card Operations ─────────────────────────────────────────────────
 
   function loadCards(): TCard[] {
-    const stored = globalThis.localStorage.getItem(storageKeys.CARDS)
-    if (stored === null) {
-      return []
-    }
-    try {
-      const parsed = JSON.parse(stored) as unknown
-      if (!Array.isArray(parsed)) {
-        console.error(`Invalid ${appLabel} cards data in localStorage.`)
-        return []
-      }
-      return parsed as TCard[]
-    } catch {
-      console.error(`Error parsing ${appLabel} cards from localStorage.`)
-      return []
-    }
+    return loadArray<TCard>(storageKeys.CARDS, [], isValidStoredCard)
   }
 
   function saveCards(cards: TCard[]): void {
@@ -213,25 +223,7 @@ export function createAppStorageFactory<
   // ── Range Configuration ─────────────────────────────────────────────
 
   function loadRange(): number[] {
-    const stored = globalThis.localStorage.getItem(storageKeys.RANGE)
-    if (stored === null) {
-      return [...defaultRange]
-    }
-    try {
-      const parsed = JSON.parse(stored) as unknown
-      if (
-        !Array.isArray(parsed) ||
-        parsed.length === 0 ||
-        !parsed.every(n => typeof n === 'number' && Number.isInteger(n))
-      ) {
-        console.error('Invalid range data in localStorage. Using defaults.')
-        return [...defaultRange]
-      }
-      return parsed as number[]
-    } catch {
-      console.error('Error parsing range from localStorage. Using defaults.')
-      return [...defaultRange]
-    }
+    return loadJSON<number[]>(storageKeys.RANGE, [...defaultRange], isValidRange)
   }
 
   function saveRange(range: number[]): void {
@@ -241,14 +233,11 @@ export function createAppStorageFactory<
   // ── Settings (localStorage) ─────────────────────────────────────────
 
   function loadSettings(): TSettings | null {
-    const parsed = loadJSON<TSettings | null>(storageKeys.SETTINGS, null)
-    if (!parsed) {
-      return null
-    }
-    // Older persisted settings may lack the levels key — default to all levels
-    const legacy = parsed as Omit<TSettings, 'levels'> & { levels?: CardLevel[] }
-    legacy.levels ??= [...ALL_LEVELS]
-    return parsed
+    return loadJSON<TSettings | null>(
+      storageKeys.SETTINGS,
+      null,
+      config.isValidSettings ?? isValidBaseSettings
+    )
   }
 
   function saveSettings(settings: TSettings): void {

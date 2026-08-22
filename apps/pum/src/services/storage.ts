@@ -3,10 +3,29 @@
  * Uses shared factory for common operations, keeps app-specific logic here.
  */
 
-import { createAppStorageFactory, MAX_TIME, MIN_LEVEL, saveJSON } from '@flashcards/shared'
+import {
+  createAppStorageFactory,
+  isRecord,
+  isValidBaseSettings,
+  MAX_TIME,
+  MIN_LEVEL,
+  saveJSON
+} from '@flashcards/shared'
 
 import { STORAGE_KEYS } from '@/constants'
 import type { Card, Difficulty, GameHistory, GameSettings, Operation } from '@/types'
+
+/** GameSettings shape check: base fields + operations/difficulties literals */
+function isValidSettings(value: unknown): boolean {
+  if (!(isValidBaseSettings(value) && isRecord(value))) return false
+  const { operations, difficulties } = value
+  return (
+    Array.isArray(operations) &&
+    operations.every((op): op is Operation => op === 'plus' || op === 'minus') &&
+    Array.isArray(difficulties) &&
+    difficulties.every((d): d is Difficulty => d === 'simple' || d === 'medium' || d === 'advanced')
+  )
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS (app-specific)
@@ -67,7 +86,7 @@ export function createDefaultCard(x: number, operator: '+' | '-', y: number): Ca
 const factory = createAppStorageFactory<Card, GameHistory, GameSettings>({
   storageKeys: STORAGE_KEYS,
   defaultRange: [],
-  appLabel: 'pum',
+  isValidSettings,
   createCardFromQuestion: (question: string) => {
     const { x, operator, y } = parseCardQuestion(question)
     return createDefaultCard(x, operator, y)

@@ -227,14 +227,27 @@ describe('Deck Storage', () => {
     })
   })
 
-  describe('Migration edge cases', () => {
-    it('should handle cards with new structure (voc field)', () => {
-      const newCards = [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
-      localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(newCards))
+  describe('Validation edge cases', () => {
+    it('should fall back to default decks when cards are not in deck structure', () => {
+      const flatCards = [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
+      localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(flatCards))
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0]!.cards[0]!.voc).toBe('hello')
+      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
+    })
+
+    it('should drop decks containing invalid cards', () => {
+      const decks = [
+        { name: 'broken', cards: [{ voc: 'hello', de: 42, level: 1, time: 5 }] },
+        { name: 'good', cards: [{ voc: 'hi', de: 'hallo', level: 1, time: 5 }] }
+      ]
+      localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(decks))
+
+      const loaded = loadDecks()
+      expect(loaded).toHaveLength(1)
+      expect(loaded[0]!.name).toBe('good')
     })
   })
 })

@@ -3,10 +3,25 @@
  * Uses shared factory for common operations, keeps app-specific logic here.
  */
 
-import { createAppStorageFactory, MAX_TIME, MIN_LEVEL, saveJSON } from '@flashcards/shared'
+import {
+  createAppStorageFactory,
+  isNumber,
+  isRecord,
+  isValidBaseSettings,
+  MAX_TIME,
+  MIN_LEVEL,
+  saveJSON
+} from '@flashcards/shared'
 
 import { DEFAULT_RANGE, STORAGE_KEYS } from '@/constants'
 import type { Card, GameHistory, GameSettings } from '@/types'
+
+/** GameSettings shape check: base fields + numeric select array */
+function isValidSettings(value: unknown): boolean {
+  if (!(isValidBaseSettings(value) && isRecord(value))) return false
+  const { select } = value
+  return Array.isArray(select) && select.every(n => isNumber(n))
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS (app-specific)
@@ -47,7 +62,7 @@ export function createDefaultCard(dividend: number, divisor: number, answer: num
 const factory = createAppStorageFactory<Card, GameHistory, GameSettings>({
   storageKeys: STORAGE_KEYS,
   defaultRange: DEFAULT_RANGE,
-  appLabel: 'div',
+  isValidSettings,
   createCardFromQuestion: (question: string) => {
     const { dividend, divisor } = parseCardQuestion(question)
     const answer = divisor === 0 ? 0 : dividend / divisor

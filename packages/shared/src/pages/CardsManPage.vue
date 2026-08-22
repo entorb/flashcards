@@ -7,6 +7,7 @@ import {
   CardManActions,
   CardsListOfCards,
   CardsManLevelDistribution,
+  CardsTimeHistogram,
   HomeDeckSelector
 } from '../components/index'
 import { useCardFiltering } from '../composables/useCardFiltering'
@@ -14,6 +15,7 @@ import { useResetCards } from '../composables/useResetCards'
 import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { BaseCard } from '../types'
+import { getTimeFilterListTitle } from '../utils/helper'
 
 interface Props {
   appPrefix: 'voc' | 'lwk'
@@ -42,17 +44,28 @@ const router = useRouter()
 const $q = useQuasar()
 const { showResetDialog } = useResetCards()
 
-const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(
-  () => props.store.allCards.value
-)
+const {
+  selectedLevel,
+  selectedTimeBucket,
+  handleLevelClick,
+  handleTimeBucketClick,
+  filteredCards
+} = useCardFiltering(() => props.store.allCards.value)
 
 const targetLevel = ref(1)
 
 const cardsToShow = computed(() => {
-  if (selectedLevel.value === null) {
+  if (selectedLevel.value === null && selectedTimeBucket.value === null) {
     return props.store.allCards.value
   }
   return filteredCards.value
+})
+
+const listTitle = computed(() => {
+  if (selectedTimeBucket.value !== null) {
+    return getTimeFilterListTitle(selectedTimeBucket.value)
+  }
+  return undefined
 })
 
 const duplicateKeys = computed(() => {
@@ -237,6 +250,13 @@ function handleResetCardsToDefaultSet() {
         @level-click="handleLevelClick"
       />
 
+      <!-- Time Histogram -->
+      <CardsTimeHistogram
+        :cards="props.store.allCards.value"
+        :selected-bucket="selectedTimeBucket"
+        @bucket-click="handleTimeBucketClick"
+      />
+
       <!-- Current Deck Cards -->
       <CardsListOfCards
         :all-cards="props.store.allCards.value"
@@ -245,6 +265,7 @@ function handleResetCardsToDefaultSet() {
         :get-label="getCardLabel"
         :get-key="getCardKey"
         :duplicate-keys="duplicateKeys"
+        :title="listTitle"
       />
 
       <CardManActions

@@ -3,9 +3,16 @@
  * Common patterns used by both 1x1 and voc apps
  */
 
-import { ALL_LEVELS, MAX_LEVEL } from '../constants'
+import { MAX_LEVEL } from '../constants'
 import type { CardLevel, DailyStats } from '../types'
 import { weightedRandomSelection } from '../utils'
+import {
+  isRecord,
+  isValidBaseSettings,
+  isValidDailyStats,
+  isValidGameResult,
+  isValidGameStats
+} from '../utils/validators'
 
 /**
  * Get today's date in ISO format (YYYY-MM-DD)
@@ -25,16 +32,21 @@ export function isDifferentDay(storedDate: string): boolean {
 /**
  * Generic localStorage loader with JSON parsing and fallback
  * @param key - Storage key
- * @param fallback - Value to return if storage is empty or parsing fails
+ * @param fallback - Value to return if storage is empty, parsing fails, or validation fails
+ * @param isValid - Optional runtime type check on the parsed value
  * @returns Parsed value or fallback
  */
-export function loadJSON<T>(key: string, fallback: T): T {
+export function loadJSON<T>(key: string, fallback: T, isValid?: (value: unknown) => boolean): T {
   const stored = globalThis.localStorage.getItem(key)
   if (stored === null || stored === '') {
     return fallback
   }
   try {
-    return JSON.parse(stored) as T
+    const parsed: unknown = JSON.parse(stored)
+    if (isValid !== undefined && !isValid(parsed)) {
+      return fallback
+    }
+    return parsed as T
   } catch {
     return fallback
   }
@@ -61,7 +73,7 @@ export function incrementDailyGames(key: string): {
   const today = getTodayISODate()
   const fallback: DailyStats = { date: today, gamesPlayed: 0 }
 
-  const dailyStats = loadJSON<DailyStats>(key, fallback)
+  const dailyStats = loadJSON<DailyStats>(key, fallback, isValidDailyStats)
 
   // Reset if it's a new day
   if (isDifferentDay(dailyStats.date)) {
@@ -81,13 +93,31 @@ export function incrementDailyGames(key: string): {
 }
 
 /**
- * Load all items from localStorage for a given key pattern
+ * Load all items from localStorage for a given key
  * @param key - Storage key
- * @param fallback - Default value if not found
- * @returns Parsed array or fallback
+ * @param fallback - Default value if not found or not an array
+ * @param isValidItem - Optional per-item type check; items failing it are dropped
+ * @returns Parsed array (invalid items removed) or fallback
  */
-export function loadArray<T>(key: string, fallback: T[] = []): T[] {
-  return loadJSON<T[]>(key, fallback)
+export function loadArray<T>(
+  key: string,
+  fallback: T[] = [],
+  isValidItem?: (item: unknown) => boolean
+): T[] {
+  const stored = globalThis.localStorage.getItem(key)
+  if (stored === null || stored === '') {
+    return fallback
+  }
+  try {
+    const parsed: unknown = JSON.parse(stored)
+    if (!Array.isArray(parsed)) {
+      return fallback
+    }
+    const items = isValidItem === undefined ? parsed : parsed.filter(isValidItem)
+    return items as T[]
+  } catch {
+    return fallback
+  }
 }
 
 /**
@@ -102,16 +132,20 @@ export function saveArray<T>(key: string, data: T[]): void {
 /**
  * Create generic history operations for a storage key
  * @param storageKey - The key to use in localStorage
+ * @param isValidEntry - Optional entry type check; invalid entries are dropped on load
  * @returns Object with load, save, and add methods
  */
-export function createHistoryOperations<T>(storageKey: string) {
+export function createHistoryOperations<T>(
+  storageKey: string,
+  isValidEntry?: (entry: unknown) => boolean
+) {
   return {
-    load: () => loadArray<T>(storageKey, []),
+    load: () => loadArray<T>(storageKey, [], isValidEntry),
     save: (history: T[]) => {
       saveArray(storageKey, history)
     },
     add: (entry: T) => {
-      const all = loadArray<T>(storageKey, [])
+      const all = loadArray<T>(storageKey, [], isValidEntry)
       all.push(entry)
       saveArray(storageKey, all)
     }
@@ -120,6 +154,7 @@ export function createHistoryOperations<T>(storageKey: string) {
 
 /**
  * Create generic statistics operations for a storage key
+ * Falls back to defaultStats if the stored value does not match the stats shape
  * @param storageKey - The key to use in localStorage
  * @param defaultStats - Default statistics object
  * @returns Object with load, save, and update methods
@@ -128,12 +163,12 @@ export function createStatsOperations<
   T extends { gamesPlayed: number; points: number; correctAnswers: number }
 >(storageKey: string, defaultStats: T) {
   return {
-    load: () => loadJSON<T>(storageKey, defaultStats),
+    load: () => loadJSON<T>(storageKey, defaultStats, isValidGameStats),
     save: (stats: T) => {
       saveJSON(storageKey, stats)
     },
     update: (points: number, correctAnswers: number) => {
-      const stats = loadJSON<T>(storageKey, defaultStats)
+      const stats = loadJSON<T>(storageKey, defaultStats, isValidGameStats)
       stats.gamesPlayed++
       stats.points += points
       stats.correctAnswers += correctAnswers
@@ -146,16 +181,25 @@ export function createStatsOperations<
 /**
  * Load from sessionStorage with JSON parsing and fallback
  * @param key - Storage key
- * @param fallback - Value to return if storage is empty or parsing fails
+ * @param fallback - Value to return if storage is empty, parsing fails, or validation fails
+ * @param isValid - Optional runtime type check on the parsed value
  * @returns Parsed value or fallback
  */
-export function loadSessionJSON<T>(key: string, fallback: T): T {
+export function loadSessionJSON<T>(
+  key: string,
+  fallback: T,
+  isValid?: (value: unknown) => boolean
+): T {
   const stored = globalThis.sessionStorage.getItem(key)
   if (stored === null || stored === '') {
     return fallback
   }
   try {
-    return JSON.parse(stored) as T
+    const parsed: unknown = JSON.parse(stored)
+    if (isValid !== undefined && !isValid(parsed)) {
+      return fallback
+    }
+    return parsed as T
   } catch {
     return fallback
   }
@@ -184,30 +228,21 @@ export function removeSessionJSON(key: string): void {
  *
  * @param settingsKey - Storage key for game settings
  * @param stateKey - Storage key for game state
+ * @param isValidSettings - Settings type check; falls back to base settings check (focus + levels)
  * @returns Object with methods to manage game settings and state
  */
 export function createGamePersistence<TSettings extends { levels?: CardLevel[] }, TState>(
   settingsKey: string,
-  stateKey: string
+  stateKey: string,
+  isValidSettings: (value: unknown) => boolean = isValidBaseSettings
 ) {
   return {
     // Game Settings operations
     saveSettings: (settings: TSettings) => {
       saveSessionJSON(settingsKey, settings)
     },
-    loadSettings: (): TSettings | null => {
-      const stored = globalThis.sessionStorage.getItem(settingsKey)
-      if (stored === null || stored === '') return null
-      try {
-        const parsed = JSON.parse(stored) as TSettings
-        // Older persisted configs may lack the levels key — default to all levels
-        const legacy = parsed as Omit<TSettings, 'levels'> & { levels?: CardLevel[] }
-        legacy.levels ??= [...ALL_LEVELS]
-        return parsed
-      } catch {
-        return null
-      }
-    },
+    loadSettings: (): TSettings | null =>
+      loadSessionJSON<TSettings | null>(settingsKey, null, isValidSettings),
     clearSettings: () => {
       removeSessionJSON(settingsKey)
     },
@@ -220,7 +255,8 @@ export function createGamePersistence<TSettings extends { levels?: CardLevel[] }
       const stored = globalThis.sessionStorage.getItem(stateKey)
       if (stored === null || stored === '') return null
       try {
-        return JSON.parse(stored) as TState
+        const parsed: unknown = JSON.parse(stored)
+        return isRecord(parsed) ? (parsed as TState) : null
       } catch {
         return null
       }
@@ -253,7 +289,8 @@ export function createGameResultOperations(resultKey: string) {
     load: () => {
       return loadSessionJSON<{ points: number; correctAnswers: number; totalCards: number } | null>(
         resultKey,
-        null
+        null,
+        isValidGameResult
       )
     },
     clear: () => {
@@ -360,32 +397,4 @@ export function selectCardsByFocus<T extends { level: number }>(
   // Use weighted random selection
   const count = Math.min(maxCards, eligible.length)
   return weightedRandomSelection(weightedCards, count)
-}
-
-/**
- * Migrate storage keys from old prefix to new prefix
- * @param oldPrefix - Old key prefix (e.g., '1x1-')
- * @param newPrefix - New key prefix (e.g., 'fc-1x1-')
- */
-// TODO: Remove this migration script after 01.07.2026
-export function migrateStorageKeys(oldPrefix: string, newPrefix: string): void {
-  const keysToMigrate: string[] = []
-
-  // Collect all keys that start with oldPrefix
-  for (let i = 0; i < globalThis.localStorage.length; i++) {
-    const key = globalThis.localStorage.key(i)
-    if (key?.startsWith(oldPrefix) === true) {
-      keysToMigrate.push(key)
-    }
-  }
-
-  // Migrate each key
-  for (const oldKey of keysToMigrate) {
-    const value = globalThis.localStorage.getItem(oldKey)
-    if (value !== null) {
-      const newKey = oldKey.replace(oldPrefix, newPrefix)
-      globalThis.localStorage.setItem(newKey, value)
-      globalThis.localStorage.removeItem(oldKey)
-    }
-  }
 }

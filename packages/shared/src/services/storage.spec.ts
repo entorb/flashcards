@@ -1,7 +1,7 @@
 import * as fc from 'fast-check'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ALL_LEVELS } from '../constants'
 import type { CardLevel } from '../types'
+import { isRecord, isValidHistoryEntry } from '../utils/validators'
 
 import {
   createAppGameStorage,
@@ -9,10 +9,11 @@ import {
   createGameResultOperations,
   createHistoryOperations,
   createStatsOperations,
+  getTodayISODate,
   incrementDailyGames,
+  loadArray,
   loadJSON,
   loadSessionJSON,
-  migrateStorageKeys,
   saveJSON,
   saveSessionJSON,
   selectCardsByFocus
@@ -404,21 +405,33 @@ describe('saveJSON / loadJSON — property tests', () => {
 
 describe('createGamePersistence', () => {
   it('saveSettings / loadSettings round-trip', () => {
-    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
-      'gp-settings',
-      'gp-state'
-    )
-    ops.saveSettings({ mode: 'copy', levels: [1] })
-    expect(ops.loadSettings()).toEqual({ mode: 'copy', levels: [1] })
+    const ops = createGamePersistence<
+      { mode: string; focus: string; levels?: CardLevel[] },
+      { index: number }
+    >('gp-settings', 'gp-state')
+    ops.saveSettings({ mode: 'copy', focus: 'weak', levels: [1] })
+    expect(ops.loadSettings()).toEqual({ mode: 'copy', focus: 'weak', levels: [1] })
   })
 
-  it('loadSettings fills missing levels with all levels (legacy config)', () => {
+  it('loadSettings returns null for settings missing levels (invalid shape)', () => {
     sessionStorage.setItem('gp-settings-legacy', JSON.stringify({ mode: 'copy' }))
     const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
       'gp-settings-legacy',
       'gp-state-legacy'
     )
-    expect(ops.loadSettings()).toEqual({ mode: 'copy', levels: [...ALL_LEVELS] })
+    expect(ops.loadSettings()).toBeNull()
+  })
+
+  it('loadSettings returns null for invalid focus value', () => {
+    sessionStorage.setItem(
+      'gp-settings-bad-focus',
+      JSON.stringify({ mode: 'copy', focus: 'bogus', levels: [1] })
+    )
+    const ops = createGamePersistence<{ mode: string; levels?: CardLevel[] }, { index: number }>(
+      'gp-settings-bad-focus',
+      'gp-state'
+    )
+    expect(ops.loadSettings()).toBeNull()
   })
 
   it('loadSettings returns null when key missing', () => {
@@ -555,27 +568,58 @@ describe('createAppGameStorage', () => {
 })
 
 // ============================================================================
-// migrateStorageKeys
+// Validation fallbacks (invalid types → defaults)
 // ============================================================================
 
-describe('migrateStorageKeys', () => {
-  it('migrates keys from old prefix to new prefix', () => {
-    localStorage.setItem('old-cards', JSON.stringify([1, 2, 3]))
-    localStorage.setItem('old-stats', JSON.stringify({ gamesPlayed: 5 }))
-    localStorage.setItem('other-key', 'untouched')
-
-    migrateStorageKeys('old-', 'new-')
-
-    expect(localStorage.getItem('new-cards')).toBe(JSON.stringify([1, 2, 3]))
-    expect(localStorage.getItem('new-stats')).toBe(JSON.stringify({ gamesPlayed: 5 }))
-    expect(localStorage.getItem('old-cards')).toBeNull()
-    expect(localStorage.getItem('old-stats')).toBeNull()
-    expect(localStorage.getItem('other-key')).toBe('untouched')
+describe('storage validation fallbacks', () => {
+  it('loadJSON returns fallback when value fails validation', () => {
+    localStorage.setItem('val-key', JSON.stringify({ gamesPlayed: 'nope', points: 0 }))
+    const isValid = (v: unknown): boolean => {
+      if (!isRecord(v)) return false
+      const { gamesPlayed, points } = v
+      return typeof gamesPlayed === 'number' && typeof points === 'number'
+    }
+    expect(loadJSON('val-key', { ok: true }, isValid)).toEqual({ ok: true })
   })
 
-  it('does nothing when no keys match the old prefix', () => {
-    localStorage.setItem('unrelated', 'value')
-    migrateStorageKeys('nonexistent-', 'new-')
-    expect(localStorage.getItem('unrelated')).toBe('value')
+  it('loadJSON returns parsed value when validation passes', () => {
+    localStorage.setItem('val-key2', JSON.stringify({ a: 1 }))
+    expect(loadJSON('val-key2', null, isRecord)).toEqual({ a: 1 })
+  })
+
+  it('loadArray drops items failing the item check', () => {
+    localStorage.setItem(
+      'val-arr',
+      JSON.stringify([
+        { date: '2026-01-01', points: 1, correctAnswers: 1 },
+        { date: 42, points: 'x' },
+        { date: '2026-01-02', points: 2, correctAnswers: 0 }
+      ])
+    )
+    const result = loadArray<{ date: string; points: number; correctAnswers: number }>(
+      'val-arr',
+      [],
+      isValidHistoryEntry
+    )
+    expect(result).toHaveLength(2)
+    expect(result[0]?.date).toBe('2026-01-01')
+  })
+
+  it('createStatsOperations falls back to defaults for wrong-typed stats', () => {
+    localStorage.setItem('val-stats', JSON.stringify({ gamesPlayed: 'five' }))
+    const ops = createStatsOperations('val-stats', {
+      gamesPlayed: 0,
+      points: 0,
+      correctAnswers: 0
+    })
+    expect(ops.load()).toEqual({ gamesPlayed: 0, points: 0, correctAnswers: 0 })
+  })
+
+  it('incrementDailyGames resets when stored daily stats have wrong types', () => {
+    const today = getTodayISODate()
+    localStorage.setItem('val-daily', JSON.stringify({ date: today, gamesPlayed: 'many' }))
+    const info = incrementDailyGames('val-daily')
+    expect(info.isFirstGame).toBe(true)
+    expect(info.gamesPlayedToday).toBe(1)
   })
 })

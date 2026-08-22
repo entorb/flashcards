@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { BaseCard } from '@flashcards/shared'
 import { ALL_LEVELS, TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
-import { CardsListOfCards, CardsManLevelDistribution } from '@flashcards/shared/components'
+import {
+  CardsListOfCards,
+  CardsManLevelDistribution,
+  CardsTimeHistogram
+} from '@flashcards/shared/components'
+import { getTimeFilterListTitle } from '@flashcards/shared/utils'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -53,9 +58,20 @@ const filteredBySettings = computed(() =>
   })
 )
 
-const { selectedLevel, handleLevelClick, filteredCards } = useCardFiltering(
-  () => filteredBySettings.value
-)
+const {
+  selectedLevel,
+  selectedTimeBucket,
+  handleLevelClick,
+  handleTimeBucketClick,
+  filteredCards
+} = useCardFiltering(() => filteredBySettings.value)
+
+const listTitle = computed(() => {
+  if (selectedTimeBucket.value !== null) {
+    return getTimeFilterListTitle(selectedTimeBucket.value)
+  }
+  return undefined
+})
 
 // Sort cards: plus before minus, then by X, then by Y
 const sortedFilteredCards = computed(() => {
@@ -163,14 +179,23 @@ function goHome() {
         @level-click="handleLevelClick"
       />
 
+      <!-- Time Histogram -->
+      <CardsTimeHistogram
+        :cards="filteredBySettings"
+        :selected-bucket="selectedTimeBucket"
+        class="q-mb-md"
+        @bucket-click="handleTimeBucketClick"
+      />
+
       <!-- Filtered Cards List -->
       <CardsListOfCards
-        v-if="selectedLevel !== null"
+        v-if="selectedLevel !== null || selectedTimeBucket !== null"
         :all-cards="filteredBySettings"
         :cards-to-show="sortedFilteredCards"
         :selected-level="selectedLevel"
         :get-label="getCardLabel"
         :get-key="getCardKey"
+        :title="listTitle"
       />
     </div>
   </q-page>

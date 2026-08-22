@@ -3,9 +3,8 @@
  * Handles localStorage operations for decks, cards, history, settings, and stats
  */
 
-import type { CardLevel, GameResult, SessionMode } from '@flashcards/shared'
+import type { GameResult, SessionMode } from '@flashcards/shared'
 import {
-  ALL_LEVELS,
   createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
@@ -13,9 +12,45 @@ import {
   loadJSON,
   saveJSON
 } from '@flashcards/shared'
+import {
+  isRecord,
+  isString,
+  isValidBaseCard,
+  isValidCardLevel,
+  isValidHistoryEntry
+} from '@flashcards/shared/utils'
 
 import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
+
+/** Card shape check: word string + valid BaseCard level/time */
+function isValidCard(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  const { word } = value
+  return isString(word) && word.length > 0 && isValidBaseCard(value)
+}
+
+/** Deck shape check: name string + valid cards */
+function isValidDeck(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  const { name, cards } = value
+  return isString(name) && name.length > 0 && Array.isArray(cards) && cards.every(isValidCard)
+}
+
+/** GameSettings shape check: valid mode/focus + levels + optional deck */
+function isValidSettings(value: unknown): boolean {
+  if (!isRecord(value)) return false
+  const { mode, focus, levels, deck } = value
+  return (
+    typeof mode === 'string' &&
+    ['copy', 'hidden'].includes(mode) &&
+    typeof focus === 'string' &&
+    ['weak', 'medium', 'strong', 'slow'].includes(focus) &&
+    Array.isArray(levels) &&
+    levels.every(isValidCardLevel) &&
+    (deck === undefined || isString(deck))
+  )
+}
 
 // Game persistence factory for session storage
 interface GameState {
@@ -32,7 +67,8 @@ interface GameState {
 
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
   STORAGE_KEYS.SELECTED_CARDS,
-  STORAGE_KEYS.GAME_STATE
+  STORAGE_KEYS.GAME_STATE,
+  isValidSettings
 )
 
 // ============================================================================
@@ -41,6 +77,7 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
 
 /**
  * Load all card decks from storage
+ * Invalid decks (or decks containing invalid cards) fall back to defaults
  */
 export function loadDecks(): CardDeck[] {
   const stored = localStorage.getItem(STORAGE_KEYS.DECKS)
@@ -49,21 +86,13 @@ export function loadDecks(): CardDeck[] {
     return DEFAULT_DECKS
   }
   try {
-    const parsed = JSON.parse(stored) as unknown
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    const parsed: unknown = JSON.parse(stored)
+    const decks = Array.isArray(parsed) ? parsed.filter(isValidDeck) : []
+    if (decks.length === 0) {
       saveDecks(DEFAULT_DECKS)
       return DEFAULT_DECKS
     }
-    // Validate each deck has required structure
-    const decks = parsed as CardDeck[]
-    const valid = decks.every(
-      d => typeof d.name === 'string' && d.name.length > 0 && Array.isArray(d.cards)
-    )
-    if (!valid) {
-      saveDecks(DEFAULT_DECKS)
-      return DEFAULT_DECKS
-    }
-    return decks
+    return decks as CardDeck[]
   } catch {
     saveDecks(DEFAULT_DECKS)
     return DEFAULT_DECKS
@@ -121,7 +150,7 @@ export function saveCards(cards: Card[]): void {
 // History
 // ============================================================================
 
-const historyOps = createHistoryOperations<GameHistory>(STORAGE_KEYS.HISTORY)
+const historyOps = createHistoryOperations<GameHistory>(STORAGE_KEYS.HISTORY, isValidHistoryEntry)
 
 export function loadHistory(): GameHistory[] {
   return historyOps.load()
@@ -153,20 +182,14 @@ export function saveGameStats(stats: typeof DEFAULT_STATS) {
 
 // ============================================================================
 // Settings
-
-/** Persisted shape: older entries may lack the levels key added later */
-type StoredGameSettings = Omit<GameSettings, 'levels'> & { levels?: CardLevel[] }
 // ============================================================================
 
 /**
- * Load game settings (older persisted settings without levels default to all levels)
+ * Load game settings
+ * @returns Validated settings or null if invalid
  */
 export function loadSettings(): GameSettings | null {
-  const parsed = loadJSON<StoredGameSettings | null>(STORAGE_KEYS.SETTINGS, null)
-  if (!parsed) {
-    return null
-  }
-  return { ...parsed, levels: parsed.levels ?? [...ALL_LEVELS] }
+  return loadJSON<GameSettings | null>(STORAGE_KEYS.SETTINGS, null, isValidSettings)
 }
 
 /**
