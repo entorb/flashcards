@@ -2,7 +2,6 @@ import {
   MAX_LEVEL,
   MAX_TIME,
   MIN_LEVEL,
-  MIN_TIME,
   PROD_HOSTNAME,
   STATS_PENDING_STORAGE_KEY,
   TIME_BUCKET_BOUNDS,
@@ -324,18 +323,6 @@ export function parseLevel(levelStr: string | undefined): number {
  */
 export function normalizeWhitespace(str: string): string {
   return str.trim().replace(/\s+/g, ' ')
-}
-
-/**
- * Sanitize base card fields: clamp level to valid range, default time to MAX_TIME
- * Use this when creating or importing cards to ensure valid defaults.
- */
-export function sanitizeBaseCard<T extends { level?: number; time?: number }>(
-  card: T
-): T & { level: number; time: number } {
-  const level = Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, card.level ?? MIN_LEVEL))
-  const time = Math.max(MIN_TIME, Math.min(MAX_TIME, card.time ?? MAX_TIME))
-  return { ...card, level, time }
 }
 
 /**

@@ -3,8 +3,7 @@ import {
   levenshteinDistance,
   MAX_TIME,
   normalizeWhitespace,
-  parseLevel,
-  sanitizeBaseCard
+  parseLevel
 } from '@flashcards/shared'
 
 import { LEVENSHTEIN_THRESHOLD } from '../constants'
@@ -103,14 +102,12 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
     const voc = normalizeWhitespace(parts[0] ?? '')
     const de = normalizeWhitespace(parts[1] ?? '')
     if (voc !== '' && de !== '') {
-      newCards.push(
-        sanitizeBaseCard({
-          voc,
-          de,
-          level: parseLevel(parts[2]),
-          time: MAX_TIME
-        })
-      )
+      newCards.push({
+        voc,
+        de,
+        level: parseLevel(parts[2]),
+        time: MAX_TIME
+      })
     }
   }
 

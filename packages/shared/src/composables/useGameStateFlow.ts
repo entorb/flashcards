@@ -138,14 +138,3 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
     dailyInfo
   }
 }
-
-/**
- * Get last game settings from localStorage
- * Useful for HomePage to remember user's last game settings
- */
-export function getLastGameSettings<TSettings>(
-  config: GameStateFlowConfig,
-  fallback: TSettings
-): TSettings {
-  return loadJSON<TSettings>(config.settingsKey, fallback)
-}

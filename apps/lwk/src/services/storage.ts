@@ -16,7 +16,7 @@ import {
   isRecord,
   isString,
   isValidBaseCard,
-  isValidCardLevel,
+  isValidBaseSettings,
   isValidHistoryEntry
 } from '@flashcards/shared/utils'
 
@@ -31,23 +31,19 @@ function isValidCard(value: unknown): boolean {
 }
 
 /** Deck shape check: name string + valid cards */
-function isValidDeck(value: unknown): boolean {
+function isValidDeck(value: unknown): value is CardDeck {
   if (!isRecord(value)) return false
   const { name, cards } = value
   return isString(name) && name.length > 0 && Array.isArray(cards) && cards.every(isValidCard)
 }
 
-/** GameSettings shape check: valid mode/focus + levels + optional deck */
+/** GameSettings shape check: base fields + mode literal + optional deck */
 function isValidSettings(value: unknown): boolean {
-  if (!isRecord(value)) return false
-  const { mode, focus, levels, deck } = value
+  if (!(isValidBaseSettings(value) && isRecord(value))) return false
+  const { mode, deck } = value
   return (
     typeof mode === 'string' &&
     ['copy', 'hidden'].includes(mode) &&
-    typeof focus === 'string' &&
-    ['weak', 'medium', 'strong', 'slow'].includes(focus) &&
-    Array.isArray(levels) &&
-    levels.every(isValidCardLevel) &&
     (deck === undefined || isString(deck))
   )
 }
@@ -92,7 +88,7 @@ export function loadDecks(): CardDeck[] {
       saveDecks(DEFAULT_DECKS)
       return DEFAULT_DECKS
     }
-    return decks as CardDeck[]
+    return decks
   } catch {
     saveDecks(DEFAULT_DECKS)
     return DEFAULT_DECKS
