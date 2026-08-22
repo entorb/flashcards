@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useQuasar } from 'quasar'
 import type { VNode } from 'vue'
 
 import { TEXT_DE } from '../text-de'
@@ -27,6 +28,8 @@ defineSlots<{
   config(): VNode[]
   'extra-buttons'?(): VNode[]
 }>()
+
+const $q = useQuasar()
 </script>
 
 <template>
