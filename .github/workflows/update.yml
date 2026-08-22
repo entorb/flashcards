@@ -39,7 +39,7 @@ jobs:
         run: pnpm exec biome migrate --write
 
       - name: Run code checks
-        run: pnpm run check
+        run: ./scripts/run_checks.sh
 
       - name: Commit changes if any
         run: |
