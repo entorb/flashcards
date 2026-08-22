@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useQuasar } from 'quasar'
+
 import { MAX_TIME } from '../constants'
 
 interface Props {
@@ -12,6 +14,8 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const $q = useQuasar()
 </script>
 
 <template>
