@@ -1,6 +1,6 @@
 // Feature: game-modes-endless-and-loops, Property 1: filterLevel1Cards returns exactly the Level 1 cards
 import fc from 'fast-check'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { LOOP_COUNT, MAX_LEVEL, MIN_LEVEL } from '../constants'
 import { TEXT_DE } from '../text-de'
@@ -8,14 +8,16 @@ import type { BaseCard } from '../types'
 
 import {
   avoidConsecutiveRepeat,
-  endlessLevel5NextCard,
-  endlessNextCard,
   filterBelowMaxLevel,
   filterByLevels,
   filterLevel1Cards,
   handleNextCard,
   repeatCards
 } from './gameModeUtils'
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 /**
  * Arbitrary: generates a BaseCard with level in [MIN_LEVEL, MAX_LEVEL]
@@ -224,134 +226,93 @@ describe('avoidConsecutiveRepeat', () => {
   })
 })
 
-describe('endlessNextCard', () => {
-  it('removes a promoted card (level > MIN_LEVEL)', () => {
-    const gameCards = {
-      value: [
-        { level: 2, time: 10 },
-        { level: 1, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const isOver = endlessNextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(false)
-    expect(gameCards.value).toHaveLength(1)
-    expect(gameCards.value[0]?.level).toBe(1)
-  })
-
-  it('keeps a Level 1 card and advances index', () => {
-    const gameCards = {
-      value: [
-        { level: 1, time: 10 },
-        { level: 1, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const isOver = endlessNextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(false)
-    expect(gameCards.value).toHaveLength(2)
-    expect(currentCardIndex.value).toBe(1)
-  })
-
-  it('returns true when last card is removed', () => {
-    const gameCards = { value: [{ level: 2, time: 10 }] }
-    const currentCardIndex = { value: 0 }
-    const isOver = endlessNextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(true)
-    expect(gameCards.value).toHaveLength(0)
-  })
-
-  it('wraps index when advancing past end', () => {
-    const gameCards = {
-      value: [
-        { level: 1, time: 10 },
-        { level: 1, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 1 }
-    const isOver = endlessNextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(false)
-    expect(currentCardIndex.value).toBe(0)
-  })
-})
-
 describe('handleNextCard', () => {
   interface TestCard extends BaseCard {
     id: string
   }
   const getKey = (c: TestCard) => c.id
 
-  it('delegates to baseNextCard in standard mode', () => {
-    const gameCards = {
-      value: [
-        { id: 'a', level: 1, time: 10 },
-        { id: 'b', level: 1, time: 10 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const baseNextCard = () => {
-      currentCardIndex.value++
-      return currentCardIndex.value >= gameCards.value.length
-    }
+  describe('standard mode', () => {
+    it('picks a random unplayed card into the next position', () => {
+      const gameCards = {
+        value: [
+          { id: 'a', level: 1, time: 10 },
+          { id: 'b', level: 1, time: 10 },
+          { id: 'c', level: 1, time: 10 }
+        ]
+      }
+      const currentCardIndex = { value: 0 }
+      // unplayed region [1,3): random 0.9 → index 2 → 'c' swapped into position 1
+      vi.spyOn(Math, 'random').mockReturnValue(0.9)
 
-    const isOver = handleNextCard(gameCards, currentCardIndex, 'standard', baseNextCard, getKey)
-    expect(isOver).toBe(false)
-    expect(currentCardIndex.value).toBe(1)
+      const isOver = handleNextCard(gameCards, currentCardIndex, 'standard', getKey)
+      expect(isOver).toBe(false)
+      expect(gameCards.value).toHaveLength(3)
+      expect(currentCardIndex.value).toBe(1)
+      expect(gameCards.value[1]?.id).toBe('c')
+    })
+
+    it('returns true when the last card was shown', () => {
+      const gameCards = { value: [{ id: 'a', level: 1, time: 10 }] }
+      const currentCardIndex = { value: 0 }
+
+      const isOver = handleNextCard(gameCards, currentCardIndex, 'standard', getKey)
+      expect(isOver).toBe(true)
+    })
   })
 
-  it('returns true when baseNextCard signals game over in standard mode', () => {
-    const gameCards = { value: [{ id: 'a', level: 1, time: 10 }] }
-    const currentCardIndex = { value: 0 }
-    const baseNextCard = () => {
-      currentCardIndex.value++
-      return true
-    }
+  describe('3-rounds mode', () => {
+    it('avoids an immediate repeat and keeps the deck intact', () => {
+      const gameCards = {
+        value: [
+          { id: 'a', level: 1, time: 10 },
+          { id: 'a', level: 1, time: 10 },
+          { id: 'b', level: 1, time: 10 }
+        ]
+      }
+      const currentCardIndex = { value: 0 }
+      // picks index 1 → 'a' (repeat), should swap with the other unplayed card 'b'
+      vi.spyOn(Math, 'random').mockReturnValue(0)
 
-    const isOver = handleNextCard(gameCards, currentCardIndex, 'standard', baseNextCard, getKey)
-    expect(isOver).toBe(true)
+      const isOver = handleNextCard(gameCards, currentCardIndex, '3-rounds', getKey)
+      expect(isOver).toBe(false)
+      expect(gameCards.value).toHaveLength(3)
+      expect(currentCardIndex.value).toBe(1)
+      expect(gameCards.value[1]?.id).toBe('b')
+    })
   })
 
-  it('removes promoted card in endless-level1 mode', () => {
-    const gameCards = {
-      value: [
-        { id: 'a', level: 2, time: 10 },
-        { id: 'b', level: 1, time: 10 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const baseNextCard = () => false
+  describe('endless-level1 mode', () => {
+    it('removes a promoted card and picks a random remaining card', () => {
+      const gameCards = {
+        value: [
+          { id: 'a', level: 2, time: 10 },
+          { id: 'b', level: 1, time: 10 }
+        ]
+      }
+      const currentCardIndex = { value: 0 }
 
-    const isOver = handleNextCard(
-      gameCards,
-      currentCardIndex,
-      'endless-level1',
-      baseNextCard,
-      getKey
-    )
-    expect(isOver).toBe(false)
-    expect(gameCards.value).toHaveLength(1)
-    expect(gameCards.value[0]?.id).toBe('b')
-  })
+      const isOver = handleNextCard(gameCards, currentCardIndex, 'endless-level1', getKey)
+      expect(isOver).toBe(false)
+      expect(gameCards.value).toHaveLength(1)
+      expect(gameCards.value[0]?.id).toBe('b')
+    })
 
-  it('avoids consecutive repeat in 3-rounds mode', () => {
-    const gameCards = {
-      value: [
-        { id: 'a', level: 1, time: 10 },
-        { id: 'a', level: 1, time: 10 },
-        { id: 'b', level: 1, time: 10 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const baseNextCard = () => {
-      currentCardIndex.value++
-      return currentCardIndex.value >= gameCards.value.length
-    }
+    it('keeps an unmastered card and picks a random card', () => {
+      const gameCards = {
+        value: [
+          { id: 'a', level: 1, time: 10 },
+          { id: 'b', level: 1, time: 10 }
+        ]
+      }
+      const currentCardIndex = { value: 0 }
+      vi.spyOn(Math, 'random').mockReturnValue(0.9)
 
-    // Play card 'a' at index 0, then nextCard should swap if index 1 is also 'a'
-    const isOver = handleNextCard(gameCards, currentCardIndex, '3-rounds', baseNextCard, getKey)
-    expect(isOver).toBe(false)
-    // After swap, the card at index 1 should be 'b'
-    expect(gameCards.value[1]?.id).toBe('b')
+      const isOver = handleNextCard(gameCards, currentCardIndex, 'endless-level1', getKey)
+      expect(isOver).toBe(false)
+      expect(gameCards.value).toHaveLength(2)
+      expect(currentCardIndex.value).toBe(1)
+    })
   })
 })
 
@@ -412,70 +373,6 @@ describe('filterBelowMaxLevel — property tests', () => {
   })
 })
 
-describe('endlessLevel5NextCard', () => {
-  it('removes a card at MAX_LEVEL', () => {
-    const gameCards = {
-      value: [
-        { level: MAX_LEVEL, time: 10 },
-        { level: 3, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const isOver = endlessLevel5NextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(false)
-    expect(gameCards.value).toHaveLength(1)
-    expect(gameCards.value[0]?.level).toBe(3)
-  })
-
-  it('keeps a card below MAX_LEVEL and advances index', () => {
-    const gameCards = {
-      value: [
-        { level: 3, time: 10 },
-        { level: 4, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    const isOver = endlessLevel5NextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(false)
-    expect(gameCards.value).toHaveLength(2)
-    expect(currentCardIndex.value).toBe(1)
-  })
-
-  it('returns true when last card is removed', () => {
-    const gameCards = { value: [{ level: MAX_LEVEL, time: 10 }] }
-    const currentCardIndex = { value: 0 }
-    const isOver = endlessLevel5NextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(true)
-    expect(gameCards.value).toHaveLength(0)
-  })
-
-  it('wraps index when advancing past end', () => {
-    const gameCards = {
-      value: [
-        { level: 3, time: 10 },
-        { level: 4, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 1 }
-    const isOver = endlessLevel5NextCard(gameCards, currentCardIndex)
-    expect(isOver).toBe(false)
-    expect(currentCardIndex.value).toBe(0)
-  })
-
-  it('does not remove a card at level 4 (below MAX_LEVEL)', () => {
-    const gameCards = {
-      value: [
-        { level: 4, time: 10 },
-        { level: 2, time: 20 }
-      ]
-    }
-    const currentCardIndex = { value: 0 }
-    endlessLevel5NextCard(gameCards, currentCardIndex)
-    expect(gameCards.value).toHaveLength(2)
-    expect(currentCardIndex.value).toBe(1)
-  })
-})
-
 describe('handleNextCard — endless-level5 mode', () => {
   interface TestCard extends BaseCard {
     id: string
@@ -490,15 +387,8 @@ describe('handleNextCard — endless-level5 mode', () => {
       ]
     }
     const currentCardIndex = { value: 0 }
-    const baseNextCard = () => false
 
-    const isOver = handleNextCard(
-      gameCards,
-      currentCardIndex,
-      'endless-level5',
-      baseNextCard,
-      getKey
-    )
+    const isOver = handleNextCard(gameCards, currentCardIndex, 'endless-level5', getKey)
     expect(isOver).toBe(false)
     expect(gameCards.value).toHaveLength(1)
     expect(gameCards.value[0]?.id).toBe('b')
@@ -512,15 +402,9 @@ describe('handleNextCard — endless-level5 mode', () => {
       ]
     }
     const currentCardIndex = { value: 0 }
-    const baseNextCard = () => false
+    vi.spyOn(Math, 'random').mockReturnValue(0.9)
 
-    const isOver = handleNextCard(
-      gameCards,
-      currentCardIndex,
-      'endless-level5',
-      baseNextCard,
-      getKey
-    )
+    const isOver = handleNextCard(gameCards, currentCardIndex, 'endless-level5', getKey)
     expect(isOver).toBe(false)
     expect(gameCards.value).toHaveLength(2)
     expect(currentCardIndex.value).toBe(1)
@@ -529,15 +413,8 @@ describe('handleNextCard — endless-level5 mode', () => {
   it('returns true when all cards reach MAX_LEVEL in endless-level5', () => {
     const gameCards = { value: [{ id: 'a', level: MAX_LEVEL, time: 10 }] }
     const currentCardIndex = { value: 0 }
-    const baseNextCard = () => false
 
-    const isOver = handleNextCard(
-      gameCards,
-      currentCardIndex,
-      'endless-level5',
-      baseNextCard,
-      getKey
-    )
+    const isOver = handleNextCard(gameCards, currentCardIndex, 'endless-level5', getKey)
     expect(isOver).toBe(true)
     expect(gameCards.value).toHaveLength(0)
   })

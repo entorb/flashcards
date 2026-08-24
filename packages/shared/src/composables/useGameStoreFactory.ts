@@ -245,13 +245,11 @@ export function createGameStoreFactory<
       saveCurrentGameState()
     }
 
-    const baseNextCard = baseStore.nextCard
     function nextCard() {
       const isGameOver = handleNextCard(
         baseStore.gameCards,
         baseStore.currentCardIndex,
         baseStore.sessionMode.value,
-        baseNextCard,
         (c: TCard) => c.question
       )
 

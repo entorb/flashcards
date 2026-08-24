@@ -149,13 +149,11 @@ export function useGameStore() {
   }
 
   // Wrap nextCard to save state and handle endless mode
-  const baseNextCard = baseStore.nextCard
   function nextCard(): boolean {
     const isGameOver = handleNextCard(
       baseStore.gameCards,
       baseStore.currentCardIndex,
       baseStore.sessionMode.value,
-      baseNextCard,
       (c: Card) => c.voc
     )
 

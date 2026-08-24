@@ -34,7 +34,8 @@ export function filterByLevels<T extends BaseCard>(cards: T[], levels: number[])
 }
 
 /**
- * Create a repeated card list for 3-rounds mode, shuffled
+ * Create a repeated card list for 3-rounds mode.
+ * Each round is shuffled independently so the card order differs per round.
  */
 export function repeatCards<T>(cards: T[], count: number): T[] {
   if (!Number.isInteger(count) || count < 1) {
@@ -42,9 +43,9 @@ export function repeatCards<T>(cards: T[], count: number): T[] {
   }
   const repeated: T[] = []
   for (let i = 0; i < count; i++) {
-    repeated.push(...cards)
+    repeated.push(...shuffleArray(cards))
   }
-  return shuffleArray(repeated)
+  return repeated
 }
 
 /**
@@ -53,8 +54,7 @@ export function repeatCards<T>(cards: T[], count: number): T[] {
  * card with a different key (searching forward) and swap it into `nextIndex`.
  * This ensures no cards are skipped — only reordered.
  *
- * For endless mode (wrapping arrays), the caller should pass the mutable array.
- * For 3-rounds mode (sequential arrays), swapping preserves total card count.
+ * For endless mode (shrinking pools), the caller should pass the mutable array.
  */
 export function avoidConsecutiveRepeat<T>(
   cards: T[],
@@ -82,66 +82,86 @@ export function avoidConsecutiveRepeat<T>(
 }
 
 /**
- * Endless mode nextCard logic: remove correctly answered cards, keep incorrect ones.
+ * Endless modes nextCard logic: remove the current card if it was mastered,
+ * then pick a random remaining card.
  * Returns true if the game is over (no cards left).
  */
-export function endlessNextCard<T extends BaseCard>(
+function nextEndlessCard<T extends BaseCard>(
   gameCards: { value: T[] },
-  currentCardIndex: { value: number }
+  currentCardIndex: { value: number },
+  sessionMode: SessionMode,
+  previousKey: string,
+  getKey: (card: T) => string
 ): boolean {
-  const currentIdx = currentCardIndex.value
-  const card = gameCards.value[currentIdx]
-  if (card && card.level > MIN_LEVEL) {
-    // Card was promoted (correct answer) — remove it
-    gameCards.value = gameCards.value.filter((_, i) => i !== currentIdx)
-    if (currentCardIndex.value >= gameCards.value.length) {
-      currentCardIndex.value = 0
-    }
-  } else {
-    // Card stays (incorrect answer) — move to next
-    currentCardIndex.value++
-    if (currentCardIndex.value >= gameCards.value.length) {
-      currentCardIndex.value = 0
-    }
+  const currentCard = gameCards.value[currentCardIndex.value]
+  const mastered =
+    sessionMode === 'endless-level1'
+      ? currentCard !== undefined && currentCard.level > MIN_LEVEL
+      : currentCard !== undefined && currentCard.level >= MAX_LEVEL
+  if (mastered) {
+    // Card was mastered (correct answer) — remove it
+    gameCards.value = gameCards.value.filter((_, i) => i !== currentCardIndex.value)
   }
-  return gameCards.value.length === 0
+  if (gameCards.value.length === 0) return true
+
+  currentCardIndex.value = Math.floor(Math.random() * gameCards.value.length)
+  currentCardIndex.value = avoidConsecutiveRepeat(
+    gameCards.value,
+    currentCardIndex.value,
+    previousKey,
+    getKey
+  )
+  return false
 }
 
 /**
- * Endless Level 5 mode nextCard logic: remove cards that have reached MAX_LEVEL.
- * Cards stay in the pool until they reach level 5, then they are removed.
- * Returns true if the game is over (no cards left).
+ * Standard & 3-rounds nextCard logic: pick a random unplayed card and swap it
+ * into the next position, so each card is shown exactly once while
+ * `currentCardIndex` stays a monotonic progress counter.
+ * Returns true when all cards were shown.
  */
-export function endlessLevel5NextCard<T extends BaseCard>(
+function nextRandomUnplayedCard<T extends BaseCard>(
   gameCards: { value: T[] },
-  currentCardIndex: { value: number }
+  currentCardIndex: { value: number },
+  previousKey: string,
+  getKey: (card: T) => string
 ): boolean {
-  const currentIdx = currentCardIndex.value
-  const card = gameCards.value[currentIdx]
-  if (card && card.level >= MAX_LEVEL) {
-    // Card reached MAX_LEVEL — remove it
-    gameCards.value = gameCards.value.filter((_, i) => i !== currentIdx)
-    if (currentCardIndex.value >= gameCards.value.length) {
-      currentCardIndex.value = 0
-    }
-  } else {
-    // Card stays — move to next
-    currentCardIndex.value++
-    if (currentCardIndex.value >= gameCards.value.length) {
-      currentCardIndex.value = 0
+  const nextIndex = currentCardIndex.value + 1
+  if (nextIndex >= gameCards.value.length) return true
+
+  let pickIndex = nextIndex + Math.floor(Math.random() * (gameCards.value.length - nextIndex))
+  const pickedCard = gameCards.value[pickIndex]
+  if (pickedCard !== undefined && getKey(pickedCard) === previousKey) {
+    // Avoid an immediate repeat if another card is available
+    for (let i = nextIndex + 1; i < gameCards.value.length; i++) {
+      const candidate = gameCards.value[i]
+      if (candidate !== undefined && getKey(candidate) !== previousKey) {
+        pickIndex = i
+        break
+      }
     }
   }
-  return gameCards.value.length === 0
+
+  const finalPick = gameCards.value[pickIndex]
+  const nextSlot = gameCards.value[nextIndex]
+  if (finalPick !== undefined && nextSlot !== undefined) {
+    gameCards.value[pickIndex] = nextSlot
+    gameCards.value[nextIndex] = finalPick
+  }
+  currentCardIndex.value = nextIndex
+  return false
 }
 
 /**
- * Shared nextCard logic for all game modes with avoid-consecutive-repeat.
- * Encapsulates the common pattern used across 1x1, voc, and lwk apps.
+ * Shared nextCard logic for all game modes: always pick a random card from the
+ * cards selected for the current game.
+ *
+ * - standard & 3-rounds: fixed-length deck, each card shown exactly once.
+ * - endless-level1 / endless-level5: the pool shrinks as cards are mastered.
  *
  * @param gameCards - reactive ref to the game cards array
  * @param currentCardIndex - reactive ref to the current card index
  * @param sessionMode - current session mode
- * @param baseNextCard - the base store's nextCard function
  * @param getKey - function to extract the unique identity key from a card
  * @returns true if the game is over
  */
@@ -149,47 +169,14 @@ export function handleNextCard<T extends BaseCard>(
   gameCards: { value: T[] },
   currentCardIndex: { value: number },
   sessionMode: SessionMode,
-  baseNextCard: () => boolean,
   getKey: (card: T) => string
 ): boolean {
   const previousCard = gameCards.value[currentCardIndex.value]
   const previousKey = previousCard === undefined ? '' : getKey(previousCard)
 
-  if (sessionMode === 'endless-level1') {
-    const isGameOver = endlessNextCard(gameCards, currentCardIndex)
-
-    currentCardIndex.value = avoidConsecutiveRepeat(
-      gameCards.value,
-      currentCardIndex.value,
-      previousKey,
-      getKey
-    )
-
-    return isGameOver
+  if (sessionMode === 'endless-level1' || sessionMode === 'endless-level5') {
+    return nextEndlessCard(gameCards, currentCardIndex, sessionMode, previousKey, getKey)
   }
 
-  if (sessionMode === 'endless-level5') {
-    const isGameOver = endlessLevel5NextCard(gameCards, currentCardIndex)
-
-    currentCardIndex.value = avoidConsecutiveRepeat(
-      gameCards.value,
-      currentCardIndex.value,
-      previousKey,
-      getKey
-    )
-
-    return isGameOver
-  }
-
-  // Standard and 3-rounds: use base nextCard
-  const isGameOver = baseNextCard()
-  if (!isGameOver && sessionMode === '3-rounds') {
-    currentCardIndex.value = avoidConsecutiveRepeat(
-      gameCards.value,
-      currentCardIndex.value,
-      previousKey,
-      getKey
-    )
-  }
-  return isGameOver
+  return nextRandomUnplayedCard(gameCards, currentCardIndex, previousKey, getKey)
 }
