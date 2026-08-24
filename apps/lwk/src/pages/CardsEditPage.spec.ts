@@ -109,25 +109,36 @@ describe('lwk CardsEditPage', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('renders card edit items for each card', async () => {
+    it('renders card edit items for each card plus the blank add row', async () => {
       const router = createMockRouter()
       const wrapper = mountPage(router)
       await wrapper.vm.$nextTick()
-      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(2)
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(3)
     })
 
     it('renders word input fields', async () => {
       const router = createMockRouter()
       const wrapper = mountPage(router)
       await wrapper.vm.$nextTick()
-      expect(wrapper.findAll('[data-cy="word-input"]')).toHaveLength(2)
+      expect(wrapper.findAll('[data-cy="word-input"]')).toHaveLength(3)
     })
 
-    it('renders add card button', async () => {
+    it('sorts cards alphabetically ignoring case on load', async () => {
+      mockAllCards.value = [
+        { word: 'Zebra', level: 1, time: 60 },
+        { word: 'apfel', level: 1, time: 60 },
+        { word: 'Apfel', level: 1, time: 60 },
+        { word: 'Biene', level: 1, time: 60 }
+      ]
       const router = createMockRouter()
       const wrapper = mountPage(router)
       await wrapper.vm.$nextTick()
-      expect(wrapper.find('[data-cy="add-card-button"]').exists()).toBe(true)
+
+      const words = wrapper
+        .findAll('[data-cy="word-input"]')
+        .slice(0, 4)
+        .map(input => input.find('input').element.value)
+      expect(words).toEqual(['apfel', 'Apfel', 'Biene', 'Zebra'])
     })
 
     it('renders back button', async () => {
@@ -151,12 +162,12 @@ describe('lwk CardsEditPage', () => {
       expect(wrapper.find('[data-cy="import-button"]').exists()).toBe(true)
     })
 
-    it('shows empty state when no cards', async () => {
+    it('shows only the blank add row when no cards exist', async () => {
       mockAllCards.value = []
       const router = createMockRouter()
       const wrapper = mountPage(router)
       await wrapper.vm.$nextTick()
-      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(0)
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(1)
     })
   })
 
@@ -230,19 +241,160 @@ describe('lwk CardsEditPage', () => {
     })
   })
 
-  // ─── Add card ─────────────────────────────────────────────────────────────
+  // ─── Adding a new card via the blank last row ─────────────────────────────
 
-  describe('adding a new card', () => {
-    it('appends an empty card when add button is clicked', async () => {
+  const getWordInput = (wrapper: ReturnType<typeof mount>, indexFromEnd: number) => {
+    const inputs = wrapper.findAll('[data-cy="word-input"]')
+    return inputs[inputs.length + indexFromEnd]
+  }
+
+  const getBlankWordInput = (wrapper: ReturnType<typeof mount>) => getWordInput(wrapper, -1)
+
+  const typeInBlankRow = async (wrapper: ReturnType<typeof mount>, word: string) => {
+    const input = getBlankWordInput(wrapper)
+    if (!input) throw new Error('blank row input not found')
+    await input.find('input').setValue(word)
+    await wrapper.vm.$nextTick()
+  }
+
+  describe('adding a new card via the blank last row', () => {
+    it('commits the word on Enter and appends a new blank row', async () => {
       const router = createMockRouter()
       const wrapper = mountPage(router)
       await wrapper.vm.$nextTick()
 
-      const before = wrapper.findAll('[data-cy="card-edit-item"]').length
-      await wrapper.find('[data-cy="add-card-button"]').trigger('click')
+      await typeInBlankRow(wrapper, 'Neues Wort')
+      await getBlankWordInput(wrapper)?.trigger('keydown', { key: 'Enter' })
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(before + 1)
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(4)
+      const committed = getWordInput(wrapper, -2)
+      expect(committed?.find('input').element.value).toBe('Neues Wort')
+      const blank = getBlankWordInput(wrapper)
+      expect(blank?.find('input').element.value).toBe('')
+    })
+
+    it('commits the word on Tab and appends a new blank row', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await typeInBlankRow(wrapper, 'Tabwort')
+      await getBlankWordInput(wrapper)?.trigger('keydown', { key: 'Tab' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(4)
+      expect(getWordInput(wrapper, -2)?.find('input').element.value).toBe('Tabwort')
+    })
+
+    it('strips and collapses whitespace on commit', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await typeInBlankRow(wrapper, '  Mehr   Worte  ')
+      await getBlankWordInput(wrapper)?.trigger('keydown', { key: 'Enter' })
+      await wrapper.vm.$nextTick()
+
+      expect(getWordInput(wrapper, -2)?.find('input').element.value).toBe('Mehr Worte')
+    })
+
+    it('does not commit an empty word', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await getBlankWordInput(wrapper)?.trigger('keydown', { key: 'Enter' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(3)
+    })
+
+    it('rejects a duplicate word with a warning and does not create a row', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await typeInBlankRow(wrapper, 'Jahr')
+      await getBlankWordInput(wrapper)?.trigger('keydown', { key: 'Enter' })
+      await wrapper.vm.$nextTick()
+
+      expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: 'warning' }))
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(3)
+      expect(getBlankWordInput(wrapper)?.find('input').element.value).toBe('')
+    })
+
+    it('commits the word on blur and appends a new blank row', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await typeInBlankRow(wrapper, 'Blurwort')
+      await getBlankWordInput(wrapper)?.trigger('blur')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(4)
+      expect(getWordInput(wrapper, -2)?.find('input').element.value).toBe('Blurwort')
+      expect(getBlankWordInput(wrapper)?.find('input').element.value).toBe('')
+    })
+
+    it('does not commit an empty word on blur', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await getBlankWordInput(wrapper)?.trigger('blur')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(3)
+    })
+
+    it('does not commit from the word input of a committed row', async () => {
+      const router = createMockRouter()
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      const firstInput = wrapper.findAll('[data-cy="word-input"]')[0]
+      await firstInput?.find('input').setValue('Geändert')
+      await firstInput?.trigger('keydown', { key: 'Enter' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('[data-cy="card-edit-item"]')).toHaveLength(3)
+    })
+  })
+
+  // ─── Commit on back ───────────────────────────────────────────────────────
+
+  describe('commit on back', () => {
+    it('commits a pending word when navigating back', async () => {
+      const router = createMockRouter()
+      vi.spyOn(router, 'push')
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await typeInBlankRow(wrapper, 'Unbestätigt')
+      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(mockImportCards).toHaveBeenCalledOnce()
+      const saved = mockImportCards.mock.calls[0] as unknown as [Card[]]
+      expect(saved[0].map(c => c.word)).toContain('Unbestätigt')
+      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
+    })
+
+    it('blocks navigation when the pending word is a duplicate', async () => {
+      const router = createMockRouter()
+      vi.spyOn(router, 'push')
+      const wrapper = mountPage(router)
+      await wrapper.vm.$nextTick()
+
+      await typeInBlankRow(wrapper, 'Jahr')
+      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: 'warning' }))
+      expect(mockImportCards).not.toHaveBeenCalled()
+      expect(router.push).not.toHaveBeenCalled()
     })
   })
 

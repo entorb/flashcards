@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace, TEXT_DE } from '@flashcards/shared'
 import { useQuasar } from 'quasar'
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
@@ -16,11 +16,20 @@ const { allCards, importCards } = useGameStore()
 const editingCards = ref<Card[]>([])
 const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
 
+function createEmptyCard(): Card {
+  return { word: '', level: MIN_LEVEL, time: MAX_TIME }
+}
+
+// Always-present blank last row for adding new cards
+const newCard = ref<Card>(createEmptyCard())
+const isBlankRow = (index: number) => index === editingCards.value.length
+const rows = computed<Card[]>(() => [...editingCards.value, newCard.value])
+
 onMounted(() => {
-  // Initialize with a copy of current cards, sorted alphabetically
+  // Initialize with a copy of current cards, sorted alphabetically ignoring case
   editingCards.value = allCards.value
     .map(card => ({ ...card }))
-    .sort((a, b) => a.word.localeCompare(b.word))
+    .sort((a, b) => a.word.toLowerCase().localeCompare(b.word.toLowerCase()))
   globalThis.addEventListener('keydown', handleKeyDown)
 })
 
@@ -29,6 +38,9 @@ onUnmounted(() => {
 })
 
 function handleGoBack() {
+  // Commit a word typed but not yet confirmed in the blank last row
+  if (!commitNewCard(false)) return
+
   // Validate and auto-save before leaving
   if (editingCards.value.some(card => !card.word.trim())) {
     $q.notify({
@@ -142,19 +154,43 @@ function processImportText(text: string) {
   })
 }
 
-function handleAddCard() {
-  editingCards.value.push({
-    word: '',
-    level: MIN_LEVEL,
-    time: MAX_TIME
-  })
-  void nextTick(() => {
-    const items = document.querySelectorAll<HTMLElement>('[data-cy="card-edit-item"]')
-    const lastItem = items[items.length - 1]
-    if (!lastItem) return
-    lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    lastItem.querySelector<HTMLInputElement>('input')?.focus()
-  })
+function commitNewCard(moveFocus = true): boolean {
+  const word = normalizeWhitespace(newCard.value.word)
+  if (!word) return true
+  if (editingCards.value.some(card => normalizeWhitespace(card.word) === word)) {
+    $q.notify({
+      type: 'warning',
+      message: TEXT_DE.lwk.cards.validationDuplicate.replace('{word}', word)
+    })
+    newCard.value = createEmptyCard()
+    return false
+  }
+  editingCards.value.push({ word, level: MIN_LEVEL, time: MAX_TIME })
+  newCard.value = createEmptyCard()
+  if (moveFocus) {
+    void nextTick(() => {
+      const items = document.querySelectorAll<HTMLElement>('[data-cy="card-edit-item"]')
+      const lastItem = items[items.length - 1]
+      if (!lastItem) return
+      lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      lastItem.querySelector<HTMLInputElement>('input')?.focus()
+    })
+  }
+  return true
+}
+
+function onWordInputKeydown(index: number, event: KeyboardEvent) {
+  if (!isBlankRow(index)) return
+  if (event.key === 'Enter' || event.key === 'Tab') {
+    event.preventDefault()
+    commitNewCard()
+  }
+}
+
+function onWordInputBlur(index: number) {
+  checkDuplicateWord(index)
+  // Persist a new word when the user leaves the blank last row
+  if (isBlankRow(index)) commitNewCard(false)
 }
 
 function handleRemoveCard(index: number) {
@@ -229,15 +265,6 @@ function getLevelOptions() {
         <q-btn
           outline
           color="primary"
-          icon="add"
-          :label="TEXT_DE.lwk.cards.addNewCard"
-          no-caps
-          data-cy="add-card-button"
-          @click="handleAddCard"
-        />
-        <q-btn
-          outline
-          color="primary"
           icon="arrow_upward"
           :label="exportButtonText"
           no-caps
@@ -259,13 +286,12 @@ function getLevelOptions() {
 
       <!-- Cards list -->
       <q-list
-        v-if="editingCards.length > 0"
         bordered
         separator
         class="rounded-borders q-mb-md"
       >
         <q-item
-          v-for="(card, index) in editingCards"
+          v-for="(card, index) in rows"
           :key="index"
           class="q-py-md"
           data-cy="card-edit-item"
@@ -281,56 +307,40 @@ function getLevelOptions() {
                 class="col"
                 data-cy="word-input"
                 @update:model-value="onCardChange"
-                @blur="checkDuplicateWord(index)"
+                @blur="onWordInputBlur(index)"
+                @keydown="onWordInputKeydown(index, $event)"
               />
 
-              <!-- Level select -->
-              <q-select
-                v-model="card.level"
-                dense
-                outlined
-                :options="getLevelOptions()"
-                emit-value
-                map-options
-                label="Level"
-                style="width: 100px"
-                data-cy="level-select"
-                @update:model-value="onCardChange"
-              />
+              <!-- Level select and delete, only for committed cards -->
+              <template v-if="!isBlankRow(index)">
+                <q-select
+                  v-model="card.level"
+                  dense
+                  outlined
+                  :options="getLevelOptions()"
+                  emit-value
+                  map-options
+                  label="Level"
+                  style="width: 100px"
+                  data-cy="level-select"
+                  @update:model-value="onCardChange"
+                />
 
-              <!-- Delete button -->
-              <q-btn
-                flat
-                dense
-                round
-                icon="delete"
-                color="negative"
-                data-cy="delete-card-button"
-                @click="handleRemoveCard(index)"
-              />
+                <!-- Delete button -->
+                <q-btn
+                  flat
+                  dense
+                  round
+                  icon="delete"
+                  color="negative"
+                  data-cy="delete-card-button"
+                  @click="handleRemoveCard(index)"
+                />
+              </template>
             </div>
           </q-item-section>
         </q-item>
       </q-list>
-
-      <!-- Empty state -->
-      <div
-        v-else
-        class="text-center q-pa-xl text-grey-6"
-      >
-        {{ TEXT_DE.lwk.cards.noCardsYet }}
-      </div>
-
-      <!-- Add card bottom -->
-      <q-btn
-        outline
-        color="primary"
-        icon="add"
-        :label="TEXT_DE.lwk.cards.addNewCard"
-        no-caps
-        data-cy="add-card-bottom-button"
-        @click="handleAddCard"
-      />
     </div>
   </q-page>
 </template>
