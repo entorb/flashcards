@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { STORAGE_KEYS } from '@/constants'
 import type { GameSettings } from '@/types'
 import { useGameStore } from './useGameStore'
 
@@ -18,7 +20,6 @@ const storageMocks = vi.hoisted(() => ({
     deck: 'LWK_1'
   })),
   saveSettings: vi.fn(),
-  saveGameConfig: vi.fn(),
   loadHistory: vi.fn(() => []),
   saveHistory: vi.fn(),
   loadGameStats: vi.fn(() => ({ points: 0, correctAnswers: 0, gamesPlayed: 0 })),
@@ -30,8 +31,6 @@ const storageMocks = vi.hoisted(() => ({
         currentCardIndex: number
         points: number
         correctAnswersCount: number
-        showWord: boolean
-        countdown: number
         gameSettings: GameSettings | null
       }
   ),
@@ -128,9 +127,10 @@ describe('useGameStore', () => {
       expect(store.gameSettings.value?.mode).toBe('copy')
     })
 
-    it('saves game config to storage', () => {
+    it('persists settings via game state flow', () => {
       store.startGame(COPY_SETTINGS)
-      expect(storageMocks.saveGameConfig).toHaveBeenCalled()
+      const stored = JSON.parse(globalThis.localStorage.getItem(STORAGE_KEYS.SETTINGS) ?? 'null')
+      expect(stored).toEqual(COPY_SETTINGS)
     })
 
     it('saves initial game state to storage', () => {
@@ -140,9 +140,9 @@ describe('useGameStore', () => {
 
     it('does not restart if gameCards already populated (page reload resume)', () => {
       store.startGame(COPY_SETTINGS)
-      const callCount = storageMocks.saveGameConfig.mock.calls.length
+      const callCount = storageMocks.saveGameState.mock.calls.length
       store.startGame(COPY_SETTINGS) // second call should be ignored
-      expect(storageMocks.saveGameConfig.mock.calls).toHaveLength(callCount)
+      expect(storageMocks.saveGameState.mock.calls).toHaveLength(callCount)
     })
   })
 
@@ -299,26 +299,6 @@ describe('useGameStore', () => {
     })
   })
 
-  // ─── isEisiHappy ──────────────────────────────────────────────────────────
-
-  describe('isEisiHappy', () => {
-    it('is false when points are 0', () => {
-      store.startGame(COPY_SETTINGS)
-      expect(store.isEisiHappy.value).toBe(false)
-    })
-
-    it('is true when points exceed gameCards.length * 5', () => {
-      store.startGame(COPY_SETTINGS)
-      // gameCards has 1 card → threshold is 5 points
-      // Give enough correct answers to exceed threshold
-      store.handleAnswer('correct', 5)
-      store.handleAnswer('correct', 5)
-      store.handleAnswer('correct', 5)
-      // Points should now exceed 5 (1 card × 5)
-      expect(store.isEisiHappy.value).toBe(store.points.value > store.gameCards.value.length * 5)
-    })
-  })
-
   // ─── nextCard ─────────────────────────────────────────────────────────────
 
   describe('nextCard', () => {
@@ -353,8 +333,6 @@ describe('useGameStore', () => {
         currentCardIndex: 0,
         points: 5,
         correctAnswersCount: 1,
-        showWord: false,
-        countdown: 0,
         gameSettings: COPY_SETTINGS
       })
       store = useGameStore()
@@ -369,8 +347,6 @@ describe('useGameStore', () => {
         currentCardIndex: 0,
         points: 0,
         correctAnswersCount: 0,
-        showWord: false,
-        countdown: 0,
         gameSettings: HIDDEN_SETTINGS
       })
       store = useGameStore()
@@ -383,8 +359,6 @@ describe('useGameStore', () => {
         currentCardIndex: 0,
         points: 10,
         correctAnswersCount: 2,
-        showWord: false,
-        countdown: 0,
         gameSettings: COPY_SETTINGS
       })
       store = useGameStore()

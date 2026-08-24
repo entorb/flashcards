@@ -1,4 +1,9 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import {
+  quasarDirectives,
+  quasarMocks,
+  quasarProvide,
+  quasarStubs
+} from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -28,6 +33,7 @@ describe('pum HistoryPage', () => {
       mocks: quasarMocks,
       plugins: [router],
       provide: quasarProvide,
+      directives: quasarDirectives,
       stubs: {
         ...quasarStubs,
         AppFooter: { template: '<div />' }

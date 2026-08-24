@@ -54,8 +54,6 @@ interface GameState {
   currentCardIndex: number
   points: number
   correctAnswersCount: number
-  showWord: boolean
-  countdown: number
   gameSettings: GameSettings
   sessionMode?: SessionMode
   initialCardCount?: number
@@ -199,7 +197,6 @@ export function saveSettings(settings: GameSettings): void {
 // Game Persistence (sessionStorage)
 // ============================================================================
 
-export const saveGameConfig = gamePersistence.saveSettings
 export const clearGameConfig = gamePersistence.clearSettings
 export const saveGameState = gamePersistence.saveState
 export const loadGameState = gamePersistence.loadState

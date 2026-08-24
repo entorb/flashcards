@@ -184,7 +184,6 @@ describe('HomePage', () => {
         correctAnswersCount: ref(0),
         history: ref([]),
         currentCard: computed(() => null as any),
-        isFoxHappy: computed(() => false),
         lastPointsBreakdown: ref(null),
         startGame: vi.fn(),
         handleAnswer: vi.fn(),

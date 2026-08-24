@@ -1,6 +1,7 @@
 import { MAX_TIME } from '@flashcards/shared'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { STORAGE_KEYS } from '../constants'
 import type { Card, CardDeck, GameSettings } from '../types'
 
 // Reset modules before each test to get a fresh singleton baseStore
@@ -149,11 +150,11 @@ describe('useGameStore - startGame', () => {
     expect(store.correctAnswersCount.value).toBe(0)
   })
 
-  it('saves settings via saveSettings', async () => {
+  it('persists settings via game state flow', async () => {
     const store = await setupMocks()
-    const { saveSettings } = await import('@/services/storage')
     store.startGame(DEFAULT_SETTINGS)
-    expect(saveSettings).toHaveBeenCalledWith(DEFAULT_SETTINGS)
+    const stored = JSON.parse(globalThis.localStorage.getItem(STORAGE_KEYS.SETTINGS) ?? 'null')
+    expect(stored).toEqual(DEFAULT_SETTINGS)
   })
 
   it('saves initial game state to sessionStorage', async () => {
@@ -734,27 +735,6 @@ describe('useGameStore - moveAllCards', () => {
     expect(() => {
       store.moveAllCards(6)
     }).toThrow()
-  })
-})
-
-// ============================================================================
-// isFoxHappy computed
-// ============================================================================
-
-describe('useGameStore - isFoxHappy', () => {
-  it('is false when points are low', async () => {
-    const store = await setupMocks()
-    store.startGame(DEFAULT_SETTINGS)
-    // No answers given, points = 0
-    expect(store.isFoxHappy.value).toBe(false)
-  })
-
-  it('is true when points exceed cards * 5', async () => {
-    const store = await setupMocks()
-    store.startGame(DEFAULT_SETTINGS)
-    // Manually set points above threshold (3 cards * 5 = 15)
-    store.points.value = 20
-    expect(store.isFoxHappy.value).toBe(true)
   })
 })
 
