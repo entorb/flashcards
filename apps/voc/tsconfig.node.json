@@ -3,9 +3,11 @@
     "../../cypress.config.base.ts",
     "../../packages/shared/src/**/*.ts",
     "../../packages/shared/src/**/*.vue",
+    "../../playwright.config.base.ts",
     "../../vite.config.base.ts",
     "../../vite.config.factory.ts",
     "cypress.config.ts",
+    "playwright.config.ts",
     "src/constants.ts",
     "src/types.ts",
     "vite.config.ts"

@@ -23,7 +23,7 @@ export const getVitestConfig = (rootDir: string): UserConfig => ({
       }
     },
     environment: 'jsdom',
-    exclude: [...configDefaults.exclude, 'e2e/**', 'node_modules/'],
+    exclude: [...configDefaults.exclude, 'e2e/**', 'node_modules/', 'playwright/**'],
     onConsoleLog(log: string) {
       // Suppress Vue warnings about unresolved Quasar components in tests
       if (log.includes('Failed to resolve component: Q')) return false
