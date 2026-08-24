@@ -111,6 +111,14 @@ function nextEndlessCard<T extends BaseCard>(
     previousKey,
     getKey
   )
+
+  // When only one unmastered card remains, the same object reference is picked
+  // again. UI watchers that key on card identity (e.g. `watch(currentCard)`)
+  // compare by reference and would not fire, leaving the game stuck on the
+  // previous answer. Replace the picked card with a fresh copy to force a reset.
+  if (gameCards.value[currentCardIndex.value] === currentCard) {
+    gameCards.value = gameCards.value.map((c, i) => (i === currentCardIndex.value ? { ...c } : c))
+  }
   return false
 }
 

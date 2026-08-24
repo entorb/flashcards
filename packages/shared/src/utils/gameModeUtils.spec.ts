@@ -418,6 +418,20 @@ describe('handleNextCard — endless-level5 mode', () => {
     expect(isOver).toBe(true)
     expect(gameCards.value).toHaveLength(0)
   })
+
+  it('replaces the single remaining card with a fresh reference so watchers reset', () => {
+    const gameCards = { value: [{ id: 'a', level: 3, time: 10 }] }
+    const currentCardIndex = { value: 0 }
+    const original = gameCards.value[0]
+
+    const isOver = handleNextCard(gameCards, currentCardIndex, 'endless-level5', getKey)
+    expect(isOver).toBe(false)
+    expect(gameCards.value).toHaveLength(1)
+    expect(currentCardIndex.value).toBe(0)
+    expect(gameCards.value[0]).not.toBe(original)
+    expect(gameCards.value[0]?.id).toBe('a')
+    expect(gameCards.value[0]?.level).toBe(3)
+  })
 })
 
 describe('TEXT_DE.shared.gameModes — endless-level5 strings', () => {
