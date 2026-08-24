@@ -252,7 +252,7 @@ describe('Integration: Filter + Select Pipeline', () => {
     expect(filtered).toHaveLength(7)
 
     // Selection step (limit to 5)
-    const selected = selectCardsForRound(filtered, 'strong', 5)
+    const selected = selectCardsForRound(filtered, 'slow', 5)
     expect(selected).toHaveLength(5)
 
     // All selected should be squares

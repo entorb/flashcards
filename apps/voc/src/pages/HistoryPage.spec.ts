@@ -226,13 +226,13 @@ describe('voc HistoryPage', () => {
         correctAnswers: 5,
         settings: {
           mode: 'multiple-choice',
-          focus: 'strong',
+          focus: 'weak',
           language: 'voc-de',
           levels: [1, 2, 3, 4, 5]
         }
       }
       const result = formatDetails(entry)
-      expect(result).toContain('Starke')
+      expect(result).toContain('Schwache')
     })
 
     it('formatDetails includes deck name when present', async () => {

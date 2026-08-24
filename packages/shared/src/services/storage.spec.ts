@@ -243,13 +243,13 @@ describe('selectCardsByFocus', () => {
 
   it('never returns more cards than maxCards', () => {
     const cards = makeCards(20)
-    const result = selectCardsByFocus({ cards, focus: 'medium', maxCards: 5 })
+    const result = selectCardsByFocus({ cards, focus: 'weak', maxCards: 5 })
     expect(result.length).toBeLessThanOrEqual(5)
   })
 
   it('never returns more cards than available', () => {
     const cards = makeCards(3)
-    const result = selectCardsByFocus({ cards, focus: 'strong', maxCards: 10 })
+    const result = selectCardsByFocus({ cards, focus: 'slow', maxCards: 10 })
     expect(result.length).toBeLessThanOrEqual(3)
   })
 
@@ -294,9 +294,9 @@ describe('selectCardsByFocus', () => {
     expect(result).toEqual([])
   })
 
-  it('focus=weak, focus=strong, focus=medium all return valid cards', () => {
+  it('focus=weak, focus=slow, all return valid cards', () => {
     const cards = makeCards(20)
-    for (const focus of ['weak', 'strong', 'medium'] as const) {
+    for (const focus of ['weak', 'slow'] as const) {
       const result = selectCardsByFocus({ cards, focus, maxCards: 10 })
       expect(result.length).toBeGreaterThan(0)
       for (const card of result) {

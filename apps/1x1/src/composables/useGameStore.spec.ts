@@ -136,7 +136,7 @@ describe('useGameStore - startGame', () => {
     const store = useGameStore()
     const { filterCardsAll } = await import('@/services/cardSelector')
 
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     expect(filterCardsAll).toHaveBeenCalled()
     expect(store.gameCards.value.length).toBeGreaterThan(0)
@@ -179,7 +179,7 @@ describe('useGameStore - startGame', () => {
     const store = useGameStore()
     const { filterCardsSquares } = await import('@/services/cardSelector')
 
-    store.startGame({ select: 'x²', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'x²', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     expect(filterCardsSquares).toHaveBeenCalled()
     expect(store.gameCards.value.length).toBeGreaterThan(0)
@@ -222,7 +222,7 @@ describe('useGameStore - startGame', () => {
     const store = useGameStore()
     const { filterCardsBySelection } = await import('@/services/cardSelector')
 
-    store.startGame({ select: [3, 4], focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: [3, 4], focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     expect(filterCardsBySelection).toHaveBeenCalled()
     expect(store.gameCards.value.length).toBeGreaterThan(0)
@@ -230,11 +230,11 @@ describe('useGameStore - startGame', () => {
 
   it('resets points and index when forceReset=true', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     store.handleAnswer('correct', 5)
     expect(store.points.value).toBeGreaterThan(0)
 
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] }, 'standard', true)
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] }, 'standard', true)
     expect(store.points.value).toBe(0)
     expect(store.currentCardIndex.value).toBe(0)
     expect(store.correctAnswersCount.value).toBe(0)
@@ -242,10 +242,10 @@ describe('useGameStore - startGame', () => {
 
   it('does not restart game if already running and forceReset=false', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const initialCards = store.gameCards.value
 
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] }, 'standard', false)
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] }, 'standard', false)
     expect(store.gameCards.value).toBe(initialCards)
   })
 
@@ -280,7 +280,7 @@ describe('useGameStore - startGame', () => {
     const store = useGameStore()
     const { initializeCards } = await import('@/services/storage')
 
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     expect(initializeCards).toHaveBeenCalled()
   })
@@ -288,7 +288,7 @@ describe('useGameStore - startGame', () => {
   it('saves game config via setGameConfig', async () => {
     const store = await setupMocks()
     const { setGameConfig } = await import('@/services/storage')
-    const settings: GameSettings = { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] }
+    const settings: GameSettings = { select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] }
 
     store.startGame(settings)
 
@@ -299,7 +299,7 @@ describe('useGameStore - startGame', () => {
     const store = await setupMocks()
     const { saveGameState } = await import('@/services/storage')
 
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     expect(saveGameState).toHaveBeenCalled()
   })
@@ -314,7 +314,7 @@ describe('useGameStore - currentCard', () => {
 
   it('returns first card after game starts', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     expect(store.currentCard.value).not.toBeNull()
     expect(store.currentCard.value?.question).toBeDefined()
   })
@@ -323,7 +323,7 @@ describe('useGameStore - currentCard', () => {
 describe('useGameStore - handleAnswer', () => {
   it('grants points for correct answer', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const initialPoints = store.points.value
 
     store.handleAnswer('correct', 5)
@@ -332,7 +332,7 @@ describe('useGameStore - handleAnswer', () => {
 
   it('increments correctAnswersCount for correct answer', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.handleAnswer('correct', 5)
     expect(store.correctAnswersCount.value).toBe(1)
@@ -340,7 +340,7 @@ describe('useGameStore - handleAnswer', () => {
 
   it('grants some points for close answer (level-based)', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const initialPoints = store.points.value
 
     store.handleAnswer('close', 5)
@@ -349,7 +349,7 @@ describe('useGameStore - handleAnswer', () => {
 
   it('does not grant points for incorrect answer', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const initialPoints = store.points.value
 
     store.handleAnswer('incorrect', 5)
@@ -358,7 +358,7 @@ describe('useGameStore - handleAnswer', () => {
 
   it('does not increment correctAnswersCount for incorrect answer', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.handleAnswer('incorrect', 5)
     expect(store.correctAnswersCount.value).toBe(0)
@@ -367,7 +367,7 @@ describe('useGameStore - handleAnswer', () => {
   it('calls updateCard with incremented level for correct answer', async () => {
     const store = await setupMocks()
     const { updateCard } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const card = store.currentCard.value!
 
     store.handleAnswer('correct', 5)
@@ -380,7 +380,7 @@ describe('useGameStore - handleAnswer', () => {
   it('calls updateCard with decremented level for incorrect answer', async () => {
     const store = await setupMocks()
     const { updateCard } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const card = store.currentCard.value!
 
     store.handleAnswer('incorrect', 5)
@@ -393,7 +393,7 @@ describe('useGameStore - handleAnswer', () => {
   it('calls updateCard with MAX_TIME for incorrect answer', async () => {
     const store = await setupMocks()
     const { updateCard } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const card = store.currentCard.value!
 
     store.handleAnswer('incorrect', 5)
@@ -415,7 +415,7 @@ describe('useGameStore - handleAnswer', () => {
   it('saves game state after answer', async () => {
     const store = await setupMocks()
     const { saveGameState } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     vi.mocked(saveGameState).mockClear()
 
     store.handleAnswer('correct', 5)
@@ -424,7 +424,7 @@ describe('useGameStore - handleAnswer', () => {
 
   it('sets lastPointsBreakdown after correct answer', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.handleAnswer('correct', 5)
     expect(store.lastPointsBreakdown.value).not.toBeNull()
@@ -435,7 +435,7 @@ describe('useGameStore - handleAnswer', () => {
 describe('useGameStore - nextCard', () => {
   it('advances currentCardIndex', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     expect(store.currentCardIndex.value).toBe(0)
 
     store.nextCard()
@@ -444,7 +444,7 @@ describe('useGameStore - nextCard', () => {
 
   it('returns false when more cards remain', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     // 3 cards in mock, first nextCard should not be game over
     const isOver = store.nextCard()
     expect(isOver).toBe(false)
@@ -452,7 +452,7 @@ describe('useGameStore - nextCard', () => {
 
   it('returns true when all cards are exhausted', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     // 3 cards in mock: advance past all of them
     store.nextCard() // index 1
     store.nextCard() // index 2
@@ -463,7 +463,7 @@ describe('useGameStore - nextCard', () => {
   it('saves game state after advancing (when not game over)', async () => {
     const store = await setupMocks()
     const { saveGameState } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     vi.mocked(saveGameState).mockClear()
 
     store.nextCard()
@@ -475,7 +475,7 @@ describe('useGameStore - finishGame', () => {
   it('saves game result to sessionStorage', async () => {
     const store = await setupMocks()
     const { setGameResult } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     store.handleAnswer('correct', 5)
 
     store.finishGame()
@@ -491,7 +491,7 @@ describe('useGameStore - finishGame', () => {
   it('clears game state from sessionStorage', async () => {
     const store = await setupMocks()
     const { clearGameState } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.finishGame()
     expect(clearGameState).toHaveBeenCalled()
@@ -499,7 +499,7 @@ describe('useGameStore - finishGame', () => {
 
   it('resets in-memory game state after finishing', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     store.handleAnswer('correct', 5)
 
     store.finishGame()
@@ -519,7 +519,7 @@ describe('useGameStore - finishGame', () => {
   it('normalizes select to all when all range values are selected', async () => {
     const store = await setupMocks()
     const { setGameResult } = await import('@/services/storage')
-    store.startGame({ select: [3, 4, 5, 6, 7, 8, 9], focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: [3, 4, 5, 6, 7, 8, 9], focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.finishGame()
     expect(setGameResult).toHaveBeenCalled()
@@ -530,7 +530,7 @@ describe('useGameStore - discardGame', () => {
   it('clears game state from sessionStorage', async () => {
     const store = await setupMocks()
     const { clearGameState } = await import('@/services/storage')
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.discardGame()
     expect(clearGameState).toHaveBeenCalled()
@@ -538,7 +538,7 @@ describe('useGameStore - discardGame', () => {
 
   it('resets in-memory game state', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     store.handleAnswer('correct', 5)
 
     store.discardGame()
@@ -583,7 +583,7 @@ describe('useGameStore - moveAllCards', () => {
 describe('useGameStore - scoring safety', () => {
   it('never grants points for incorrect answers', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const initialPoints = store.points.value
     store.handleAnswer('incorrect', 5)
     expect(store.points.value).toBe(initialPoints)
@@ -591,7 +591,7 @@ describe('useGameStore - scoring safety', () => {
 
   it('grants points for correct answers', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
     const initialPoints = store.points.value
     store.handleAnswer('correct', 5)
     expect(store.points.value).toBeGreaterThan(initialPoints)
@@ -599,7 +599,7 @@ describe('useGameStore - scoring safety', () => {
 
   it('points are always non-negative after multiple incorrect answers', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.handleAnswer('incorrect', 5)
     store.handleAnswer('incorrect', 5)
@@ -609,7 +609,7 @@ describe('useGameStore - scoring safety', () => {
 
   it('correctAnswersCount matches number of correct answers given', async () => {
     const store = await setupMocks()
-    store.startGame({ select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] })
 
     store.handleAnswer('correct', 5)
     store.handleAnswer('incorrect', 5)

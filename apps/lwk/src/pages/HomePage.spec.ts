@@ -200,7 +200,7 @@ describe('HomePage', () => {
       const { loadSettings } = await import('@/services/storage')
       vi.mocked(loadSettings).mockReturnValue({
         mode: 'hidden',
-        focus: 'strong',
+        focus: 'slow',
         levels: [1, 2, 3, 4, 5],
         deck: 'LWK_1'
       })
@@ -209,14 +209,14 @@ describe('HomePage', () => {
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { settings: { mode: string; focus: string } }
       expect(vm.settings.mode).toBe('hidden')
-      expect(vm.settings.focus).toBe('strong')
+      expect(vm.settings.focus).toBe('slow')
     })
 
     it('ignores saved settings when saved deck no longer exists', async () => {
       const { loadSettings } = await import('@/services/storage')
       vi.mocked(loadSettings).mockReturnValue({
         mode: 'hidden',
-        focus: 'strong',
+        focus: 'slow',
         levels: [1, 2, 3, 4, 5],
         deck: 'MISSING'
       })

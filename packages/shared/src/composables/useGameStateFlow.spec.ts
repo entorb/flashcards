@@ -35,7 +35,7 @@ const sampleCards: TestCard[] = [
 ]
 
 const sampleSettings: TestSettings = {
-  focus: 'medium',
+  focus: 'weak',
   maxCards: 10,
   deck: 'LWK_1'
 }

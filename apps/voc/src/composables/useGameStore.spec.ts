@@ -22,7 +22,7 @@ const MOCK_DECKS: CardDeck[] = [
 
 const DEFAULT_SETTINGS: GameSettings = {
   mode: 'multiple-choice',
-  focus: 'medium',
+  focus: 'weak',
   levels: [1, 2, 3, 4, 5],
   language: 'voc-de',
   deck: 'en'

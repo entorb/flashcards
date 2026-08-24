@@ -26,7 +26,7 @@ describe('HomeFocusSelector', () => {
 
   it('clicking a button updates the model value', async () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'medium' },
+      props: { modelValue: 'slow' },
       ...mountOptions
     })
     const buttons = wrapper.findAll('button')
@@ -41,7 +41,7 @@ describe('HomeFocusSelector', () => {
 
   it('clicking the slow button emits slow', async () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'medium' },
+      props: { modelValue: 'weak' },
       ...mountOptions
     })
     const buttons = wrapper.findAll('button')
@@ -56,7 +56,7 @@ describe('HomeFocusSelector', () => {
 
   it('hides label when hideLabel=true', () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'medium', hideLabel: true },
+      props: { modelValue: 'slow', hideLabel: true },
       ...mountOptions
     })
     // The label div uses v-if="!hideLabel"
@@ -65,7 +65,7 @@ describe('HomeFocusSelector', () => {
 
   it('shows label when hideLabel is not set', () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'medium' },
+      props: { modelValue: 'slow' },
       ...mountOptions
     })
     expect(wrapper.find('.text-subtitle2').exists()).toBe(true)

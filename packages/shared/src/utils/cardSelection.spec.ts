@@ -87,22 +87,6 @@ describe('selectCardsByFocus', () => {
     })
   })
 
-  describe('focus: medium', () => {
-    it('returns at most maxCards cards', () => {
-      const cards = makeCards([1, 2, 3, 4, 5])
-      const result = selectCardsByFocus({ cards, focus: 'medium', maxCards: 3 })
-      expect(result.length).toBeLessThanOrEqual(3)
-    })
-  })
-
-  describe('focus: strong', () => {
-    it('returns at most maxCards cards', () => {
-      const cards = makeCards([1, 2, 3, 4, 5])
-      const result = selectCardsByFocus({ cards, focus: 'strong', maxCards: 2 })
-      expect(result.length).toBeLessThanOrEqual(2)
-    })
-  })
-
   describe('focus: slow', () => {
     it('returns cards sorted by time descending when timeExtractor provided', () => {
       const cards = [
@@ -136,7 +120,7 @@ describe('selectCardsByFocus', () => {
 
     it('returns empty array when maxCards is 0', () => {
       const cards = makeCards([1, 2, 3])
-      const result = selectCardsByFocus({ cards, focus: 'medium', maxCards: 0 })
+      const result = selectCardsByFocus({ cards, focus: 'weak', maxCards: 0 })
       expect(result).toHaveLength(0)
     })
 
@@ -168,7 +152,7 @@ describe('selectCardsByFocus', () => {
       const cards = makeCards([1, 2, 3])
       const result = selectCardsByFocus({
         cards,
-        focus: 'medium',
+        focus: 'weak',
         maxCards: 5,
         modeFilter: () => false
       })
@@ -190,7 +174,7 @@ describe('selectCardsByFocus — property tests', () => {
           { minLength: 1, maxLength: 100 }
         ),
         fc.integer({ min: 1, max: 50 }),
-        fc.constantFrom('weak' as const, 'medium' as const, 'strong' as const, 'slow' as const),
+        fc.constantFrom('weak' as const, 'slow' as const), // 'medium' as const, 'strong' as const,
         (cards, maxCards, focus) => {
           const result = selectCardsByFocus({ cards, focus, maxCards })
           return result.length <= cards.length && result.length <= maxCards
@@ -210,7 +194,7 @@ describe('selectCardsByFocus — property tests', () => {
           }),
           { minLength: 1, maxLength: 100 }
         ),
-        fc.constantFrom('weak' as const, 'medium' as const, 'strong' as const, 'slow' as const),
+        fc.constantFrom('weak' as const, 'slow' as const), // 'medium' as const, 'strong' as const,
         (cards, focus) => {
           const result = selectCardsByFocus({ cards, focus, maxCards: 20 })
           return result.every(c => c.level >= 1 && c.level <= 5)

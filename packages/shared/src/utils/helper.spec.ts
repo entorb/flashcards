@@ -16,14 +16,6 @@ describe('getFocusText', () => {
     expect(getFocusText('weak')).toBe('Schwache')
   })
 
-  it('returns medium text for "medium"', () => {
-    expect(getFocusText('medium')).toBe('Mittlere')
-  })
-
-  it('returns strong text for "strong"', () => {
-    expect(getFocusText('strong')).toBe('Starke')
-  })
-
   it('returns slow text for "slow"', () => {
     expect(getFocusText('slow')).toBe('Langsame')
   })

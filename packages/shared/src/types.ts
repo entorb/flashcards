@@ -26,7 +26,8 @@ export interface BaseCard {
  * Common FocusType for all apps
  * Represents learning focus strategy
  */
-export type FocusType = 'weak' | 'medium' | 'strong' | 'slow'
+export type FocusType = 'weak' | 'slow'
+// | 'medium' | 'strong'
 
 /**
  * Card difficulty level (1 = unknown, 5 = mastered)

@@ -232,7 +232,7 @@ describe('HomePage', () => {
       const { loadSettings } = await import('@/services/storage')
       vi.mocked(loadSettings).mockReturnValue({
         mode: 'typing',
-        focus: 'strong',
+        focus: 'weak',
         levels: [1, 2, 3, 4, 5],
         language: 'de-voc',
         deck: 'en'
@@ -244,7 +244,7 @@ describe('HomePage', () => {
         settings: { mode: string; focus: string; language: string }
       }
       expect(vm.settings.mode).toBe('typing')
-      expect(vm.settings.focus).toBe('strong')
+      expect(vm.settings.focus).toBe('weak')
       expect(vm.settings.language).toBe('de-voc')
     })
 

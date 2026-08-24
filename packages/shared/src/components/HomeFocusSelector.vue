@@ -11,8 +11,6 @@ const focus = defineModel<FocusType>({ required: true })
 
 const focusOptions = [
   { label: TEXT_DE.shared.focusOptions.weak, value: 'weak' as const, icon: 'trending_down' },
-  // { label: TEXT_DE.shared.focusOptions.medium, value: 'medium' as const, icon: 'change_history' },
-  // { label: TEXT_DE.shared.focusOptions.strong, value: 'strong' as const, icon: 'trending_up' },
   { label: TEXT_DE.shared.focusOptions.slow, value: 'slow' as const, icon: 'schedule' }
 ]
 </script>

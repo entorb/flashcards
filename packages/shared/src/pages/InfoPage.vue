@@ -145,7 +145,7 @@ defineEmits<{
                 class="q-mr-xs"
               />{{ TEXT_DE.shared.focusOptions.weak }}
             </li>
-            <li>
+            <!-- <li>
               <QIcon
                 name="change_history"
                 size="xs"
@@ -158,7 +158,7 @@ defineEmits<{
                 size="xs"
                 class="q-mr-xs"
               />{{ TEXT_DE.shared.focusOptions.strong }}
-            </li>
+            </li> -->
             <li>
               <QIcon
                 name="schedule"

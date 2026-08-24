@@ -87,7 +87,7 @@ describe('pum HistoryPage', () => {
         settings: {
           operations: ['minus'],
           difficulties: ['medium'],
-          focus: 'medium',
+          focus: 'weak',
           levels: [1, 2, 3, 4, 5]
         }
       }

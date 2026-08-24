@@ -94,7 +94,7 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         const store = await setupEndlessMocks(cards)
 
         store.startGame(
-          { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] },
+          { select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] },
           'endless-level1',
           true
         )
@@ -127,7 +127,7 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         const store = await setupEndlessMocks(cards)
 
         store.startGame(
-          { select: 'all', focus: 'medium', levels: [1, 2, 3, 4, 5] },
+          { select: 'all', focus: 'slow', levels: [1, 2, 3, 4, 5] },
           'endless-level1',
           true
         )

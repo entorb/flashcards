@@ -181,11 +181,11 @@ describe('lwk HistoryPage', () => {
         date: '2024-01-01T10:00:00Z',
         points: 10,
         correctAnswers: 5,
-        settings: { mode: 'copy', focus: 'strong', levels: [1, 2, 3, 4, 5], deck: 'LWK_1' }
+        settings: { mode: 'copy', focus: 'slow', levels: [1, 2, 3, 4, 5], deck: 'LWK_1' }
       }
       const result = formatDetails(entry)
       // Should contain focus-related text
-      expect(result).toContain('Starke')
+      expect(result).toContain('Langsame')
     })
 
     it('formatDetails includes deck name when present', async () => {

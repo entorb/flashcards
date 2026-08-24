@@ -171,14 +171,14 @@ describe('lwk storage service', () => {
     it('preserves all settings fields', () => {
       const settings: GameSettings = {
         mode: 'hidden',
-        focus: 'strong',
+        focus: 'weak',
         levels: [1, 2, 3, 4, 5],
         deck: 'LWK_2'
       }
       saveSettings(settings)
       const loaded = loadSettings()
       expect(loaded?.mode).toBe('hidden')
-      expect(loaded?.focus).toBe('strong')
+      expect(loaded?.focus).toBe('weak')
       expect(loaded?.deck).toBe('LWK_2')
     })
   })

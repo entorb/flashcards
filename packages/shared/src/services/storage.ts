@@ -337,11 +337,11 @@ export function createAppGameStorage(
 
 /**
  * Card selection factory: applies focus-weighted selection algorithm
- * Supports 'weak', 'strong', 'medium', 'slow' focus strategies
+ * Supports 'weak', 'slow' focus strategies
  */
 export interface CardSelectionConfig<T extends { level: number }> {
   cards: T[]
-  focus: 'weak' | 'medium' | 'strong' | 'slow'
+  focus: 'weak' | 'slow' // | 'medium' | 'strong'
   maxCards: number
   modeFilter?: (card: T) => boolean
   timeExtractor?: (card: T) => number
@@ -377,18 +377,18 @@ export function selectCardsByFocus<T extends { level: number }>(
   }
 
   const weightedCards: WeightedCard[] = eligible.map(card => {
-    let weight: number
+    let weight = 1
 
     if (focus === 'weak') {
       // Level 1 = 5x weight, Level 5 = 1x weight
       weight = MAX_LEVEL + 1 - card.level
-    } else if (focus === 'strong') {
-      // Level 1 = 1x weight, Level 5 = 5x weight
-      weight = card.level
-    } else {
-      // medium: 1->1, 2->3, 3->5, 4->3, 5->1
-      const mediumWeights = [1, 3, 5, 3, 1]
-      weight = mediumWeights[card.level - 1] ?? 1
+      // } else if (focus === 'strong') {
+      //   // Level 1 = 1x weight, Level 5 = 5x weight
+      //   weight = card.level
+      // } else {
+      //   // medium: 1->1, 2->3, 3->5, 4->3, 5->1
+      //   const mediumWeights = [1, 3, 5, 3, 1]
+      //   weight = mediumWeights[card.level - 1] ?? 1
     }
 
     return { item: card, weight }

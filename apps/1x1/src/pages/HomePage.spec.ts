@@ -130,7 +130,7 @@ describe('HomePage', () => {
     it('loads saved settings on mount when available', async () => {
       mocks.loadSettings.mockReturnValue({
         select: [3, 5],
-        focus: 'strong',
+        focus: 'slow',
         levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
@@ -284,14 +284,14 @@ describe('HomePage', () => {
     it('applies saved focus setting on mount', async () => {
       mocks.loadSettings.mockReturnValue({
         select: [3, 5],
-        focus: 'strong',
+        focus: 'slow',
         levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { focus: string }
-      expect(vm.focus).toBe('strong')
+      expect(vm.focus).toBe('slow')
     })
 
     it('applies saved select setting on mount', async () => {
@@ -315,7 +315,7 @@ describe('HomePage', () => {
     it('passes saved config to saveSettings on start game', async () => {
       mocks.loadSettings.mockReturnValue({
         select: [3, 5],
-        focus: 'strong',
+        focus: 'slow',
         levels: [1, 2, 3, 4, 5]
       })
       const router = createMockRouter()
@@ -323,7 +323,7 @@ describe('HomePage', () => {
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="start-game-button"]').trigger('click')
       expect(mocks.saveSettings).toHaveBeenCalledWith(
-        expect.objectContaining({ select: [3, 5], focus: 'strong', levels: [1, 2, 3, 4, 5] })
+        expect.objectContaining({ select: [3, 5], focus: 'slow', levels: [1, 2, 3, 4, 5] })
       )
     })
   })

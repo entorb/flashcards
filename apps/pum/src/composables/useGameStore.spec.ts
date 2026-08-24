@@ -90,7 +90,7 @@ describe('useGameStore - startGame', () => {
     store.startGame({
       operations: ['plus'],
       difficulties: ['simple'],
-      focus: 'medium',
+      focus: 'weak',
       levels: [1, 2, 3, 4, 5]
     })
 
@@ -105,7 +105,7 @@ describe('useGameStore - answerCard', () => {
       getGameConfig: vi.fn(() => ({
         operations: ['plus'],
         difficulties: ['simple'],
-        focus: 'medium',
+        focus: 'weak',
         levels: [1, 2, 3, 4, 5]
       })),
       loadGameState: vi.fn(() => ({
@@ -125,7 +125,7 @@ describe('useGameStore - answerCard', () => {
       getGameConfig: vi.fn(() => ({
         operations: ['plus'],
         difficulties: ['simple'],
-        focus: 'medium',
+        focus: 'weak',
         levels: [1, 2, 3, 4, 5]
       })),
       loadGameState: vi.fn(() => ({
