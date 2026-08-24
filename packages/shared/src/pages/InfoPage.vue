@@ -145,20 +145,6 @@ defineEmits<{
                 class="q-mr-xs"
               />{{ TEXT_DE.shared.focusOptions.weak }}
             </li>
-            <!-- <li>
-              <QIcon
-                name="change_history"
-                size="xs"
-                class="q-mr-xs"
-              />{{ TEXT_DE.shared.focusOptions.medium }}
-            </li>
-            <li>
-              <QIcon
-                name="trending_up"
-                size="xs"
-                class="q-mr-xs"
-              />{{ TEXT_DE.shared.focusOptions.strong }}
-            </li> -->
             <li>
               <QIcon
                 name="schedule"

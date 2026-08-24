@@ -104,7 +104,8 @@ function nextEndlessCard<T extends BaseCard>(
   }
   if (gameCards.value.length === 0) return true
 
-  currentCardIndex.value = Math.floor(Math.random() * gameCards.value.length)
+  // Game randomness only, no security requirement
+  currentCardIndex.value = Math.floor(Math.random() * gameCards.value.length) // NOSONAR typescript:S2245
   currentCardIndex.value = avoidConsecutiveRepeat(
     gameCards.value,
     currentCardIndex.value,
@@ -137,7 +138,8 @@ function nextRandomUnplayedCard<T extends BaseCard>(
   const nextIndex = currentCardIndex.value + 1
   if (nextIndex >= gameCards.value.length) return true
 
-  let pickIndex = nextIndex + Math.floor(Math.random() * (gameCards.value.length - nextIndex))
+  // Game randomness only, no security requirement
+  let pickIndex = nextIndex + Math.floor(Math.random() * (gameCards.value.length - nextIndex)) // NOSONAR typescript:S2245
   const pickedCard = gameCards.value[pickIndex]
   if (pickedCard !== undefined && getKey(pickedCard) === previousKey) {
     // Avoid an immediate repeat if another card is available
