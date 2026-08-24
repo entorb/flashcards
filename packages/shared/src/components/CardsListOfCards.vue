@@ -75,6 +75,7 @@ const sortedCards = computed(() => {
             <q-item-section side>
               <q-badge
                 :label="`Level ${card.level}`"
+                text-color="grey-9"
                 :style="{ backgroundColor: getLevelColor(card.level) }"
               />
               <div

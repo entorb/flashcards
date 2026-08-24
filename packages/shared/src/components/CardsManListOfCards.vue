@@ -48,6 +48,7 @@ function getLevelColor(level: number): string {
             <q-item-section side>
               <q-badge
                 :label="`Level ${card.level}`"
+                text-color="grey-9"
                 :style="{ backgroundColor: getLevelColor(card.level) }"
               />
               <!-- Do not display the time when it equals MAX_TIME (default/sentinel value) -->

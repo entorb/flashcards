@@ -156,7 +156,7 @@ function goHome() {
       <!-- Extended Cards Section -->
       <q-card class="q-mt-md">
         <q-card-section>
-          <div class="text-subtitle2 q-mb-md text-grey-8">
+          <div class="text-h6 q-mb-md">
             <q-icon
               name="extension"
               size="18px"

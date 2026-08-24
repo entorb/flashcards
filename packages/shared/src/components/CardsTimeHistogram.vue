@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MAX_TIME, TIME_BUCKET_BOUNDS, TIME_BUCKET_COLORS } from '../constants'
+import { LEVEL_COLORS, MAX_TIME, TIME_BUCKET_BOUNDS } from '../constants'
 import { TEXT_DE } from '../text-de'
 import type { BaseCard } from '../types'
 import { getTimeBucketIndex, getTimeBucketLabel } from '../utils/helper'
@@ -49,7 +49,7 @@ function getCardCountByBucket(bucket: number): number {
             class="time-badge cursor-pointer"
             :data-cy="`time-bucket-${bucket}`"
             :style="{
-              backgroundColor: TIME_BUCKET_COLORS[bucket],
+              backgroundColor: LEVEL_COLORS[5 - bucket],
               border:
                 props.selectedBucket === bucket
                   ? '3px solid var(--q-primary)'
@@ -60,10 +60,10 @@ function getCardCountByBucket(bucket: number): number {
             @click="emit('bucketClick', bucket)"
           >
             <q-card-section class="text-center q-pa-sm">
-              <div class="text-caption text-white">
+              <div class="text-caption text-grey-8">
                 {{ getTimeBucketLabel(bucket) }}
               </div>
-              <div class="text-h5 text-weight-bold text-white">
+              <div class="text-h5 text-weight-bold text-grey-9">
                 {{ getCardCountByBucket(bucket) }}
               </div>
             </q-card-section>

@@ -12,7 +12,7 @@ import {
   CardsManLevelDistribution,
   CardsTimeHistogram
 } from '@flashcards/shared/components'
-import { getTimeFilterListTitle, getTimeTextColor } from '@flashcards/shared/utils'
+import { getTimeFilterListTitle } from '@flashcards/shared/utils'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -131,7 +131,7 @@ function getCellStyle(y: number, x: number): Record<string, string> {
 
   return {
     backgroundColor: LEVEL_COLORS[card.level] ?? BG_COLORS.disabled,
-    color: getTimeTextColor(card.time, cardsInRange.value)
+    color: '#212121'
   }
 }
 
@@ -269,53 +269,10 @@ function goHome() {
             </div>
           </div>
 
-          <!-- Legend -->
-          <q-separator class="q-my-md" />
-          <div class="legend">
-            <div class="text-subtitle2 q-mb-sm text-grey-8">
-              <q-icon
-                name="info_outline"
-                size="18px"
-                class="q-mr-xs"
-              />
-              {{ TEXT_DE.shared.cards.legend }}
-            </div>
-            <div class="row q-col-gutter-sm">
-              <div class="col-12 col-sm-6">
-                <q-chip
-                  dense
-                  square
-                  class="legend-chip"
-                >
-                  <q-icon
-                    name="palette"
-                    size="16px"
-                    class="q-mr-xs"
-                  />
-                  <span class="text-caption">{{ TEXT_DE.shared.cards.legendBackground }}</span>
-                </q-chip>
-              </div>
-              <div class="col-12 col-sm-6">
-                <q-chip
-                  dense
-                  square
-                  class="legend-chip"
-                >
-                  <q-icon
-                    name="schedule"
-                    size="16px"
-                    class="q-mr-xs"
-                  />
-                  <span class="text-caption">{{ TEXT_DE.shared.cards.legendTextColor }}</span>
-                </q-chip>
-              </div>
-            </div>
-          </div>
-
           <!-- Extended Cards Section -->
           <q-separator class="q-my-md" />
           <div class="q-mt-md">
-            <div class="text-subtitle2 q-mb-md text-grey-8">
+            <div class="text-h6 q-mb-md">
               <q-icon
                 name="extension"
                 size="18px"

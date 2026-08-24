@@ -38,12 +38,10 @@ export const TEXT_DE = {
       cardsPerLevel: 'Karten pro Level',
       cardsPerTime: 'Antwortzeiten',
       timeFilterPrefix: 'Zeit',
-      legend: 'Legende',
       edit: 'Bearbeiten',
       rename: 'Umbenennen',
       delete: 'Löschen',
       legendBackground: 'Hintergrund: Level (Rot=1 → Grün=5)',
-      legendTextColor: 'Schriftfarbe: Zeit (Grün=schnell → Rot=langsam)',
       duplicateWarning: 'Karte bereits vorhanden'
     },
     words: {

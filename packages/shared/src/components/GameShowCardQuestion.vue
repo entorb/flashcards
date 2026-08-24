@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-
-import { MAX_TIME } from '../constants'
+import { LEVEL_COLORS, MAX_TIME } from '../constants'
 
 interface Props {
   currentCard: {
@@ -24,17 +23,19 @@ const $q = useQuasar()
       <div class="row justify-between items-center q-mb-sm">
         <q-badge
           v-if="currentCard"
-          color="primary"
           :label="`Level ${currentCard.level}`"
+          text-color="grey-9"
           data-cy="card-level"
+          :style="{ backgroundColor: LEVEL_COLORS[currentCard.level] }"
         />
-        <div
+        <q-badge
           v-if="currentCard && currentCard.time < MAX_TIME"
-          class="text-caption text-weight-medium text-grey-7"
+          text-color="grey-9"
           data-cy="card-time"
+          :style="{ backgroundColor: LEVEL_COLORS[5 - Math.min(4, Math.floor(currentCard.time / (MAX_TIME / 5)))] }"
         >
           {{ currentCard.time.toFixed(1) }}s
-        </div>
+        </q-badge>
       </div>
       <div
         class="q-my-md text-weight-bold"

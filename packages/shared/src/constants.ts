@@ -112,11 +112,11 @@ export const CLOSE_MATCH_SCORE_PERCENTAGE = 0.75
  * Used by LevelDistribution component and level visualizations
  */
 export const LEVEL_COLORS: Record<number, string> = {
-  1: '#ffcdd2', // red-100 - Level 1 (beginner)
-  2: '#ffe0b2', // orange-100 - Level 2
-  3: '#fff9c4', // yellow-100 - Level 3 (intermediate)
-  4: '#dcedc8', // light-green-100 - Level 4
-  5: '#c8e6c9' // green-100 - Level 5 (advanced)
+  1: '#ef9a9a', // red-200 - Level 1 (weak)
+  2: '#ffcc80', // orange-200 - Level 2
+  3: '#fff59d', // yellow-200 - Level 3 (intermediate)
+  4: '#c5e1a5', // light-green-200 - Level 4
+  5: '#a5d6a7' // green-200 - Level 5 (strong)
 }
 
 // Validate at import time: LEVEL_COLORS must cover every level
@@ -135,30 +135,7 @@ export const BG_COLORS = {
   lightGrey: '#f8f9fa'
 }
 
-// --- Time Colors ---
-
-/**
- * Time-based colors for card response speed visualization (from green=fast to red=slow)
- * Used by CardsManPage to color-code card response times
- */
-export const TIME_COLORS = {
-  veryFast: '#2e7d32', // green-800
-  fast: '#558b2f', // light-green-800
-  medium: '#f57f17', // yellow-800
-  slow: '#e65100', // orange-900
-  verySlow: '#c62828' // red-800
-}
-
-/**
- * Thresholds for time color transitions (normalized 0-1)
- * Used with TIME_COLORS to determine which color to apply based on relative response time
- */
-export const TIME_COLOR_THRESHOLDS = {
-  veryFast: 0.2,
-  fast: 0.4,
-  medium: 0.6,
-  slow: 0.8
-}
+// --- Time Histogram ---
 
 /**
  * Upper bounds (seconds) of the answer-time histogram buckets shown on CardsManPage.
@@ -166,15 +143,6 @@ export const TIME_COLOR_THRESHOLDS = {
  * Cards with time = MAX_TIME (never answered correctly) fall into the last bucket.
  */
 export const TIME_BUCKET_BOUNDS: readonly number[] = [5, 10, 15, 20]
-
-/** Tile background colors per time bucket, green (fast) → red (slow) */
-export const TIME_BUCKET_COLORS: readonly string[] = [
-  TIME_COLORS.veryFast,
-  TIME_COLORS.fast,
-  TIME_COLORS.medium,
-  TIME_COLORS.slow,
-  TIME_COLORS.verySlow
-]
 
 // --- Game Modes ---
 
