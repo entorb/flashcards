@@ -75,9 +75,8 @@ strong {
 }
 
 .app-icon {
-  width: 100px;
+  width: 120px;
   height: auto;
-  max-height: 100px;
   margin: 0 auto 1rem;
   display: block;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
