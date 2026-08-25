@@ -506,6 +506,7 @@ describe('useGameStore - finishGame', () => {
     expect(store.currentCardIndex.value).toBe(0)
     expect(store.points.value).toBe(0)
     expect(store.correctAnswersCount.value).toBe(0)
+    expect(store.gameCards.value).toHaveLength(0)
   })
 
   it('does nothing when no game settings', async () => {

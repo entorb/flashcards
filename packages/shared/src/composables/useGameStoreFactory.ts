@@ -288,6 +288,7 @@ export function createGameStoreFactory<
       storage.clearGameState()
       baseStore.sessionMode.value = 'standard'
       baseStore.resetGameState()
+      baseStore.gameCards.value = []
     }
 
     function discardGame() {
