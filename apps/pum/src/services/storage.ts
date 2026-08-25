@@ -159,14 +159,21 @@ export function initializeCards(): Card[] {
   return cards
 }
 
+/** Points granted per difficulty level */
+const DIFFICULTY_POINTS: Record<Difficulty, number> = {
+  simple: 1,
+  medium: 2,
+  advanced: 4
+}
+
 /**
- * Calculate scoring difficulty for a card
- * Difficulty = Y (the smaller operand, since X >= Y) + operator bonus (2 for minus, 0 for plus)
+ * Calculate scoring points for a card
+ * Points = difficulty level points (simple 1, medium 2, advanced 4) + 1 bonus for minus
  */
 export function getDifficultyForCard(card: Card): number {
-  const { y, operator } = parseCardQuestion(card.question)
-  const operatorBonus = operator === '-' ? 2 : 0
-  return y + operatorBonus
+  const { operator } = parseCardQuestion(card.question)
+  const operatorBonus = operator === '-' ? 1 : 0
+  return DIFFICULTY_POINTS[getDifficultyFromQuestion(card.question)] + operatorBonus
 }
 
 /**

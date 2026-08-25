@@ -172,7 +172,7 @@ export const TEXT_DE = {
       advanced: '3'
     },
     info: {
-      difficulty: 'Plus/Minus: 7+3 → 3, 15-8 → 8+2'
+      difficulty: 'Plus/Minus: Einfach 1, Mittel 2, Schwer 4 Punkte; Minusaufgaben: +1 Punkt'
     }
   },
 

@@ -159,19 +159,34 @@ describe('pum storage — unit tests', () => {
   // ─── getDifficultyForCard ───────────────────────────────────────────────
 
   describe('getDifficultyForCard', () => {
-    it('returns Y as base difficulty for plus cards', () => {
+    it('returns 1 point for simple plus cards', () => {
       const card: Card = { question: '7+3', answer: 10, level: 1, time: 60 }
-      expect(getDifficultyForCard(card)).toBe(3)
+      expect(getDifficultyForCard(card)).toBe(1)
     })
 
-    it('returns Y + 2 for minus cards', () => {
+    it('returns 2 points for medium plus cards', () => {
+      const card: Card = { question: '15+3', answer: 18, level: 1, time: 60 }
+      expect(getDifficultyForCard(card)).toBe(2)
+    })
+
+    it('returns 3 points for medium minus cards', () => {
       const card: Card = { question: '15-8', answer: 7, level: 1, time: 60 }
-      expect(getDifficultyForCard(card)).toBe(10) // 8 + 2
+      expect(getDifficultyForCard(card)).toBe(3) // 2 + 1
     })
 
-    it('adds 0 bonus for plus', () => {
+    it('returns 4 points for advanced plus cards', () => {
+      const card: Card = { question: '15+12', answer: 27, level: 1, time: 60 }
+      expect(getDifficultyForCard(card)).toBe(4)
+    })
+
+    it('returns 5 points for advanced minus cards', () => {
+      const card: Card = { question: '20-11', answer: 9, level: 1, time: 60 }
+      expect(getDifficultyForCard(card)).toBe(5) // 4 + 1
+    })
+
+    it('returns 1 point for simple plus cards with high Y', () => {
       const card: Card = { question: '10+5', answer: 15, level: 1, time: 60 }
-      expect(getDifficultyForCard(card)).toBe(5)
+      expect(getDifficultyForCard(card)).toBe(1)
     })
   })
 
