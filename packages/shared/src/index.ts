@@ -3,6 +3,7 @@
 export * from './composables/useAnswerFeedback'
 export * from './composables/useBaseGameStore'
 export * from './composables/useCardFiltering'
+export * from './composables/useCardsEdit'
 export * from './composables/useCountdownTimer'
 export * from './composables/useDeckGameStore'
 export * from './composables/useDeckManagement'

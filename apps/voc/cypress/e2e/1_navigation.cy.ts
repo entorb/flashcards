@@ -77,7 +77,7 @@ describe('VOC Navigation Smoke Tests', () => {
     // Navigate to CardsEdit
     cy.get('[data-cy="edit-cards-button"]').click()
     cy.url().should('include', '/cards-edit')
-    cy.get('[data-cy="add-card-button"]').should('be.visible')
+    cy.get('[data-cy="card-edit-item"]').should('be.visible')
 
     // Test back via button goes to CardsManPage
     cy.get('[data-cy="back-button"]').click()

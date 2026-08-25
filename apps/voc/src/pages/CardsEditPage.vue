@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace, TEXT_DE } from '@flashcards/shared'
+import {
+  MAX_LEVEL,
+  MAX_TIME,
+  MIN_LEVEL,
+  normalizeWhitespace,
+  TEXT_DE,
+  useCardsEdit
+} from '@flashcards/shared'
 import { useQuasar } from 'quasar'
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
@@ -16,6 +23,24 @@ const { allCards, importCards } = useGameStore()
 const editingCards = ref<Card[]>([])
 const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
 
+// Always-present blank last row for adding new cards
+const { isBlankRow, rows, commitNewCard, onInputKeydown, onInputBlur, removeCard } =
+  useCardsEdit<Card>({
+    editingCards,
+    createEmptyCard: () => ({ voc: '', de: '', level: MIN_LEVEL, time: MAX_TIME }),
+    fieldOrder: ['voc', 'de'],
+    prepareCard: pending => {
+      const voc = normalizeWhitespace(pending.voc)
+      const de = normalizeWhitespace(pending.de)
+      if (!(voc || de)) return null
+      if (!voc) return { error: TEXT_DE.voc.cards.validationEnEmpty }
+      if (!de) return { error: TEXT_DE.voc.cards.validationDeEmpty }
+      return { card: { voc, de, level: MIN_LEVEL, time: MAX_TIME }, key: voc }
+    },
+    duplicateMessage: key => TEXT_DE.voc.cards.validationDuplicate.replace('{word}', key),
+    getKey: card => card.voc
+  })
+
 onMounted(() => {
   // Initialize with a copy of current cards, sorted alphabetically
   editingCards.value = allCards.value
@@ -29,6 +54,9 @@ onUnmounted(() => {
 })
 
 function handleGoBack() {
+  // Commit a card typed but not yet confirmed in the blank last row
+  if (!commitNewCard(false)) return
+
   // Validate all cards before auto-saving
   for (const card of editingCards.value) {
     if (!card.voc.trim()) {
@@ -162,52 +190,6 @@ function processImportText(text: string) {
   })
 }
 
-function addNewCard() {
-  editingCards.value.push({
-    voc: '',
-    de: '',
-    level: MIN_LEVEL,
-    time: MAX_TIME
-  })
-  void nextTick(() => {
-    const index = editingCards.value.length - 1
-    const input = document.querySelector<HTMLInputElement>(`[data-cy="card-voc-${index}"] input`)
-    if (!input) return
-    input.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    input.focus()
-  })
-}
-
-function removeCard(index: number) {
-  if (editingCards.value.length <= 1) {
-    $q.notify({
-      type: 'negative',
-      message: TEXT_DE.shared.cardActions.lastCardError
-    })
-    return
-  }
-  editingCards.value.splice(index, 1)
-}
-
-function checkDuplicateVoc(index: number) {
-  const card = editingCards.value[index]
-  // biome-ignore lint/complexity/useOptionalChain: optional chain prevents TS narrowing
-  if (!(card && card.voc.trim())) return
-  const normalized = normalizeWhitespace(card.voc)
-  for (let i = 0; i < editingCards.value.length; i++) {
-    if (i === index) continue
-    const other = editingCards.value[i]
-    if (!other) continue
-    if (normalizeWhitespace(other.voc) === normalized) {
-      $q.notify({
-        type: 'warning',
-        message: TEXT_DE.voc.cards.validationDuplicate.replace('{word}', card.voc.trim())
-      })
-      return
-    }
-  }
-}
-
 function onCardChange() {
   // Auto-save could be triggered here if needed
 }
@@ -239,15 +221,6 @@ function onCardChange() {
     <div class="q-gutter-lg">
       <!-- Export and Import buttons -->
       <div class="row q-gutter-md items-center">
-        <q-btn
-          outline
-          color="primary"
-          icon="add"
-          :label="TEXT_DE.voc.cards.addNewCard"
-          no-caps
-          data-cy="add-card-button"
-          @click="addNewCard"
-        />
         <q-btn
           outline
           color="primary"
@@ -302,7 +275,7 @@ function onCardChange() {
 
           <!-- Data Rows -->
           <q-item
-            v-for="(card, index) in editingCards"
+            v-for="(card, index) in rows"
             :key="index"
             data-cy="card-edit-item"
           >
@@ -312,9 +285,10 @@ function onCardChange() {
                 outlined
                 dense
                 :placeholder="TEXT_DE.voc.cards.vocPlaceholder"
-                :data-cy="`card-voc-${index}`"
+                data-cy="card-voc-input"
                 @update:model-value="onCardChange"
-                @blur="checkDuplicateVoc(index)"
+                @blur="onInputBlur(index)"
+                @keydown="onInputKeydown(index, 'voc', $event)"
               />
             </q-item-section>
             <q-item-section style="flex: 0 0 40%">
@@ -323,11 +297,16 @@ function onCardChange() {
                 outlined
                 dense
                 :placeholder="TEXT_DE.voc.cards.dePlaceholder"
-                :data-cy="`card-de-${index}`"
+                data-cy="card-de-input"
                 @update:model-value="onCardChange"
+                @blur="onInputBlur(index)"
+                @keydown="onInputKeydown(index, 'de', $event)"
               />
             </q-item-section>
-            <q-item-section style="flex: 0 0 20%">
+            <q-item-section
+              v-if="!isBlankRow(index)"
+              style="flex: 0 0 20%"
+            >
               <div class="row items-center q-gutter-xs">
                 <q-input
                   v-model.number="card.level"
@@ -337,7 +316,7 @@ function onCardChange() {
                   :min="MIN_LEVEL"
                   :max="MAX_LEVEL"
                   style="width: 60px"
-                  :data-cy="`card-level-${index}`"
+                  data-cy="card-level-input"
                   @update:model-value="onCardChange"
                 />
                 <q-btn
@@ -347,27 +326,20 @@ function onCardChange() {
                   icon="delete"
                   color="negative"
                   size="sm"
-                  :data-cy="`delete-card-${index}`"
+                  data-cy="delete-card-button"
                   @click="removeCard(index)"
                 >
                   <q-tooltip>{{ TEXT_DE.shared.words.delete }}</q-tooltip>
                 </q-btn>
               </div>
             </q-item-section>
+            <q-item-section
+              v-else
+              style="flex: 0 0 20%"
+            />
           </q-item>
         </q-list>
       </div>
-
-      <!-- Add card bottom -->
-      <q-btn
-        outline
-        color="primary"
-        icon="add"
-        :label="TEXT_DE.voc.cards.addNewCard"
-        no-caps
-        data-cy="add-card-bottom-button"
-        @click="addNewCard"
-      />
     </div>
   </q-page>
 </template>

@@ -1,4 +1,4 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
+import { quasarMocks, quasarStubs } from '@flashcards/shared/test-utils'
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
@@ -63,7 +63,8 @@ describe('lwk CardsEditPage', () => {
     global: {
       mocks: quasarMocks,
       plugins: [router],
-      provide: quasarProvide,
+      // The shared useCardsEdit composable reads $q via inject, so its notify must be mockNotify too
+      provide: { _q_: { ...quasarMocks.$q, notify: mockNotify } },
       stubs: { ...quasarStubs }
     }
   })

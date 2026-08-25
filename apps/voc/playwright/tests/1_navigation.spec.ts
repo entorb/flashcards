@@ -79,7 +79,7 @@ test.describe('VOC Navigation Smoke Tests', () => {
     // Navigate to CardsEdit
     await page.getByTestId('edit-cards-button').click()
     await expect(page).toHaveURL(/\/cards-edit/)
-    await expect(page.getByTestId('add-card-button')).toBeVisible()
+    await expect(page.getByTestId('card-edit-item').first()).toBeVisible()
 
     // Test back via button goes to CardsManPage
     await page.getByTestId('back-button').click()

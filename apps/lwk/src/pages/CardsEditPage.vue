@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL, normalizeWhitespace, TEXT_DE } from '@flashcards/shared'
+import {
+  MAX_LEVEL,
+  MAX_TIME,
+  MIN_LEVEL,
+  normalizeWhitespace,
+  TEXT_DE,
+  useCardsEdit
+} from '@flashcards/shared'
 import { useQuasar } from 'quasar'
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useGameStore } from '../composables/useGameStore'
@@ -16,14 +23,20 @@ const { allCards, importCards } = useGameStore()
 const editingCards = ref<Card[]>([])
 const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
 
-function createEmptyCard(): Card {
-  return { word: '', level: MIN_LEVEL, time: MAX_TIME }
-}
-
 // Always-present blank last row for adding new cards
-const newCard = ref<Card>(createEmptyCard())
-const isBlankRow = (index: number) => index === editingCards.value.length
-const rows = computed<Card[]>(() => [...editingCards.value, newCard.value])
+const { isBlankRow, rows, commitNewCard, onInputKeydown, onInputBlur, removeCard } =
+  useCardsEdit<Card>({
+    editingCards,
+    createEmptyCard: () => ({ word: '', level: MIN_LEVEL, time: MAX_TIME }),
+    fieldOrder: ['word'],
+    prepareCard: pending => {
+      const word = normalizeWhitespace(pending.word)
+      if (!word) return null
+      return { card: { word, level: MIN_LEVEL, time: MAX_TIME }, key: word }
+    },
+    duplicateMessage: key => TEXT_DE.lwk.cards.validationDuplicate.replace('{word}', key),
+    getKey: card => card.word
+  })
 
 onMounted(() => {
   // Initialize with a copy of current cards, sorted alphabetically ignoring case
@@ -154,75 +167,6 @@ function processImportText(text: string) {
   })
 }
 
-function commitNewCard(moveFocus = true): boolean {
-  const word = normalizeWhitespace(newCard.value.word)
-  if (!word) return true
-  if (editingCards.value.some(card => normalizeWhitespace(card.word) === word)) {
-    $q.notify({
-      type: 'warning',
-      message: TEXT_DE.lwk.cards.validationDuplicate.replace('{word}', word)
-    })
-    newCard.value = createEmptyCard()
-    return false
-  }
-  editingCards.value.push({ word, level: MIN_LEVEL, time: MAX_TIME })
-  newCard.value = createEmptyCard()
-  if (moveFocus) {
-    void nextTick(() => {
-      const items = document.querySelectorAll<HTMLElement>('[data-cy="card-edit-item"]')
-      const lastItem = items[items.length - 1]
-      if (!lastItem) return
-      lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      lastItem.querySelector<HTMLInputElement>('input')?.focus()
-    })
-  }
-  return true
-}
-
-function onWordInputKeydown(index: number, event: KeyboardEvent) {
-  if (!isBlankRow(index)) return
-  if (event.key === 'Enter' || event.key === 'Tab') {
-    event.preventDefault()
-    commitNewCard()
-  }
-}
-
-function onWordInputBlur(index: number) {
-  checkDuplicateWord(index)
-  // Persist a new word when the user leaves the blank last row
-  if (isBlankRow(index)) commitNewCard(false)
-}
-
-function handleRemoveCard(index: number) {
-  if (editingCards.value.length <= 1) {
-    $q.notify({
-      type: 'negative',
-      message: TEXT_DE.shared.cardActions.lastCardError
-    })
-    return
-  }
-  editingCards.value.splice(index, 1)
-}
-
-function checkDuplicateWord(index: number) {
-  const card = editingCards.value[index]
-  // biome-ignore lint/complexity/useOptionalChain: optional chain prevents TS narrowing
-  if (!(card && card.word.trim())) return
-  const normalized = normalizeWhitespace(card.word)
-  for (let i = 0; i < editingCards.value.length; i++) {
-    if (i === index) continue
-    const other = editingCards.value[i]
-    if (!other) continue
-    if (normalizeWhitespace(other.word) === normalized) {
-      $q.notify({
-        type: 'warning',
-        message: TEXT_DE.lwk.cards.validationDuplicate.replace('{word}', card.word.trim())
-      })
-      return
-    }
-  }
-}
-
 function onCardChange() {
   // Auto-save could be triggered here if needed
 }
@@ -307,8 +251,8 @@ function getLevelOptions() {
                 class="col"
                 data-cy="word-input"
                 @update:model-value="onCardChange"
-                @blur="onWordInputBlur(index)"
-                @keydown="onWordInputKeydown(index, $event)"
+                @blur="onInputBlur(index)"
+                @keydown="onInputKeydown(index, 'word', $event)"
               />
 
               <!-- Level select and delete, only for committed cards -->
@@ -334,7 +278,7 @@ function getLevelOptions() {
                   icon="delete"
                   color="negative"
                   data-cy="delete-card-button"
-                  @click="handleRemoveCard(index)"
+                  @click="removeCard(index)"
                 />
               </template>
             </div>
