@@ -182,8 +182,10 @@ function generateExtendedVirtualCards(
  * Base mode (no extended): cards with both factors in [2,9]
  * Extended mode: base cards + all Z ≤ 50 cards with divisor ∈ {2..9, 11, 12}
  */
-export function getVirtualCardsForRange(range: number[]): Card[] {
-  const storedCards = factory.loadCards()
+export function getVirtualCardsForRange(
+  range: number[],
+  storedCards: Card[] = factory.loadCards()
+): Card[] {
   const cardMap = new Map(storedCards.map(c => [c.question, c]))
 
   const baseCards = generateBaseVirtualCards(cardMap)

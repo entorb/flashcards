@@ -28,7 +28,7 @@ const { resetCards } = useGameStore()
 const cards = ref<Card[]>([])
 const range = ref<number[]>([...DEFAULT_RANGE])
 
-const cardsInRange = computed(() => getVirtualCardsForRange(range.value))
+const cardsInRange = computed(() => getVirtualCardsForRange(range.value, cards.value))
 
 const {
   selectedLevel,
