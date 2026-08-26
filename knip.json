@@ -1,0 +1,17 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.sh"],
+      "ignoreDependencies": [""]
+    },
+    "apps/*": {
+      "project": ["src/**/*.ts", "src/**/*.vue", "!src/**/*.spec.ts"]
+    },
+    "packages/*": {
+      "project": ["src/**/*.ts", "src/**/*.vue", "!src/**/*.spec.ts"]
+    }
+  },
+  "ignoreDependencies": ["@typescript/native"]
+}
