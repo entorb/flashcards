@@ -11,22 +11,22 @@ dictionaries:
   - cspell-words
 language: en-US
 ignorePaths:
-  - '/.vscode/'
-  - 'cspell-words.txt'
-  - 'cspell.config.yaml'
-  - '/LICENSE'
-  - '.*.js'
   - '.*.ts'
+  - '.*'
   - '.*'
   - '*.spec.ts'
   - '*.svg'
-  - 'biome.json'
-  - 'build'
-  - 'dist'
-  - 'package*.json'
-  - 'pnpm-lock.yaml'
-  - 'pnpm-workspace.yaml'
-  - 'scripts/**'
-  - 'src/assets/'
-  - 'TODO.md'
-  - 'www/index.html'
+  - /.vscode/
+  - /LICENSE
+  - biome.json
+  - build
+  - cspell-words.txt
+  - cspell.config.yaml.js
+  - dist
+  - package*.json
+  - pnpm-lock.yaml
+  - pnpm-workspace.yaml
+  - scripts/**
+  - src/assets/
+  - TODO.md
+  - www/index.html
