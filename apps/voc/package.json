@@ -1,0 +1,25 @@
+{
+  "name": "voc",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "cy:open": "cypress open --e2e",
+    "cy:run": "cypress run --e2e --quiet",
+    "dev": "vite",
+    "pw:open": "playwright test --ui",
+    "pw:run": "playwright test",
+    "preview": "vite preview",
+    "run": "vite build && vite preview",
+    "test": "vitest --watch=false --silent=passed-only --reporter=minimal",
+    "test:cov": "vitest --watch=false --silent=passed-only --coverage"
+  },
+  "dependencies": {
+    "@flashcards/shared": "workspace:*",
+    "@quasar/extras": "^2.0.3",
+    "quasar": "^2.24.0",
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0"
+  }
+}
