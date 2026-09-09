@@ -2,12 +2,12 @@
  * Central configuration for the div app
  */
 
-import type { GameStateFlowConfig } from '@flashcards/shared'
+import type { GameStateFlowConfig } from "@flashcards/shared"
 
 /**
  * Base path for the div app — used in routing, PWA config, and database
  */
-export const BASE_PATH = 'fc-div'
+export const BASE_PATH = "fc-div"
 
 // --- Storage Keys ---
 
@@ -16,16 +16,16 @@ export const BASE_PATH = 'fc-div'
  * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
  */
 export const STORAGE_KEYS = {
-  CARDS: 'fc-div-cards',
-  HISTORY: 'fc-div-history',
-  STATS: 'fc-div-stats',
-  SETTINGS: 'fc-div-settings',
-  GAME_CONFIG: 'fc-div-game-config',
-  SELECTED_CARDS: 'fc-div-selected-cards',
-  GAME_RESULT: 'fc-div-game-result',
-  DAILY_STATS: 'fc-div-daily-stats',
-  GAME_STATE: 'fc-div-game-state',
-  RANGE: 'fc-div-range'
+  CARDS: "fc-div-cards",
+  HISTORY: "fc-div-history",
+  STATS: "fc-div-stats",
+  SETTINGS: "fc-div-settings",
+  GAME_CONFIG: "fc-div-game-config",
+  SELECTED_CARDS: "fc-div-selected-cards",
+  GAME_RESULT: "fc-div-game-result",
+  DAILY_STATS: "fc-div-daily-stats",
+  GAME_STATE: "fc-div-game-state",
+  RANGE: "fc-div-range",
 }
 
 // --- Game State Flow Configuration ---
@@ -40,7 +40,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,
-  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS,
 }
 
 // --- Game Logic ---

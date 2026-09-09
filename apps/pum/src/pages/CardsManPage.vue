@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { BaseCard } from '@flashcards/shared'
-import { ALL_LEVELS, TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
+import type { BaseCard } from "@flashcards/shared"
+import { ALL_LEVELS, TEXT_DE, useCardFiltering, useResetCards } from "@flashcards/shared"
 import {
   CardsListOfCards,
   CardsManLevelDistribution,
-  CardsTimeHistogram
-} from '@flashcards/shared/components'
-import { getTimeFilterListTitle } from '@flashcards/shared/utils'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  CardsTimeHistogram,
+} from "@flashcards/shared/components"
+import { getTimeFilterListTitle } from "@flashcards/shared/utils"
+import { computed, onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import PumToggleButtons from '@/components/PumToggleButtons.vue'
-import { useGameStore } from '@/composables/useGameStore'
-import { DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from '@/constants'
-import { filterCards } from '@/services/cardSelector'
-import { loadCards, parseCardQuestion } from '@/services/storage'
-import type { Card, Difficulty, Operation } from '@/types'
-import { formatDisplayQuestion } from '@/utils/questionFormatter'
+import PumToggleButtons from "@/components/PumToggleButtons.vue"
+import { useGameStore } from "@/composables/useGameStore"
+import { DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from "@/constants"
+import { filterCards } from "@/services/cardSelector"
+import { loadCards, parseCardQuestion } from "@/services/storage"
+import type { Card, Difficulty, Operation } from "@/types"
+import { formatDisplayQuestion } from "@/utils/questionFormatter"
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
@@ -27,35 +27,35 @@ const selectedOperations = ref<Operation[]>([...DEFAULT_OPERATIONS])
 const selectedDifficulties = ref<Difficulty[]>([...DEFAULT_DIFFICULTIES])
 
 const operationButtons = [
-  { value: 'plus', label: TEXT_DE.plusMinus.selection.plus, dataCy: 'filter-operation-plus' },
-  { value: 'minus', label: TEXT_DE.plusMinus.selection.minus, dataCy: 'filter-operation-minus' }
+  { value: "plus", label: TEXT_DE.plusMinus.selection.plus, dataCy: "filter-operation-plus" },
+  { value: "minus", label: TEXT_DE.plusMinus.selection.minus, dataCy: "filter-operation-minus" },
 ]
 
 const difficultyButtons = [
   {
-    value: 'simple',
+    value: "simple",
     label: TEXT_DE.plusMinus.selection.simple,
-    dataCy: 'filter-difficulty-simple'
+    dataCy: "filter-difficulty-simple",
   },
   {
-    value: 'medium',
+    value: "medium",
     label: TEXT_DE.plusMinus.selection.medium,
-    dataCy: 'filter-difficulty-medium'
+    dataCy: "filter-difficulty-medium",
   },
   {
-    value: 'advanced',
+    value: "advanced",
     label: TEXT_DE.plusMinus.selection.advanced,
-    dataCy: 'filter-difficulty-advanced'
-  }
+    dataCy: "filter-difficulty-advanced",
+  },
 ]
 
 const filteredBySettings = computed(() =>
   filterCards(cards.value, {
     operations: selectedOperations.value,
     difficulties: selectedDifficulties.value,
-    focus: 'weak',
-    levels: [...ALL_LEVELS]
-  })
+    focus: "weak",
+    levels: [...ALL_LEVELS],
+  }),
 )
 
 const {
@@ -63,7 +63,7 @@ const {
   selectedTimeBucket,
   handleLevelClick,
   handleTimeBucketClick,
-  filteredCards
+  filteredCards,
 } = useCardFiltering(() => filteredBySettings.value)
 
 const listTitle = computed(() => {
@@ -81,7 +81,7 @@ const sortedFilteredCards = computed(() => {
     const bQ = parseCardQuestion(b.question)
     // Plus (+) before minus (-)
     if (aQ.operator !== bQ.operator) {
-      return aQ.operator === '+' ? -1 : 1
+      return aQ.operator === "+" ? -1 : 1
     }
     // Then by X
     if (aQ.x !== bQ.x) return aQ.x - bQ.x
@@ -102,18 +102,18 @@ function getCardKey(card: BaseCard): string {
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     goHome()
   }
 }
 
 onMounted(() => {
   cards.value = loadCards()
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function resetCardsHandler() {
@@ -124,7 +124,7 @@ function resetCardsHandler() {
 }
 
 function goHome() {
-  void router.push({ name: '/HomePage' })
+  void router.push({ name: "/HomePage" })
 }
 </script>
 

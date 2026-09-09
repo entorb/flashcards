@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { getFocusText, TEXT_DE } from '@flashcards/shared'
-import { HistoryPage } from '@flashcards/shared/pages'
-import { onMounted, ref } from 'vue'
+import { getFocusText, TEXT_DE } from "@flashcards/shared"
+import { HistoryPage } from "@flashcards/shared/pages"
+import { onMounted, ref } from "vue"
 
-import { loadHistory } from '@/services/storage'
-import type { GameHistory } from '@/types'
+import { loadHistory } from "@/services/storage"
+import type { GameHistory } from "@/types"
 
 const history = ref<GameHistory[]>([])
 
@@ -14,21 +14,21 @@ onMounted(() => {
 
 const operationLabels: Record<string, string> = {
   plus: TEXT_DE.plusMinus.selection.plus,
-  minus: TEXT_DE.plusMinus.selection.minus
+  minus: TEXT_DE.plusMinus.selection.minus,
 }
 
 const difficultyLabels: Record<string, string> = {
   simple: TEXT_DE.plusMinus.selection.simple,
   medium: TEXT_DE.plusMinus.selection.medium,
-  advanced: TEXT_DE.plusMinus.selection.advanced
+  advanced: TEXT_DE.plusMinus.selection.advanced,
 }
 
 function formatOperations(ops: string[]): string {
-  return ops.map(op => operationLabels[op] ?? op).join(', ')
+  return ops.map((op) => operationLabels[op] ?? op).join(", ")
 }
 
 function formatDifficulties(diffs: string[]): string {
-  return diffs.map(d => difficultyLabels[d] ?? d).join(', ')
+  return diffs.map((d) => difficultyLabels[d] ?? d).join(", ")
 }
 
 function formatDetails(game: GameHistory): string {

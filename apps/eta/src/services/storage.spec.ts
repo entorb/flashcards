@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { STORAGE_KEYS } from '@/constants'
-import type { SessionData } from '@/types'
+import { STORAGE_KEYS } from "@/constants"
+import type { SessionData } from "@/types"
 
-import { clearSession, loadSession, saveSession } from './storage'
+import { clearSession, loadSession, saveSession } from "./storage"
 
-describe('storage service', () => {
+describe("storage service", () => {
   beforeEach(() => {
     // Clear localStorage before each test
     globalThis.localStorage.clear()
@@ -16,15 +16,15 @@ describe('storage service', () => {
     vi.restoreAllMocks()
   })
 
-  describe('saveSession', () => {
-    it('should save session to localStorage', () => {
+  describe("saveSession", () => {
+    it("should save session to localStorage", () => {
       const session: SessionData = {
         totalTasks: 10,
-        startTime: new Date('2024-01-01T10:00:00Z'),
+        startTime: new Date("2024-01-01T10:00:00Z"),
         measurements: [
-          { timestamp: new Date('2024-01-01T10:00:00Z'), completedTasks: 0 },
-          { timestamp: new Date('2024-01-01T10:05:00Z'), completedTasks: 5 }
-        ]
+          { timestamp: new Date("2024-01-01T10:00:00Z"), completedTasks: 0 },
+          { timestamp: new Date("2024-01-01T10:05:00Z"), completedTasks: 5 },
+        ],
       }
 
       saveSession(session)
@@ -32,44 +32,44 @@ describe('storage service', () => {
       const stored = globalThis.localStorage.getItem(STORAGE_KEYS.SESSION)
       expect(stored).not.toBeNull()
       if (stored === null) {
-        throw new Error('Session was not saved to localStorage')
+        throw new Error("Session was not saved to localStorage")
       }
       const parsed = JSON.parse(stored)
       expect(parsed.totalTasks).toBe(10)
-      expect(parsed.startTime).toBe('2024-01-01T10:00:00.000Z')
+      expect(parsed.startTime).toBe("2024-01-01T10:00:00.000Z")
       expect(parsed.measurements).toHaveLength(2)
-      expect(parsed.measurements[0].timestamp).toBe('2024-01-01T10:00:00.000Z')
-      expect(parsed.measurements[1].timestamp).toBe('2024-01-01T10:05:00.000Z')
+      expect(parsed.measurements[0].timestamp).toBe("2024-01-01T10:00:00.000Z")
+      expect(parsed.measurements[1].timestamp).toBe("2024-01-01T10:05:00.000Z")
     })
 
-    it('should handle save errors gracefully', () => {
+    it("should handle save errors gracefully", () => {
       const session: SessionData = {
         totalTasks: 10,
-        startTime: new Date('2024-01-01T10:00:00'),
-        measurements: []
+        startTime: new Date("2024-01-01T10:00:00"),
+        measurements: [],
       }
 
       // Mock localStorage.setItem to throw an error
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.spyOn(globalThis.localStorage, 'setItem').mockImplementationOnce(() => {
-        throw new Error('Quota exceeded')
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+      vi.spyOn(globalThis.localStorage, "setItem").mockImplementationOnce(() => {
+        throw new Error("Quota exceeded")
       })
 
       saveSession(session)
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save session:', expect.any(Error))
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to save session:", expect.any(Error))
     })
   })
 
-  describe('loadSession', () => {
-    it('should load session from localStorage', () => {
+  describe("loadSession", () => {
+    it("should load session from localStorage", () => {
       const sessionData = {
         totalTasks: 10,
-        startTime: '2024-01-01T10:00:00.000Z',
+        startTime: "2024-01-01T10:00:00.000Z",
         measurements: [
-          { timestamp: '2024-01-01T10:00:00.000Z', completedTasks: 0 },
-          { timestamp: '2024-01-01T10:05:00.000Z', completedTasks: 5 }
-        ]
+          { timestamp: "2024-01-01T10:00:00.000Z", completedTasks: 0 },
+          { timestamp: "2024-01-01T10:05:00.000Z", completedTasks: 5 },
+        ],
       }
 
       globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionData))
@@ -83,13 +83,13 @@ describe('storage service', () => {
       expect(loaded?.measurements[0]?.timestamp).toBeInstanceOf(Date)
     })
 
-    it('should return null when no session exists', () => {
+    it("should return null when no session exists", () => {
       const loaded = loadSession()
       expect(loaded).toBeNull()
     })
 
-    it('should return null and clear corrupted data', () => {
-      globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, 'invalid json')
+    it("should return null and clear corrupted data", () => {
+      globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, "invalid json")
 
       const loaded = loadSession()
 
@@ -97,11 +97,11 @@ describe('storage service', () => {
       expect(globalThis.localStorage.getItem(STORAGE_KEYS.SESSION)).toBeNull()
     })
 
-    it('should validate and clear invalid session data', () => {
+    it("should validate and clear invalid session data", () => {
       const invalidSession = {
         totalTasks: -5, // Invalid: negative
-        startTime: '2024-01-01T10:00:00.000Z',
-        measurements: []
+        startTime: "2024-01-01T10:00:00.000Z",
+        measurements: [],
       }
 
       globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(invalidSession))
@@ -112,11 +112,11 @@ describe('storage service', () => {
       expect(globalThis.localStorage.getItem(STORAGE_KEYS.SESSION)).toBeNull()
     })
 
-    it('should validate and clear session with non-integer totalTasks', () => {
+    it("should validate and clear session with non-integer totalTasks", () => {
       const invalidSession = {
         totalTasks: 10.5, // Invalid: not an integer
-        startTime: '2024-01-01T10:00:00.000Z',
-        measurements: []
+        startTime: "2024-01-01T10:00:00.000Z",
+        measurements: [],
       }
 
       globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(invalidSession))
@@ -128,12 +128,12 @@ describe('storage service', () => {
     })
   })
 
-  describe('clearSession', () => {
-    it('should remove session from localStorage', () => {
+  describe("clearSession", () => {
+    it("should remove session from localStorage", () => {
       const sessionData = {
         totalTasks: 10,
-        startTime: '2024-01-01T10:00:00.000Z',
-        measurements: []
+        startTime: "2024-01-01T10:00:00.000Z",
+        measurements: [],
       }
 
       globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(sessionData))
@@ -143,15 +143,15 @@ describe('storage service', () => {
       expect(globalThis.localStorage.getItem(STORAGE_KEYS.SESSION)).toBeNull()
     })
 
-    it('should handle clear errors gracefully', () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.spyOn(globalThis.localStorage, 'removeItem').mockImplementationOnce(() => {
-        throw new Error('Storage error')
+    it("should handle clear errors gracefully", () => {
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+      vi.spyOn(globalThis.localStorage, "removeItem").mockImplementationOnce(() => {
+        throw new Error("Storage error")
       })
 
       clearSession()
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to clear session:', expect.any(Error))
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to clear session:", expect.any(Error))
     })
   })
 })

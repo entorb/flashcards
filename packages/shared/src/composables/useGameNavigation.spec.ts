@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
 
-import { useGameNavigation } from './useGameNavigation'
+import { useGameNavigation } from "./useGameNavigation"
 
 function makeOptions(nextCardResult = false) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/HomePage', component: { template: '<div />' } },
-      { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
-    ]
+      { path: "/", name: "/HomePage", component: { template: "<div />" } },
+      { path: "/game-over", name: "/GameOverPage", component: { template: "<div />" } },
+    ],
   })
-  vi.spyOn(router, 'push')
+  vi.spyOn(router, "push")
 
   const nextCard = vi.fn(() => nextCardResult)
   const finishGame = vi.fn()
@@ -21,13 +21,13 @@ function makeOptions(nextCardResult = false) {
   return { router, nextCard, finishGame, discardGame, stopTimer }
 }
 
-describe('useGameNavigation', () => {
+describe("useGameNavigation", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('handleNextCard', () => {
-    it('calls nextCard()', () => {
+  describe("handleNextCard", () => {
+    it("calls nextCard()", () => {
       const options = makeOptions(false)
       const { handleNextCard } = useGameNavigation(options)
 
@@ -36,7 +36,7 @@ describe('useGameNavigation', () => {
       expect(options.nextCard).toHaveBeenCalledOnce()
     })
 
-    it('does not navigate when nextCard() returns false (mid-game)', () => {
+    it("does not navigate when nextCard() returns false (mid-game)", () => {
       const options = makeOptions(false)
       const { handleNextCard } = useGameNavigation(options)
 
@@ -47,17 +47,17 @@ describe('useGameNavigation', () => {
       expect(options.stopTimer).not.toHaveBeenCalled()
     })
 
-    it('calls finishGame and navigates to /game-over when nextCard() returns true', () => {
+    it("calls finishGame and navigates to /game-over when nextCard() returns true", () => {
       const options = makeOptions(true)
       const { handleNextCard } = useGameNavigation(options)
 
       handleNextCard()
 
       expect(options.finishGame).toHaveBeenCalledOnce()
-      expect(options.router.push).toHaveBeenCalledWith({ name: '/GameOverPage' })
+      expect(options.router.push).toHaveBeenCalledWith({ name: "/GameOverPage" })
     })
 
-    it('calls stopTimer when nextCard() returns true (game over)', () => {
+    it("calls stopTimer when nextCard() returns true (game over)", () => {
       const options = makeOptions(true)
       const { handleNextCard } = useGameNavigation(options)
 
@@ -67,8 +67,8 @@ describe('useGameNavigation', () => {
     })
   })
 
-  describe('handleGoHome', () => {
-    it('calls discardGame', () => {
+  describe("handleGoHome", () => {
+    it("calls discardGame", () => {
       const options = makeOptions()
       const { handleGoHome } = useGameNavigation(options)
 
@@ -77,16 +77,16 @@ describe('useGameNavigation', () => {
       expect(options.discardGame).toHaveBeenCalledOnce()
     })
 
-    it('navigates to /', () => {
+    it("navigates to /", () => {
       const options = makeOptions()
       const { handleGoHome } = useGameNavigation(options)
 
       handleGoHome()
 
-      expect(options.router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+      expect(options.router.push).toHaveBeenCalledWith({ name: "/HomePage" })
     })
 
-    it('calls stopTimer', () => {
+    it("calls stopTimer", () => {
       const options = makeOptions()
       const { handleGoHome } = useGameNavigation(options)
 

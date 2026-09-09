@@ -1,9 +1,9 @@
-import type { ComputedRef, Ref } from 'vue'
-import { computed, ref } from 'vue'
+import type { ComputedRef, Ref } from "vue"
+import { computed, ref } from "vue"
 
-import { MAX_TIME } from '../constants'
-import type { BaseCard } from '../types'
-import { getTimeBucketIndex } from '../utils/helper'
+import { MAX_TIME } from "../constants"
+import type { BaseCard } from "../types"
+import { getTimeBucketIndex } from "../utils/helper"
 
 interface UseCardFilteringReturn<T extends BaseCard> {
   selectedLevel: Ref<number | null>
@@ -14,7 +14,7 @@ interface UseCardFilteringReturn<T extends BaseCard> {
 }
 
 export function useCardFiltering<T extends BaseCard = BaseCard>(
-  getCards: () => T[]
+  getCards: () => T[],
 ): UseCardFilteringReturn<T> {
   const selectedLevel = ref<number | null>(null)
   const selectedTimeBucket = ref<number | null>(null)
@@ -40,12 +40,12 @@ export function useCardFiltering<T extends BaseCard = BaseCard>(
 
   const filteredCards = computed(() => {
     if (selectedLevel.value !== null) {
-      return getCards().filter(card => card.level === selectedLevel.value)
+      return getCards().filter((card) => card.level === selectedLevel.value)
     }
     if (selectedTimeBucket.value !== null) {
       const bucket = selectedTimeBucket.value
       return getCards().filter(
-        card => card.time < MAX_TIME && getTimeBucketIndex(card.time) === bucket
+        (card) => card.time < MAX_TIME && getTimeBucketIndex(card.time) === bucket,
       )
     }
     return []
@@ -56,6 +56,6 @@ export function useCardFiltering<T extends BaseCard = BaseCard>(
     selectedTimeBucket,
     handleLevelClick,
     handleTimeBucketClick,
-    filteredCards
+    filteredCards,
   }
 }

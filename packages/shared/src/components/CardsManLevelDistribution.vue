@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { LEVEL_COLORS } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
+import { LEVEL_COLORS } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
 
 interface Props {
   cards: BaseCard[]
@@ -16,15 +16,15 @@ const emit = defineEmits<{
 }>()
 
 function getCardCountByLevel(level: number): number {
-  return props.cards.filter(card => card.level === level).length
+  return props.cards.filter((card) => card.level === level).length
 }
 
 function getLevelBackgroundColor(level: number): string {
-  return LEVEL_COLORS[level] ?? '#f5f5f5'
+  return LEVEL_COLORS[level] ?? "#f5f5f5"
 }
 
 function handleReset() {
-  emit('reset')
+  emit("reset")
 }
 </script>
 

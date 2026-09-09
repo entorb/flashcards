@@ -1,7 +1,7 @@
-import { createDeckGameStore, MAX_TIME } from '@flashcards/shared'
+import { createDeckGameStore, MAX_TIME } from "@flashcards/shared"
 
-import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from '../constants'
-import { selectCards } from '../services/cardSelector'
+import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from "../constants"
+import { selectCards } from "../services/cardSelector"
 import {
   clearGameState,
   loadCards,
@@ -16,9 +16,9 @@ import {
   saveGameStats,
   saveHistory,
   saveSettings,
-  setGameResult
-} from '../services/storage'
-import type { Card, GameHistory, GameSettings } from '../types'
+  setGameResult,
+} from "../services/storage"
+import type { Card, GameHistory, GameSettings } from "../types"
 
 export const useGameStore = createDeckGameStore<Card, GameHistory, GameSettings>({
   storage: {
@@ -35,22 +35,22 @@ export const useGameStore = createDeckGameStore<Card, GameHistory, GameSettings>
     loadGameState,
     saveGameState,
     clearGameState,
-    setGameResult
+    setGameResult,
   },
   gameStateFlowConfig: GAME_STATE_FLOW_CONFIG,
-  getKey: card => card.word,
+  getKey: (card) => card.word,
   selectCards: (cards, settings) => selectCards(cards, settings.mode, settings.focus),
-  getDifficultyPoints: settings => (settings.mode === 'hidden' ? POINTS_MODE_HIDDEN : 1),
-  tracksTime: settings => settings.mode === 'hidden',
+  getDifficultyPoints: (settings) => (settings.mode === "hidden" ? POINTS_MODE_HIDDEN : 1),
+  tracksTime: (settings) => settings.mode === "hidden",
   timeBonusPredicate: (card, answerTime, result, settings) =>
-    result === 'correct' &&
-    settings.mode === 'hidden' &&
+    result === "correct" &&
+    settings.mode === "hidden" &&
     answerTime !== undefined &&
     card.time < MAX_TIME &&
     answerTime <= card.time,
-  isValidImportCard: card => card.word.trim().length > 0,
+  isValidImportCard: (card) => card.word.trim().length > 0,
   newDeckCards: () => [],
-  getDefaultDeckName: () => DEFAULT_DECKS[0]?.name ?? '',
+  getDefaultDeckName: () => DEFAULT_DECKS[0]?.name ?? "",
   resetCards: ({ setAllCards }) => {
     const defaultDeck = DEFAULT_DECKS[0]
     if (defaultDeck === undefined) return
@@ -61,5 +61,5 @@ export const useGameStore = createDeckGameStore<Card, GameHistory, GameSettings>
       currentSettings.deck = defaultDeck.name
       saveSettings(currentSettings)
     }
-  }
+  },
 })

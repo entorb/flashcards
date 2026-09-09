@@ -21,17 +21,17 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string[]]
+  "update:modelValue": [value: string[]]
 }>()
 
 function emitSelection(values: string[]) {
-  emit('update:modelValue', values)
+  emit("update:modelValue", values)
 }
 
 function toggle(value: string) {
-  const allValues = props.buttons.map(b => b.value)
+  const allValues = props.buttons.map((b) => b.value)
   const current = props.modelValue
-  const allSelected = allValues.every(v => current.includes(v))
+  const allSelected = allValues.every((v) => current.includes(v))
 
   if (allSelected) {
     emitSelection([value])

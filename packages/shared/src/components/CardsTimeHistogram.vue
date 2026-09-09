@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { LEVEL_COLORS, MAX_TIME, TIME_BUCKET_BOUNDS } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
-import { getTimeBucketIndex, getTimeBucketLabel } from '../utils/helper'
+import { LEVEL_COLORS, MAX_TIME, TIME_BUCKET_BOUNDS } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
+import { getTimeBucketIndex, getTimeBucketLabel } from "../utils/helper"
 
 interface Props {
   cards: BaseCard[]
@@ -17,12 +17,12 @@ const emit = defineEmits<{
 
 const bucketIndices = Array.from(
   { length: TIME_BUCKET_BOUNDS.length + 1 },
-  (_, i) => TIME_BUCKET_BOUNDS.length - i
+  (_, i) => TIME_BUCKET_BOUNDS.length - i,
 )
 
 function getCardCountByBucket(bucket: number): number {
   return props.cards.filter(
-    card => card.time < MAX_TIME && getTimeBucketIndex(card.time) === bucket
+    (card) => card.time < MAX_TIME && getTimeBucketIndex(card.time) === bucket,
   ).length
 }
 </script>

@@ -7,20 +7,20 @@ import {
   TEXT_DE,
   useGameNavigation,
   useGameTimer,
-  useKeyboardContinue
-} from '@flashcards/shared'
+  useKeyboardContinue,
+} from "@flashcards/shared"
 import {
   GameHeader,
   GameInputSubmit,
   GameNextCardButton,
   GamePointsBreakdown,
-  GameShowCardQuestion
-} from '@flashcards/shared/components'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+  GameShowCardQuestion,
+} from "@flashcards/shared/components"
+import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '../composables/useGameStore'
-import { validateTypingAnswer } from '../utils/helpers'
+import { useGameStore } from "../composables/useGameStore"
+import { validateTypingAnswer } from "../utils/helpers"
 
 const router = useRouter()
 const {
@@ -35,26 +35,26 @@ const {
   handleAnswer: storeHandleAnswer,
   nextCard,
   finishGame,
-  discardGame
+  discardGame,
 } = useGameStore()
 
 // For endless mode, show remaining cards count (shrinks as cards are removed)
 const totalCardsOverride = computed(() =>
-  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined
+  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined,
 )
 
 // GamePage component state
 const showAnswer = ref(false)
 const answerStatus = ref<AnswerStatus | null>(null)
-const userAnswer = ref('')
+const userAnswer = ref("")
 const options = ref<string[]>([])
 const feedbackData = ref<{
-  type: 'simple' | 'close' | 'typing-incorrect'
+  type: "simple" | "close" | "typing-incorrect"
   message?: string
   userInput?: string
   correctText?: string
   highlightedText?: string
-}>({ type: 'simple' })
+}>({ type: "simple" })
 const showProceedButton = ref(false)
 
 // Use shared timer logic
@@ -66,32 +66,32 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
   nextCard,
   finishGame,
   discardGame,
-  router
+  router,
 })
 
 // Track button disabled state for keyboard control
 const isProceedDisabled = ref(false)
 
 // Determine feedback type based on answer status and game mode
-function getFeedbackType(status: AnswerStatus | null): 'simple' | 'close' | 'typing-incorrect' {
-  if (status === 'close') return 'close'
-  if (status === 'incorrect' && gameSettings.value?.mode === 'typing') return 'typing-incorrect'
-  return 'simple'
+function getFeedbackType(status: AnswerStatus | null): "simple" | "close" | "typing-incorrect" {
+  if (status === "close") return "close"
+  if (status === "incorrect" && gameSettings.value?.mode === "typing") return "typing-incorrect"
+  return "simple"
 }
 
 // Compute question and answer based on language direction
 const question = computed(() => {
-  if (!(gameSettings.value && currentCard.value)) return ''
-  return gameSettings.value.language === 'voc-de' ? currentCard.value.voc : currentCard.value.de
+  if (!(gameSettings.value && currentCard.value)) return ""
+  return gameSettings.value.language === "voc-de" ? currentCard.value.voc : currentCard.value.de
 })
 
 const correctAnswer = computed(() => {
-  if (!(gameSettings.value && currentCard.value)) return ''
-  return gameSettings.value.language === 'voc-de' ? currentCard.value.de : currentCard.value.voc
+  if (!(gameSettings.value && currentCard.value)) return ""
+  return gameSettings.value.language === "voc-de" ? currentCard.value.de : currentCard.value.voc
 })
 
 const targetLang = computed(() => {
-  return gameSettings.value?.language === 'voc-de' ? 'de' : 'voc'
+  return gameSettings.value?.language === "voc-de" ? "de" : "voc"
 })
 
 // Determine which time to display based on mode
@@ -100,7 +100,7 @@ const displayTime = computed(() => {
   const card = currentCard.value
   if (!(settings && card)) return MAX_TIME
 
-  if (settings.mode === 'multiple-choice') {
+  if (settings.mode === "multiple-choice") {
     return MAX_TIME // Don't show time for multiple-choice
   }
   return card.time
@@ -110,10 +110,10 @@ const displayTime = computed(() => {
 watch(
   () => [currentCard.value, gameSettings.value?.mode],
   () => {
-    if (gameSettings.value?.mode === 'multiple-choice') {
+    if (gameSettings.value?.mode === "multiple-choice") {
       const otherAnswers = allCards.value
-        .filter(c => c.voc !== currentCard.value?.voc)
-        .map(c => c[targetLang.value])
+        .filter((c) => c.voc !== currentCard.value?.voc)
+        .map((c) => c[targetLang.value])
 
       const shuffledOthers = shuffleArray(otherAnswers)
       const incorrectOptions = [...new Set(shuffledOthers)].slice(0, 3)
@@ -121,7 +121,7 @@ watch(
       options.value = shuffleArray([...incorrectOptions, correctAnswer.value])
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Reset state when card changes and start timer
@@ -130,11 +130,11 @@ watch(
   () => {
     showAnswer.value = false
     answerStatus.value = null
-    userAnswer.value = ''
-    feedbackData.value = { type: 'simple' }
+    userAnswer.value = ""
+    feedbackData.value = { type: "simple" }
     showProceedButton.value = false
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 function submitAnswer(result: AnswerStatus) {
@@ -156,31 +156,31 @@ function submitAnswer(result: AnswerStatus) {
   const feedbackType = getFeedbackType(result)
   feedbackData.value.type = feedbackType
 
-  if (result === 'close') {
-    const mainCorrectAnswer = correctAnswer.value.split('/')[0]?.trim() ?? correctAnswer.value
+  if (result === "close") {
+    const mainCorrectAnswer = correctAnswer.value.split("/")[0]?.trim() ?? correctAnswer.value
     feedbackData.value = {
       type: feedbackType,
       userInput: userAnswer.value,
-      correctText: mainCorrectAnswer
+      correctText: mainCorrectAnswer,
     }
-  } else if (feedbackType === 'typing-incorrect') {
+  } else if (feedbackType === "typing-incorrect") {
     feedbackData.value = {
       type: feedbackType,
       userInput: userAnswer.value,
-      correctText: correctAnswer.value
+      correctText: correctAnswer.value,
     }
   }
 }
 
 function handleMultipleChoiceSubmit(option: string) {
-  submitAnswer(option === correctAnswer.value ? 'correct' : 'incorrect')
+  submitAnswer(option === correctAnswer.value ? "correct" : "incorrect")
 }
 
 function handleBlindSubmit(correct: boolean) {
   if (correct) {
-    submitAnswer('correct')
+    submitAnswer("correct")
   } else {
-    submitAnswer('incorrect')
+    submitAnswer("incorrect")
   }
 }
 
@@ -190,7 +190,7 @@ function handleTypingSubmit() {
   const result = validateTypingAnswer(
     userAnswer.value,
     correctAnswer.value,
-    gameSettings.value.language
+    gameSettings.value.language,
   )
   submitAnswer(result)
 }
@@ -201,7 +201,7 @@ useKeyboardContinue(canProceed, handleNextCard)
 
 // Handle Escape key
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     handleGoHome()
   }
 }
@@ -210,13 +210,13 @@ onMounted(() => {
   // Redirect home if there's no game in progress and no settings
   // This handles the case where user accessed /game directly without starting a game
   if (gameCards.value.length === 0 && !gameSettings.value) {
-    void router.push({ name: '/HomePage' })
+    void router.push({ name: "/HomePage" })
   }
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 </script>
 

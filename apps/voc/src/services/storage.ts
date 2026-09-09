@@ -3,25 +3,25 @@
  * Handles localStorage operations for cards, history, settings, and stats
  */
 
-import type { GameResult, GameStats, SessionMode } from '@flashcards/shared'
+import type { GameResult, GameStats, SessionMode } from "@flashcards/shared"
 import {
   createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
   loadJSON,
-  saveJSON
-} from '@flashcards/shared'
+  saveJSON,
+} from "@flashcards/shared"
 import {
   isRecord,
   isString,
   isValidBaseCard,
   isValidBaseSettings,
-  isValidHistoryEntry
-} from '@flashcards/shared/utils'
+  isValidHistoryEntry,
+} from "@flashcards/shared/utils"
 
-import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'
-import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
+import { DEFAULT_DECKS, STORAGE_KEYS } from "../constants"
+import type { Card, CardDeck, GameHistory, GameSettings } from "../types"
 
 /** Card shape check: voc/de strings + valid BaseCard level/time */
 function isValidCard(value: unknown): boolean {
@@ -42,10 +42,10 @@ function isValidSettings(value: unknown): boolean {
   if (!(isValidBaseSettings(value) && isRecord(value))) return false
   const { mode, language, deck } = value
   return (
-    typeof mode === 'string' &&
-    ['multiple-choice', 'blind', 'typing'].includes(mode) &&
-    typeof language === 'string' &&
-    ['voc-de', 'de-voc'].includes(language) &&
+    typeof mode === "string" &&
+    ["multiple-choice", "blind", "typing"].includes(mode) &&
+    typeof language === "string" &&
+    ["voc-de", "de-voc"].includes(language) &&
     (deck === undefined || isString(deck))
   )
 }
@@ -64,7 +64,7 @@ interface GameState {
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
   STORAGE_KEYS.GAME_SETTINGS,
   STORAGE_KEYS.GAME_STATE,
-  isValidSettings
+  isValidSettings,
 )
 
 /**
@@ -111,7 +111,7 @@ export function saveDecks(decks: CardDeck[]): void {
  */
 export function getCurrentDeckName(): string {
   const settings = loadSettings()
-  return settings?.deck ?? 'en'
+  return settings?.deck ?? "en"
 }
 
 // Cards (for backward compatibility - operates on current deck)
@@ -122,7 +122,7 @@ export function getCurrentDeckName(): string {
 export function loadCards(): Card[] {
   const decks = loadDecks()
   const deckName = getCurrentDeckName()
-  const deck = decks.find(d => d.name === deckName) ?? decks[0]
+  const deck = decks.find((d) => d.name === deckName) ?? decks[0]
   return deck?.cards ?? []
 }
 
@@ -132,7 +132,7 @@ export function loadCards(): Card[] {
 export function saveCards(cards: Card[]): void {
   const decks = loadDecks()
   const deckName = getCurrentDeckName()
-  const deckIndex = decks.findIndex(d => d.name === deckName)
+  const deckIndex = decks.findIndex((d) => d.name === deckName)
 
   if (deckIndex >= 0) {
     const deck = decks[deckIndex]
@@ -186,7 +186,7 @@ export function saveSettings(settings: GameSettings): void {
 const statsOps = createStatsOperations<GameStats>(STORAGE_KEYS.STATS, {
   points: 0,
   correctAnswers: 0,
-  gamesPlayed: 0
+  gamesPlayed: 0,
 })
 
 /**
@@ -208,7 +208,7 @@ export function saveGameStats(stats: GameStats): void {
 const gameStorage = createAppGameStorage(
   STORAGE_KEYS.GAME_RESULT,
   STORAGE_KEYS.GAME_STATE,
-  STORAGE_KEYS.DAILY_STATS
+  STORAGE_KEYS.DAILY_STATS,
 )
 
 // Daily Stats

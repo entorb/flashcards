@@ -2,30 +2,30 @@ import {
   quasarDirectives,
   quasarMocks,
   quasarProvide,
-  quasarStubs
-} from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { GameHistory } from '@/types'
-import HistoryPage from './HistoryPage.vue'
+  quasarStubs,
+} from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { GameHistory } from "@/types"
+import HistoryPage from "./HistoryPage.vue"
 
 const storageMocks = vi.hoisted(() => ({
-  loadHistory: vi.fn((): GameHistory[] => [])
+  loadHistory: vi.fn((): GameHistory[] => []),
 }))
 
-vi.mock('@/services/storage', () => ({
-  loadHistory: storageMocks.loadHistory
+vi.mock("@/services/storage", () => ({
+  loadHistory: storageMocks.loadHistory,
 }))
 
-describe('pum HistoryPage', () => {
+describe("pum HistoryPage", () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/HomePage', component: { template: '<div />' } },
-        { path: '/history', name: '/HistoryPage', component: { template: '<div />' } }
-      ]
+        { path: "/", name: "/HomePage", component: { template: "<div />" } },
+        { path: "/history", name: "/HistoryPage", component: { template: "<div />" } },
+      ],
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -36,9 +36,9 @@ describe('pum HistoryPage', () => {
       directives: quasarDirectives,
       stubs: {
         ...quasarStubs,
-        AppFooter: { template: '<div />' }
-      }
-    }
+        AppFooter: { template: "<div />" },
+      },
+    },
   })
 
   beforeEach(() => {
@@ -47,21 +47,21 @@ describe('pum HistoryPage', () => {
     vi.clearAllMocks()
   })
 
-  it('mounts without errors', async () => {
+  it("mounts without errors", async () => {
     const router = createMockRouter()
     const wrapper = mount(HistoryPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('loads history on mount', async () => {
+  it("loads history on mount", async () => {
     const router = createMockRouter()
     mount(HistoryPage, createMountOptions(router))
     await router.isReady()
     expect(storageMocks.loadHistory).toHaveBeenCalled()
   })
 
-  it('renders with empty history', async () => {
+  it("renders with empty history", async () => {
     storageMocks.loadHistory.mockReturnValue([])
     const router = createMockRouter()
     const wrapper = mount(HistoryPage, createMountOptions(router))
@@ -69,34 +69,34 @@ describe('pum HistoryPage', () => {
     expect(wrapper.exists()).toBe(true)
     const items = wrapper
       .findAll('[data-cy^="history-game-"]')
-      .filter(el => /^history-game-\d+$/.test(el.attributes('data-cy') ?? ''))
+      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(0)
   })
 
-  it('renders history entries', async () => {
+  it("renders history entries", async () => {
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 42,
         correctAnswers: 8,
         settings: {
-          operations: ['plus'],
-          difficulties: ['simple'],
-          focus: 'weak',
-          levels: [1, 2, 3, 4, 5]
-        }
+          operations: ["plus"],
+          difficulties: ["simple"],
+          focus: "weak",
+          levels: [1, 2, 3, 4, 5],
+        },
       },
       {
-        date: '2024-01-14T09:00:00.000Z',
+        date: "2024-01-14T09:00:00.000Z",
         points: 30,
         correctAnswers: 6,
         settings: {
-          operations: ['minus'],
-          difficulties: ['medium'],
-          focus: 'weak',
-          levels: [1, 2, 3, 4, 5]
-        }
-      }
+          operations: ["minus"],
+          difficulties: ["medium"],
+          focus: "weak",
+          levels: [1, 2, 3, 4, 5],
+        },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -106,23 +106,23 @@ describe('pum HistoryPage', () => {
 
     const items = wrapper
       .findAll('[data-cy^="history-game-"]')
-      .filter(el => /^history-game-\d+$/.test(el.attributes('data-cy') ?? ''))
+      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(2)
   })
 
-  it('formatDetails shows operations, difficulties, and focus', async () => {
+  it("formatDetails shows operations, difficulties, and focus", async () => {
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 42,
         correctAnswers: 8,
         settings: {
-          operations: ['plus', 'minus'],
-          difficulties: ['simple', 'advanced'],
-          focus: 'weak',
-          levels: [1, 2, 3, 4, 5]
-        }
-      }
+          operations: ["plus", "minus"],
+          difficulties: ["simple", "advanced"],
+          focus: "weak",
+          levels: [1, 2, 3, 4, 5],
+        },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -133,6 +133,6 @@ describe('pum HistoryPage', () => {
     const entry = wrapper.find('[data-cy="history-game-0"]')
     const text = entry.text()
     // Should contain operation labels separated by pipe
-    expect(text).toContain('|')
+    expect(text).toContain("|")
   })
 })

@@ -1,73 +1,73 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import HomeFocusSelector from './HomeFocusSelector.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import HomeFocusSelector from "./HomeFocusSelector.vue"
 
 const mountOptions = {
   global: {
     mocks: quasarMocks,
     provide: quasarProvide,
-    stubs: quasarStubs
-  }
+    stubs: quasarStubs,
+  },
 }
 
-describe('HomeFocusSelector', () => {
+describe("HomeFocusSelector", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders 2 focus option buttons (weak, slow)', () => {
+  it("renders 2 focus option buttons (weak, slow)", () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'weak' },
-      ...mountOptions
+      props: { modelValue: "weak" },
+      ...mountOptions,
     })
-    expect(wrapper.findAll('button')).toHaveLength(2)
+    expect(wrapper.findAll("button")).toHaveLength(2)
   })
 
-  it('clicking a button updates the model value', async () => {
+  it("clicking a button updates the model value", async () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'slow' },
-      ...mountOptions
+      props: { modelValue: "slow" },
+      ...mountOptions,
     })
-    const buttons = wrapper.findAll('button')
+    const buttons = wrapper.findAll("button")
     const weakButton = buttons[0]
     expect(weakButton).toBeDefined()
     if (!weakButton) {
-      throw new Error('Weak button not found')
+      throw new Error("Weak button not found")
     }
-    await weakButton.trigger('click')
-    expect(wrapper.emitted('update:modelValue')).toEqual([['weak']])
+    await weakButton.trigger("click")
+    expect(wrapper.emitted("update:modelValue")).toEqual([["weak"]])
   })
 
-  it('clicking the slow button emits slow', async () => {
+  it("clicking the slow button emits slow", async () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'weak' },
-      ...mountOptions
+      props: { modelValue: "weak" },
+      ...mountOptions,
     })
-    const buttons = wrapper.findAll('button')
+    const buttons = wrapper.findAll("button")
     const slowButton = buttons[1]
     expect(slowButton).toBeDefined()
     if (!slowButton) {
-      throw new Error('Slow button not found')
+      throw new Error("Slow button not found")
     }
-    await slowButton.trigger('click')
-    expect(wrapper.emitted('update:modelValue')).toEqual([['slow']])
+    await slowButton.trigger("click")
+    expect(wrapper.emitted("update:modelValue")).toEqual([["slow"]])
   })
 
-  it('hides label when hideLabel=true', () => {
+  it("hides label when hideLabel=true", () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'slow', hideLabel: true },
-      ...mountOptions
+      props: { modelValue: "slow", hideLabel: true },
+      ...mountOptions,
     })
     // The label div uses v-if="!hideLabel"
-    expect(wrapper.find('.text-subtitle2').exists()).toBe(false)
+    expect(wrapper.find(".text-subtitle2").exists()).toBe(false)
   })
 
-  it('shows label when hideLabel is not set', () => {
+  it("shows label when hideLabel is not set", () => {
     const wrapper = mount(HomeFocusSelector, {
-      props: { modelValue: 'slow' },
-      ...mountOptions
+      props: { modelValue: "slow" },
+      ...mountOptions,
     })
-    expect(wrapper.find('.text-subtitle2').exists()).toBe(true)
+    expect(wrapper.find(".text-subtitle2").exists()).toBe(true)
   })
 })

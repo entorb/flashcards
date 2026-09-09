@@ -1,5 +1,5 @@
-import { STORAGE_KEYS } from '@/constants'
-import type { SessionData } from '@/types'
+import { STORAGE_KEYS } from "@/constants"
+import type { SessionData } from "@/types"
 
 /**
  * Load session data from localStorage
@@ -16,7 +16,7 @@ export function loadSession(): SessionData | null {
 
     // Validate the session data
     if (
-      typeof parsed.totalTasks !== 'number' ||
+      typeof parsed.totalTasks !== "number" ||
       parsed.totalTasks <= 0 ||
       !Number.isInteger(parsed.totalTasks)
     ) {
@@ -30,8 +30,8 @@ export function loadSession(): SessionData | null {
       startTime: new Date(parsed.startTime),
       measurements: parsed.measurements.map((m: { timestamp: string; completedTasks: number }) => ({
         timestamp: new Date(m.timestamp),
-        completedTasks: m.completedTasks
-      }))
+        completedTasks: m.completedTasks,
+      })),
     }
   } catch {
     // If there's any error parsing, clear the corrupted data
@@ -49,14 +49,14 @@ export function saveSession(session: SessionData): void {
     const toStore = {
       totalTasks: session.totalTasks,
       startTime: session.startTime.toISOString(),
-      measurements: session.measurements.map(m => ({
+      measurements: session.measurements.map((m) => ({
         timestamp: m.timestamp.toISOString(),
-        completedTasks: m.completedTasks
-      }))
+        completedTasks: m.completedTasks,
+      })),
     }
     globalThis.localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(toStore))
   } catch (error) {
-    console.error('Failed to save session:', error)
+    console.error("Failed to save session:", error)
   }
 }
 
@@ -67,6 +67,6 @@ export function clearSession(): void {
   try {
     globalThis.localStorage.removeItem(STORAGE_KEYS.SESSION)
   } catch (error) {
-    console.error('Failed to clear session:', error)
+    console.error("Failed to clear session:", error)
   }
 }

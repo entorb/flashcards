@@ -1,26 +1,26 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { TEXT_DE } from '../text-de'
-import { useResetCards } from './useResetCards'
+import { TEXT_DE } from "../text-de"
+import { useResetCards } from "./useResetCards"
 
 const mockNotify = vi.fn()
 const mockOnOk = vi.fn()
 const mockDialog = vi.fn(() => ({ onOk: mockOnOk }))
 
-vi.mock('quasar', () => ({
+vi.mock("quasar", () => ({
   useQuasar: () => ({
     dialog: mockDialog,
-    notify: mockNotify
-  })
+    notify: mockNotify,
+  }),
 }))
 
-describe('useResetCards', () => {
+describe("useResetCards", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockDialog.mockReturnValue({ onOk: mockOnOk })
   })
 
-  it('showResetDialog calls $q.dialog with correct title and message', () => {
+  it("showResetDialog calls $q.dialog with correct title and message", () => {
     const { showResetDialog } = useResetCards()
 
     showResetDialog(vi.fn())
@@ -28,12 +28,12 @@ describe('useResetCards', () => {
     expect(mockDialog).toHaveBeenCalledWith(
       expect.objectContaining({
         title: TEXT_DE.shared.cardActions.confirmResetTitle,
-        message: TEXT_DE.shared.cardActions.confirmResetMessage
-      })
+        message: TEXT_DE.shared.cardActions.confirmResetMessage,
+      }),
     )
   })
 
-  it('onOk callback calls the provided onConfirm function', () => {
+  it("onOk callback calls the provided onConfirm function", () => {
     let capturedCallback: (() => void) | null = null
     mockOnOk.mockImplementation((cb: () => void) => {
       capturedCallback = cb
@@ -48,7 +48,7 @@ describe('useResetCards', () => {
     expect(onConfirm).toHaveBeenCalledOnce()
   })
 
-  it('onOk callback calls $q.notify with positive type', () => {
+  it("onOk callback calls $q.notify with positive type", () => {
     let capturedCallback: (() => void) | null = null
     mockOnOk.mockImplementation((cb: () => void) => {
       capturedCallback = cb
@@ -59,6 +59,6 @@ describe('useResetCards', () => {
 
     expect(capturedCallback).not.toBeNull()
     capturedCallback!()
-    expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: 'positive' }))
+    expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: "positive" }))
   })
 })

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { getFocusText, TEXT_DE } from '@flashcards/shared'
-import { HistoryPage } from '@flashcards/shared/pages'
-import { onMounted, ref } from 'vue'
+import { getFocusText, TEXT_DE } from "@flashcards/shared"
+import { HistoryPage } from "@flashcards/shared/pages"
+import { onMounted, ref } from "vue"
 
-import { loadHistory, loadRange } from '@/services/storage'
-import type { GameHistory } from '@/types'
+import { loadHistory, loadRange } from "@/services/storage"
+import type { GameHistory } from "@/types"
 
 const history = ref<GameHistory[]>([])
 const range = ref<number[]>([3, 4, 5, 6, 7, 8, 9])
@@ -15,8 +15,8 @@ onMounted(() => {
 })
 
 function formatSelection(select: number[] | string): string {
-  if (typeof select === 'string') {
-    if (select === 'all') {
+  if (typeof select === "string") {
+    if (select === "all") {
       // Display 'all' as range representation (min-max of current range)
       const min = Math.min(...range.value)
       const max = Math.max(...range.value)
@@ -24,7 +24,7 @@ function formatSelection(select: number[] | string): string {
     }
     return select
   }
-  return select.join(', ')
+  return select.join(", ")
 }
 
 function formatDetails(game: GameHistory): string {

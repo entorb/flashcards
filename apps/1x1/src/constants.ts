@@ -2,12 +2,12 @@
  * Central configuration for the 1x1 app
  */
 
-import type { GameStateFlowConfig } from '@flashcards/shared'
+import type { GameStateFlowConfig } from "@flashcards/shared"
 
 /**
  * Base path for the 1x1 app — used in routing, PWA config, and database
  */
-export const BASE_PATH = 'fc-1x1'
+export const BASE_PATH = "fc-1x1"
 
 // --- Storage Keys ---
 
@@ -16,16 +16,16 @@ export const BASE_PATH = 'fc-1x1'
  * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
  */
 export const STORAGE_KEYS = {
-  CARDS: 'fc-1x1-cards',
-  HISTORY: 'fc-1x1-history',
-  STATS: 'fc-1x1-stats',
-  SETTINGS: 'fc-1x1-settings',
-  GAME_CONFIG: 'fc-1x1-game-config',
-  SELECTED_CARDS: 'fc-1x1-selected-cards',
-  GAME_RESULT: 'fc-1x1-game-result',
-  DAILY_STATS: 'fc-1x1-daily-stats',
-  GAME_STATE: 'fc-1x1-game-state',
-  RANGE: 'fc-1x1-range'
+  CARDS: "fc-1x1-cards",
+  HISTORY: "fc-1x1-history",
+  STATS: "fc-1x1-stats",
+  SETTINGS: "fc-1x1-settings",
+  GAME_CONFIG: "fc-1x1-game-config",
+  SELECTED_CARDS: "fc-1x1-selected-cards",
+  GAME_RESULT: "fc-1x1-game-result",
+  DAILY_STATS: "fc-1x1-daily-stats",
+  GAME_STATE: "fc-1x1-game-state",
+  RANGE: "fc-1x1-range",
 }
 
 // --- Game State Flow Configuration ---
@@ -40,7 +40,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,
-  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS,
 }
 
 // --- Game Logic ---

@@ -3,14 +3,14 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from "@flashcards/shared"
 
 // ============================================================================
 // App-Specific Types
 // ============================================================================
 
-type GameMode = 'multiple-choice' | 'blind' | 'typing'
-type Direction = 'voc-de' | 'de-voc'
+type GameMode = "multiple-choice" | "blind" | "typing"
+type Direction = "voc-de" | "de-voc"
 
 // Card Definition (extends BaseCard)
 export interface Card extends BaseCard {

@@ -1,29 +1,29 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import * as fc from 'fast-check'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from '../constants'
-import type { BaseGameHistory, DailyBonusConfig, GameResult } from '../types'
-import { calculateDailyBonuses } from '../utils/helper'
-import GameOverPage from './GameOverPage.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import * as fc from "fast-check"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from "../constants"
+import type { BaseGameHistory, DailyBonusConfig, GameResult } from "../types"
+import { calculateDailyBonuses } from "../utils/helper"
+import GameOverPage from "./GameOverPage.vue"
 
 // Mock helperStatsDataWrite so it doesn't make real network calls
-vi.mock('../utils/helper', async importOriginal => {
-  const actual = await importOriginal<typeof import('../utils/helper')>()
+vi.mock("../utils/helper", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../utils/helper")>()
   return {
     ...actual,
     helperStatsDataWrite: vi.fn(async () => Promise.resolve()),
-    calculateDailyBonuses: actual.calculateDailyBonuses
+    calculateDailyBonuses: actual.calculateDailyBonuses,
   }
 })
 
 // Also mock via the index re-export path
-vi.mock('../index', async importOriginal => {
-  const actual = await importOriginal<typeof import('../index')>()
+vi.mock("../index", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../index")>()
   return {
     ...actual,
-    helperStatsDataWrite: vi.fn(async () => Promise.resolve())
+    helperStatsDataWrite: vi.fn(async () => Promise.resolve()),
   }
 })
 
@@ -31,15 +31,15 @@ const createMockRouter = () =>
   createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/HomePage', component: { template: '<div />' } },
-      { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
-    ]
+      { path: "/", name: "/HomePage", component: { template: "<div />" } },
+      { path: "/game-over", name: "/GameOverPage", component: { template: "<div />" } },
+    ],
   })
 
 const bonusConfig: DailyBonusConfig = {
   firstGameBonus: FIRST_GAME_BONUS,
   streakGameBonus: STREAK_GAME_BONUS,
-  streakGameInterval: 5
+  streakGameInterval: 5,
 }
 
 interface TestHistory extends BaseGameHistory {
@@ -54,32 +54,32 @@ function makeStorageFunctions(gameResult: GameResult | null = null) {
     clearGameState: vi.fn(),
     incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 2 })),
     saveGameStats: vi.fn(),
-    saveHistory: vi.fn()
+    saveHistory: vi.fn(),
   }
 }
 
 function makeProps(
   storageFunctions: ReturnType<typeof makeStorageFunctions>,
   history: TestHistory[] = [],
-  stats = { gamesPlayed: 1, points: 10, correctAnswers: 5 }
+  stats = { gamesPlayed: 1, points: 10, correctAnswers: 5 },
 ) {
   return {
     storageFunctions,
     bonusConfig,
-    basePath: '1x1',
+    basePath: "1x1",
     gameStoreHistory: history,
-    gameStoreStats: stats
+    gameStoreStats: stats,
   }
 }
 
-describe('GameOverPage (shared)', () => {
+describe("GameOverPage (shared)", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
   })
 
-  it('renders final-points when valid game result exists', async () => {
+  it("renders final-points when valid game result exists", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 42, correctAnswers: 8, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
@@ -90,8 +90,8 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
@@ -99,9 +99,9 @@ describe('GameOverPage (shared)', () => {
     expect(wrapper.find('[data-cy="final-points"]').exists()).toBe(true)
   })
 
-  it('redirects to / when getGameResult returns null and history is empty', async () => {
+  it("redirects to / when getGameResult returns null and history is empty", async () => {
     const router = createMockRouter()
-    vi.spyOn(router, 'push')
+    vi.spyOn(router, "push")
     const storageFunctions = makeStorageFunctions(null)
 
     mount(GameOverPage, {
@@ -110,19 +110,19 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('uses last history entry when getGameResult returns null', async () => {
+  it("uses last history entry when getGameResult returns null", async () => {
     const router = createMockRouter()
     const storageFunctions = makeStorageFunctions(null)
     const history: TestHistory[] = [
-      { date: '2024-01-01', points: 20, correctAnswers: 5, totalCards: 10 }
+      { date: "2024-01-01", points: 20, correctAnswers: 5, totalCards: 10 },
     ]
 
     const wrapper = mount(GameOverPage, {
@@ -131,8 +131,8 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
@@ -140,7 +140,7 @@ describe('GameOverPage (shared)', () => {
     expect(wrapper.find('[data-cy="final-points"]').exists()).toBe(true)
   })
 
-  it('calls saveHistory and saveGameStats on mount', async () => {
+  it("calls saveHistory and saveGameStats on mount", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 10, correctAnswers: 5, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
@@ -151,16 +151,16 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(storageFunctions.saveHistory).toHaveBeenCalled()
     expect(storageFunctions.saveGameStats).toHaveBeenCalled()
   })
 
-  it('calls incrementDailyGames on mount when result exists', async () => {
+  it("calls incrementDailyGames on mount when result exists", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 10, correctAnswers: 5, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
@@ -171,15 +171,15 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(storageFunctions.incrementDailyGames).toHaveBeenCalled()
   })
 
-  it('shows bonus chip when first game of day', async () => {
+  it("shows bonus chip when first game of day", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 10, correctAnswers: 5, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
@@ -191,19 +191,19 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
     await wrapper.vm.$nextTick()
 
     // Bonus section should be visible
-    expect(wrapper.html()).toContain('bonus')
+    expect(wrapper.html()).toContain("bonus")
   })
 
-  it('back-to-home button calls clearGameResult, clearGameState and navigates home', async () => {
+  it("back-to-home button calls clearGameResult, clearGameState and navigates home", async () => {
     const router = createMockRouter()
-    vi.spyOn(router, 'push')
+    vi.spyOn(router, "push")
     const result: GameResult = { points: 10, correctAnswers: 5, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
 
@@ -213,22 +213,22 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
     await wrapper.vm.$nextTick()
 
-    await wrapper.find('[data-cy="back-to-home-button"]').trigger('click')
+    await wrapper.find('[data-cy="back-to-home-button"]').trigger("click")
 
     expect(storageFunctions.clearGameResult).toHaveBeenCalled()
     expect(storageFunctions.clearGameState).toHaveBeenCalled()
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('Enter key triggers goHome', async () => {
+  it("Enter key triggers goHome", async () => {
     const router = createMockRouter()
-    vi.spyOn(router, 'push')
+    vi.spyOn(router, "push")
     const result: GameResult = { points: 10, correctAnswers: 5, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
 
@@ -238,18 +238,18 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
-    globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }))
 
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('Escape key triggers goHome', async () => {
+  it("Escape key triggers goHome", async () => {
     const router = createMockRouter()
-    vi.spyOn(router, 'push')
+    vi.spyOn(router, "push")
     const result: GameResult = { points: 10, correctAnswers: 5, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
 
@@ -259,16 +259,16 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
-    globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
 
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('renders correct answers and total cards', async () => {
+  it("renders correct answers and total cards", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 30, correctAnswers: 7, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
@@ -279,23 +279,23 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('[data-cy="correct-answers-count"]').text()).toContain('7')
-    expect(wrapper.find('[data-cy="total-questions-count"]').text()).toContain('10')
+    expect(wrapper.find('[data-cy="correct-answers-count"]').text()).toContain("7")
+    expect(wrapper.find('[data-cy="total-questions-count"]').text()).toContain("10")
   })
 
-  it('skips bonus application when result is already flagged as processed', async () => {
+  it("skips bonus application when result is already flagged as processed", async () => {
     const router = createMockRouter()
     const result: GameResult = {
       points: 42,
       correctAnswers: 8,
       totalCards: 10,
-      bonusesApplied: true
+      bonusesApplied: true,
     }
     const storageFunctions = makeStorageFunctions(result)
 
@@ -305,10 +305,10 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(wrapper.find('[data-cy="final-points"]').exists()).toBe(true)
     expect(storageFunctions.incrementDailyGames).not.toHaveBeenCalled()
@@ -317,7 +317,7 @@ describe('GameOverPage (shared)', () => {
     wrapper.unmount()
   })
 
-  it('marks a fresh result as processed so a remount cannot double-apply bonuses', async () => {
+  it("marks a fresh result as processed so a remount cannot double-apply bonuses", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 42, correctAnswers: 8, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
@@ -329,15 +329,15 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
     first.unmount()
 
     expect(storageFunctions.incrementDailyGames).toHaveBeenCalledOnce()
     expect(storageFunctions.setGameResult).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ points: 42, totalCards: 10, bonusesApplied: true })
+      expect.objectContaining({ points: 42, totalCards: 10, bonusesApplied: true }),
     )
 
     // Second mount — simulates reload/back-navigation with the flagged result
@@ -348,20 +348,20 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
     second.unmount()
 
     expect(storageFunctions.incrementDailyGames).toHaveBeenCalledOnce()
   })
 
-  it('history-reconstructed results are display-only and never re-apply bonuses', async () => {
+  it("history-reconstructed results are display-only and never re-apply bonuses", async () => {
     const router = createMockRouter()
     const storageFunctions = makeStorageFunctions(null)
     const history: TestHistory[] = [
-      { date: '2024-01-01', points: 20, correctAnswers: 5, totalCards: 10 }
+      { date: "2024-01-01", points: 20, correctAnswers: 5, totalCards: 10 },
     ]
 
     const wrapper = mount(GameOverPage, {
@@ -370,10 +370,10 @@ describe('GameOverPage (shared)', () => {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(wrapper.find('[data-cy="final-points"]').exists()).toBe(true)
     expect(storageFunctions.incrementDailyGames).not.toHaveBeenCalled()
@@ -389,7 +389,7 @@ describe('GameOverPage (shared)', () => {
  * For any GameResult with random points and any set of daily bonuses,
  * the totalPoints computed on the GameOverPage equals result.points + sum(bonusReasons.points).
  */
-describe('GameOverPage — total equals session points plus bonus points (Property 5)', () => {
+describe("GameOverPage — total equals session points plus bonus points (Property 5)", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
@@ -398,22 +398,22 @@ describe('GameOverPage — total equals session points plus bonus points (Proper
 
   const dailyInfoArb = fc.record({
     isFirstGame: fc.boolean(),
-    gamesPlayedToday: fc.integer({ min: 1, max: 50 })
+    gamesPlayedToday: fc.integer({ min: 1, max: 50 }),
   })
 
   const bonusConfigArb: fc.Arbitrary<DailyBonusConfig> = fc.record({
     firstGameBonus: fc.integer({ min: 0, max: 50 }),
     streakGameBonus: fc.integer({ min: 0, max: 50 }),
-    streakGameInterval: fc.integer({ min: 1, max: 10 })
+    streakGameInterval: fc.integer({ min: 1, max: 10 }),
   })
 
   const gameResultArb: fc.Arbitrary<GameResult> = fc.record({
     points: fc.integer({ min: 0, max: 10_000 }),
     correctAnswers: fc.integer({ min: 0, max: 100 }),
-    totalCards: fc.integer({ min: 1, max: 100 })
+    totalCards: fc.integer({ min: 1, max: 100 }),
   })
 
-  it('totalPoints displayed by component matches session points plus bonus points', async () => {
+  it("totalPoints displayed by component matches session points plus bonus points", async () => {
     await fc.assert(
       fc.asyncProperty(
         gameResultArb,
@@ -430,9 +430,9 @@ describe('GameOverPage — total equals session points plus bonus points (Proper
           const router = createRouter({
             history: createMemoryHistory(),
             routes: [
-              { path: '/', component: { template: '<div />' } },
-              { path: '/game-over', component: { template: '<div />' } }
-            ]
+              { path: "/", component: { template: "<div />" } },
+              { path: "/game-over", component: { template: "<div />" } },
+            ],
           })
 
           const storageFunctions = {
@@ -441,27 +441,27 @@ describe('GameOverPage — total equals session points plus bonus points (Proper
             clearGameState: vi.fn(),
             incrementDailyGames: vi.fn(() => dailyInfo),
             saveGameStats: vi.fn(),
-            saveHistory: vi.fn()
+            saveHistory: vi.fn(),
           }
 
           const wrapper = mount(GameOverPage, {
             props: {
               storageFunctions,
               bonusConfig: config,
-              basePath: '1x1',
+              basePath: "1x1",
               gameStoreHistory: [] as Array<BaseGameHistory & { totalCards: number }>,
-              gameStoreStats: { gamesPlayed: 1, points: 100, correctAnswers: 50 }
+              gameStoreStats: { gamesPlayed: 1, points: 100, correctAnswers: 50 },
             },
             global: {
               mocks: quasarMocks,
               plugins: [router],
               provide: quasarProvide,
-              stubs: { ...quasarStubs }
-            }
+              stubs: { ...quasarStubs },
+            },
           })
 
           // Wait for onMounted to complete
-          await new Promise(resolve => setTimeout(resolve, 0))
+          await new Promise((resolve) => setTimeout(resolve, 0))
           await wrapper.vm.$nextTick()
 
           const finalPointsEl = wrapper.find('[data-cy="final-points"]')
@@ -469,9 +469,9 @@ describe('GameOverPage — total equals session points plus bonus points (Proper
           expect(finalPointsEl.text()).toBe(String(expectedTotal))
 
           wrapper.unmount()
-        }
+        },
       ),
-      { numRuns: 20 }
+      { numRuns: 20 },
     )
   })
 })
@@ -483,7 +483,7 @@ describe('GameOverPage — total equals session points plus bonus points (Proper
  * with gamesPlayed incremented by 1 (compared to pre-game value) and points
  * that include the bonus points added by the GameOverPage.
  */
-describe('GameOverPage — persists gamesPlayed increment and bonus points (Property 6)', () => {
+describe("GameOverPage — persists gamesPlayed increment and bonus points (Property 6)", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
@@ -492,28 +492,28 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
 
   const dailyInfoArb = fc.record({
     isFirstGame: fc.boolean(),
-    gamesPlayedToday: fc.integer({ min: 1, max: 50 })
+    gamesPlayedToday: fc.integer({ min: 1, max: 50 }),
   })
 
   const bonusConfigArb: fc.Arbitrary<DailyBonusConfig> = fc.record({
     firstGameBonus: fc.integer({ min: 0, max: 50 }),
     streakGameBonus: fc.integer({ min: 0, max: 50 }),
-    streakGameInterval: fc.integer({ min: 1, max: 10 })
+    streakGameInterval: fc.integer({ min: 1, max: 10 }),
   })
 
   const gameResultArb: fc.Arbitrary<GameResult> = fc.record({
     points: fc.integer({ min: 0, max: 10_000 }),
     correctAnswers: fc.integer({ min: 0, max: 100 }),
-    totalCards: fc.integer({ min: 1, max: 100 })
+    totalCards: fc.integer({ min: 1, max: 100 }),
   })
 
   const preGameStatsArb = fc.record({
     gamesPlayed: fc.integer({ min: 0, max: 1000 }),
     points: fc.integer({ min: 0, max: 100_000 }),
-    correctAnswers: fc.integer({ min: 0, max: 10_000 })
+    correctAnswers: fc.integer({ min: 0, max: 10_000 }),
   })
 
-  it('saveGameStats receives gamesPlayed incremented by 1 and points including bonus', async () => {
+  it("saveGameStats receives gamesPlayed incremented by 1 and points including bonus", async () => {
     await fc.assert(
       fc.asyncProperty(
         gameResultArb,
@@ -525,7 +525,7 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
           const statsAfterFinish = {
             gamesPlayed: preGameStats.gamesPlayed + 1,
             points: preGameStats.points,
-            correctAnswers: preGameStats.correctAnswers
+            correctAnswers: preGameStats.correctAnswers,
           }
 
           const bonuses = calculateDailyBonuses(dailyInfo, config)
@@ -537,9 +537,9 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
           const router = createRouter({
             history: createMemoryHistory(),
             routes: [
-              { path: '/', component: { template: '<div />' } },
-              { path: '/game-over', component: { template: '<div />' } }
-            ]
+              { path: "/", component: { template: "<div />" } },
+              { path: "/game-over", component: { template: "<div />" } },
+            ],
           })
 
           const storageFunctions = {
@@ -548,27 +548,27 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
             clearGameState: vi.fn(),
             incrementDailyGames: vi.fn(() => dailyInfo),
             saveGameStats: vi.fn(),
-            saveHistory: vi.fn()
+            saveHistory: vi.fn(),
           }
 
           const wrapper = mount(GameOverPage, {
             props: {
               storageFunctions,
               bonusConfig: config,
-              basePath: '1x1',
+              basePath: "1x1",
               gameStoreHistory: [] as Array<BaseGameHistory & { totalCards: number }>,
-              gameStoreStats: statsAfterFinish
+              gameStoreStats: statsAfterFinish,
             },
             global: {
               mocks: quasarMocks,
               plugins: [router],
               provide: quasarProvide,
-              stubs: { ...quasarStubs }
-            }
+              stubs: { ...quasarStubs },
+            },
           })
 
           // Wait for onMounted to complete
-          await new Promise(resolve => setTimeout(resolve, 0))
+          await new Promise((resolve) => setTimeout(resolve, 0))
           await wrapper.vm.$nextTick()
 
           // Verify saveGameStats was called
@@ -585,9 +585,9 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
           expect(savedStats.points).toBe(preGameStats.points + expectedBonusSum)
 
           wrapper.unmount()
-        }
+        },
       ),
-      { numRuns: 20 }
+      { numRuns: 20 },
     )
   })
 })
@@ -598,21 +598,21 @@ describe('GameOverPage — persists gamesPlayed increment and bonus points (Prop
  * When bonus points are zero, gamesPlayed still increments.
  * _Requirements: 2.4_
  */
-describe('GameOverPage — zero bonus points edge case', () => {
+describe("GameOverPage — zero bonus points edge case", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
   })
 
-  it('gamesPlayed increments and points stay unchanged when no bonuses are earned', async () => {
+  it("gamesPlayed increments and points stay unchanged when no bonuses are earned", async () => {
     const router = createMockRouter()
     const result: GameResult = { points: 55, correctAnswers: 6, totalCards: 10 }
     const storageFunctions = makeStorageFunctions(result)
     // Not first game, gamesPlayedToday=2 is not a multiple of streakGameInterval(5) → zero bonuses
     storageFunctions.incrementDailyGames.mockReturnValue({
       isFirstGame: false,
-      gamesPlayedToday: 2
+      gamesPlayedToday: 2,
     })
 
     const initialPoints = 200
@@ -622,16 +622,16 @@ describe('GameOverPage — zero bonus points edge case', () => {
       props: makeProps(storageFunctions, [], {
         gamesPlayed: initialGamesPlayed,
         points: initialPoints,
-        correctAnswers: 30
+        correctAnswers: 30,
       }),
       global: {
         mocks: quasarMocks,
         plugins: [router],
         provide: quasarProvide,
-        stubs: { ...quasarStubs }
-      }
+        stubs: { ...quasarStubs },
+      },
     })
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await new Promise((resolve) => setTimeout(resolve, 0))
     await wrapper.vm.$nextTick()
 
     expect(storageFunctions.saveGameStats).toHaveBeenCalledOnce()

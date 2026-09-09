@@ -3,22 +3,22 @@
  * Common patterns used by both 1x1 and voc apps
  */
 
-import { MAX_LEVEL } from '../constants'
-import type { CardLevel, DailyStats } from '../types'
-import { weightedRandomSelection } from '../utils'
+import { MAX_LEVEL } from "../constants"
+import type { CardLevel, DailyStats } from "../types"
+import { weightedRandomSelection } from "../utils"
 import {
   isRecord,
   isValidBaseSettings,
   isValidDailyStats,
   isValidGameResult,
-  isValidGameStats
-} from '../utils/validators'
+  isValidGameStats,
+} from "../utils/validators"
 
 /**
  * Get today's date in ISO format (YYYY-MM-DD)
  */
 export function getTodayISODate(): string {
-  const [datePart] = new Date().toISOString().split('T')
+  const [datePart] = new Date().toISOString().split("T")
   return datePart ?? new Date().toISOString().slice(0, 10)
 }
 
@@ -38,7 +38,7 @@ export function isDifferentDay(storedDate: string): boolean {
  */
 export function loadJSON<T>(key: string, fallback: T, isValid?: (value: unknown) => boolean): T {
   const stored = globalThis.localStorage.getItem(key)
-  if (stored === null || stored === '') {
+  if (stored === null || stored === "") {
     return fallback
   }
   try {
@@ -88,7 +88,7 @@ export function incrementDailyGames(key: string): {
 
   return {
     isFirstGame,
-    gamesPlayedToday: dailyStats.gamesPlayed
+    gamesPlayedToday: dailyStats.gamesPlayed,
   }
 }
 
@@ -102,10 +102,10 @@ export function incrementDailyGames(key: string): {
 export function loadArray<T>(
   key: string,
   fallback: T[] = [],
-  isValidItem?: (item: unknown) => boolean
+  isValidItem?: (item: unknown) => boolean,
 ): T[] {
   const stored = globalThis.localStorage.getItem(key)
-  if (stored === null || stored === '') {
+  if (stored === null || stored === "") {
     return fallback
   }
   try {
@@ -137,7 +137,7 @@ export function saveArray<T>(key: string, data: T[]): void {
  */
 export function createHistoryOperations<T>(
   storageKey: string,
-  isValidEntry?: (entry: unknown) => boolean
+  isValidEntry?: (entry: unknown) => boolean,
 ) {
   return {
     load: () => loadArray<T>(storageKey, [], isValidEntry),
@@ -148,7 +148,7 @@ export function createHistoryOperations<T>(
       const all = loadArray<T>(storageKey, [], isValidEntry)
       all.push(entry)
       saveArray(storageKey, all)
-    }
+    },
   }
 }
 
@@ -160,7 +160,7 @@ export function createHistoryOperations<T>(
  * @returns Object with load, save, and update methods
  */
 export function createStatsOperations<
-  T extends { gamesPlayed: number; points: number; correctAnswers: number }
+  T extends { gamesPlayed: number; points: number; correctAnswers: number },
 >(storageKey: string, defaultStats: T) {
   return {
     load: () => loadJSON<T>(storageKey, defaultStats, isValidGameStats),
@@ -174,7 +174,7 @@ export function createStatsOperations<
       stats.correctAnswers += correctAnswers
       saveJSON(storageKey, stats)
       return stats
-    }
+    },
   }
 }
 
@@ -188,10 +188,10 @@ export function createStatsOperations<
 export function loadSessionJSON<T>(
   key: string,
   fallback: T,
-  isValid?: (value: unknown) => boolean
+  isValid?: (value: unknown) => boolean,
 ): T {
   const stored = globalThis.sessionStorage.getItem(key)
-  if (stored === null || stored === '') {
+  if (stored === null || stored === "") {
     return fallback
   }
   try {
@@ -234,7 +234,7 @@ export function removeSessionJSON(key: string): void {
 export function createGamePersistence<TSettings extends { levels?: CardLevel[] }, TState>(
   settingsKey: string,
   stateKey: string,
-  isValidSettings: (value: unknown) => boolean = isValidBaseSettings
+  isValidSettings: (value: unknown) => boolean = isValidBaseSettings,
 ) {
   return {
     // Game Settings operations
@@ -253,7 +253,7 @@ export function createGamePersistence<TSettings extends { levels?: CardLevel[] }
     },
     loadState: (): TState | null => {
       const stored = globalThis.sessionStorage.getItem(stateKey)
-      if (stored === null || stored === '') return null
+      if (stored === null || stored === "") return null
       try {
         const parsed: unknown = JSON.parse(stored)
         return isRecord(parsed) ? (parsed as TState) : null
@@ -269,7 +269,7 @@ export function createGamePersistence<TSettings extends { levels?: CardLevel[] }
     clearAll: () => {
       removeSessionJSON(settingsKey)
       removeSessionJSON(stateKey)
-    }
+    },
   }
 }
 
@@ -290,12 +290,12 @@ export function createGameResultOperations(resultKey: string) {
       return loadSessionJSON<{ points: number; correctAnswers: number; totalCards: number } | null>(
         resultKey,
         null,
-        isValidGameResult
+        isValidGameResult,
       )
     },
     clear: () => {
       removeSessionJSON(resultKey)
-    }
+    },
   }
 }
 
@@ -311,7 +311,7 @@ export function createGameResultOperations(resultKey: string) {
 export function createAppGameStorage(
   resultKey: string,
   gameStateKey: string,
-  dailyStatsKey: string
+  dailyStatsKey: string,
 ) {
   const resultOps = createGameResultOperations(resultKey)
 
@@ -331,7 +331,7 @@ export function createAppGameStorage(
     // Game State clear
     clearGameState: () => {
       removeSessionJSON(gameStateKey)
-    }
+    },
   }
 }
 
@@ -341,14 +341,14 @@ export function createAppGameStorage(
  */
 export interface CardSelectionConfig<T extends { level: number }> {
   cards: T[]
-  focus: 'weak' | 'slow' // | 'medium' | 'strong'
+  focus: "weak" | "slow" // | 'medium' | 'strong'
   maxCards: number
   modeFilter?: (card: T) => boolean
   timeExtractor?: (card: T) => number
 }
 
 export function selectCardsByFocus<T extends { level: number }>(
-  config: CardSelectionConfig<T>
+  config: CardSelectionConfig<T>,
 ): T[] {
   const { cards, focus, maxCards, modeFilter, timeExtractor } = config
 
@@ -364,7 +364,7 @@ export function selectCardsByFocus<T extends { level: number }>(
   }
 
   // Handle 'slow' focus separately (time-based sorting)
-  if (focus === 'slow' && timeExtractor) {
+  if (focus === "slow" && timeExtractor) {
     const sortedByTime = [...eligible].sort((a, b) => timeExtractor(b) - timeExtractor(a))
     const count = Math.min(maxCards, sortedByTime.length)
     return sortedByTime.slice(0, count)
@@ -376,10 +376,10 @@ export function selectCardsByFocus<T extends { level: number }>(
     weight: number
   }
 
-  const weightedCards: WeightedCard[] = eligible.map(card => {
+  const weightedCards: WeightedCard[] = eligible.map((card) => {
     let weight = 1
 
-    if (focus === 'weak') {
+    if (focus === "weak") {
       // Level 1 = 5x weight, Level 5 = 1x weight
       weight = MAX_LEVEL + 1 - card.level
       // } else if (focus === 'strong') {

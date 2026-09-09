@@ -3,7 +3,7 @@
  * Provides common navigation logic used across all game pages
  */
 
-import type { Router } from 'vue-router'
+import type { Router } from "vue-router"
 
 export interface UseGameNavigationOptions {
   /** Timer stop function from useGameTimer */
@@ -47,7 +47,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
     if (isGameOver) {
       stopTimer()
       finishGame()
-      void router.push({ name: '/GameOverPage' })
+      void router.push({ name: "/GameOverPage" })
     }
   }
 
@@ -58,11 +58,11 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
   function handleGoHome() {
     stopTimer()
     discardGame()
-    void router.push({ name: '/HomePage' })
+    void router.push({ name: "/HomePage" })
   }
 
   return {
     handleNextCard,
-    handleGoHome
+    handleGoHome,
   }
 }

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
-import type { VNode } from 'vue'
+import { useQuasar } from "quasar"
+import type { VNode } from "vue"
 
-import { TEXT_DE } from '../text-de'
-import type { GameStats } from '../types'
+import { TEXT_DE } from "../text-de"
+import type { GameStats } from "../types"
 
-import AppFooter from './AppFooter.vue'
-import HomePwaInstallInfo from './HomePwaInstallInfo.vue'
-import HomeStatisticsCard from './HomeStatisticsCard.vue'
+import AppFooter from "./AppFooter.vue"
+import HomePwaInstallInfo from "./HomePwaInstallInfo.vue"
+import HomeStatisticsCard from "./HomeStatisticsCard.vue"
 
 defineProps<{
   appTitle: string
@@ -26,7 +26,7 @@ defineEmits<{
 defineSlots<{
   mascot(): VNode[]
   config(): VNode[]
-  'extra-buttons'?(): VNode[]
+  "extra-buttons"?(): VNode[]
 }>()
 
 const $q = useQuasar()

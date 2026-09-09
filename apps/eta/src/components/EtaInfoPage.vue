@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
-import { AboutSection } from '@flashcards/shared/components'
-import { QIcon } from 'quasar'
+import { TEXT_DE } from "@flashcards/shared"
+import { AboutSection } from "@flashcards/shared/components"
+import { QIcon } from "quasar"
 
-import { BASE_PATH } from '@/constants'
+import { BASE_PATH } from "@/constants"
 
 defineEmits<{
   back: []

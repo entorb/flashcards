@@ -2,14 +2,14 @@
  * Central configuration for the lwk app
  */
 
-import type { GameStateFlowConfig } from '@flashcards/shared'
+import type { GameStateFlowConfig } from "@flashcards/shared"
 
-import type { Card } from './types'
+import type { Card } from "./types"
 
 /**
  * Base path for the lwk app — used in routing, PWA config, and database
  */
-export const BASE_PATH = 'fc-lwk'
+export const BASE_PATH = "fc-lwk"
 
 // --- Storage Keys ---
 
@@ -18,14 +18,14 @@ export const BASE_PATH = 'fc-lwk'
  * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
  */
 export const STORAGE_KEYS = {
-  DECKS: 'fc-lwk-decks',
-  HISTORY: 'fc-lwk-history',
-  STATS: 'fc-lwk-stats',
-  SETTINGS: 'fc-lwk-settings',
-  SELECTED_CARDS: 'fc-lwk-selected-cards',
-  GAME_STATE: 'fc-lwk-game-state',
-  GAME_RESULT: 'fc-lwk-game-result',
-  DAILY_STATS: 'fc-lwk-daily-stats'
+  DECKS: "fc-lwk-decks",
+  HISTORY: "fc-lwk-history",
+  STATS: "fc-lwk-stats",
+  SETTINGS: "fc-lwk-settings",
+  SELECTED_CARDS: "fc-lwk-selected-cards",
+  GAME_STATE: "fc-lwk-game-state",
+  GAME_RESULT: "fc-lwk-game-result",
+  DAILY_STATS: "fc-lwk-daily-stats",
 }
 
 // --- Game State Flow Configuration ---
@@ -40,7 +40,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,
-  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS,
 }
 
 // --- Game Logic ---
@@ -76,20 +76,20 @@ export const POINTS_MODE_HIDDEN = 4
  */
 export const DEFAULT_DECKS = [
   {
-    name: 'LWK_1',
+    name: "LWK_1",
     //cspell:disable
     cards: [
-      { word: 'Jahr', level: 1, time: 60 },
-      { word: 'bleiben', level: 1, time: 60 },
-      { word: 'Januar', level: 1, time: 60 },
-      { word: 'essen', level: 1, time: 60 },
-      { word: 'März', level: 1, time: 60 },
-      { word: 'November', level: 1, time: 60 },
-      { word: 'nehmen', level: 1, time: 60 },
-      { word: 'Mai', level: 1, time: 60 },
-      { word: 'gehen', level: 1, time: 60 },
-      { word: 'Februar', level: 1, time: 60 }
+      { word: "Jahr", level: 1, time: 60 },
+      { word: "bleiben", level: 1, time: 60 },
+      { word: "Januar", level: 1, time: 60 },
+      { word: "essen", level: 1, time: 60 },
+      { word: "März", level: 1, time: 60 },
+      { word: "November", level: 1, time: 60 },
+      { word: "nehmen", level: 1, time: 60 },
+      { word: "Mai", level: 1, time: 60 },
+      { word: "gehen", level: 1, time: 60 },
+      { word: "Februar", level: 1, time: 60 },
       //cspell:enable
-    ] as Card[]
-  }
+    ] as Card[],
+  },
 ]

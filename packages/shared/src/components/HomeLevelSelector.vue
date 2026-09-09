@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue"
 
-import { ALL_LEVELS } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { BaseCard, CardLevel } from '../types'
+import { ALL_LEVELS } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { BaseCard, CardLevel } from "../types"
 
 interface Props {
   cards: BaseCard[]
@@ -40,7 +40,8 @@ function toggle(level: CardLevel): void {
     return
   }
   // Deselecting the last selected level selects all instead (never empty)
-  levels.value = levels.value.length === 1 ? [...ALL_LEVELS] : levels.value.filter(l => l !== level)
+  levels.value =
+    levels.value.length === 1 ? [...ALL_LEVELS] : levels.value.filter((l) => l !== level)
 }
 </script>
 

@@ -1,461 +1,461 @@
 // cspell:disable
 
-import { levenshteinDistance, MAX_TIME } from '@flashcards/shared'
-import { describe, expect, it } from 'vitest'
+import { levenshteinDistance, MAX_TIME } from "@flashcards/shared"
+import { describe, expect, it } from "vitest"
 
-import { normalizeString, parseCardsFromText, validateTypingAnswer } from './helpers'
+import { normalizeString, parseCardsFromText, validateTypingAnswer } from "./helpers"
 
 /**
  * Unit tests for helpers utility functions
  * Tests pure functions: typing validation, string normalization, and card parsing
  */
 
-describe('helpers - Typing Answer Validation', () => {
-  describe('Exact matches', () => {
-    it('should return correct for exact match', () => {
-      const result = validateTypingAnswer('apple', 'apple', 'voc-de')
-      expect(result).toBe('correct')
+describe("helpers - Typing Answer Validation", () => {
+  describe("Exact matches", () => {
+    it("should return correct for exact match", () => {
+      const result = validateTypingAnswer("apple", "apple", "voc-de")
+      expect(result).toBe("correct")
     })
 
-    it('should normalize case differences', () => {
-      const result = validateTypingAnswer('APPLE', 'apple', 'voc-de')
-      expect(result).toBe('correct')
+    it("should normalize case differences", () => {
+      const result = validateTypingAnswer("APPLE", "apple", "voc-de")
+      expect(result).toBe("correct")
     })
 
-    it('should trim whitespace', () => {
-      const result = validateTypingAnswer('  apple  ', 'apple', 'voc-de')
-      expect(result).toBe('correct')
+    it("should trim whitespace", () => {
+      const result = validateTypingAnswer("  apple  ", "apple", "voc-de")
+      expect(result).toBe("correct")
     })
 
-    it('should handle multiple answer options separated by slash', () => {
-      const result = validateTypingAnswer('hello', 'hello / hallo', 'voc-de')
-      expect(result).toBe('correct')
+    it("should handle multiple answer options separated by slash", () => {
+      const result = validateTypingAnswer("hello", "hello / hallo", "voc-de")
+      expect(result).toBe("correct")
     })
 
-    it('should match second option in slash-separated answers', () => {
-      const result = validateTypingAnswer('hallo', 'hello / hallo', 'voc-de')
-      expect(result).toBe('correct')
-    })
-  })
-
-  describe('Close matches (Levenshtein distance <= 2)', () => {
-    it('should return close for 1 character deletion', () => {
-      const result = validateTypingAnswer('aple', 'apple', 'voc-de')
-      expect(result).toBe('close')
-    })
-
-    it('should return close for 1 character substitution', () => {
-      const result = validateTypingAnswer('appl', 'apple', 'voc-de')
-      expect(result).toBe('close')
-    })
-
-    it('should return close for 2 character differences', () => {
-      const result = validateTypingAnswer('apl', 'apple', 'voc-de')
-      expect(result).toBe('close')
-    })
-
-    it('should return incorrect for 3+ character differences', () => {
-      const result = validateTypingAnswer('xyz', 'apple', 'voc-de')
-      expect(result).toBe('incorrect')
+    it("should match second option in slash-separated answers", () => {
+      const result = validateTypingAnswer("hallo", "hello / hallo", "voc-de")
+      expect(result).toBe("correct")
     })
   })
 
-  describe('DE->Voc language direction (verb handling)', () => {
+  describe("Close matches (Levenshtein distance <= 2)", () => {
+    it("should return close for 1 character deletion", () => {
+      const result = validateTypingAnswer("aple", "apple", "voc-de")
+      expect(result).toBe("close")
+    })
+
+    it("should return close for 1 character substitution", () => {
+      const result = validateTypingAnswer("appl", "apple", "voc-de")
+      expect(result).toBe("close")
+    })
+
+    it("should return close for 2 character differences", () => {
+      const result = validateTypingAnswer("apl", "apple", "voc-de")
+      expect(result).toBe("close")
+    })
+
+    it("should return incorrect for 3+ character differences", () => {
+      const result = validateTypingAnswer("xyz", "apple", "voc-de")
+      expect(result).toBe("incorrect")
+    })
+  })
+
+  describe("DE->Voc language direction (verb handling)", () => {
     it('should accept verbs without "to" prefix in DE->Voc', () => {
-      const result = validateTypingAnswer('walk', 'to walk', 'de-voc')
-      expect(result).toBe('correct')
+      const result = validateTypingAnswer("walk", "to walk", "de-voc")
+      expect(result).toBe("correct")
     })
 
     it('should still accept "to" prefix in DE->Voc', () => {
-      const result = validateTypingAnswer('to walk', 'to walk', 'de-voc')
-      expect(result).toBe('correct')
+      const result = validateTypingAnswer("to walk", "to walk", "de-voc")
+      expect(result).toBe("correct")
     })
 
     it('should not accept without "to" prefix in Voc->DE', () => {
-      const result = validateTypingAnswer('walk', 'to walk', 'voc-de')
-      expect(result).toBe('incorrect')
+      const result = validateTypingAnswer("walk", "to walk", "voc-de")
+      expect(result).toBe("incorrect")
     })
 
     it('should handle multiple verb options with "to" prefix', () => {
-      const result = validateTypingAnswer('run', 'to run / to execute', 'de-voc')
-      expect(result).toBe('correct')
+      const result = validateTypingAnswer("run", "to run / to execute", "de-voc")
+      expect(result).toBe("correct")
     })
 
-    it('should handle mixed options in DE->Voc', () => {
-      const result = validateTypingAnswer('leap', 'to jump / leap', 'de-voc')
-      expect(result).toBe('correct')
+    it("should handle mixed options in DE->Voc", () => {
+      const result = validateTypingAnswer("leap", "to jump / leap", "de-voc")
+      expect(result).toBe("correct")
     })
   })
 
-  describe('Edge cases', () => {
-    it('should handle empty user input', () => {
-      const result = validateTypingAnswer('', 'apple', 'voc-de')
-      expect(result).toBe('incorrect')
+  describe("Edge cases", () => {
+    it("should handle empty user input", () => {
+      const result = validateTypingAnswer("", "apple", "voc-de")
+      expect(result).toBe("incorrect")
     })
 
-    it('should handle special characters and accents', () => {
-      const result = validateTypingAnswer('café', 'café', 'voc-de')
-      expect(result).toBe('correct')
+    it("should handle special characters and accents", () => {
+      const result = validateTypingAnswer("café", "café", "voc-de")
+      expect(result).toBe("correct")
     })
 
-    it('should handle whitespace in answer options', () => {
-      const result = validateTypingAnswer('hello world', 'hello world', 'voc-de')
-      expect(result).toBe('correct')
+    it("should handle whitespace in answer options", () => {
+      const result = validateTypingAnswer("hello world", "hello world", "voc-de")
+      expect(result).toBe("correct")
     })
 
-    it('should handle multiple spaces with fuzzy matching', () => {
+    it("should handle multiple spaces with fuzzy matching", () => {
       // normalizeWhitespace collapses multiple spaces, so both become 'hello world'
-      const result = validateTypingAnswer('  hello  world  ', 'hello world', 'voc-de')
-      expect(result).toBe('correct') // Exact match after whitespace normalization
+      const result = validateTypingAnswer("  hello  world  ", "hello world", "voc-de")
+      expect(result).toBe("correct") // Exact match after whitespace normalization
     })
   })
 
-  describe('Helper function: levenshteinDistance', () => {
-    it('should return 0 for identical strings', () => {
-      expect(levenshteinDistance('hello', 'hello')).toBe(0)
+  describe("Helper function: levenshteinDistance", () => {
+    it("should return 0 for identical strings", () => {
+      expect(levenshteinDistance("hello", "hello")).toBe(0)
     })
 
-    it('should return correct distance for single character operations', () => {
-      expect(levenshteinDistance('hello', 'hallo')).toBe(1) // substitution
-      expect(levenshteinDistance('hello', 'helo')).toBe(1) // deletion
-      expect(levenshteinDistance('hello', 'helloo')).toBe(1) // insertion
+    it("should return correct distance for single character operations", () => {
+      expect(levenshteinDistance("hello", "hallo")).toBe(1) // substitution
+      expect(levenshteinDistance("hello", "helo")).toBe(1) // deletion
+      expect(levenshteinDistance("hello", "helloo")).toBe(1) // insertion
     })
 
-    it('should return correct distance for multiple operations', () => {
-      expect(levenshteinDistance('kitten', 'sitting')).toBe(3)
+    it("should return correct distance for multiple operations", () => {
+      expect(levenshteinDistance("kitten", "sitting")).toBe(3)
     })
 
-    it('should handle empty strings', () => {
-      expect(levenshteinDistance('', 'hello')).toBe(5)
-      expect(levenshteinDistance('hello', '')).toBe(5)
-      expect(levenshteinDistance('', '')).toBe(0)
+    it("should handle empty strings", () => {
+      expect(levenshteinDistance("", "hello")).toBe(5)
+      expect(levenshteinDistance("hello", "")).toBe(5)
+      expect(levenshteinDistance("", "")).toBe(0)
     })
   })
 
-  describe('Helper function: normalizeString', () => {
-    it('should convert to lowercase', () => {
-      expect(normalizeString('HELLO')).toBe('hello')
+  describe("Helper function: normalizeString", () => {
+    it("should convert to lowercase", () => {
+      expect(normalizeString("HELLO")).toBe("hello")
     })
 
-    it('should trim whitespace', () => {
-      expect(normalizeString('  hello  ')).toBe('hello')
+    it("should trim whitespace", () => {
+      expect(normalizeString("  hello  ")).toBe("hello")
     })
 
-    it('should handle both case and whitespace', () => {
-      expect(normalizeString('  HELLO  ')).toBe('hello')
+    it("should handle both case and whitespace", () => {
+      expect(normalizeString("  HELLO  ")).toBe("hello")
     })
 
-    it('should preserve internal whitespace', () => {
-      expect(normalizeString('hello world')).toBe('hello world')
+    it("should preserve internal whitespace", () => {
+      expect(normalizeString("hello world")).toBe("hello world")
     })
   })
 })
 
-describe('helpers - Card Text Parsing', () => {
-  describe('Empty input handling', () => {
-    it('should return null for empty string', () => {
-      const result = parseCardsFromText('')
+describe("helpers - Card Text Parsing", () => {
+  describe("Empty input handling", () => {
+    it("should return null for empty string", () => {
+      const result = parseCardsFromText("")
       expect(result).toBeNull()
     })
 
-    it('should return null for whitespace-only string', () => {
-      const result = parseCardsFromText('   \n  \n  ')
-      expect(result).toBeNull()
-    })
-  })
-
-  describe('Delimiter detection', () => {
-    it('should detect tab delimiter', () => {
-      const result = parseCardsFromText('apple\tApfel\t1')
-      expect(result?.delimiter).toBe('\t')
-    })
-
-    it('should detect semicolon delimiter', () => {
-      const result = parseCardsFromText('apple;Apfel;1')
-      expect(result?.delimiter).toBe(';')
-    })
-
-    it('should detect comma delimiter', () => {
-      const result = parseCardsFromText('apple,Apfel,1')
-      expect(result?.delimiter).toBe(',')
-    })
-
-    it('should detect slash delimiter', () => {
-      const result = parseCardsFromText('apple/Apfel/1')
-      expect(result?.delimiter).toBe('/')
-    })
-
-    it('should prefer tab over other delimiters if both exist', () => {
-      const result = parseCardsFromText('apple\tApfel;test\t1')
-      expect(result?.delimiter).toBe('\t')
-    })
-
-    it('should return null if no valid delimiter found', () => {
-      const result = parseCardsFromText('appleApfel1')
+    it("should return null for whitespace-only string", () => {
+      const result = parseCardsFromText("   \n  \n  ")
       expect(result).toBeNull()
     })
   })
 
-  describe('Basic card parsing', () => {
-    it('should parse single card with all fields', () => {
-      const result = parseCardsFromText('apple\tApfel\t2')
+  describe("Delimiter detection", () => {
+    it("should detect tab delimiter", () => {
+      const result = parseCardsFromText("apple\tApfel\t1")
+      expect(result?.delimiter).toBe("\t")
+    })
+
+    it("should detect semicolon delimiter", () => {
+      const result = parseCardsFromText("apple;Apfel;1")
+      expect(result?.delimiter).toBe(";")
+    })
+
+    it("should detect comma delimiter", () => {
+      const result = parseCardsFromText("apple,Apfel,1")
+      expect(result?.delimiter).toBe(",")
+    })
+
+    it("should detect slash delimiter", () => {
+      const result = parseCardsFromText("apple/Apfel/1")
+      expect(result?.delimiter).toBe("/")
+    })
+
+    it("should prefer tab over other delimiters if both exist", () => {
+      const result = parseCardsFromText("apple\tApfel;test\t1")
+      expect(result?.delimiter).toBe("\t")
+    })
+
+    it("should return null if no valid delimiter found", () => {
+      const result = parseCardsFromText("appleApfel1")
+      expect(result).toBeNull()
+    })
+  })
+
+  describe("Basic card parsing", () => {
+    it("should parse single card with all fields", () => {
+      const result = parseCardsFromText("apple\tApfel\t2")
       expect(result?.cards).toHaveLength(1)
       expect(result!.cards[0]!).toEqual({
-        voc: 'apple',
-        de: 'Apfel',
+        voc: "apple",
+        de: "Apfel",
         level: 2,
-        time: MAX_TIME
+        time: MAX_TIME,
       })
     })
 
-    it('should parse single card without level (defaults to 1)', () => {
-      const result = parseCardsFromText('apple\tApfel')
+    it("should parse single card without level (defaults to 1)", () => {
+      const result = parseCardsFromText("apple\tApfel")
       expect(result?.cards).toHaveLength(1)
       expect(result!.cards[0]!.level).toBe(1)
     })
 
-    it('should parse multiple cards', () => {
-      const text = 'apple\tApfel\nbanana\tBanane\t3\ncherry\tKirsche'
+    it("should parse multiple cards", () => {
+      const text = "apple\tApfel\nbanana\tBanane\t3\ncherry\tKirsche"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
     })
 
-    it('should trim whitespace from card values', () => {
-      const result = parseCardsFromText('  apple  \t  Apfel  \t  2  ')
+    it("should trim whitespace from card values", () => {
+      const result = parseCardsFromText("  apple  \t  Apfel  \t  2  ")
       expect(result!.cards[0]!).toEqual({
-        voc: 'apple',
-        de: 'Apfel',
+        voc: "apple",
+        de: "Apfel",
         level: 2,
-        time: MAX_TIME
+        time: MAX_TIME,
       })
     })
   })
 
-  describe('Header handling', () => {
+  describe("Header handling", () => {
     it('should skip header line containing "voc" and "de"', () => {
-      const text = 'voc\tde\tlevel\napple\tApfel\t1'
+      const text = "voc\tde\tlevel\napple\tApfel\t1"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
-      expect(result!.cards[0]!.voc).toBe('apple')
+      expect(result!.cards[0]!.voc).toBe("apple")
     })
 
     it('should skip header with lowercase "voc" and "de"', () => {
-      const text = 'voc\tde\tlevel\napple\tApfel\t1'
+      const text = "voc\tde\tlevel\napple\tApfel\t1"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
     })
 
-    it('should skip header with mixed case', () => {
-      const text = 'Voc\tDE\tLevel\napple\tApfel\t1'
+    it("should skip header with mixed case", () => {
+      const text = "Voc\tDE\tLevel\napple\tApfel\t1"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(1)
     })
 
     it('should not skip first line if it does not contain "Voc" and "de"', () => {
-      const text = 'apple\tApfel\t1\nbanana\tBanane\t2'
+      const text = "apple\tApfel\t1\nbanana\tBanane\t2"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
   })
 
-  describe('Level parsing', () => {
-    it('should parse valid levels 1-5', () => {
+  describe("Level parsing", () => {
+    it("should parse valid levels 1-5", () => {
       for (let level = 1; level <= 5; level++) {
         const result = parseCardsFromText(`word\tWort\t${level}`)
         expect(result!.cards[0]!.level).toBe(level)
       }
     })
 
-    it('should default to level 1 if level is not a number', () => {
-      const result = parseCardsFromText('apple\tApfel\tabc')
+    it("should default to level 1 if level is not a number", () => {
+      const result = parseCardsFromText("apple\tApfel\tabc")
       expect(result!.cards[0]!.level).toBe(1)
     })
 
-    it('should default to level 1 if level field is empty', () => {
-      const result = parseCardsFromText('apple\tApfel\t')
+    it("should default to level 1 if level field is empty", () => {
+      const result = parseCardsFromText("apple\tApfel\t")
       expect(result!.cards[0]!.level).toBe(1)
     })
 
-    it('should default to level 1 when level is 0 (falsy check)', () => {
+    it("should default to level 1 when level is 0 (falsy check)", () => {
       // Note: Number.parseInt('0', 10) returns 0, but 0 || 1 evaluates to 1
-      const result = parseCardsFromText('apple\tApfel\t0')
+      const result = parseCardsFromText("apple\tApfel\t0")
       expect(result!.cards[0]!.level).toBe(1)
     })
 
-    it('should clamp level values above MAX_LEVEL to MIN_LEVEL', () => {
-      const result = parseCardsFromText('apple\tApfel\t10')
+    it("should clamp level values above MAX_LEVEL to MIN_LEVEL", () => {
+      const result = parseCardsFromText("apple\tApfel\t10")
       expect(result!.cards[0]!.level).toBe(1)
     })
   })
 
-  describe('Multi-word and special characters', () => {
-    it('should parse multi-word phrases', () => {
-      const result = parseCardsFromText('to walk\tzu Fuß gehen\t1')
-      expect(result!.cards[0]!.voc).toBe('to walk')
-      expect(result!.cards[0]!.de).toBe('zu Fuß gehen')
+  describe("Multi-word and special characters", () => {
+    it("should parse multi-word phrases", () => {
+      const result = parseCardsFromText("to walk\tzu Fuß gehen\t1")
+      expect(result!.cards[0]!.voc).toBe("to walk")
+      expect(result!.cards[0]!.de).toBe("zu Fuß gehen")
     })
 
-    it('should handle special characters and umlauts', () => {
-      const result = parseCardsFromText('Müller\tmüller@example.com\t1')
+    it("should handle special characters and umlauts", () => {
+      const result = parseCardsFromText("Müller\tmüller@example.com\t1")
       expect(result!.cards[0]!).toEqual({
-        voc: 'Müller',
-        de: 'müller@example.com',
+        voc: "Müller",
+        de: "müller@example.com",
         level: 1,
-        time: MAX_TIME
+        time: MAX_TIME,
       })
     })
 
-    it('should handle numbers in card text', () => {
-      const result = parseCardsFromText('chapter 5\tkapitel 5\t2')
-      expect(result!.cards[0]!.voc).toBe('chapter 5')
-      expect(result!.cards[0]!.de).toBe('kapitel 5')
+    it("should handle numbers in card text", () => {
+      const result = parseCardsFromText("chapter 5\tkapitel 5\t2")
+      expect(result!.cards[0]!.voc).toBe("chapter 5")
+      expect(result!.cards[0]!.de).toBe("kapitel 5")
     })
 
-    it('should handle punctuation in card text', () => {
+    it("should handle punctuation in card text", () => {
       const result = parseCardsFromText("don't\tdarf nicht\t1")
       expect(result!.cards[0]!.voc).toBe("don't")
-      expect(result!.cards[0]!.de).toBe('darf nicht')
+      expect(result!.cards[0]!.de).toBe("darf nicht")
     })
   })
 
-  describe('Invalid card filtering', () => {
-    it('should skip lines with empty English field', () => {
-      const text = 'apple\tApfel\n\tBanane\ncherry\tKirsche'
+  describe("Invalid card filtering", () => {
+    it("should skip lines with empty English field", () => {
+      const text = "apple\tApfel\n\tBanane\ncherry\tKirsche"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
+      expect(result?.cards.map((c) => c.voc)).toEqual(["apple", "cherry"])
     })
 
-    it('should skip lines with empty German field', () => {
-      const text = 'apple\tApfel\nbanana\t\ncherry\tKirsche'
+    it("should skip lines with empty German field", () => {
+      const text = "apple\tApfel\nbanana\t\ncherry\tKirsche"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
+      expect(result?.cards.map((c) => c.voc)).toEqual(["apple", "cherry"])
     })
 
-    it('should skip lines with only whitespace in fields', () => {
-      const text = 'apple\tApfel\n  \t  \ncherry\tKirsche'
+    it("should skip lines with only whitespace in fields", () => {
+      const text = "apple\tApfel\n  \t  \ncherry\tKirsche"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
 
-    it('should skip lines with less than 2 fields (after splitting)', () => {
-      const text = 'apple\tApfel\nbanana\t\ncherry\tKirsche'
+    it("should skip lines with less than 2 fields (after splitting)", () => {
+      const text = "apple\tApfel\nbanana\t\ncherry\tKirsche"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
-      expect(result?.cards.map(c => c.voc)).toEqual(['apple', 'cherry'])
-    })
-  })
-
-  describe('Different delimiters in single parse', () => {
-    it('should parse semicolon-delimited cards correctly', () => {
-      const text = 'voc;de;level\napple;Apfel;1\nbanana;Banane;2'
-      const result = parseCardsFromText(text)
-      expect(result?.cards).toHaveLength(2)
-      expect(result!.cards[0]!.voc).toBe('apple')
-      expect(result!.cards[0]!.de).toBe('Apfel')
-    })
-
-    it('should parse comma-delimited cards correctly', () => {
-      const text = 'apple,Apfel,1\nbanana,Banane,2'
-      const result = parseCardsFromText(text)
-      expect(result?.cards).toHaveLength(2)
-      expect(result!.cards[0]!.voc).toBe('apple')
-    })
-
-    it('should parse slash-delimited cards correctly', () => {
-      const text = 'apple/Apfel/1\nbanana/Banane/2'
-      const result = parseCardsFromText(text)
-      expect(result?.cards).toHaveLength(2)
-      expect(result!.cards[0]!.voc).toBe('apple')
+      expect(result?.cards.map((c) => c.voc)).toEqual(["apple", "cherry"])
     })
   })
 
-  describe('Return value validation', () => {
-    it('should return null if no valid cards are found', () => {
-      const text = '\t\n\t\n\t'
+  describe("Different delimiters in single parse", () => {
+    it("should parse semicolon-delimited cards correctly", () => {
+      const text = "voc;de;level\napple;Apfel;1\nbanana;Banane;2"
+      const result = parseCardsFromText(text)
+      expect(result?.cards).toHaveLength(2)
+      expect(result!.cards[0]!.voc).toBe("apple")
+      expect(result!.cards[0]!.de).toBe("Apfel")
+    })
+
+    it("should parse comma-delimited cards correctly", () => {
+      const text = "apple,Apfel,1\nbanana,Banane,2"
+      const result = parseCardsFromText(text)
+      expect(result?.cards).toHaveLength(2)
+      expect(result!.cards[0]!.voc).toBe("apple")
+    })
+
+    it("should parse slash-delimited cards correctly", () => {
+      const text = "apple/Apfel/1\nbanana/Banane/2"
+      const result = parseCardsFromText(text)
+      expect(result?.cards).toHaveLength(2)
+      expect(result!.cards[0]!.voc).toBe("apple")
+    })
+  })
+
+  describe("Return value validation", () => {
+    it("should return null if no valid cards are found", () => {
+      const text = "\t\n\t\n\t"
       const result = parseCardsFromText(text)
       expect(result).toBeNull()
     })
 
-    it('should return cards and delimiter when successful', () => {
-      const result = parseCardsFromText('apple\tApfel')
+    it("should return cards and delimiter when successful", () => {
+      const result = parseCardsFromText("apple\tApfel")
       expect(result).toEqual({
         cards: expect.any(Array),
-        delimiter: '\t'
+        delimiter: "\t",
       })
       expect(result?.cards).toHaveLength(1)
     })
 
-    it('should include MAX_TIME in parsed cards', () => {
-      const result = parseCardsFromText('apple\tApfel')
+    it("should include MAX_TIME in parsed cards", () => {
+      const result = parseCardsFromText("apple\tApfel")
       expect(result!.cards[0]!.time).toBe(MAX_TIME)
     })
   })
 
-  describe('Edge cases', () => {
-    it('should handle cards with extra delimiter occurrences', () => {
-      const result = parseCardsFromText('apple pie\tApfelkuchen\t1')
+  describe("Edge cases", () => {
+    it("should handle cards with extra delimiter occurrences", () => {
+      const result = parseCardsFromText("apple pie\tApfelkuchen\t1")
       expect(result?.cards).toHaveLength(1)
-      expect(result!.cards[0]!.voc).toBe('apple pie')
+      expect(result!.cards[0]!.voc).toBe("apple pie")
     })
 
-    it('should handle empty lines in input', () => {
-      const text = 'apple\tApfel\n\nbanana\tBanane'
+    it("should handle empty lines in input", () => {
+      const text = "apple\tApfel\n\nbanana\tBanane"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
 
-    it('should handle Windows line endings (CRLF)', () => {
-      const text = 'apple\tApfel\r\nbanana\tBanane\r\n'
+    it("should handle Windows line endings (CRLF)", () => {
+      const text = "apple\tApfel\r\nbanana\tBanane\r\n"
       // JavaScript's trim() and split('\n') will handle \r correctly
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(2)
     })
 
-    it('should handle very long card values', () => {
-      const longEn = 'a'.repeat(1000)
-      const longDe = 'b'.repeat(1000)
+    it("should handle very long card values", () => {
+      const longEn = "a".repeat(1000)
+      const longDe = "b".repeat(1000)
       const result = parseCardsFromText(`${longEn}\t${longDe}\t1`)
       expect(result!.cards[0]!.voc).toBe(longEn)
       expect(result!.cards[0]!.de).toBe(longDe)
     })
 
-    it('should preserve spaces within card values', () => {
-      const result = parseCardsFromText('to walk quickly\tschnell zu Fuß gehen\t1')
-      expect(result!.cards[0]!.voc).toBe('to walk quickly')
-      expect(result!.cards[0]!.de).toBe('schnell zu Fuß gehen')
+    it("should preserve spaces within card values", () => {
+      const result = parseCardsFromText("to walk quickly\tschnell zu Fuß gehen\t1")
+      expect(result!.cards[0]!.voc).toBe("to walk quickly")
+      expect(result!.cards[0]!.de).toBe("schnell zu Fuß gehen")
     })
   })
 
-  describe('Real-world scenarios', () => {
-    it('should parse TSV export format', () => {
-      const text = 'voc\tde\tlevel\napple\tApfel\t1\nbanana\tBanane\t2\ncherry\tKirsche\t3'
+  describe("Real-world scenarios", () => {
+    it("should parse TSV export format", () => {
+      const text = "voc\tde\tlevel\napple\tApfel\t1\nbanana\tBanane\t2\ncherry\tKirsche\t3"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
-      expect(result?.delimiter).toBe('\t')
+      expect(result?.delimiter).toBe("\t")
     })
 
-    it('should parse CSV export format', () => {
-      const text = 'apple,Apfel,1\nbanana,Banane,2\ncherry,Kirsche,3'
+    it("should parse CSV export format", () => {
+      const text = "apple,Apfel,1\nbanana,Banane,2\ncherry,Kirsche,3"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
-      expect(result?.delimiter).toBe(',')
+      expect(result?.delimiter).toBe(",")
     })
 
-    it('should parse mixed language content', () => {
+    it("should parse mixed language content", () => {
       const text =
-        'voc\tde\tlevel\n' +
-        'hello\thallo\t1\n' +
-        'goodbye\tAuf Wiedersehen\t2\n' +
-        'thank you\tDanke schön\t2\n' +
-        'please\tbitte\t1'
+        "voc\tde\tlevel\n" +
+        "hello\thallo\t1\n" +
+        "goodbye\tAuf Wiedersehen\t2\n" +
+        "thank you\tDanke schön\t2\n" +
+        "please\tbitte\t1"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(4)
     })
 
-    it('should handle import with only some cards having levels', () => {
-      const text = 'apple\tApfel\t2\nbanana\tBanane\ncherry\tKirsche\t4'
+    it("should handle import with only some cards having levels", () => {
+      const text = "apple\tApfel\t2\nbanana\tBanane\ncherry\tKirsche\t4"
       const result = parseCardsFromText(text)
       expect(result?.cards).toHaveLength(3)
       expect(result!.cards[0]!.level).toBe(2)

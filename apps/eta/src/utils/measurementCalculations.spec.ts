@@ -1,57 +1,57 @@
-import { describe, expect, it } from 'vitest'
-import type { MeasurementPoint, SessionData } from '@/types'
-import { calculateTimePerTask, calculateTotalRuntime } from './measurementCalculations'
+import { describe, expect, it } from "vitest"
+import type { MeasurementPoint, SessionData } from "@/types"
+import { calculateTimePerTask, calculateTotalRuntime } from "./measurementCalculations"
 
-describe('calculateTimePerTask', () => {
-  it('should return null for invalid index', () => {
+describe("calculateTimePerTask", () => {
+  it("should return null for invalid index", () => {
     const measurements: MeasurementPoint[] = []
-    const startTime = new Date('2024-01-01T10:00:00')
+    const startTime = new Date("2024-01-01T10:00:00")
 
     const result = calculateTimePerTask(measurements, startTime, 0)
 
     expect(result).toBeNull()
   })
 
-  it('should calculate time per task for first measurement', () => {
+  it("should calculate time per task for first measurement", () => {
     const measurements: MeasurementPoint[] = [
-      { timestamp: new Date('2024-01-01T10:05:00'), completedTasks: 5 }
+      { timestamp: new Date("2024-01-01T10:05:00"), completedTasks: 5 },
     ]
-    const startTime = new Date('2024-01-01T10:00:00')
+    const startTime = new Date("2024-01-01T10:00:00")
 
     const result = calculateTimePerTask(measurements, startTime, 0)
 
     expect(result).toBe(60) // 5 minutes = 300 seconds / 5 tasks = 60 seconds per task
   })
 
-  it('should return null for first measurement with zero completed tasks', () => {
+  it("should return null for first measurement with zero completed tasks", () => {
     const measurements: MeasurementPoint[] = [
-      { timestamp: new Date('2024-01-01T10:05:00'), completedTasks: 0 }
+      { timestamp: new Date("2024-01-01T10:05:00"), completedTasks: 0 },
     ]
-    const startTime = new Date('2024-01-01T10:00:00')
+    const startTime = new Date("2024-01-01T10:00:00")
 
     const result = calculateTimePerTask(measurements, startTime, 0)
 
     expect(result).toBeNull()
   })
 
-  it('should calculate time per task for subsequent measurements', () => {
+  it("should calculate time per task for subsequent measurements", () => {
     const measurements: MeasurementPoint[] = [
-      { timestamp: new Date('2024-01-01T10:05:00'), completedTasks: 5 },
-      { timestamp: new Date('2024-01-01T10:10:00'), completedTasks: 10 }
+      { timestamp: new Date("2024-01-01T10:05:00"), completedTasks: 5 },
+      { timestamp: new Date("2024-01-01T10:10:00"), completedTasks: 10 },
     ]
-    const startTime = new Date('2024-01-01T10:00:00')
+    const startTime = new Date("2024-01-01T10:00:00")
 
     const result = calculateTimePerTask(measurements, startTime, 1)
 
     expect(result).toBe(60) // 5 minutes = 300 seconds / 5 tasks = 60 seconds per task
   })
 
-  it('should return null for zero task difference', () => {
+  it("should return null for zero task difference", () => {
     const measurements: MeasurementPoint[] = [
-      { timestamp: new Date('2024-01-01T10:05:00'), completedTasks: 5 },
-      { timestamp: new Date('2024-01-01T10:10:00'), completedTasks: 5 }
+      { timestamp: new Date("2024-01-01T10:05:00"), completedTasks: 5 },
+      { timestamp: new Date("2024-01-01T10:10:00"), completedTasks: 5 },
     ]
-    const startTime = new Date('2024-01-01T10:00:00')
+    const startTime = new Date("2024-01-01T10:00:00")
 
     const result = calculateTimePerTask(measurements, startTime, 1)
 
@@ -59,12 +59,12 @@ describe('calculateTimePerTask', () => {
   })
 })
 
-describe('calculateTotalRuntime', () => {
-  it('should return null for empty measurements', () => {
+describe("calculateTotalRuntime", () => {
+  it("should return null for empty measurements", () => {
     const sessionData: SessionData = {
       totalTasks: 10,
-      startTime: new Date('2024-01-01T10:00:00'),
-      measurements: []
+      startTime: new Date("2024-01-01T10:00:00"),
+      measurements: [],
     }
 
     const result = calculateTotalRuntime(sessionData)
@@ -72,14 +72,14 @@ describe('calculateTotalRuntime', () => {
     expect(result).toBeNull()
   })
 
-  it('should calculate total runtime correctly', () => {
+  it("should calculate total runtime correctly", () => {
     const sessionData: SessionData = {
       totalTasks: 10,
-      startTime: new Date('2024-01-01T10:00:00'),
+      startTime: new Date("2024-01-01T10:00:00"),
       measurements: [
-        { timestamp: new Date('2024-01-01T10:05:00'), completedTasks: 5 },
-        { timestamp: new Date('2024-01-01T10:10:00'), completedTasks: 10 }
-      ]
+        { timestamp: new Date("2024-01-01T10:05:00"), completedTasks: 5 },
+        { timestamp: new Date("2024-01-01T10:10:00"), completedTasks: 10 },
+      ],
     }
 
     const result = calculateTotalRuntime(sessionData)

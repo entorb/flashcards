@@ -4,7 +4,7 @@
  * Used for auto-close countdowns and button disable countdowns
  */
 
-import { onUnmounted, ref } from 'vue'
+import { onUnmounted, ref } from "vue"
 
 export interface UseCountdownTimerOptions {
   /** Interval in milliseconds for countdown updates (default: 100ms) */
@@ -94,6 +94,6 @@ export function useCountdownTimer(options: UseCountdownTimerOptions = {}) {
     isRunning,
     start,
     stop,
-    reset
+    reset,
   }
 }

@@ -1,6 +1,6 @@
 // Vitest setup file
 
-import { vi } from 'vitest'
+import { vi } from "vitest"
 
 // Create in-memory storage implementation for localStorage
 class LocalStorageMock implements Storage {
@@ -36,9 +36,9 @@ globalThis.localStorage = new LocalStorageMock()
 globalThis.sessionStorage = new LocalStorageMock()
 
 // Mock matchMedia
-Object.defineProperty(globalThis, 'matchMedia', {
+Object.defineProperty(globalThis, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -46,6 +46,6 @@ Object.defineProperty(globalThis, 'matchMedia', {
     removeListener: vi.fn(), // deprecated
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn()
-  }))
+    dispatchEvent: vi.fn(),
+  })),
 })

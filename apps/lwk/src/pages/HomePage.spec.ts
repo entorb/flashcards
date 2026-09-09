@@ -1,35 +1,35 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import HomePage from './HomePage.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { ref } from "vue"
+import { createMemoryHistory, createRouter } from "vue-router"
+import HomePage from "./HomePage.vue"
 
 // ---------------------------------------------------------------------------
 // Hoisted mocks
 // ---------------------------------------------------------------------------
 
-const mockCards = ref([{ word: 'Jahr', level: 1, time: 60 }])
+const mockCards = ref([{ word: "Jahr", level: 1, time: 60 }])
 const mockGameStats = ref({ points: 0, correctAnswers: 0, gamesPlayed: 0 })
 const mockStartGame = vi.fn()
 const mockSwitchDeck = vi.fn()
-const mockGetDecks = vi.fn(() => [{ name: 'LWK_1', cards: mockCards.value }])
+const mockGetDecks = vi.fn(() => [{ name: "LWK_1", cards: mockCards.value }])
 
-vi.mock('@/composables/useGameStore', () => ({
+vi.mock("@/composables/useGameStore", () => ({
   useGameStore: vi.fn(() => ({
     gameStats: mockGameStats,
     allCards: mockCards,
     startGame: mockStartGame,
     getDecks: mockGetDecks,
-    switchDeck: mockSwitchDeck
-  }))
+    switchDeck: mockSwitchDeck,
+  })),
 }))
 
-vi.mock('@/services/storage', () => ({
+vi.mock("@/services/storage", () => ({
   loadSettings: vi.fn(() => null),
   saveSettings: vi.fn(),
   clearGameState: vi.fn(),
-  clearGameConfig: vi.fn()
+  clearGameConfig: vi.fn(),
 }))
 
 // ---------------------------------------------------------------------------
@@ -40,12 +40,12 @@ const createMockRouter = () =>
   createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/HomePage', component: { template: '<div />' } },
-      { path: '/game', name: '/GamePage', component: { template: '<div />' } },
-      { path: '/history', name: '/HistoryPage', component: { template: '<div />' } },
-      { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
-      { path: '/info', name: '/InfoPage', component: { template: '<div />' } }
-    ]
+      { path: "/", name: "/HomePage", component: { template: "<div />" } },
+      { path: "/game", name: "/GamePage", component: { template: "<div />" } },
+      { path: "/history", name: "/HistoryPage", component: { template: "<div />" } },
+      { path: "/cards", name: "/CardsManPage", component: { template: "<div />" } },
+      { path: "/info", name: "/InfoPage", component: { template: "<div />" } },
+    ],
   })
 
 // ---------------------------------------------------------------------------
@@ -70,71 +70,71 @@ const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
             <button data-cy="go-to-info-button" @click="$emit('goToInfo')">Info</button>
           </div>
         `,
-        props: ['appTitle', 'basePath', 'statistics', 'disableStartButton'],
-        emits: ['startGame', 'goToCards', 'goToHistory', 'goToInfo']
+        props: ["appTitle", "basePath", "statistics", "disableStartButton"],
+        emits: ["startGame", "goToCards", "goToHistory", "goToInfo"],
       },
       HomeFocusSelector: {
         template: '<div data-cy="focus-selector" />',
-        props: ['modelValue', 'hideLabel'],
-        emits: ['update:modelValue']
+        props: ["modelValue", "hideLabel"],
+        emits: ["update:modelValue"],
       },
-      EisiMascot: { template: '<div data-cy="eisi-mascot" />', props: ['smile', 'size'] }
-    }
-  }
+      EisiMascot: { template: '<div data-cy="eisi-mascot" />', props: ["smile", "size"] },
+    },
+  },
 })
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('HomePage', () => {
+describe("HomePage", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
-    mockCards.value = [{ word: 'Jahr', level: 1, time: 60 }]
+    mockCards.value = [{ word: "Jahr", level: 1, time: 60 }]
     mockGameStats.value = { points: 0, correctAnswers: 0, gamesPlayed: 0 }
-    mockGetDecks.mockReturnValue([{ name: 'LWK_1', cards: mockCards.value }])
+    mockGetDecks.mockReturnValue([{ name: "LWK_1", cards: mockCards.value }])
   })
 
   // -------------------------------------------------------------------------
   // Mounting
   // -------------------------------------------------------------------------
 
-  describe('mount', () => {
-    it('mounts without errors', async () => {
+  describe("mount", () => {
+    it("mounts without errors", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('renders the EisiMascot', async () => {
+    it("renders the EisiMascot", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.find('[data-cy="eisi-mascot"]').exists()).toBe(true)
     })
 
-    it('renders the focus selector', async () => {
+    it("renders the focus selector", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.find('[data-cy="focus-selector"]').exists()).toBe(true)
     })
 
-    it('renders the start game button', async () => {
+    it("renders the start game button", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.find('[data-cy="start-game-button"]').exists()).toBe(true)
     })
 
-    it('renders the deck select element', async () => {
+    it("renders the deck select element", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      expect(wrapper.find('select').exists()).toBe(true)
+      expect(wrapper.find("select").exists()).toBe(true)
     })
   })
 
@@ -142,41 +142,41 @@ describe('HomePage', () => {
   // Navigation
   // -------------------------------------------------------------------------
 
-  describe('navigation', () => {
-    it('start game button navigates to /game', async () => {
+  describe("navigation", () => {
+    it("start game button navigates to /game", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/GamePage' })
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
+      expect(router.push).toHaveBeenCalledWith({ name: "/GamePage" })
     })
 
-    it('history button navigates to /history', async () => {
+    it("history button navigates to /history", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="go-to-history-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/HistoryPage' })
+      await wrapper.find('[data-cy="go-to-history-button"]').trigger("click")
+      expect(router.push).toHaveBeenCalledWith({ name: "/HistoryPage" })
     })
 
-    it('cards button navigates to /cards', async () => {
+    it("cards button navigates to /cards", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="go-to-cards-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/CardsManPage' })
+      await wrapper.find('[data-cy="go-to-cards-button"]').trigger("click")
+      expect(router.push).toHaveBeenCalledWith({ name: "/CardsManPage" })
     })
 
-    it('info button navigates to /info', async () => {
+    it("info button navigates to /info", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="go-to-info-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/InfoPage' })
+      await wrapper.find('[data-cy="go-to-info-button"]').trigger("click")
+      expect(router.push).toHaveBeenCalledWith({ name: "/InfoPage" })
     })
   })
 
@@ -184,48 +184,48 @@ describe('HomePage', () => {
   // Settings loading
   // -------------------------------------------------------------------------
 
-  describe('settings loading', () => {
-    it('uses default settings when none saved', async () => {
-      const { loadSettings } = await import('@/services/storage')
+  describe("settings loading", () => {
+    it("uses default settings when none saved", async () => {
+      const { loadSettings } = await import("@/services/storage")
       vi.mocked(loadSettings).mockReturnValue(null)
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { settings: { mode: string; focus: string } }
-      expect(vm.settings.mode).toBe('copy')
-      expect(vm.settings.focus).toBe('weak')
+      expect(vm.settings.mode).toBe("copy")
+      expect(vm.settings.focus).toBe("weak")
     })
 
-    it('loads saved settings on mount when deck is valid', async () => {
-      const { loadSettings } = await import('@/services/storage')
+    it("loads saved settings on mount when deck is valid", async () => {
+      const { loadSettings } = await import("@/services/storage")
       vi.mocked(loadSettings).mockReturnValue({
-        mode: 'hidden',
-        focus: 'slow',
+        mode: "hidden",
+        focus: "slow",
         levels: [1, 2, 3, 4, 5],
-        deck: 'LWK_1'
+        deck: "LWK_1",
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { settings: { mode: string; focus: string } }
-      expect(vm.settings.mode).toBe('hidden')
-      expect(vm.settings.focus).toBe('slow')
+      expect(vm.settings.mode).toBe("hidden")
+      expect(vm.settings.focus).toBe("slow")
     })
 
-    it('ignores saved settings when saved deck no longer exists', async () => {
-      const { loadSettings } = await import('@/services/storage')
+    it("ignores saved settings when saved deck no longer exists", async () => {
+      const { loadSettings } = await import("@/services/storage")
       vi.mocked(loadSettings).mockReturnValue({
-        mode: 'hidden',
-        focus: 'slow',
+        mode: "hidden",
+        focus: "slow",
         levels: [1, 2, 3, 4, 5],
-        deck: 'MISSING'
+        deck: "MISSING",
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { settings: { deck: string } }
       // Falls back to first available deck
-      expect(vm.settings.deck).toBe('LWK_1')
+      expect(vm.settings.deck).toBe("LWK_1")
     })
   })
 
@@ -233,25 +233,25 @@ describe('HomePage', () => {
   // Deck options
   // -------------------------------------------------------------------------
 
-  describe('deck options', () => {
-    it('populates deckOptions from getDecks() on mount', async () => {
+  describe("deck options", () => {
+    it("populates deckOptions from getDecks() on mount", async () => {
       mockGetDecks.mockReturnValue([
-        { name: 'LWK_1', cards: [] },
-        { name: 'LWK_2', cards: [] }
+        { name: "LWK_1", cards: [] },
+        { name: "LWK_2", cards: [] },
       ])
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { deckOptions: { label: string; value: string }[] }
       expect(vm.deckOptions).toHaveLength(2)
-      expect(vm.deckOptions[0]!.value).toBe('LWK_1')
-      expect(vm.deckOptions[1]!.value).toBe('LWK_2')
+      expect(vm.deckOptions[0]!.value).toBe("LWK_1")
+      expect(vm.deckOptions[1]!.value).toBe("LWK_2")
     })
 
-    it('handleDeckChange updates settings.deck', async () => {
+    it("handleDeckChange updates settings.deck", async () => {
       mockGetDecks.mockReturnValue([
-        { name: 'LWK_1', cards: [] },
-        { name: 'LWK_2', cards: [] }
+        { name: "LWK_1", cards: [] },
+        { name: "LWK_2", cards: [] },
       ])
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -260,8 +260,8 @@ describe('HomePage', () => {
         settings: { deck: string }
         handleDeckChange: (name: string) => void
       }
-      vm.handleDeckChange('LWK_2')
-      expect(vm.settings.deck).toBe('LWK_2')
+      vm.handleDeckChange("LWK_2")
+      expect(vm.settings.deck).toBe("LWK_2")
     })
   })
 
@@ -269,9 +269,9 @@ describe('HomePage', () => {
   // Mode auto-switching
   // -------------------------------------------------------------------------
 
-  describe('mode auto-switching', () => {
-    it('hasLevel1Or2Cards is true when cards have level < 3', async () => {
-      mockCards.value = [{ word: 'Jahr', level: 2, time: 60 }]
+  describe("mode auto-switching", () => {
+    it("hasLevel1Or2Cards is true when cards have level < 3", async () => {
+      mockCards.value = [{ word: "Jahr", level: 2, time: 60 }]
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -279,8 +279,8 @@ describe('HomePage', () => {
       expect(vm.hasLevel1Or2Cards).toBe(true)
     })
 
-    it('hasLevel1Or2Cards is false when all cards are level 3+', async () => {
-      mockCards.value = [{ word: 'Jahr', level: 3, time: 60 }]
+    it("hasLevel1Or2Cards is false when all cards are level 3+", async () => {
+      mockCards.value = [{ word: "Jahr", level: 3, time: 60 }]
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -288,23 +288,23 @@ describe('HomePage', () => {
       expect(vm.hasLevel1Or2Cards).toBe(false)
     })
 
-    it('auto-switches from copy to hidden when no level 1/2 cards', async () => {
-      mockCards.value = [{ word: 'Jahr', level: 3, time: 60 }]
+    it("auto-switches from copy to hidden when no level 1/2 cards", async () => {
+      mockCards.value = [{ word: "Jahr", level: 3, time: 60 }]
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { settings: { mode: string } }
       // copy mode should have been switched to hidden automatically
-      expect(vm.settings.mode).toBe('hidden')
+      expect(vm.settings.mode).toBe("hidden")
     })
 
-    it('keeps copy mode when level 1/2 cards exist', async () => {
-      mockCards.value = [{ word: 'Jahr', level: 1, time: 60 }]
+    it("keeps copy mode when level 1/2 cards exist", async () => {
+      mockCards.value = [{ word: "Jahr", level: 1, time: 60 }]
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { settings: { mode: string } }
-      expect(vm.settings.mode).toBe('copy')
+      expect(vm.settings.mode).toBe("copy")
     })
   })
 
@@ -312,34 +312,34 @@ describe('HomePage', () => {
   // Start game action
   // -------------------------------------------------------------------------
 
-  describe('startGame action', () => {
-    it('calls clearGameState and clearGameConfig before starting', async () => {
-      const { clearGameState, clearGameConfig } = await import('@/services/storage')
+  describe("startGame action", () => {
+    it("calls clearGameState and clearGameConfig before starting", async () => {
+      const { clearGameState, clearGameConfig } = await import("@/services/storage")
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
       expect(clearGameState).toHaveBeenCalled()
       expect(clearGameConfig).toHaveBeenCalled()
     })
 
-    it('calls saveSettings with current settings on start', async () => {
-      const { saveSettings } = await import('@/services/storage')
+    it("calls saveSettings with current settings on start", async () => {
+      const { saveSettings } = await import("@/services/storage")
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
       expect(saveSettings).toHaveBeenCalled()
     })
 
-    it('calls store startGame with current settings', async () => {
+    it("calls store startGame with current settings", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
       expect(mockStartGame).toHaveBeenCalledWith(
-        expect.objectContaining({ mode: 'copy', focus: 'weak', levels: [1, 2, 3, 4, 5] }),
-        'standard'
+        expect.objectContaining({ mode: "copy", focus: "weak", levels: [1, 2, 3, 4, 5] }),
+        "standard",
       )
     })
   })

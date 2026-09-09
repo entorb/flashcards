@@ -9,11 +9,11 @@ import {
   isValidBaseSettings,
   MAX_TIME,
   MIN_LEVEL,
-  saveJSON
-} from '@flashcards/shared'
+  saveJSON,
+} from "@flashcards/shared"
 
-import { STORAGE_KEYS } from '@/constants'
-import type { Card, Difficulty, GameHistory, GameSettings, Operation } from '@/types'
+import { STORAGE_KEYS } from "@/constants"
+import type { Card, Difficulty, GameHistory, GameSettings, Operation } from "@/types"
 
 /** GameSettings shape check: base fields + operations/difficulties literals */
 function isValidSettings(value: unknown): boolean {
@@ -21,9 +21,9 @@ function isValidSettings(value: unknown): boolean {
   const { operations, difficulties } = value
   return (
     Array.isArray(operations) &&
-    operations.every((op): op is Operation => op === 'plus' || op === 'minus') &&
+    operations.every((op): op is Operation => op === "plus" || op === "minus") &&
     Array.isArray(difficulties) &&
-    difficulties.every((d): d is Difficulty => d === 'simple' || d === 'medium' || d === 'advanced')
+    difficulties.every((d): d is Difficulty => d === "simple" || d === "medium" || d === "advanced")
   )
 }
 
@@ -38,22 +38,22 @@ function isValidSettings(value: unknown): boolean {
  */
 export function parseCardQuestion(question: string): {
   x: number
-  operator: '+' | '-'
+  operator: "+" | "-"
   y: number
 } {
-  const plusIndex = question.indexOf('+')
-  const minusIndex = question.indexOf('-')
+  const plusIndex = question.indexOf("+")
+  const minusIndex = question.indexOf("-")
 
-  let operator: '+' | '-'
+  let operator: "+" | "-"
   let splitIndex: number
 
   if (plusIndex !== -1) {
-    operator = '+'
+    operator = "+"
     splitIndex = plusIndex
   } else if (minusIndex === -1) {
-    return { x: 0, operator: '+', y: 0 }
+    return { x: 0, operator: "+", y: 0 }
   } else {
-    operator = '-'
+    operator = "-"
     splitIndex = minusIndex
   }
 
@@ -69,13 +69,13 @@ export function parseCardQuestion(question: string): {
  * @param y - The second operand
  * @returns Card with default values
  */
-export function createDefaultCard(x: number, operator: '+' | '-', y: number): Card {
-  const answer = operator === '+' ? x + y : x - y
+export function createDefaultCard(x: number, operator: "+" | "-", y: number): Card {
+  const answer = operator === "+" ? x + y : x - y
   return {
     question: `${x}${operator}${y}`,
     answer,
     level: MIN_LEVEL,
-    time: MAX_TIME
+    time: MAX_TIME,
   }
 }
 
@@ -90,7 +90,7 @@ const factory = createAppStorageFactory<Card, GameHistory, GameSettings>({
   createCardFromQuestion: (question: string) => {
     const { x, operator, y } = parseCardQuestion(question)
     return createDefaultCard(x, operator, y)
-  }
+  },
 })
 
 // ============================================================================
@@ -100,7 +100,7 @@ const factory = createAppStorageFactory<Card, GameHistory, GameSettings>({
 /**
  * Generate simple difficulty cards: X in [1..10], Y in [1..10], X >= Y → 55 cards
  */
-function generateSimpleCards(operator: '+' | '-'): Card[] {
+function generateSimpleCards(operator: "+" | "-"): Card[] {
   const cards: Card[] = []
   for (let x = 1; x <= 10; x++) {
     for (let y = 1; y <= x; y++) {
@@ -113,7 +113,7 @@ function generateSimpleCards(operator: '+' | '-'): Card[] {
 /**
  * Generate medium difficulty cards: X in [11..20], Y in [1..10] → 100 cards
  */
-function generateMediumCards(operator: '+' | '-'): Card[] {
+function generateMediumCards(operator: "+" | "-"): Card[] {
   const cards: Card[] = []
   for (let x = 11; x <= 20; x++) {
     for (let y = 1; y <= 10; y++) {
@@ -126,7 +126,7 @@ function generateMediumCards(operator: '+' | '-'): Card[] {
 /**
  * Generate advanced difficulty cards: X in [11..20], Y in [11..20], X >= Y → 55 cards
  */
-function generateAdvancedCards(operator: '+' | '-'): Card[] {
+function generateAdvancedCards(operator: "+" | "-"): Card[] {
   const cards: Card[] = []
   for (let x = 11; x <= 20; x++) {
     for (let y = 11; y <= x; y++) {
@@ -146,12 +146,12 @@ function generateAdvancedCards(operator: '+' | '-'): Card[] {
 export function initializeCards(): Card[] {
   const cards: Card[] = []
 
-  for (const op of ['plus', 'minus'] as const) {
-    const operator: '+' | '-' = op === 'plus' ? '+' : '-'
+  for (const op of ["plus", "minus"] as const) {
+    const operator: "+" | "-" = op === "plus" ? "+" : "-"
     cards.push(
       ...generateSimpleCards(operator),
       ...generateMediumCards(operator),
-      ...generateAdvancedCards(operator)
+      ...generateAdvancedCards(operator),
     )
   }
 
@@ -163,7 +163,7 @@ export function initializeCards(): Card[] {
 const DIFFICULTY_POINTS: Record<Difficulty, number> = {
   simple: 1,
   medium: 2,
-  advanced: 4
+  advanced: 4,
 }
 
 /**
@@ -172,7 +172,7 @@ const DIFFICULTY_POINTS: Record<Difficulty, number> = {
  */
 export function getDifficultyForCard(card: Card): number {
   const { operator } = parseCardQuestion(card.question)
-  const operatorBonus = operator === '-' ? 1 : 0
+  const operatorBonus = operator === "-" ? 1 : 0
   return DIFFICULTY_POINTS[getDifficultyFromQuestion(card.question)] + operatorBonus
 }
 
@@ -180,7 +180,7 @@ export function getDifficultyForCard(card: Card): number {
  * Get the operation type from a card question string
  */
 export function getOperationFromQuestion(question: string): Operation {
-  return question.includes('+') ? 'plus' : 'minus'
+  return question.includes("+") ? "plus" : "minus"
 }
 
 /**
@@ -188,9 +188,9 @@ export function getOperationFromQuestion(question: string): Operation {
  */
 export function getDifficultyFromQuestion(question: string): Difficulty {
   const { x, y } = parseCardQuestion(question)
-  if (x <= 10 && y <= 10) return 'simple'
-  if (x >= 11 && y >= 11) return 'advanced'
-  return 'medium'
+  if (x <= 10 && y <= 10) return "simple"
+  if (x >= 11 && y >= 11) return "advanced"
+  return "medium"
 }
 
 // ============================================================================
@@ -211,7 +211,7 @@ export const {
   saveGameState,
   loadGameState,
   clearGameState,
-  loadRange
+  loadRange,
 } = factory
 
 // Only used in .vue page files

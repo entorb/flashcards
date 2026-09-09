@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { MAX_LEVEL, MIN_LEVEL } from '../constants'
-import { TEXT_DE } from '../text-de'
+import { MAX_LEVEL, MIN_LEVEL } from "../constants"
+import { TEXT_DE } from "../text-de"
 
 interface Props {
-  appPrefix: 'voc' | 'lwk'
+  appPrefix: "voc" | "lwk"
 }
 
 defineProps<Props>()
@@ -16,11 +16,11 @@ const emit = defineEmits<{
 const targetLevel = defineModel<number>({ required: true })
 
 function handleMoveClick() {
-  emit('moveClick')
+  emit("moveClick")
 }
 
 function handleResetClick() {
-  emit('resetClick')
+  emit("resetClick")
 }
 </script>
 

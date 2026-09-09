@@ -1,16 +1,16 @@
-import { registerSW } from 'virtual:pwa-register'
-import { TEXT_DE } from '@flashcards/shared'
-import { Dialog, Notify, Quasar } from 'quasar'
-import { createApp } from 'vue'
+import { registerSW } from "virtual:pwa-register"
+import { TEXT_DE } from "@flashcards/shared"
+import { Dialog, Notify, Quasar } from "quasar"
+import { createApp } from "vue"
 
-import App from './App.vue'
-import { router } from './router'
+import App from "./App.vue"
+import { router } from "./router"
 
 // Import Quasar css
-import 'quasar/src/css/index.sass'
+import "quasar/src/css/index.sass"
 
 // Import icon libraries
-import '@quasar/extras/material-icons/material-icons.css'
+import "@quasar/extras/material-icons/material-icons.css"
 
 const app = createApp(App)
 
@@ -21,13 +21,13 @@ const app = createApp(App)
 app.use(Quasar, {
   plugins: {
     Dialog,
-    Notify
-  }
+    Notify,
+  },
 })
 
 app.use(router)
 
-app.mount('#app')
+app.mount("#app")
 
 // Register PWA service worker after app is mounted
 
@@ -38,9 +38,9 @@ const updateSW = registerSW({
     Dialog.create({
       message: TEXT_DE.shared.pwa.update.confirmMessage,
       cancel: true,
-      persistent: true
+      persistent: true,
     }).onOk(() => {
       void updateSW(true)
     })
-  }
+  },
 })

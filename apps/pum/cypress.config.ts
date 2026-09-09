@@ -1,11 +1,11 @@
-import { defineConfig } from 'cypress'
+import { defineConfig } from "cypress"
 
-import baseConfig from '../../cypress.config.base'
+import baseConfig from "../../cypress.config.base"
 
 export default defineConfig({
   ...baseConfig,
   e2e: {
     ...baseConfig.e2e,
-    baseUrl: 'http://localhost:5178/fc-pum/'
-  }
+    baseUrl: "http://localhost:5178/fc-pum/",
+  },
 })

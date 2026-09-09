@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import type { CardLevel, FocusType, SessionMode } from '@flashcards/shared'
-import { ALL_LEVELS, filterByLevels, TEXT_DE } from '@flashcards/shared'
+import type { CardLevel, FocusType, SessionMode } from "@flashcards/shared"
+import { ALL_LEVELS, filterByLevels, TEXT_DE } from "@flashcards/shared"
 import {
   HomeFocusSelector,
   HomeGameModeButtons,
   HomeLevelSelector,
-  HomePageLayout
-} from '@flashcards/shared/components'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  HomePageLayout,
+} from "@flashcards/shared/components"
+import { computed, onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import PumToggleButtons from '@/components/PumToggleButtons.vue'
-import RaccoonMascot from '@/components/RaccoonMascot.vue'
-import { useGameStore } from '@/composables/useGameStore'
-import { BASE_PATH, DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from '@/constants'
-import { filterCards } from '@/services/cardSelector'
+import PumToggleButtons from "@/components/PumToggleButtons.vue"
+import RaccoonMascot from "@/components/RaccoonMascot.vue"
+import { useGameStore } from "@/composables/useGameStore"
+import { BASE_PATH, DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from "@/constants"
+import { filterCards } from "@/services/cardSelector"
 import {
   initializeCards,
   loadCards,
   loadGameStats,
   loadSettings,
-  saveSettings
-} from '@/services/storage'
-import type { Difficulty, Operation } from '@/types'
+  saveSettings,
+} from "@/services/storage"
+import type { Difficulty, Operation } from "@/types"
 
 const router = useRouter()
 
@@ -33,38 +33,38 @@ const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
 const operations = ref<Operation[]>([...DEFAULT_OPERATIONS])
 const difficulties = ref<Difficulty[]>([...DEFAULT_DIFFICULTIES])
-const focus = ref<FocusType>('weak')
+const focus = ref<FocusType>("weak")
 const levels = ref<CardLevel[]>([...ALL_LEVELS])
 
 const operationButtons = [
   {
-    value: 'plus',
+    value: "plus",
     label: TEXT_DE.plusMinus.selection.plus,
-    dataCy: 'operation-button-plus'
+    dataCy: "operation-button-plus",
   },
   {
-    value: 'minus',
+    value: "minus",
     label: TEXT_DE.plusMinus.selection.minus,
-    dataCy: 'operation-button-minus'
-  }
+    dataCy: "operation-button-minus",
+  },
 ]
 
 const difficultyButtons = [
   {
-    value: 'simple',
+    value: "simple",
     label: TEXT_DE.plusMinus.selection.simple,
-    dataCy: 'difficulty-button-simple'
+    dataCy: "difficulty-button-simple",
   },
   {
-    value: 'medium',
+    value: "medium",
     label: TEXT_DE.plusMinus.selection.medium,
-    dataCy: 'difficulty-button-medium'
+    dataCy: "difficulty-button-medium",
   },
   {
-    value: 'advanced',
+    value: "advanced",
     label: TEXT_DE.plusMinus.selection.advanced,
-    dataCy: 'difficulty-button-advanced'
-  }
+    dataCy: "difficulty-button-advanced",
+  },
 ]
 
 // Compute filtered cards for the current selection (operations + difficulties)
@@ -76,7 +76,7 @@ const basePool = computed(() => {
     operations: operations.value,
     difficulties: difficulties.value,
     focus: focus.value,
-    levels: levels.value
+    levels: levels.value,
   })
 })
 
@@ -106,7 +106,7 @@ onMounted(() => {
 })
 
 function startGame() {
-  startGameWithMode('standard')
+  startGameWithMode("standard")
 }
 
 function startGameWithMode(mode: SessionMode) {
@@ -114,23 +114,23 @@ function startGameWithMode(mode: SessionMode) {
     operations: operations.value,
     difficulties: difficulties.value,
     focus: focus.value,
-    levels: [...levels.value]
+    levels: [...levels.value],
   }
   saveSettings(gameConfig)
   storeStartGame(gameConfig, mode, true)
-  void router.push({ name: '/GamePage' })
+  void router.push({ name: "/GamePage" })
 }
 
 function goToHistory() {
-  void router.push({ name: '/HistoryPage' })
+  void router.push({ name: "/HistoryPage" })
 }
 
 function goToCards() {
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function goToInfo() {
-  void router.push({ name: '/InfoPage' })
+  void router.push({ name: "/InfoPage" })
 }
 </script>
 

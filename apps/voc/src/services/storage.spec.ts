@@ -1,80 +1,80 @@
 // cspell:ignore guten
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from "vitest"
 
-import { INITIAL_CARDS, STORAGE_KEYS } from '../constants'
-import type { Card, CardDeck } from '../types'
+import { INITIAL_CARDS, STORAGE_KEYS } from "../constants"
+import type { Card, CardDeck } from "../types"
 import {
   getCurrentDeckName,
   loadCards,
   loadDecks,
   saveCards,
   saveDecks,
-  saveSettings
-} from './storage'
+  saveSettings,
+} from "./storage"
 
-describe('Deck Storage', () => {
+describe("Deck Storage", () => {
   beforeEach(() => {
     localStorage.clear()
   })
 
-  describe('loadDecks', () => {
-    it('should return default deck when no storage exists', () => {
+  describe("loadDecks", () => {
+    it("should return default deck when no storage exists", () => {
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.name).toBe("en")
       expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
 
-    it('should load existing decks from storage', () => {
+    it("should load existing decks from storage", () => {
       const testDecks: CardDeck[] = [
         {
-          name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
+          name: "en",
+          cards: [{ voc: "hello", de: "hallo", level: 1, time: 5 }],
         },
         {
-          name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
-        }
+          name: "fr",
+          cards: [{ voc: "bonjour", de: "guten Tag", level: 1, time: 5 }],
+        },
       ]
       localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(testDecks))
 
       const decks = loadDecks()
       expect(decks).toHaveLength(2)
-      expect(decks[0]!.name).toBe('en')
-      expect(decks[1]!.name).toBe('fr')
-      expect(decks[0]!.cards[0]!.voc).toBe('hello')
+      expect(decks[0]!.name).toBe("en")
+      expect(decks[1]!.name).toBe("fr")
+      expect(decks[0]!.cards[0]!.voc).toBe("hello")
     })
 
-    it('should handle invalid storage data', () => {
-      localStorage.setItem(STORAGE_KEYS.CARDS, 'invalid json')
+    it("should handle invalid storage data", () => {
+      localStorage.setItem(STORAGE_KEYS.CARDS, "invalid json")
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.name).toBe("en")
       expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
 
-    it('should handle empty array in storage', () => {
-      localStorage.setItem(STORAGE_KEYS.CARDS, '[]')
+    it("should handle empty array in storage", () => {
+      localStorage.setItem(STORAGE_KEYS.CARDS, "[]")
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.name).toBe("en")
       expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
   })
 
-  describe('saveDecks', () => {
-    it('should save decks to localStorage', () => {
+  describe("saveDecks", () => {
+    it("should save decks to localStorage", () => {
       const testDecks: CardDeck[] = [
         {
-          name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
+          name: "en",
+          cards: [{ voc: "hello", de: "hallo", level: 1, time: 5 }],
         },
         {
-          name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
-        }
+          name: "fr",
+          cards: [{ voc: "bonjour", de: "guten Tag", level: 1, time: 5 }],
+        },
       ]
 
       saveDecks(testDecks)
@@ -83,171 +83,171 @@ describe('Deck Storage', () => {
       expect(stored).not.toBeNull()
       const parsed = JSON.parse(stored!)
       expect(parsed).toHaveLength(2)
-      expect(parsed[0]!.name).toBe('en')
-      expect(parsed[1]!.name).toBe('fr')
+      expect(parsed[0]!.name).toBe("en")
+      expect(parsed[1]!.name).toBe("fr")
     })
   })
 
-  describe('getCurrentDeckName', () => {
-    it('should return default deck name when no settings exist', () => {
+  describe("getCurrentDeckName", () => {
+    it("should return default deck name when no settings exist", () => {
       const deckName = getCurrentDeckName()
-      expect(deckName).toBe('en')
+      expect(deckName).toBe("en")
     })
 
-    it('should return deck name from settings', () => {
+    it("should return deck name from settings", () => {
       saveSettings({
-        mode: 'multiple-choice',
-        focus: 'weak',
+        mode: "multiple-choice",
+        focus: "weak",
         levels: [1, 2, 3, 4, 5],
-        language: 'voc-de',
-        deck: 'fr'
+        language: "voc-de",
+        deck: "fr",
       })
 
       const deckName = getCurrentDeckName()
-      expect(deckName).toBe('fr')
+      expect(deckName).toBe("fr")
     })
 
-    it('should return default when settings exist but deck is not set', () => {
+    it("should return default when settings exist but deck is not set", () => {
       saveSettings({
-        mode: 'multiple-choice',
-        focus: 'weak',
+        mode: "multiple-choice",
+        focus: "weak",
         levels: [1, 2, 3, 4, 5],
-        language: 'voc-de'
+        language: "voc-de",
       })
 
       const deckName = getCurrentDeckName()
-      expect(deckName).toBe('en')
+      expect(deckName).toBe("en")
     })
   })
 
-  describe('loadCards', () => {
-    it('should load cards from current deck', () => {
+  describe("loadCards", () => {
+    it("should load cards from current deck", () => {
       const testDecks: CardDeck[] = [
         {
-          name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
+          name: "en",
+          cards: [{ voc: "hello", de: "hallo", level: 1, time: 5 }],
         },
         {
-          name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
-        }
+          name: "fr",
+          cards: [{ voc: "bonjour", de: "guten Tag", level: 1, time: 5 }],
+        },
       ]
       saveDecks(testDecks)
       saveSettings({
-        mode: 'multiple-choice',
-        focus: 'weak',
+        mode: "multiple-choice",
+        focus: "weak",
         levels: [1, 2, 3, 4, 5],
-        language: 'voc-de',
-        deck: 'fr'
+        language: "voc-de",
+        deck: "fr",
       })
 
       const cards = loadCards()
       expect(cards).toHaveLength(1)
-      expect(cards[0]!.voc).toBe('bonjour')
+      expect(cards[0]!.voc).toBe("bonjour")
     })
 
-    it('should load from first deck when current deck not found', () => {
+    it("should load from first deck when current deck not found", () => {
       const testDecks: CardDeck[] = [
         {
-          name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
-        }
+          name: "en",
+          cards: [{ voc: "hello", de: "hallo", level: 1, time: 5 }],
+        },
       ]
       saveDecks(testDecks)
       saveSettings({
-        mode: 'multiple-choice',
-        focus: 'weak',
+        mode: "multiple-choice",
+        focus: "weak",
         levels: [1, 2, 3, 4, 5],
-        language: 'voc-de',
-        deck: 'nonexistent'
+        language: "voc-de",
+        deck: "nonexistent",
       })
 
       const cards = loadCards()
       expect(cards).toHaveLength(1)
-      expect(cards[0]!.voc).toBe('hello')
+      expect(cards[0]!.voc).toBe("hello")
     })
   })
 
-  describe('saveCards', () => {
-    it('should save cards to current deck', () => {
+  describe("saveCards", () => {
+    it("should save cards to current deck", () => {
       const testDecks: CardDeck[] = [
         {
-          name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
+          name: "en",
+          cards: [{ voc: "hello", de: "hallo", level: 1, time: 5 }],
         },
         {
-          name: 'fr',
-          cards: [{ voc: 'bonjour', de: 'guten Tag', level: 1, time: 5 }]
-        }
+          name: "fr",
+          cards: [{ voc: "bonjour", de: "guten Tag", level: 1, time: 5 }],
+        },
       ]
       saveDecks(testDecks)
       saveSettings({
-        mode: 'multiple-choice',
-        focus: 'weak',
+        mode: "multiple-choice",
+        focus: "weak",
         levels: [1, 2, 3, 4, 5],
-        language: 'voc-de',
-        deck: 'fr'
+        language: "voc-de",
+        deck: "fr",
       })
 
       const newCards: Card[] = [
         // cspell:disable-next-line
-        { voc: 'merci', de: 'danke', level: 2, time: 10 }
+        { voc: "merci", de: "danke", level: 2, time: 10 },
       ]
       saveCards(newCards)
 
       const decks = loadDecks()
       expect(decks[1]!.cards).toHaveLength(1)
-      expect(decks[1]!.cards[0]!.voc).toBe('merci')
+      expect(decks[1]!.cards[0]!.voc).toBe("merci")
       // Verify first deck unchanged
-      expect(decks[0]!.cards[0]!.voc).toBe('hello')
+      expect(decks[0]!.cards[0]!.voc).toBe("hello")
     })
 
-    it('should not save when deck does not exist', () => {
+    it("should not save when deck does not exist", () => {
       const testDecks: CardDeck[] = [
         {
-          name: 'en',
-          cards: [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
-        }
+          name: "en",
+          cards: [{ voc: "hello", de: "hallo", level: 1, time: 5 }],
+        },
       ]
       saveDecks(testDecks)
       saveSettings({
-        mode: 'multiple-choice',
-        focus: 'weak',
+        mode: "multiple-choice",
+        focus: "weak",
         levels: [1, 2, 3, 4, 5],
-        language: 'voc-de',
-        deck: 'nonexistent'
+        language: "voc-de",
+        deck: "nonexistent",
       })
 
-      const newCards: Card[] = [{ voc: 'test', de: 'Test', level: 1, time: 5 }]
+      const newCards: Card[] = [{ voc: "test", de: "Test", level: 1, time: 5 }]
       saveCards(newCards)
 
       // Verify original deck unchanged
       const decks = loadDecks()
-      expect(decks[0]!.cards[0]!.voc).toBe('hello')
+      expect(decks[0]!.cards[0]!.voc).toBe("hello")
     })
   })
 
-  describe('Validation edge cases', () => {
-    it('should fall back to default decks when cards are not in deck structure', () => {
-      const flatCards = [{ voc: 'hello', de: 'hallo', level: 1, time: 5 }]
+  describe("Validation edge cases", () => {
+    it("should fall back to default decks when cards are not in deck structure", () => {
+      const flatCards = [{ voc: "hello", de: "hallo", level: 1, time: 5 }]
       localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(flatCards))
 
       const decks = loadDecks()
       expect(decks).toHaveLength(1)
-      expect(decks[0]!.name).toBe('en')
+      expect(decks[0]!.name).toBe("en")
       expect(decks[0]!.cards).toEqual(INITIAL_CARDS)
     })
 
-    it('should drop decks containing invalid cards', () => {
+    it("should drop decks containing invalid cards", () => {
       const decks = [
-        { name: 'broken', cards: [{ voc: 'hello', de: 42, level: 1, time: 5 }] },
-        { name: 'good', cards: [{ voc: 'hi', de: 'hallo', level: 1, time: 5 }] }
+        { name: "broken", cards: [{ voc: "hello", de: 42, level: 1, time: 5 }] },
+        { name: "good", cards: [{ voc: "hi", de: "hallo", level: 1, time: 5 }] },
       ]
       localStorage.setItem(STORAGE_KEYS.CARDS, JSON.stringify(decks))
 
       const loaded = loadDecks()
       expect(loaded).toHaveLength(1)
-      expect(loaded[0]!.name).toBe('good')
+      expect(loaded[0]!.name).toBe("good")
     })
   })
 })

@@ -5,15 +5,15 @@ import {
   MIN_LEVEL,
   normalizeWhitespace,
   TEXT_DE,
-  useCardsEdit
-} from '@flashcards/shared'
-import { useQuasar } from 'quasar'
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  useCardsEdit,
+} from "@flashcards/shared"
+import { useQuasar } from "quasar"
+import { onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '../composables/useGameStore'
-import type { Card } from '../types'
-import { parseCardsFromText } from '../utils/helpers'
+import { useGameStore } from "../composables/useGameStore"
+import type { Card } from "../types"
+import { parseCardsFromText } from "../utils/helpers"
 
 const router = useRouter()
 const $q = useQuasar()
@@ -27,27 +27,27 @@ const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
 const { isBlankRow, rows, commitNewCard, onInputKeydown, onInputBlur, removeCard } =
   useCardsEdit<Card>({
     editingCards,
-    createEmptyCard: () => ({ word: '', level: MIN_LEVEL, time: MAX_TIME }),
-    fieldOrder: ['word'],
-    prepareCard: pending => {
+    createEmptyCard: () => ({ word: "", level: MIN_LEVEL, time: MAX_TIME }),
+    fieldOrder: ["word"],
+    prepareCard: (pending) => {
       const word = normalizeWhitespace(pending.word)
       if (!word) return null
       return { card: { word, level: MIN_LEVEL, time: MAX_TIME }, key: word }
     },
-    duplicateMessage: key => TEXT_DE.lwk.cards.validationDuplicate.replace('{word}', key),
-    getKey: card => card.word
+    duplicateMessage: (key) => TEXT_DE.lwk.cards.validationDuplicate.replace("{word}", key),
+    getKey: (card) => card.word,
   })
 
 onMounted(() => {
   // Initialize with a copy of current cards, sorted alphabetically ignoring case
   editingCards.value = allCards.value
-    .map(card => ({ ...card }))
+    .map((card) => ({ ...card }))
     .sort((a, b) => a.word.toLowerCase().localeCompare(b.word.toLowerCase()))
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function handleGoBack() {
@@ -55,10 +55,10 @@ function handleGoBack() {
   if (!commitNewCard(false)) return
 
   // Validate and auto-save before leaving
-  if (editingCards.value.some(card => !card.word.trim())) {
+  if (editingCards.value.some((card) => !card.word.trim())) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE.lwk.cards.validationWordEmpty
+      type: "negative",
+      message: TEXT_DE.lwk.cards.validationWordEmpty,
     })
     return
   }
@@ -73,8 +73,8 @@ function handleGoBack() {
   for (const card of editingCards.value) {
     if (seen.has(card.word)) {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE.lwk.cards.validationDuplicate.replace('{word}', card.word)
+        type: "negative",
+        message: TEXT_DE.lwk.cards.validationDuplicate.replace("{word}", card.word),
       })
       return
     }
@@ -82,18 +82,18 @@ function handleGoBack() {
   }
 
   importCards(editingCards.value)
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     handleGoBack()
   }
 }
 
 function handleExport() {
-  const header = 'word\tlevel\n'
-  const tsvContent = editingCards.value.map(c => `${c.word}\t${c.level}`).join('\n')
+  const header = "word\tlevel\n"
+  const tsvContent = editingCards.value.map((c) => `${c.word}\t${c.level}`).join("\n")
   navigator.clipboard
     .writeText(header + tsvContent)
     .then(() => {
@@ -102,8 +102,8 @@ function handleExport() {
     })
     .catch(() => {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE.shared.cardActions.clipboardError
+        type: "negative",
+        message: TEXT_DE.shared.cardActions.clipboardError,
       })
     })
 }
@@ -123,12 +123,12 @@ function showManualImportDialog() {
     title: TEXT_DE.lwk.cards.importDialogTitle,
     message: TEXT_DE.lwk.cards.importDialogMessage,
     prompt: {
-      model: '',
-      type: 'textarea',
-      outlined: true
+      model: "",
+      type: "textarea",
+      outlined: true,
     },
     cancel: true,
-    class: 'bordered'
+    class: "bordered",
   }).onOk((text: string) => {
     processImportText(text)
   })
@@ -136,7 +136,7 @@ function showManualImportDialog() {
 
 function processImportText(text: string) {
   if (!text) {
-    $q.notify({ type: 'negative', message: TEXT_DE.shared.cardActions.emptyTextError })
+    $q.notify({ type: "negative", message: TEXT_DE.shared.cardActions.emptyTextError })
     return
   }
 
@@ -144,8 +144,8 @@ function processImportText(text: string) {
 
   if (!parseResult) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE.lwk.cards.noDelimiterError
+      type: "negative",
+      message: TEXT_DE.lwk.cards.noDelimiterError,
     })
     return
   }
@@ -154,16 +154,16 @@ function processImportText(text: string) {
 
   if (newCards.length === 0) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE.lwk.cards.noCardsFoundError.replace('{delimiter}', delimiter)
+      type: "negative",
+      message: TEXT_DE.lwk.cards.noCardsFoundError.replace("{delimiter}", delimiter),
     })
     return
   }
 
   editingCards.value = newCards
   $q.notify({
-    type: 'positive',
-    message: TEXT_DE.lwk.cards.importSuccess.replace('{count}', newCards.length.toString())
+    type: "positive",
+    message: TEXT_DE.lwk.cards.importSuccess.replace("{count}", newCards.length.toString()),
   })
 }
 

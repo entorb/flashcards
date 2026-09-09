@@ -1,9 +1,9 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card } from '@/types'
-import CardsManPage from './CardsManPage.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { Card } from "@/types"
+import CardsManPage from "./CardsManPage.vue"
 
 // ---------------------------------------------------------------------------
 // Storage mocks
@@ -11,21 +11,21 @@ import CardsManPage from './CardsManPage.vue'
 
 const storageMocks = vi.hoisted(() => ({
   loadCards: vi.fn((): Card[] => [
-    { question: '3x3', answer: 9, level: 1, time: 60 },
-    { question: '4x3', answer: 12, level: 2, time: 45 },
-    { question: '4x4', answer: 16, level: 3, time: 30 }
+    { question: "3x3", answer: 9, level: 1, time: 60 },
+    { question: "4x3", answer: 12, level: 2, time: 45 },
+    { question: "4x4", answer: 16, level: 3, time: 30 },
   ]),
   loadRange: vi.fn(() => [3, 4, 5, 6, 7, 8, 9]),
   saveRange: vi.fn(),
   initializeCards: vi.fn(),
   toggleFeature: vi.fn((current: number[], feature: string) => {
-    if (feature === 'feature1x2')
-      return current.includes(2) ? current.filter(n => n !== 2) : [2, ...current]
-    if (feature === 'feature1x12')
-      return current.includes(11) ? current.filter(n => n < 11) : [...current, 11, 12]
-    if (feature === 'feature1x20')
+    if (feature === "feature1x2")
+      return current.includes(2) ? current.filter((n) => n !== 2) : [2, ...current]
+    if (feature === "feature1x12")
+      return current.includes(11) ? current.filter((n) => n < 11) : [...current, 11, 12]
+    if (feature === "feature1x20")
       return current.includes(13)
-        ? current.filter(n => n < 13)
+        ? current.filter((n) => n < 13)
         : [...current, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     return current
   }),
@@ -33,17 +33,17 @@ const storageMocks = vi.hoisted(() => ({
     question: `${y}x${x}`,
     answer: x * y,
     level: 1,
-    time: 60
-  }))
+    time: 60,
+  })),
 }))
 
-vi.mock('@/services/storage', () => ({
+vi.mock("@/services/storage", () => ({
   loadCards: storageMocks.loadCards,
   loadRange: storageMocks.loadRange,
   saveRange: storageMocks.saveRange,
   initializeCards: storageMocks.initializeCards,
   toggleFeature: storageMocks.toggleFeature,
-  createDefaultCard: storageMocks.createDefaultCard
+  createDefaultCard: storageMocks.createDefaultCard,
 }))
 
 // ---------------------------------------------------------------------------
@@ -52,14 +52,14 @@ vi.mock('@/services/storage', () => ({
 
 const gameStoreMocks = vi.hoisted(() => ({
   resetCards: vi.fn(),
-  allCards: { value: [] as Card[] }
+  allCards: { value: [] as Card[] },
 }))
 
-vi.mock('@/composables/useGameStore', () => ({
+vi.mock("@/composables/useGameStore", () => ({
   useGameStore: () => ({
     resetCards: gameStoreMocks.resetCards,
-    allCards: gameStoreMocks.allCards
-  })
+    allCards: gameStoreMocks.allCards,
+  }),
 }))
 
 // ---------------------------------------------------------------------------
@@ -67,14 +67,14 @@ vi.mock('@/composables/useGameStore', () => ({
 // ---------------------------------------------------------------------------
 
 const resetCardsMocks = vi.hoisted(() => ({
-  showResetDialog: vi.fn()
+  showResetDialog: vi.fn(),
 }))
 
-vi.mock('@flashcards/shared', async importOriginal => {
-  const actual = await importOriginal<typeof import('@flashcards/shared')>()
+vi.mock("@flashcards/shared", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@flashcards/shared")>()
   return {
     ...actual,
-    useResetCards: () => ({ showResetDialog: resetCardsMocks.showResetDialog })
+    useResetCards: () => ({ showResetDialog: resetCardsMocks.showResetDialog }),
   }
 })
 
@@ -86,9 +86,9 @@ function createMockRouter() {
   return createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', name: '/HomePage', component: { template: '<div>Home</div>' } },
-      { path: '/cards', name: '/CardsManPage', component: { template: '<div>Cards</div>' } }
-    ]
+      { path: "/", name: "/HomePage", component: { template: "<div>Home</div>" } },
+      { path: "/cards", name: "/CardsManPage", component: { template: "<div>Cards</div>" } },
+    ],
   })
 }
 
@@ -101,9 +101,9 @@ function createMountOptions(router: ReturnType<typeof createMockRouter>) {
       stubs: {
         ...quasarStubs,
         CardsManLevelDistribution: { template: '<div data-cy="level-distribution" />' },
-        CardsListOfCards: { template: '<div data-cy="cards-list" />' }
-      }
-    }
+        CardsListOfCards: { template: '<div data-cy="cards-list" />' },
+      },
+    },
   }
 }
 
@@ -111,34 +111,34 @@ function createMountOptions(router: ReturnType<typeof createMockRouter>) {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('1x1 CardsManPage', () => {
+describe("1x1 CardsManPage", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
     storageMocks.loadRange.mockReturnValue([3, 4, 5, 6, 7, 8, 9])
     storageMocks.loadCards.mockReturnValue([
-      { question: '3x3', answer: 9, level: 1, time: 60 },
-      { question: '4x3', answer: 12, level: 2, time: 45 },
-      { question: '4x4', answer: 16, level: 3, time: 30 }
+      { question: "3x3", answer: 9, level: 1, time: 60 },
+      { question: "4x3", answer: 12, level: 2, time: 45 },
+      { question: "4x4", answer: 16, level: 3, time: 30 },
     ])
   })
 
-  describe('mounting', () => {
-    it('mounts without errors', async () => {
+  describe("mounting", () => {
+    it("mounts without errors", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('renders back button', () => {
+    it("renders back button", () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="back-button"]').exists()).toBe(true)
     })
 
-    it('loads cards and range on mount', async () => {
+    it("loads cards and range on mount", async () => {
       const router = createMockRouter()
       mount(CardsManPage, createMountOptions(router))
       await router.isReady()
@@ -147,39 +147,39 @@ describe('1x1 CardsManPage', () => {
     })
   })
 
-  describe('navigation', () => {
-    it('back button navigates to home', async () => {
+  describe("navigation", () => {
+    it("back button navigates to home", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
-      await wrapper.find('[data-cy="back-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+      await wrapper.find('[data-cy="back-button"]').trigger("click")
+      expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
     })
 
-    it('Escape key navigates to home', async () => {
+    it("Escape key navigates to home", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       mount(CardsManPage, createMountOptions(router))
       await router.isReady()
-      globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
       await Promise.resolve()
-      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+      expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
     })
 
-    it('other keys do not navigate', async () => {
+    it("other keys do not navigate", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       mount(CardsManPage, createMountOptions(router))
       await router.isReady()
-      globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+      globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }))
       await Promise.resolve()
       expect(router.push).not.toHaveBeenCalled()
     })
   })
 
-  describe('computed values', () => {
-    it('yValues is derived from range', async () => {
+  describe("computed values", () => {
+    it("yValues is derived from range", async () => {
       storageMocks.loadRange.mockReturnValue([3, 4, 5])
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
@@ -188,7 +188,7 @@ describe('1x1 CardsManPage', () => {
       expect(vm.yValues).toEqual([3, 4, 5])
     })
 
-    it('xValues is derived from range', async () => {
+    it("xValues is derived from range", async () => {
       storageMocks.loadRange.mockReturnValue([3, 4, 5])
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
@@ -197,7 +197,7 @@ describe('1x1 CardsManPage', () => {
       expect(vm.xValues).toEqual([3, 4, 5])
     })
 
-    it('cardsInRange includes all combinations where x <= y', async () => {
+    it("cardsInRange includes all combinations where x <= y", async () => {
       storageMocks.loadRange.mockReturnValue([3, 4])
       storageMocks.loadCards.mockReturnValue([])
       const router = createMockRouter()
@@ -208,68 +208,68 @@ describe('1x1 CardsManPage', () => {
       expect(vm.cardsInRange).toHaveLength(3)
     })
 
-    it('cardsInRange uses stored card data when available', async () => {
+    it("cardsInRange uses stored card data when available", async () => {
       storageMocks.loadRange.mockReturnValue([3, 4])
-      storageMocks.loadCards.mockReturnValue([{ question: '3x3', answer: 9, level: 5, time: 10 }])
+      storageMocks.loadCards.mockReturnValue([{ question: "3x3", answer: 9, level: 5, time: 10 }])
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { cardsInRange: Card[] }
-      const card3x3 = vm.cardsInRange.find(c => c.question === '3x3')
+      const card3x3 = vm.cardsInRange.find((c) => c.question === "3x3")
       expect(card3x3?.level).toBe(5)
       expect(card3x3?.time).toBe(10)
     })
   })
 
-  describe('feature toggles', () => {
-    it('renders feature-1x2-toggle button', () => {
+  describe("feature toggles", () => {
+    it("renders feature-1x2-toggle button", () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="feature-1x2-toggle"]').exists()).toBe(true)
     })
 
-    it('renders feature-1x12-toggle button', () => {
+    it("renders feature-1x12-toggle button", () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="feature-1x12-toggle"]').exists()).toBe(true)
     })
 
-    it('renders feature-1x20-toggle button', () => {
+    it("renders feature-1x20-toggle button", () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       expect(wrapper.find('[data-cy="feature-1x20-toggle"]').exists()).toBe(true)
     })
 
-    it('clicking feature-1x2-toggle calls toggleFeature and saveRange', async () => {
+    it("clicking feature-1x2-toggle calls toggleFeature and saveRange", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
-      await wrapper.find('[data-cy="feature-1x2-toggle"]').trigger('click')
-      expect(storageMocks.toggleFeature).toHaveBeenCalledWith(expect.any(Array), 'feature1x2')
+      await wrapper.find('[data-cy="feature-1x2-toggle"]').trigger("click")
+      expect(storageMocks.toggleFeature).toHaveBeenCalledWith(expect.any(Array), "feature1x2")
       expect(storageMocks.saveRange).toHaveBeenCalled()
     })
 
-    it('clicking feature-1x12-toggle calls toggleFeature and saveRange', async () => {
+    it("clicking feature-1x12-toggle calls toggleFeature and saveRange", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
-      await wrapper.find('[data-cy="feature-1x12-toggle"]').trigger('click')
-      expect(storageMocks.toggleFeature).toHaveBeenCalledWith(expect.any(Array), 'feature1x12')
+      await wrapper.find('[data-cy="feature-1x12-toggle"]').trigger("click")
+      expect(storageMocks.toggleFeature).toHaveBeenCalledWith(expect.any(Array), "feature1x12")
       expect(storageMocks.saveRange).toHaveBeenCalled()
     })
 
-    it('clicking feature-1x20-toggle calls toggleFeature and saveRange', async () => {
+    it("clicking feature-1x20-toggle calls toggleFeature and saveRange", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
-      await wrapper.find('[data-cy="feature-1x20-toggle"]').trigger('click')
-      expect(storageMocks.toggleFeature).toHaveBeenCalledWith(expect.any(Array), 'feature1x20')
+      await wrapper.find('[data-cy="feature-1x20-toggle"]').trigger("click")
+      expect(storageMocks.toggleFeature).toHaveBeenCalledWith(expect.any(Array), "feature1x20")
       expect(storageMocks.saveRange).toHaveBeenCalled()
     })
   })
 
-  describe('reset cards', () => {
-    it('level distribution reset triggers showResetDialog', async () => {
+  describe("reset cards", () => {
+    it("level distribution reset triggers showResetDialog", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
@@ -284,7 +284,7 @@ describe('1x1 CardsManPage', () => {
       expect(resetCardsMocks.showResetDialog).toHaveBeenCalled()
     })
 
-    it('showResetDialog callback calls resetCards and reloads cards', async () => {
+    it("showResetDialog callback calls resetCards and reloads cards", async () => {
       // Capture the callback passed to showResetDialog
       let capturedCallback: (() => void) | undefined
       resetCardsMocks.showResetDialog.mockImplementation((cb: () => void) => {
@@ -306,17 +306,17 @@ describe('1x1 CardsManPage', () => {
     })
   })
 
-  describe('keyboard listener cleanup', () => {
-    it('removes keydown listener on unmount', async () => {
+  describe("keyboard listener cleanup", () => {
+    it("removes keydown listener on unmount", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await router.isReady()
 
       wrapper.unmount()
 
       // After unmount, Escape should not trigger navigation
-      globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
       await Promise.resolve()
       expect(router.push).not.toHaveBeenCalled()
     })

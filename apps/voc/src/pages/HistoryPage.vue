@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { getFocusText, TEXT_DE } from '@flashcards/shared'
-import { HistoryPage } from '@flashcards/shared/pages'
+import { getFocusText, TEXT_DE } from "@flashcards/shared"
+import { HistoryPage } from "@flashcards/shared/pages"
 
-import { useGameStore } from '../composables/useGameStore'
-import type { GameHistory } from '../types'
+import { useGameStore } from "../composables/useGameStore"
+import type { GameHistory } from "../types"
 
 const { history } = useGameStore()
 
 function getModeText(mode: string): string {
   const modes: Record<string, string> = {
-    'multiple-choice': TEXT_DE.voc.mode.multipleChoice,
+    "multiple-choice": TEXT_DE.voc.mode.multipleChoice,
     blind: TEXT_DE.voc.mode.blind,
-    typing: TEXT_DE.voc.mode.typing
+    typing: TEXT_DE.voc.mode.typing,
   }
   return modes[mode] || mode
 }
@@ -19,9 +19,9 @@ function getModeText(mode: string): string {
 function formatDetails(game: GameHistory): string {
   const mode = getModeText(game.settings.mode)
   const focus = `${TEXT_DE.shared.words.focus}: ${getFocusText(game.settings.focus)}`
-  const deck = game.settings.deck ? `${TEXT_DE.shared.words.deck}: ${game.settings.deck}` : ''
+  const deck = game.settings.deck ? `${TEXT_DE.shared.words.deck}: ${game.settings.deck}` : ""
   const parts = [deck, mode, focus, game.settings.language]
-  return parts.join(' | ')
+  return parts.join(" | ")
 }
 
 function getPoints(entry: GameHistory): number {

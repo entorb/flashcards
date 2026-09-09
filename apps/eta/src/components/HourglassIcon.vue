@@ -1,6 +1,6 @@
 <!-- cspell:ignore offsetblur -->
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue"
 
 interface Props {
   progress: number // 0-100
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: 120
+  size: 120,
 })
 
 const sizeValue = computed(() => props.size)

@@ -1,13 +1,13 @@
-import type { FocusType } from '@flashcards/shared'
-import { createGameStoreFactory, filterByLevels } from '@flashcards/shared'
+import type { FocusType } from "@flashcards/shared"
+import { createGameStoreFactory, filterByLevels } from "@flashcards/shared"
 
-import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from '@/constants'
+import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from "@/constants"
 import {
   filterCardsAll,
   filterCardsBySelection,
   filterCardsSquares,
-  selectCardsForRound
-} from '@/services/cardSelector'
+  selectCardsForRound,
+} from "@/services/cardSelector"
 import {
   getVirtualCardsForRange,
   initializeCards,
@@ -25,9 +25,9 @@ import {
   saveHistory as storageSaveHistory,
   setGameConfig as storageSetGameConfig,
   setGameResult as storageSetGameResult,
-  updateCard as storageUpdateCard
-} from '@/services/storage'
-import type { Card, GameHistory, GameSettings } from '@/types'
+  updateCard as storageUpdateCard,
+} from "@/services/storage"
+import type { Card, GameHistory, GameSettings } from "@/types"
 
 export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettings>({
   storage: {
@@ -62,14 +62,14 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
     },
     resetCards: (...args) => {
       storageResetCards(...args)
-    }
+    },
   },
   filterCards: (allCards, settings, range) => {
     const rangeSet = new Set(range)
     let selected: Card[]
-    if (settings.select === 'x²') {
+    if (settings.select === "x²") {
       selected = filterCardsSquares(allCards, rangeSet)
-    } else if (settings.select === 'all') {
+    } else if (settings.select === "all") {
       selected = filterCardsAll(allCards, rangeSet)
     } else {
       const selectArray = Array.isArray(settings.select) ? settings.select : []
@@ -77,7 +77,7 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
     }
     return filterByLevels(selected, settings.levels)
   },
-  getDifficultyPoints: card => {
+  getDifficultyPoints: (card) => {
     const { x, y } = parseCardQuestion(card.question)
     return Math.min(x, y)
   },
@@ -89,12 +89,12 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
     if (
       Array.isArray(settings.select) &&
       settings.select.length === range.length &&
-      settings.select.every(num => rangeSet.has(num))
+      settings.select.every((num) => rangeSet.has(num))
     ) {
-      settingsForHistory.select = 'all'
+      settingsForHistory.select = "all"
     }
     return settingsForHistory
   },
   gameStateFlowConfig: GAME_STATE_FLOW_CONFIG,
-  maxCardsPerGame: MAX_CARDS_PER_GAME
+  maxCardsPerGame: MAX_CARDS_PER_GAME,
 })

@@ -3,14 +3,14 @@
   lang="ts"
   generic="T extends { name: string; cards: BaseCard[] }, S extends { deck?: string }"
 >
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from "vue"
 
-import type { BaseCard } from '../types'
+import type { BaseCard } from "../types"
 
 /** @lintignore */
 export interface DeckSelectorProps<
   T extends { name: string; cards: BaseCard[] },
-  S extends { deck?: string }
+  S extends { deck?: string },
 > {
   getDecks: () => T[]
   switchDeck: (deckName: string) => void
@@ -20,7 +20,7 @@ export interface DeckSelectorProps<
 
 const props = defineProps<DeckSelectorProps<T, S>>()
 
-const currentDeck = ref<string>('')
+const currentDeck = ref<string>("")
 const deckOptions = ref<{ label: string; value: string }[]>([])
 
 onMounted(() => {
@@ -38,13 +38,13 @@ function loadDecksAndSettings() {
 
   // Load deck options
   const decks = props.getDecks()
-  deckOptions.value = decks.map(deck => ({
+  deckOptions.value = decks.map((deck) => ({
     label: deck.name,
-    value: deck.name
+    value: deck.name,
   }))
 
   // Validate that current deck exists, fall back to first deck if not
-  const deckExists = decks.some(d => d.name === currentDeck.value)
+  const deckExists = decks.some((d) => d.name === currentDeck.value)
   const firstDeck = decks[0]
   if (!deckExists && firstDeck !== undefined) {
     handleDeckChange(firstDeck.name)

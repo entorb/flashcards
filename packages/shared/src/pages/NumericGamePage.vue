@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import GameFeedbackNegative from '../components/GameFeedbackNegative.vue'
-import GameHeader from '../components/GameHeader.vue'
-import GameInputSubmit from '../components/GameInputSubmit.vue'
-import GameNextCardButton from '../components/GameNextCardButton.vue'
-import GamePointsBreakdown from '../components/GamePointsBreakdown.vue'
-import GameShowCardQuestion from '../components/GameShowCardQuestion.vue'
-import { useGameNavigation } from '../composables/useGameNavigation'
-import { useGameTimer } from '../composables/useGameTimer'
-import { useKeyboardContinue } from '../composables/useKeyboardContinue'
-import type { PointsBreakdown } from '../services/scoring'
-import type { AnswerStatus, BaseCard, SessionMode } from '../types'
-import { isEndlessMode } from '../utils/gameModeUtils'
+import type { Ref } from "vue"
+import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+import { useRouter } from "vue-router"
+import GameFeedbackNegative from "../components/GameFeedbackNegative.vue"
+import GameHeader from "../components/GameHeader.vue"
+import GameInputSubmit from "../components/GameInputSubmit.vue"
+import GameNextCardButton from "../components/GameNextCardButton.vue"
+import GamePointsBreakdown from "../components/GamePointsBreakdown.vue"
+import GameShowCardQuestion from "../components/GameShowCardQuestion.vue"
+import { useGameNavigation } from "../composables/useGameNavigation"
+import { useGameTimer } from "../composables/useGameTimer"
+import { useKeyboardContinue } from "../composables/useKeyboardContinue"
+import type { PointsBreakdown } from "../services/scoring"
+import type { AnswerStatus, BaseCard, SessionMode } from "../types"
+import { isEndlessMode } from "../utils/gameModeUtils"
 
 export interface NumericGameCard extends BaseCard {
   question: string
@@ -43,13 +43,13 @@ const router = useRouter()
 
 // For endless mode, show remaining cards count (shrinks as cards are removed)
 const totalCardsOverride = computed(() =>
-  isEndlessMode(props.store.sessionMode.value) ? props.store.gameCards.value.length : undefined
+  isEndlessMode(props.store.sessionMode.value) ? props.store.gameCards.value.length : undefined,
 )
 
 // GamePage component state
 const userAnswer = ref<number | null>(null)
 const showFeedback = ref(false)
-const answerStatus = ref<'correct' | 'incorrect' | null>(null)
+const answerStatus = ref<"correct" | "incorrect" | null>(null)
 const userAnswerNum = ref<number | null>(null)
 
 // Use shared timer logic
@@ -62,14 +62,14 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
   nextCard: (...args) => props.store.nextCard(...args),
   finishGame: (...args) => props.store.finishGame(...args),
   discardGame: (...args) => props.store.discardGame(...args),
-  router
+  router,
 })
 
 // Track button disabled state for keyboard control
 const isButtonDisabled = ref(false)
 
 const displayQuestion = computed(() => {
-  if (!currentCard.value) return ''
+  if (!currentCard.value) return ""
   return props.formatQuestion(currentCard.value.question)
 })
 
@@ -80,7 +80,7 @@ const expectedAnswerLength = computed(() => {
 })
 
 // Auto-submit after user enters expected number of digits
-watch(userAnswer, newValue => {
+watch(userAnswer, (newValue) => {
   if (newValue !== null && newValue !== undefined && !showFeedback.value) {
     const valueStr = String(newValue)
     if (valueStr.length >= expectedAnswerLength.value) {
@@ -102,7 +102,7 @@ watch(
     answerStatus.value = null
     userAnswerNum.value = null
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 function submitAnswer() {
@@ -112,7 +112,7 @@ function submitAnswer() {
   const isCorrect = parsedUserAnswer === currentCard.value.answer
   const answerTime = elapsedTime.value
 
-  answerStatus.value = isCorrect ? 'correct' : 'incorrect'
+  answerStatus.value = isCorrect ? "correct" : "incorrect"
   userAnswerNum.value = parsedUserAnswer
 
   showFeedback.value = true
@@ -128,7 +128,7 @@ function handleContinue() {
 
 // Handle Escape key
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     handleGoHome()
   }
 }
@@ -136,13 +136,13 @@ function handleKeyDown(event: KeyboardEvent) {
 onMounted(() => {
   // Redirect home if there's no game in progress and no settings
   if (props.store.gameCards.value.length === 0 && !props.store.gameSettings.value) {
-    void router.push({ name: '/HomePage' })
+    void router.push({ name: "/HomePage" })
   }
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 </script>
 

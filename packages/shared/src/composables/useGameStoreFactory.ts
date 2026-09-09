@@ -4,36 +4,36 @@
  * Each app provides app-specific callbacks for filtering, scoring, and history.
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue"
 
-import { LOOP_COUNT, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
-import { calculatePointsBreakdown } from '../services/scoring'
+import { LOOP_COUNT, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants"
+import { calculatePointsBreakdown } from "../services/scoring"
 import type {
   AnswerStatus,
   BaseCard,
   BaseGameHistory,
   GameResult,
   GameStats,
-  SessionMode
-} from '../types'
-import { shuffleArray } from '../utils/cardSelection'
+  SessionMode,
+} from "../types"
+import { shuffleArray } from "../utils/cardSelection"
 import {
   filterBelowMaxLevel,
   filterLevel1Cards,
   handleNextCard,
   isEndlessMode,
-  repeatCards
-} from '../utils/gameModeUtils'
-import { roundTime } from '../utils/helper'
+  repeatCards,
+} from "../utils/gameModeUtils"
+import { roundTime } from "../utils/helper"
 
-import { createBaseGameStore } from './useBaseGameStore'
-import type { GameStateFlowConfig } from './useGameStateFlow'
-import { initializeGameFlow } from './useGameStateFlow'
+import { createBaseGameStore } from "./useBaseGameStore"
+import type { GameStateFlowConfig } from "./useGameStateFlow"
+import { initializeGameFlow } from "./useGameStateFlow"
 
 export interface GameStoreFactoryConfig<
   TCard extends BaseCard & { question: string; answer: number },
   THistory extends BaseGameHistory,
-  TSettings
+  TSettings,
 > {
   storage: {
     loadCards: () => TCard[]
@@ -83,15 +83,15 @@ function selectCardsByMode<TCard extends BaseCard, TSettings extends { focus: st
   mode: SessionMode,
   settings: TSettings,
   selectForRound: (cards: TCard[], focus: string, count: number) => TCard[],
-  maxCards: number
+  maxCards: number,
 ): TCard[] {
-  if (mode === 'endless-level1') {
+  if (mode === "endless-level1") {
     return shuffleArray(filterLevel1Cards(filteredCards))
   }
-  if (mode === 'endless-level5') {
+  if (mode === "endless-level5") {
     return shuffleArray(filterBelowMaxLevel(filteredCards))
   }
-  if (mode === '3-rounds') {
+  if (mode === "3-rounds") {
     const focusSelected = selectForRound(filteredCards, settings.focus, maxCards)
     return shuffleArray(repeatCards(focusSelected, LOOP_COUNT))
   }
@@ -104,7 +104,7 @@ function selectCardsByMode<TCard extends BaseCard, TSettings extends { focus: st
 function handleCorrectAnswer<TCard extends BaseCard & { question: string }>(
   card: TCard,
   answerTime: number,
-  updateCard: (question: string, updates: Partial<TCard>) => void
+  updateCard: (question: string, updates: Partial<TCard>) => void,
 ): void {
   const newLevel = Math.min(card.level + 1, MAX_LEVEL)
   const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
@@ -118,7 +118,7 @@ function handleCorrectAnswer<TCard extends BaseCard & { question: string }>(
  */
 function handleIncorrectAnswer<TCard extends BaseCard & { question: string }>(
   card: TCard,
-  updateCard: (question: string, updates: Partial<TCard>) => void
+  updateCard: (question: string, updates: Partial<TCard>) => void,
 ): void {
   const newLevel = Math.max(card.level - 1, MIN_LEVEL)
   card.level = newLevel
@@ -133,7 +133,7 @@ function handleIncorrectAnswer<TCard extends BaseCard & { question: string }>(
 export function createGameStoreFactory<
   TCard extends BaseCard & { question: string; answer: number },
   THistory extends BaseGameHistory,
-  TSettings extends { focus: string }
+  TSettings extends { focus: string },
 >(factoryConfig: GameStoreFactoryConfig<TCard, THistory, TSettings>) {
   const { storage, gameStateFlowConfig, maxCardsPerGame } = factoryConfig
 
@@ -143,7 +143,7 @@ export function createGameStoreFactory<
     loadHistory: storage.loadHistory,
     saveHistory: storage.saveHistory,
     loadGameStats: storage.loadGameStats,
-    saveGameStats: storage.saveGameStats
+    saveGameStats: storage.saveGameStats,
   })
 
   return function useGameStore() {
@@ -166,7 +166,7 @@ export function createGameStoreFactory<
       baseStore.currentCardIndex.value = savedGameState.currentCardIndex
       baseStore.points.value = savedGameState.points
       baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
-      baseStore.sessionMode.value = savedGameState.sessionMode ?? 'standard'
+      baseStore.sessionMode.value = savedGameState.sessionMode ?? "standard"
       initialCardCount.value = savedGameState.initialCardCount ?? savedGameState.gameCards.length
     }
 
@@ -177,11 +177,11 @@ export function createGameStoreFactory<
         points: baseStore.points.value,
         correctAnswersCount: baseStore.correctAnswersCount.value,
         sessionMode: baseStore.sessionMode.value,
-        initialCardCount: initialCardCount.value
+        initialCardCount: initialCardCount.value,
       })
     }
 
-    function startGame(settings: TSettings, mode: SessionMode = 'standard', forceReset = false) {
+    function startGame(settings: TSettings, mode: SessionMode = "standard", forceReset = false) {
       if (!forceReset && baseStore.gameCards.value.length > 0) {
         return
       }
@@ -204,7 +204,7 @@ export function createGameStoreFactory<
         mode,
         settings,
         factoryConfig.selectCardsForRound,
-        maxCardsPerGame
+        maxCardsPerGame,
       )
 
       initializeGameFlow(gameStateFlowConfig, settings, selectedCards)
@@ -217,7 +217,7 @@ export function createGameStoreFactory<
         points: 0,
         correctAnswersCount: 0,
         sessionMode: mode,
-        initialCardCount: selectedCards.length
+        initialCardCount: selectedCards.length,
       })
     }
 
@@ -225,15 +225,15 @@ export function createGameStoreFactory<
       const card = currentCard.value
       if (!(card && baseStore.gameSettings.value)) return
 
-      if (result === 'correct' || result === 'close') {
+      if (result === "correct" || result === "close") {
         const rawDifficulty = factoryConfig.getDifficultyPoints(card)
-        const difficultyPoints = result === 'correct' ? rawDifficulty : 0
+        const difficultyPoints = result === "correct" ? rawDifficulty : 0
 
         const pointsBreakdown = calculatePointsBreakdown({
           difficultyPoints,
           level: card.level,
           timeBonus: card.time < MAX_TIME && answerTime <= card.time,
-          closeAdjustment: result === 'close'
+          closeAdjustment: result === "close",
         })
 
         baseStore.handleAnswerBase(result, pointsBreakdown)
@@ -250,7 +250,7 @@ export function createGameStoreFactory<
         baseStore.gameCards,
         baseStore.currentCardIndex,
         baseStore.sessionMode.value,
-        (c: TCard) => c.question
+        (c: TCard) => c.question,
       )
 
       if (!isGameOver) {
@@ -270,7 +270,7 @@ export function createGameStoreFactory<
         date: new Date().toISOString(),
         settings: settingsForHistory,
         points: baseStore.points.value,
-        correctAnswers: baseStore.correctAnswersCount.value
+        correctAnswers: baseStore.correctAnswersCount.value,
       } as unknown as THistory
 
       baseStore.history.value = [...baseStore.history.value, historyEntry]
@@ -282,11 +282,11 @@ export function createGameStoreFactory<
       storage.setGameResult({
         points: baseStore.points.value,
         correctAnswers: baseStore.correctAnswersCount.value,
-        totalCards
+        totalCards,
       })
 
       storage.clearGameState()
-      baseStore.sessionMode.value = 'standard'
+      baseStore.sessionMode.value = "standard"
       baseStore.resetGameState()
       baseStore.gameCards.value = []
     }
@@ -324,7 +324,7 @@ export function createGameStoreFactory<
       finishGame,
       discardGame,
       resetCards,
-      moveAllCards: baseStore.moveAllCards
+      moveAllCards: baseStore.moveAllCards,
     }
   }
 }

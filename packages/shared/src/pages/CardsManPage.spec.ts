@@ -1,22 +1,22 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { BaseCard } from '../types'
-import CardsManPage from './CardsManPage.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { ref } from "vue"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { BaseCard } from "../types"
+import CardsManPage from "./CardsManPage.vue"
 
 // Controllable dialog/notify mocks
 const dialogMock = vi.hoisted(() =>
-  vi.fn(() => ({ onOk: vi.fn(), onCancel: vi.fn(), onDismiss: vi.fn() }))
+  vi.fn(() => ({ onOk: vi.fn(), onCancel: vi.fn(), onDismiss: vi.fn() })),
 )
 const notifyMock = vi.hoisted(() => vi.fn())
 
-vi.mock('quasar', () => ({
+vi.mock("quasar", () => ({
   useQuasar: () => ({
     dialog: (...args: Parameters<typeof dialogMock>) => dialogMock(...args),
-    notify: (...args: Parameters<typeof notifyMock>) => notifyMock(...args)
-  })
+    notify: (...args: Parameters<typeof notifyMock>) => notifyMock(...args),
+  }),
 }))
 
 // Helper to create a dialog mock that fires onOk immediately
@@ -28,114 +28,114 @@ function makeDialogWithOk(cb?: () => void) {
       return { onOk: vi.fn(), onCancel: vi.fn(), onDismiss: vi.fn() }
     },
     onCancel: vi.fn(),
-    onDismiss: vi.fn()
+    onDismiss: vi.fn(),
   } as ReturnType<typeof dialogMock>
 }
 const router = createRouter({
   history: createMemoryHistory(),
   routes: [
-    { path: '/', component: { template: '<div />' } },
-    { path: '/cards-edit', component: { template: '<div />' } },
-    { path: '/decks-edit', component: { template: '<div />' } }
-  ]
+    { path: "/", component: { template: "<div />" } },
+    { path: "/cards-edit", component: { template: "<div />" } },
+    { path: "/decks-edit", component: { template: "<div />" } },
+  ],
 })
 
 const mockCards: BaseCard[] = [
   { level: 1, time: 60 },
   { level: 2, time: 30 },
-  { level: 3, time: 15 }
+  { level: 3, time: 15 },
 ]
 
 function makeMockStore() {
   return {
     allCards: ref<BaseCard[]>(mockCards),
     moveAllCards: vi.fn(),
-    resetCards: vi.fn()
+    resetCards: vi.fn(),
   }
 }
 
 function makeProps(store: ReturnType<typeof makeMockStore>) {
   return {
-    appPrefix: 'lwk' as const,
-    title: 'Kartenverwaltung',
-    bannerHtml: '<strong>Info</strong>',
-    decksTitle: 'Decks',
-    editCardsRoute: '/cards-edit',
-    editDecksRoute: '/decks-edit',
-    getDecks: vi.fn(() => [{ name: 'LWK_1', cards: mockCards }]),
+    appPrefix: "lwk" as const,
+    title: "Kartenverwaltung",
+    bannerHtml: "<strong>Info</strong>",
+    decksTitle: "Decks",
+    editCardsRoute: "/cards-edit",
+    editDecksRoute: "/decks-edit",
+    getDecks: vi.fn(() => [{ name: "LWK_1", cards: mockCards }]),
     switchDeck: vi.fn(),
-    loadSettings: vi.fn(() => ({ deck: 'LWK_1' })),
+    loadSettings: vi.fn(() => ({ deck: "LWK_1" })),
     saveSettings: vi.fn(),
     store,
     getCardLabel: (card: BaseCard) => `Level ${card.level}`,
-    getCardKey: (card: BaseCard) => `${card.level}-${card.time}`
+    getCardKey: (card: BaseCard) => `${card.level}-${card.time}`,
   }
 }
 
 // Reusable stubs — plain versions for navigation tests
 const plainStubs = {
   ...quasarStubs,
-  HomeDeckSelector: { template: '<div />' },
-  CardsManLevelDistribution: { template: '<div />' },
+  HomeDeckSelector: { template: "<div />" },
+  CardsManLevelDistribution: { template: "<div />" },
   CardsListOfCards: {
-    props: ['title', 'selectedLevel'],
-    template: '<div class="list-stub">{{ title }}|{{ selectedLevel }}</div>'
+    props: ["title", "selectedLevel"],
+    template: '<div class="list-stub">{{ title }}|{{ selectedLevel }}</div>',
   },
-  CardManActions: { template: '<div />' }
+  CardManActions: { template: "<div />" },
 }
 
 const globalOpts = {
   mocks: quasarMocks,
   plugins: [router],
   provide: quasarProvide,
-  stubs: plainStubs
+  stubs: plainStubs,
 }
 
-describe('CardsManPage (shared)', () => {
+describe("CardsManPage (shared)", () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
     dialogMock.mockReturnValue({ onOk: vi.fn(), onCancel: vi.fn(), onDismiss: vi.fn() })
-    vi.spyOn(router, 'push').mockResolvedValue()
+    vi.spyOn(router, "push").mockResolvedValue()
   })
 
-  it('mounts without errors', async () => {
+  it("mounts without errors", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('back button navigates to /', async () => {
+  it("back button navigates to /", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
-    await wrapper.find('[data-cy="back-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    await wrapper.find('[data-cy="back-button"]').trigger("click")
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('edit-cards button navigates to editCardsRoute', async () => {
+  it("edit-cards button navigates to editCardsRoute", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
-    await wrapper.find('[data-cy="edit-cards-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith('/cards-edit')
+    await wrapper.find('[data-cy="edit-cards-button"]').trigger("click")
+    expect(router.push).toHaveBeenCalledWith("/cards-edit")
   })
 
-  it('edit-decks button navigates to editDecksRoute', async () => {
+  it("edit-decks button navigates to editDecksRoute", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
-    await wrapper.find('[data-cy="edit-decks-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith('/decks-edit')
+    await wrapper.find('[data-cy="edit-decks-button"]').trigger("click")
+    expect(router.push).toHaveBeenCalledWith("/decks-edit")
   })
 
-  it('Escape key triggers navigation to /', () => {
+  it("Escape key triggers navigation to /", () => {
     const store = makeMockStore()
     mount(CardsManPage, { props: makeProps(store), global: globalOpts })
-    globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('handleMoveClick is triggered by CardManActions move-click event', async () => {
+  it("handleMoveClick is triggered by CardManActions move-click event", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     await wrapper.vm.$nextTick()
@@ -145,7 +145,7 @@ describe('CardsManPage (shared)', () => {
     }).not.toThrow()
   })
 
-  it('handleResetCards is triggered by CardsManLevelDistribution reset event', async () => {
+  it("handleResetCards is triggered by CardsManLevelDistribution reset event", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     await wrapper.vm.$nextTick()
@@ -155,7 +155,7 @@ describe('CardsManPage (shared)', () => {
     }).not.toThrow()
   })
 
-  it('handleResetCardsToDefaultSet is triggered by CardManActions reset-click event', async () => {
+  it("handleResetCardsToDefaultSet is triggered by CardManActions reset-click event", async () => {
     const store = makeMockStore()
     const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
     await wrapper.vm.$nextTick()
@@ -167,8 +167,8 @@ describe('CardsManPage (shared)', () => {
 
   // ─── handleMoveClick — dialog confirmation ────────────────────────────────
 
-  describe('handleMoveClick — dialog confirmation', () => {
-    it('calls moveAllCards when dialog is confirmed', async () => {
+  describe("handleMoveClick — dialog confirmation", () => {
+    it("calls moveAllCards when dialog is confirmed", async () => {
       const store = makeMockStore()
       dialogMock.mockReturnValueOnce(makeDialogWithOk())
 
@@ -180,21 +180,21 @@ describe('CardsManPage (shared)', () => {
       expect(store.moveAllCards).toHaveBeenCalledWith(3)
     })
 
-    it('handleMoveClick with invalid level calls notify', async () => {
+    it("handleMoveClick with invalid level calls notify", async () => {
       const store = makeMockStore()
       const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { handleMoveClick: () => void; targetLevel: number }
       vm.targetLevel = 99 // invalid
       vm.handleMoveClick()
-      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'negative' }))
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }))
     })
   })
 
   // ─── handleResetCards — calls moveAllCards(1) and resets time ─────────────
 
-  describe('handleResetCards', () => {
-    it('calls moveAllCards(1) and resets card times when dialog confirmed', async () => {
+  describe("handleResetCards", () => {
+    it("calls moveAllCards(1) and resets card times when dialog confirmed", async () => {
       const store = makeMockStore()
       dialogMock.mockReturnValueOnce(makeDialogWithOk())
 
@@ -209,8 +209,8 @@ describe('CardsManPage (shared)', () => {
 
   // ─── handleResetCardsToDefaultSet ────────────────────────────────────────
 
-  describe('handleResetCardsToDefaultSet', () => {
-    it('calls resetCards when dialog confirmed', async () => {
+  describe("handleResetCardsToDefaultSet", () => {
+    it("calls resetCards when dialog confirmed", async () => {
       const store = makeMockStore()
       dialogMock.mockReturnValueOnce(makeDialogWithOk())
 
@@ -225,8 +225,8 @@ describe('CardsManPage (shared)', () => {
 
   // ─── handleLevelClick — filters cards ────────────────────────────────────
 
-  describe('handleLevelClick', () => {
-    it('does not throw when called via vm', async () => {
+  describe("handleLevelClick", () => {
+    it("does not throw when called via vm", async () => {
       const store = makeMockStore()
       const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
       await wrapper.vm.$nextTick()
@@ -237,7 +237,7 @@ describe('CardsManPage (shared)', () => {
     })
   })
 
-  describe('handleTimeBucketClick', () => {
+  describe("handleTimeBucketClick", () => {
     function mountWithHistogram() {
       return mount(CardsManPage, {
         props: makeProps(makeMockStore()),
@@ -246,35 +246,35 @@ describe('CardsManPage (shared)', () => {
           stubs: {
             ...plainStubs,
             CardsTimeHistogram: {
-              template: '<button data-cy="histogram-stub" @click="$emit(\'bucketClick\', 3)" />'
-            }
-          }
-        }
+              template: '<button data-cy="histogram-stub" @click="$emit(\'bucketClick\', 3)" />',
+            },
+          },
+        },
       })
     }
 
-    it('time bucket click shows time-filtered list title', async () => {
+    it("time bucket click shows time-filtered list title", async () => {
       const wrapper = mountWithHistogram()
-      await wrapper.find('[data-cy="histogram-stub"]').trigger('click')
-      const listStub = wrapper.find('.list-stub')
-      expect(listStub.text()).toContain('Zeit <20s')
+      await wrapper.find('[data-cy="histogram-stub"]').trigger("click")
+      const listStub = wrapper.find(".list-stub")
+      expect(listStub.text()).toContain("Zeit <20s")
     })
 
-    it('level click after time selection switches the list back to level view', async () => {
+    it("level click after time selection switches the list back to level view", async () => {
       const wrapper = mountWithHistogram()
-      await wrapper.find('[data-cy="histogram-stub"]').trigger('click')
+      await wrapper.find('[data-cy="histogram-stub"]').trigger("click")
       const vm = wrapper.vm as unknown as { handleLevelClick: (level: number) => void }
       vm.handleLevelClick(2)
       await wrapper.vm.$nextTick()
-      const listStub = wrapper.find('.list-stub')
-      expect(listStub.text()).not.toContain('Zeit')
+      const listStub = wrapper.find(".list-stub")
+      expect(listStub.text()).not.toContain("Zeit")
     })
   })
 
   // ─── duplicateKeys — detects duplicate cards ────────────────────────────
 
-  describe('duplicateKeys', () => {
-    it('returns empty set when all cards have unique keys', async () => {
+  describe("duplicateKeys", () => {
+    it("returns empty set when all cards have unique keys", async () => {
       const store = makeMockStore()
       const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
       await wrapper.vm.$nextTick()
@@ -282,23 +282,23 @@ describe('CardsManPage (shared)', () => {
       expect(vm.duplicateKeys.size).toBe(0)
     })
 
-    it('detects duplicate cards based on getCardKey', async () => {
+    it("detects duplicate cards based on getCardKey", async () => {
       const cards: BaseCard[] = [
         { level: 1, time: 60 },
         { level: 1, time: 60 }, // same key as first
         { level: 2, time: 30 },
-        { level: 1, time: 60 } // same key as first
+        { level: 1, time: 60 }, // same key as first
       ]
       const store = {
         allCards: ref<BaseCard[]>(cards),
         moveAllCards: vi.fn(),
-        resetCards: vi.fn()
+        resetCards: vi.fn(),
       }
       const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
       await wrapper.vm.$nextTick()
       const vm = wrapper.vm as unknown as { duplicateKeys: Set<string> }
       expect(vm.duplicateKeys.size).toBe(1)
-      expect(vm.duplicateKeys.has('1-60')).toBe(true)
+      expect(vm.duplicateKeys.has("1-60")).toBe(true)
     })
   })
 })

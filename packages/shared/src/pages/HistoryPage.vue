@@ -1,9 +1,9 @@
 <script setup lang="ts" generic="T extends BaseGameHistory">
-import { computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
 
-import { TEXT_DE } from '../text-de'
-import type { BaseGameHistory } from '../types'
+import { TEXT_DE } from "../text-de"
+import type { BaseGameHistory } from "../types"
 
 /** @lintignore */
 export interface Props<T extends BaseGameHistory> {
@@ -26,31 +26,31 @@ const sortedHistory = computed(() => {
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
   const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   }
-  return new Intl.DateTimeFormat('de-DE', options).format(date)
+  return new Intl.DateTimeFormat("de-DE", options).format(date)
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     goHome()
   }
 }
 
 onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function goHome() {
-  void router.push({ name: '/HomePage' })
+  void router.push({ name: "/HomePage" })
 }
 </script>
 

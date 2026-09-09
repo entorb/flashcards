@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { TEXT_DE } from '../text-de'
-import type { AnswerStatus } from '../types'
+import { TEXT_DE } from "../text-de"
+import type { AnswerStatus } from "../types"
 
 interface Props {
   status: AnswerStatus
@@ -9,63 +9,63 @@ interface Props {
   isButtonDisabled?: boolean
 }
 
-type Emits = (e: 'continue') => void
+type Emits = (e: "continue") => void
 
 /* eslint-disable vue/no-boolean-default */
 withDefaults(defineProps<Props>(), {
-  iconSize: '80px',
+  iconSize: "80px",
   showContinueButton: true,
-  isButtonDisabled: false
+  isButtonDisabled: false,
 })
 /* eslint-enable vue/no-boolean-default */
 
 const emit = defineEmits<Emits>()
 
 function handleContinue() {
-  emit('continue')
+  emit("continue")
 }
 
 function getIcon(status: AnswerStatus): string {
   switch (status) {
-    case 'correct':
-      return 'check_circle'
-    case 'close':
-      return 'warning'
-    case 'incorrect':
-      return 'cancel'
+    case "correct":
+      return "check_circle"
+    case "close":
+      return "warning"
+    case "incorrect":
+      return "cancel"
   }
 }
 
 function getBackgroundClass(status: AnswerStatus): string {
   switch (status) {
-    case 'correct':
-      return 'bg-positive'
-    case 'close':
-      return 'bg-warning'
-    case 'incorrect':
-      return 'bg-negative'
+    case "correct":
+      return "bg-positive"
+    case "close":
+      return "bg-warning"
+    case "incorrect":
+      return "bg-negative"
   }
 }
 
 function getButtonBackgroundClass(status: AnswerStatus): string {
   switch (status) {
-    case 'correct':
-      return 'bg-positive-1'
-    case 'close':
-      return 'bg-warning-1'
-    case 'incorrect':
-      return 'bg-negative-1'
+    case "correct":
+      return "bg-positive-1"
+    case "close":
+      return "bg-warning-1"
+    case "incorrect":
+      return "bg-negative-1"
   }
 }
 
 function getColor(status: AnswerStatus): string {
   switch (status) {
-    case 'correct':
-      return 'positive'
-    case 'close':
-      return 'warning'
-    case 'incorrect':
-      return 'negative'
+    case "correct":
+      return "positive"
+    case "close":
+      return "warning"
+    case "incorrect":
+      return "negative"
   }
 }
 </script>

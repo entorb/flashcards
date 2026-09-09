@@ -1,27 +1,27 @@
-import { MAX_LEVEL, MIN_LEVEL } from '../constants.js'
-import type { BaseCard, SessionMode } from '../types.js'
+import { MAX_LEVEL, MIN_LEVEL } from "../constants.js"
+import type { BaseCard, SessionMode } from "../types.js"
 
-import { shuffleArray } from './cardSelection.js'
+import { shuffleArray } from "./cardSelection.js"
 
 /**
  * Check if a session mode is an endless mode (cards are removed as they're mastered)
  */
 export function isEndlessMode(mode: SessionMode): boolean {
-  return mode === 'endless-level1' || mode === 'endless-level5'
+  return mode === "endless-level1" || mode === "endless-level5"
 }
 
 /**
  * Filter cards at Level 1 from any card array
  */
 export function filterLevel1Cards<T extends BaseCard>(cards: T[]): T[] {
-  return cards.filter(card => card.level === MIN_LEVEL)
+  return cards.filter((card) => card.level === MIN_LEVEL)
 }
 
 /**
  * Filter cards below MAX_LEVEL (level < 5) from any card array
  */
 export function filterBelowMaxLevel<T extends BaseCard>(cards: T[]): T[] {
-  return cards.filter(card => card.level < MAX_LEVEL)
+  return cards.filter((card) => card.level < MAX_LEVEL)
 }
 
 /**
@@ -30,7 +30,7 @@ export function filterBelowMaxLevel<T extends BaseCard>(cards: T[]): T[] {
 export function filterByLevels<T extends BaseCard>(cards: T[], levels: number[]): T[] {
   if (levels.length === 0) return []
   const levelSet = new Set(levels)
-  return cards.filter(card => levelSet.has(card.level))
+  return cards.filter((card) => levelSet.has(card.level))
 }
 
 /**
@@ -60,7 +60,7 @@ export function avoidConsecutiveRepeat<T>(
   cards: T[],
   nextIndex: number,
   previousKey: string,
-  getKey: (card: T) => string
+  getKey: (card: T) => string,
 ): number {
   if (cards.length <= 1) return nextIndex
   const nextCard = cards[nextIndex]
@@ -91,11 +91,11 @@ function nextEndlessCard<T extends BaseCard>(
   currentCardIndex: { value: number },
   sessionMode: SessionMode,
   previousKey: string,
-  getKey: (card: T) => string
+  getKey: (card: T) => string,
 ): boolean {
   const currentCard = gameCards.value[currentCardIndex.value]
   const mastered =
-    sessionMode === 'endless-level1'
+    sessionMode === "endless-level1"
       ? currentCard !== undefined && currentCard.level > MIN_LEVEL
       : currentCard !== undefined && currentCard.level >= MAX_LEVEL
   if (mastered) {
@@ -110,7 +110,7 @@ function nextEndlessCard<T extends BaseCard>(
     gameCards.value,
     currentCardIndex.value,
     previousKey,
-    getKey
+    getKey,
   )
 
   // When only one unmastered card remains, the same object reference is picked
@@ -133,7 +133,7 @@ function nextRandomUnplayedCard<T extends BaseCard>(
   gameCards: { value: T[] },
   currentCardIndex: { value: number },
   previousKey: string,
-  getKey: (card: T) => string
+  getKey: (card: T) => string,
 ): boolean {
   const nextIndex = currentCardIndex.value + 1
   if (nextIndex >= gameCards.value.length) return true
@@ -179,12 +179,12 @@ export function handleNextCard<T extends BaseCard>(
   gameCards: { value: T[] },
   currentCardIndex: { value: number },
   sessionMode: SessionMode,
-  getKey: (card: T) => string
+  getKey: (card: T) => string,
 ): boolean {
   const previousCard = gameCards.value[currentCardIndex.value]
-  const previousKey = previousCard === undefined ? '' : getKey(previousCard)
+  const previousKey = previousCard === undefined ? "" : getKey(previousCard)
 
-  if (sessionMode === 'endless-level1' || sessionMode === 'endless-level5') {
+  if (sessionMode === "endless-level1" || sessionMode === "endless-level5") {
     return nextEndlessCard(gameCards, currentCardIndex, sessionMode, previousKey, getKey)
   }
 
