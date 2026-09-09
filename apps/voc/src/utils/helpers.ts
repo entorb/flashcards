@@ -3,11 +3,11 @@ import {
   levenshteinDistance,
   MAX_TIME,
   normalizeWhitespace,
-  parseLevel
-} from '@flashcards/shared'
+  parseLevel,
+} from "@flashcards/shared"
 
-import { LEVENSHTEIN_THRESHOLD } from '../constants'
-import type { Card } from '../types'
+import { LEVENSHTEIN_THRESHOLD } from "../constants"
+import type { Card } from "../types"
 
 /**
  * Normalize a string for comparison (lowercase, trim)
@@ -25,44 +25,44 @@ export function normalizeString(str: string): string {
 export function validateTypingAnswer(
   userInput: string,
   correctAnswer: string,
-  language: 'voc-de' | 'de-voc'
+  language: "voc-de" | "de-voc",
 ): AnswerStatus {
   const normalizedUserAnswer = normalizeString(userInput)
-  const possibleAnswers = correctAnswer.split('/').map(normalizeString)
+  const possibleAnswers = correctAnswer.split("/").map(normalizeString)
 
   // If DE->Voc, also accept answers without the leading "to "
-  if (language === 'de-voc') {
+  if (language === "de-voc") {
     const answersWithoutTo = possibleAnswers
-      .filter(ans => ans.startsWith('to '))
-      .map(ans => ans.slice(3))
+      .filter((ans) => ans.startsWith("to "))
+      .map((ans) => ans.slice(3))
     possibleAnswers.push(...answersWithoutTo)
   }
 
   // Check for exact match
   if (possibleAnswers.includes(normalizedUserAnswer)) {
-    return 'correct'
+    return "correct"
   }
 
   // Check for "close" answers using Levenshtein distance
   if (
     possibleAnswers.some(
-      ans => levenshteinDistance(normalizedUserAnswer, ans) <= LEVENSHTEIN_THRESHOLD
+      (ans) => levenshteinDistance(normalizedUserAnswer, ans) <= LEVENSHTEIN_THRESHOLD,
     )
   ) {
-    return 'close'
+    return "close"
   }
 
-  return 'incorrect'
+  return "incorrect"
 }
 
 /**
  * Detect the delimiter used in the first line of text
  */
 function detectDelimiter(firstLine: string): string | null {
-  if (firstLine.includes('\t')) return '\t'
-  if (firstLine.includes(';')) return ';'
-  if (firstLine.includes(',')) return ','
-  if (firstLine.includes('/')) return '/'
+  if (firstLine.includes("\t")) return "\t"
+  if (firstLine.includes(";")) return ";"
+  if (firstLine.includes(",")) return ","
+  if (firstLine.includes("/")) return "/"
   return null
 }
 
@@ -71,7 +71,7 @@ function detectDelimiter(firstLine: string): string | null {
  */
 function isHeaderLine(line: string): boolean {
   const lower = line.toLowerCase()
-  return lower.includes('voc') && lower.includes('de')
+  return lower.includes("voc") && lower.includes("de")
 }
 
 /**
@@ -85,8 +85,8 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
     return null
   }
 
-  const lines = text.trim().split('\n')
-  const firstLine = lines[0] ?? ''
+  const lines = text.trim().split("\n")
+  const firstLine = lines[0] ?? ""
   const delimiter = detectDelimiter(firstLine)
   if (delimiter === null) {
     return null
@@ -99,14 +99,14 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
     }
 
     const parts = line.split(delimiter)
-    const voc = normalizeWhitespace(parts[0] ?? '')
-    const de = normalizeWhitespace(parts[1] ?? '')
-    if (voc !== '' && de !== '') {
+    const voc = normalizeWhitespace(parts[0] ?? "")
+    const de = normalizeWhitespace(parts[1] ?? "")
+    if (voc !== "" && de !== "") {
       newCards.push({
         voc,
         de,
         level: parseLevel(parts[2]),
-        time: MAX_TIME
+        time: MAX_TIME,
       })
     }
   }

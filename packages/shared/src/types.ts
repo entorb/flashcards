@@ -26,7 +26,7 @@ export interface BaseCard {
  * Common FocusType for all apps
  * Represents learning focus strategy
  */
-export type FocusType = 'weak' | 'slow'
+export type FocusType = "weak" | "slow"
 // | 'medium' | 'strong'
 
 /**
@@ -48,7 +48,7 @@ export interface BaseGameSettings {
  * Common AnswerStatus for all apps
  * Result of evaluating a user's answer
  */
-export type AnswerStatus = 'correct' | 'incorrect' | 'close'
+export type AnswerStatus = "correct" | "incorrect" | "close"
 
 /**
  * Game statistics interface
@@ -113,4 +113,4 @@ export interface DailyBonusConfig {
  * Named SessionMode to avoid collision with app-specific GameMode types
  * (voc: 'multiple-choice' | 'blind' | 'typing', lwk: 'copy' | 'hidden')
  */
-export type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
+export type SessionMode = "standard" | "endless-level1" | "endless-level5" | "3-rounds"

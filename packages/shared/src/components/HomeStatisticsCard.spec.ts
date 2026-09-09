@@ -1,48 +1,48 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
-import HomeStatisticsCard from './HomeStatisticsCard.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { describe, expect, it } from "vitest"
+import HomeStatisticsCard from "./HomeStatisticsCard.vue"
 
 const mountOptions = {
   global: {
     mocks: quasarMocks,
     provide: quasarProvide,
-    stubs: quasarStubs
-  }
+    stubs: quasarStubs,
+  },
 }
 
-describe('HomeStatisticsCard', () => {
-  it('renders gamesPlayed in stats-games-played', () => {
+describe("HomeStatisticsCard", () => {
+  it("renders gamesPlayed in stats-games-played", () => {
     const wrapper = mount(HomeStatisticsCard, {
       props: { statistics: { gamesPlayed: 7, points: 150, correctAnswers: 42 } },
-      ...mountOptions
+      ...mountOptions,
     })
-    expect(wrapper.find('[data-cy="stats-games-played"]').text()).toContain('7')
+    expect(wrapper.find('[data-cy="stats-games-played"]').text()).toContain("7")
   })
 
-  it('renders points in stats-total-points', () => {
+  it("renders points in stats-total-points", () => {
     const wrapper = mount(HomeStatisticsCard, {
       props: { statistics: { gamesPlayed: 0, points: 999, correctAnswers: 0 } },
-      ...mountOptions
+      ...mountOptions,
     })
-    expect(wrapper.find('[data-cy="stats-total-points"]').text()).toContain('999')
+    expect(wrapper.find('[data-cy="stats-total-points"]').text()).toContain("999")
   })
 
-  it('renders correctAnswers in stats-correct-answers', () => {
+  it("renders correctAnswers in stats-correct-answers", () => {
     const wrapper = mount(HomeStatisticsCard, {
       props: { statistics: { gamesPlayed: 0, points: 0, correctAnswers: 55 } },
-      ...mountOptions
+      ...mountOptions,
     })
-    expect(wrapper.find('[data-cy="stats-correct-answers"]').text()).toContain('55')
+    expect(wrapper.find('[data-cy="stats-correct-answers"]').text()).toContain("55")
   })
 
-  it('handles zero values without errors', () => {
+  it("handles zero values without errors", () => {
     const wrapper = mount(HomeStatisticsCard, {
       props: { statistics: { gamesPlayed: 0, points: 0, correctAnswers: 0 } },
-      ...mountOptions
+      ...mountOptions,
     })
-    expect(wrapper.find('[data-cy="stats-games-played"]').text()).toContain('0')
-    expect(wrapper.find('[data-cy="stats-total-points"]').text()).toContain('0')
-    expect(wrapper.find('[data-cy="stats-correct-answers"]').text()).toContain('0')
+    expect(wrapper.find('[data-cy="stats-games-played"]').text()).toContain("0")
+    expect(wrapper.find('[data-cy="stats-total-points"]').text()).toContain("0")
+    expect(wrapper.find('[data-cy="stats-correct-answers"]').text()).toContain("0")
   })
 })

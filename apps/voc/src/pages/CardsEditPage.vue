@@ -5,15 +5,15 @@ import {
   MIN_LEVEL,
   normalizeWhitespace,
   TEXT_DE,
-  useCardsEdit
-} from '@flashcards/shared'
-import { useQuasar } from 'quasar'
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  useCardsEdit,
+} from "@flashcards/shared"
+import { useQuasar } from "quasar"
+import { onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '../composables/useGameStore'
-import type { Card } from '../types'
-import { parseCardsFromText } from '../utils/helpers'
+import { useGameStore } from "../composables/useGameStore"
+import type { Card } from "../types"
+import { parseCardsFromText } from "../utils/helpers"
 
 const router = useRouter()
 const $q = useQuasar()
@@ -27,9 +27,9 @@ const exportButtonText = ref<string>(TEXT_DE.voc.cards.export)
 const { isBlankRow, rows, commitNewCard, onInputKeydown, onInputBlur, removeCard } =
   useCardsEdit<Card>({
     editingCards,
-    createEmptyCard: () => ({ voc: '', de: '', level: MIN_LEVEL, time: MAX_TIME }),
-    fieldOrder: ['voc', 'de'],
-    prepareCard: pending => {
+    createEmptyCard: () => ({ voc: "", de: "", level: MIN_LEVEL, time: MAX_TIME }),
+    fieldOrder: ["voc", "de"],
+    prepareCard: (pending) => {
       const voc = normalizeWhitespace(pending.voc)
       const de = normalizeWhitespace(pending.de)
       if (!(voc || de)) return null
@@ -37,20 +37,20 @@ const { isBlankRow, rows, commitNewCard, onInputKeydown, onInputBlur, removeCard
       if (!de) return { error: TEXT_DE.voc.cards.validationDeEmpty }
       return { card: { voc, de, level: MIN_LEVEL, time: MAX_TIME }, key: voc }
     },
-    duplicateMessage: key => TEXT_DE.voc.cards.validationDuplicate.replace('{word}', key),
-    getKey: card => card.voc
+    duplicateMessage: (key) => TEXT_DE.voc.cards.validationDuplicate.replace("{word}", key),
+    getKey: (card) => card.voc,
   })
 
 onMounted(() => {
   // Initialize with a copy of current cards, sorted alphabetically
   editingCards.value = allCards.value
-    .map(card => ({ ...card }))
+    .map((card) => ({ ...card }))
     .sort((a, b) => a.voc.localeCompare(b.voc))
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function handleGoBack() {
@@ -61,24 +61,24 @@ function handleGoBack() {
   for (const card of editingCards.value) {
     if (!card.voc.trim()) {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE.voc.cards.validationEnEmpty
+        type: "negative",
+        message: TEXT_DE.voc.cards.validationEnEmpty,
       })
       return
     }
     if (!card.de.trim()) {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE.voc.cards.validationDeEmpty
+        type: "negative",
+        message: TEXT_DE.voc.cards.validationDeEmpty,
       })
       return
     }
     if (card.level < MIN_LEVEL || card.level > MAX_LEVEL) {
       $q.notify({
-        type: 'negative',
+        type: "negative",
         message: TEXT_DE.shared.cardActions.invalidLevelError
-          .replace('{min}', MIN_LEVEL.toString())
-          .replace('{max}', MAX_LEVEL.toString())
+          .replace("{min}", MIN_LEVEL.toString())
+          .replace("{max}", MAX_LEVEL.toString()),
       })
       return
     }
@@ -95,8 +95,8 @@ function handleGoBack() {
   for (const card of editingCards.value) {
     if (seen.has(card.voc)) {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE.voc.cards.validationDuplicate.replace('{word}', card.voc)
+        type: "negative",
+        message: TEXT_DE.voc.cards.validationDuplicate.replace("{word}", card.voc),
       })
       return
     }
@@ -104,18 +104,18 @@ function handleGoBack() {
   }
 
   importCards(editingCards.value)
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     handleGoBack()
   }
 }
 
 function handleExport() {
-  const header = 'voc\tde\tlevel\n'
-  const tsvContent = editingCards.value.map(c => `${c.voc}\t${c.de}\t${c.level}`).join('\n')
+  const header = "voc\tde\tlevel\n"
+  const tsvContent = editingCards.value.map((c) => `${c.voc}\t${c.de}\t${c.level}`).join("\n")
   navigator.clipboard
     .writeText(header + tsvContent)
     .then(() => {
@@ -124,8 +124,8 @@ function handleExport() {
     })
     .catch(() => {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE.shared.cardActions.clipboardError
+        type: "negative",
+        message: TEXT_DE.shared.cardActions.clipboardError,
       })
     })
 }
@@ -146,12 +146,12 @@ function showManualImportDialog() {
     title: TEXT_DE.voc.cards.importDialogTitle,
     message: TEXT_DE.voc.cards.importDialogMessage,
     prompt: {
-      model: '',
-      type: 'textarea',
-      outlined: true
+      model: "",
+      type: "textarea",
+      outlined: true,
     },
     cancel: true,
-    class: 'bordered'
+    class: "bordered",
   }).onOk((text: string) => {
     processImportText(text)
   })
@@ -159,7 +159,7 @@ function showManualImportDialog() {
 
 function processImportText(text: string) {
   if (!text) {
-    $q.notify({ type: 'negative', message: TEXT_DE.shared.cardActions.emptyTextError })
+    $q.notify({ type: "negative", message: TEXT_DE.shared.cardActions.emptyTextError })
     return
   }
 
@@ -167,8 +167,8 @@ function processImportText(text: string) {
 
   if (!parseResult) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE.voc.cards.noDelimiterError
+      type: "negative",
+      message: TEXT_DE.voc.cards.noDelimiterError,
     })
     return
   }
@@ -177,16 +177,16 @@ function processImportText(text: string) {
 
   if (newCards.length === 0) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE.voc.cards.noCardsFoundError.replace('{delimiter}', delimiter)
+      type: "negative",
+      message: TEXT_DE.voc.cards.noCardsFoundError.replace("{delimiter}", delimiter),
     })
     return
   }
 
   editingCards.value = newCards
   $q.notify({
-    type: 'positive',
-    message: TEXT_DE.voc.cards.importSuccess.replace('{count}', newCards.length.toString())
+    type: "positive",
+    message: TEXT_DE.voc.cards.importSuccess.replace("{count}", newCards.length.toString()),
   })
 }
 

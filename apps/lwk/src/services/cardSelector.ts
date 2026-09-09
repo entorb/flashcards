@@ -3,12 +3,12 @@
  * Handles selection of cards for game sessions based on focus settings
  */
 
-import type { FocusType } from '@flashcards/shared'
-import { selectCardsByFocus } from '@flashcards/shared'
-import { shuffleArray } from '@flashcards/shared/utils'
+import type { FocusType } from "@flashcards/shared"
+import { selectCardsByFocus } from "@flashcards/shared"
+import { shuffleArray } from "@flashcards/shared/utils"
 
-import { MAX_CARDS_PER_GAME } from '../constants'
-import type { Card, GameMode } from '../types'
+import { MAX_CARDS_PER_GAME } from "../constants"
+import type { Card, GameMode } from "../types"
 
 /**
  * Select cards for a game session based on mode and focus
@@ -18,7 +18,7 @@ export function selectCards(allCards: Card[], mode: GameMode, focus: FocusType):
   // Filter cards based on mode
   const modeFilter = (card: Card) => {
     // Copy mode: only cards with level < 3
-    if (mode === 'copy') {
+    if (mode === "copy") {
       return card.level < 3
     }
     return true
@@ -30,7 +30,7 @@ export function selectCards(allCards: Card[], mode: GameMode, focus: FocusType):
     focus,
     maxCards: MAX_CARDS_PER_GAME,
     modeFilter,
-    timeExtractor: (card: Card) => card.time
+    timeExtractor: (card: Card) => card.time,
   })
 
   return shuffleArray(selectedCards)

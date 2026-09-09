@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { LEVEL_COLORS, MAX_TIME } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
+import { LEVEL_COLORS, MAX_TIME } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
 
 interface Props {
   allCards: BaseCard[]
@@ -14,7 +14,7 @@ interface Props {
 defineProps<Props>()
 
 function getLevelColor(level: number): string {
-  return LEVEL_COLORS[level] ?? '#ffffff'
+  return LEVEL_COLORS[level] ?? "#ffffff"
 }
 </script>
 

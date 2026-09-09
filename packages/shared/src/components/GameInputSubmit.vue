@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue"
 
-import { TEXT_DE } from '../text-de'
+import { TEXT_DE } from "../text-de"
 
 interface Props {
   buttonDisabled: boolean
   onSubmit: () => void
-  inputType: 'text' | 'numeric'
+  inputType: "text" | "numeric"
 }
 
 const props = defineProps<Props>()
 const model = defineModel<string | number | null>({ required: true })
 
-const pattern = computed(() => (props.inputType === 'numeric' ? '[0-9]*' : undefined))
+const pattern = computed(() => (props.inputType === "numeric" ? "[0-9]*" : undefined))
 const inputRules = computed(() =>
-  props.inputType === 'numeric' ? [(val: unknown) => val === null || Number.isInteger(val)] : []
+  props.inputType === "numeric" ? [(val: unknown) => val === null || Number.isInteger(val)] : [],
 )
 
 const canSubmit = computed(
   () =>
-    model.value !== null && model.value !== undefined && model.value !== '' && !props.buttonDisabled
+    model.value !== null &&
+    model.value !== undefined &&
+    model.value !== "" &&
+    !props.buttonDisabled,
 )
 </script>
 

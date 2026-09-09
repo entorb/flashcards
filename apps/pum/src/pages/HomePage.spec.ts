@@ -1,9 +1,9 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card, Difficulty, GameSettings, Operation } from '@/types'
-import HomePage from './HomePage.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { Card, Difficulty, GameSettings, Operation } from "@/types"
+import HomePage from "./HomePage.vue"
 
 const mocks = vi.hoisted(() => ({
   loadGameStats: vi.fn(() => ({ gamesPlayed: 5, points: 100, correctAnswers: 42 })),
@@ -11,40 +11,40 @@ const mocks = vi.hoisted(() => ({
   loadCards: vi.fn((): Card[] => []),
   saveSettings: vi.fn(),
   initializeCards: vi.fn((): Card[] => []),
-  startGame: vi.fn()
+  startGame: vi.fn(),
 }))
 
-vi.mock('@/services/storage', () => ({
+vi.mock("@/services/storage", () => ({
   loadGameStats: mocks.loadGameStats,
   loadSettings: mocks.loadSettings,
   loadCards: mocks.loadCards,
   saveSettings: mocks.saveSettings,
-  initializeCards: mocks.initializeCards
+  initializeCards: mocks.initializeCards,
 }))
 
-vi.mock('@/services/cardSelector', () => ({
-  filterCards: (cards: Card[]) => cards
+vi.mock("@/services/cardSelector", () => ({
+  filterCards: (cards: Card[]) => cards,
 }))
 
-vi.mock('@/composables/useGameStore', () => ({
+vi.mock("@/composables/useGameStore", () => ({
   useGameStore: vi.fn(() => ({
     gameStats: { value: { gamesPlayed: 0, points: 0, correctAnswers: 0 } },
     gameSettings: { value: null },
-    startGame: mocks.startGame
-  }))
+    startGame: mocks.startGame,
+  })),
 }))
 
-describe('HomePage — toggle behavior (Req 8)', () => {
+describe("HomePage — toggle behavior (Req 8)", () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/HomePage', component: { template: '<div />' } },
-        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
-        { path: '/history', name: '/HistoryPage', component: { template: '<div />' } },
-        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
-        { path: '/info', name: '/InfoPage', component: { template: '<div />' } }
-      ]
+        { path: "/", name: "/HomePage", component: { template: "<div />" } },
+        { path: "/game", name: "/GamePage", component: { template: "<div />" } },
+        { path: "/history", name: "/HistoryPage", component: { template: "<div />" } },
+        { path: "/cards", name: "/CardsManPage", component: { template: "<div />" } },
+        { path: "/info", name: "/InfoPage", component: { template: "<div />" } },
+      ],
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -54,11 +54,11 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       provide: quasarProvide,
       stubs: {
         ...quasarStubs,
-        AppFooter: { template: '<div />' },
+        AppFooter: { template: "<div />" },
         HomeFocusSelector: {
           template: '<div data-cy="focus-selector" />',
-          props: ['modelValue'],
-          emits: ['update:modelValue']
+          props: ["modelValue"],
+          emits: ["update:modelValue"],
         },
         HomePageLayout: {
           template: `<div>
@@ -70,12 +70,12 @@ describe('HomePage — toggle behavior (Req 8)', () => {
             <button data-cy="go-to-cards-button" @click="$emit('go-to-cards')">Cards</button>
             <button data-cy="go-to-info-button" @click="$emit('go-to-info')">Info</button>
           </div>`,
-          props: ['appTitle', 'basePath', 'statistics'],
-          emits: ['start-game', 'go-to-cards', 'go-to-history', 'go-to-info']
+          props: ["appTitle", "basePath", "statistics"],
+          emits: ["start-game", "go-to-cards", "go-to-history", "go-to-info"],
         },
-        RaccoonMascot: { template: '<div data-cy="mascot" />' }
-      }
-    }
+        RaccoonMascot: { template: '<div data-cy="mascot" />' },
+      },
+    },
   })
 
   beforeEach(() => {
@@ -89,8 +89,8 @@ describe('HomePage — toggle behavior (Req 8)', () => {
 
   // ─── Operation toggle (Req 8) ──────────────────────────────────────────
 
-  describe('operation toggle', () => {
-    it('renders operation buttons', async () => {
+  describe("operation toggle", () => {
+    it("renders operation buttons", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -98,51 +98,51 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       expect(wrapper.find('[data-cy="operation-button-minus"]').exists()).toBe(true)
     })
 
-    it('all selected + tap one → select only that one', async () => {
+    it("all selected + tap one → select only that one", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="operation-button-plus"]').trigger('click')
+      await wrapper.find('[data-cy="operation-button-plus"]').trigger("click")
       const vm = wrapper.vm as unknown as { operations: Operation[] }
-      expect(vm.operations).toEqual(['plus'])
+      expect(vm.operations).toEqual(["plus"])
     })
 
-    it('one selected + tap same → select all', async () => {
+    it("one selected + tap same → select all", async () => {
       mocks.loadSettings.mockReturnValue({
-        operations: ['plus'],
-        difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak',
-        levels: [1, 2, 3, 4, 5]
+        operations: ["plus"],
+        difficulties: ["simple", "medium", "advanced"],
+        focus: "weak",
+        levels: [1, 2, 3, 4, 5],
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="operation-button-plus"]').trigger('click')
+      await wrapper.find('[data-cy="operation-button-plus"]').trigger("click")
       const vm = wrapper.vm as unknown as { operations: Operation[] }
-      expect(vm.operations).toEqual(['plus', 'minus'])
+      expect(vm.operations).toEqual(["plus", "minus"])
     })
 
-    it('one selected + tap different → add to selection', async () => {
+    it("one selected + tap different → add to selection", async () => {
       mocks.loadSettings.mockReturnValue({
-        operations: ['plus'],
-        difficulties: ['simple', 'medium', 'advanced'],
-        focus: 'weak',
-        levels: [1, 2, 3, 4, 5]
+        operations: ["plus"],
+        difficulties: ["simple", "medium", "advanced"],
+        focus: "weak",
+        levels: [1, 2, 3, 4, 5],
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="operation-button-minus"]').trigger('click')
+      await wrapper.find('[data-cy="operation-button-minus"]').trigger("click")
       const vm = wrapper.vm as unknown as { operations: Operation[] }
-      expect(vm.operations).toContain('plus')
-      expect(vm.operations).toContain('minus')
+      expect(vm.operations).toContain("plus")
+      expect(vm.operations).toContain("minus")
     })
   })
 
   // ─── Difficulty toggle (Req 8) ─────────────────────────────────────────
 
-  describe('difficulty toggle', () => {
-    it('renders difficulty buttons', async () => {
+  describe("difficulty toggle", () => {
+    it("renders difficulty buttons", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -151,59 +151,59 @@ describe('HomePage — toggle behavior (Req 8)', () => {
       expect(wrapper.find('[data-cy="difficulty-button-advanced"]').exists()).toBe(true)
     })
 
-    it('all selected + tap one → select only that one', async () => {
+    it("all selected + tap one → select only that one", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="difficulty-button-simple"]').trigger('click')
+      await wrapper.find('[data-cy="difficulty-button-simple"]').trigger("click")
       const vm = wrapper.vm as unknown as { difficulties: Difficulty[] }
-      expect(vm.difficulties).toEqual(['simple'])
+      expect(vm.difficulties).toEqual(["simple"])
     })
 
-    it('one selected + tap same → select all', async () => {
+    it("one selected + tap same → select all", async () => {
       mocks.loadSettings.mockReturnValue({
-        operations: ['plus', 'minus'],
-        difficulties: ['medium'],
-        focus: 'weak',
-        levels: [1, 2, 3, 4, 5]
+        operations: ["plus", "minus"],
+        difficulties: ["medium"],
+        focus: "weak",
+        levels: [1, 2, 3, 4, 5],
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="difficulty-button-medium"]').trigger('click')
+      await wrapper.find('[data-cy="difficulty-button-medium"]').trigger("click")
       const vm = wrapper.vm as unknown as { difficulties: Difficulty[] }
-      expect(vm.difficulties).toEqual(['simple', 'medium', 'advanced'])
+      expect(vm.difficulties).toEqual(["simple", "medium", "advanced"])
     })
 
-    it('one selected + tap different → add to selection', async () => {
+    it("one selected + tap different → add to selection", async () => {
       mocks.loadSettings.mockReturnValue({
-        operations: ['plus', 'minus'],
-        difficulties: ['simple'],
-        focus: 'weak',
-        levels: [1, 2, 3, 4, 5]
+        operations: ["plus", "minus"],
+        difficulties: ["simple"],
+        focus: "weak",
+        levels: [1, 2, 3, 4, 5],
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="difficulty-button-advanced"]').trigger('click')
+      await wrapper.find('[data-cy="difficulty-button-advanced"]').trigger("click")
       const vm = wrapper.vm as unknown as { difficulties: Difficulty[] }
-      expect(vm.difficulties).toContain('simple')
-      expect(vm.difficulties).toContain('advanced')
+      expect(vm.difficulties).toContain("simple")
+      expect(vm.difficulties).toContain("advanced")
     })
 
-    it('multiple (not all) selected + tap selected → select all', async () => {
+    it("multiple (not all) selected + tap selected → select all", async () => {
       mocks.loadSettings.mockReturnValue({
-        operations: ['plus', 'minus'],
-        difficulties: ['simple', 'medium'],
-        focus: 'weak',
-        levels: [1, 2, 3, 4, 5]
+        operations: ["plus", "minus"],
+        difficulties: ["simple", "medium"],
+        focus: "weak",
+        levels: [1, 2, 3, 4, 5],
       })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="difficulty-button-simple"]').trigger('click')
+      await wrapper.find('[data-cy="difficulty-button-simple"]').trigger("click")
       const vm = wrapper.vm as unknown as { difficulties: Difficulty[] }
-      expect(vm.difficulties).toEqual(['simple', 'medium', 'advanced'])
+      expect(vm.difficulties).toEqual(["simple", "medium", "advanced"])
     })
   })
 })

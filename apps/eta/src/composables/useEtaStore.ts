@@ -1,8 +1,8 @@
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue"
 
-import { calculateRegression, predictRemainingTime } from '@/services/regression'
-import { clearSession, loadSession, saveSession } from '@/services/storage'
-import type { MeasurementPoint, SessionData, TimeEstimate } from '@/types'
+import { calculateRegression, predictRemainingTime } from "@/services/regression"
+import { clearSession, loadSession, saveSession } from "@/services/storage"
+import type { MeasurementPoint, SessionData, TimeEstimate } from "@/types"
 
 const sessionData = ref<SessionData | null>(null)
 
@@ -21,7 +21,7 @@ function startSession(totalTasks: number): void {
   sessionData.value = {
     totalTasks,
     startTime: new Date(),
-    measurements: []
+    measurements: [],
   }
   saveSession(sessionData.value)
 }
@@ -51,7 +51,7 @@ function getTimeEstimates(): TimeEstimate | null {
 
   const regression = calculateRegression(
     sessionData.value.measurements,
-    sessionData.value.startTime
+    sessionData.value.startTime,
   )
 
   if (!regression) {
@@ -107,7 +107,7 @@ export function useEtaStore() {
 
     const measurement: MeasurementPoint = {
       timestamp: newTimestamp,
-      completedTasks
+      completedTasks,
     }
 
     sessionData.value.measurements.push(measurement)
@@ -133,6 +133,6 @@ export function useEtaStore() {
     deleteMeasurement,
     resetSession,
     getTimeEstimates,
-    isComplete
+    isComplete,
   }
 }

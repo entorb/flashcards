@@ -7,5 +7,5 @@
  * @returns Formatted question with spaced colon (e.g., "18 : 3")
  */
 export function formatDisplayQuestion(cardQuestion: string, _selection?: number[]): string {
-  return cardQuestion.replace(/:/g, ' : ')
+  return cardQuestion.replace(/:/g, " : ")
 }

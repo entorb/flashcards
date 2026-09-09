@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from "vue"
 
-import { BUTTON_DISABLE_DURATION } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { AnswerStatus } from '../types'
+import { BUTTON_DISABLE_DURATION } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { AnswerStatus } from "../types"
 
 interface Props {
   answerStatus: AnswerStatus
@@ -17,7 +17,7 @@ const emit = defineEmits<{
 }>()
 
 function handleClick() {
-  emit('click')
+  emit("click")
 }
 
 // Internal countdown state
@@ -29,9 +29,9 @@ let buttonDisableCountdownInterval: ReturnType<typeof setInterval> | null = null
 
 // Start countdown on mount for incorrect/close answers
 onMounted(() => {
-  if (props.answerStatus === 'incorrect' || props.answerStatus === 'close') {
+  if (props.answerStatus === "incorrect" || props.answerStatus === "close") {
     isButtonDisabled.value = true
-    emit('disabledChange', true)
+    emit("disabledChange", true)
     buttonDisableCountdown.value = Math.ceil(BUTTON_DISABLE_DURATION / 1000)
 
     // Update countdown display
@@ -48,7 +48,7 @@ onMounted(() => {
     buttonDisableTimer = setTimeout(() => {
       isButtonDisabled.value = false
       buttonDisableCountdown.value = 0
-      emit('disabledChange', false)
+      emit("disabledChange", false)
     }, BUTTON_DISABLE_DURATION)
   }
 })
@@ -65,7 +65,7 @@ onUnmounted(() => {
   }
   // Ensure parent is notified if unmounting while disabled
   if (isButtonDisabled.value) {
-    emit('disabledChange', false)
+    emit("disabledChange", false)
   }
 })
 
@@ -73,20 +73,20 @@ onUnmounted(() => {
 const buttonColor = computed(() => {
   // During countdown, show answer result state (only incorrect/close trigger countdown)
   if (isButtonDisabled.value) {
-    return props.answerStatus === 'close' ? 'warning' : 'negative'
+    return props.answerStatus === "close" ? "warning" : "negative"
   }
   // After countdown expires, show primary (blue) color
-  return 'primary'
+  return "primary"
 })
 
 // Determine button icon based on answer status and disabled state
 const buttonIcon = computed(() => {
   // During countdown, show answer result state (only incorrect/close trigger countdown)
   if (isButtonDisabled.value) {
-    return props.answerStatus === 'close' ? 'warning' : 'cancel'
+    return props.answerStatus === "close" ? "warning" : "cancel"
   }
   // After countdown expires, show play_arrow icon
-  return 'play_arrow'
+  return "play_arrow"
 })
 </script>
 

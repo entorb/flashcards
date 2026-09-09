@@ -3,7 +3,7 @@
  * Provides timer logic used in GamePage components across all apps
  */
 
-import { onUnmounted, type Ref, ref, watch } from 'vue'
+import { onUnmounted, type Ref, ref, watch } from "vue"
 
 /**
  * Creates a game timer that tracks elapsed time and resets on trigger
@@ -39,7 +39,7 @@ export function useGameTimer(trigger: Ref<unknown>, maxTime?: number) {
     () => {
       startTimer()
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   // Cleanup on unmount
@@ -50,6 +50,6 @@ export function useGameTimer(trigger: Ref<unknown>, maxTime?: number) {
   return {
     elapsedTime,
     stopTimer,
-    startTimer
+    startTimer,
   }
 }

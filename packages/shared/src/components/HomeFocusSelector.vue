@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { TEXT_DE } from '../text-de'
-import type { FocusType } from '../types'
+import { TEXT_DE } from "../text-de"
+import type { FocusType } from "../types"
 
 interface Props {
   hideLabel?: boolean
@@ -10,8 +10,8 @@ defineProps<Props>()
 const focus = defineModel<FocusType>({ required: true })
 
 const focusOptions = [
-  { label: TEXT_DE.shared.focusOptions.weak, value: 'weak' as const, icon: 'trending_down' },
-  { label: TEXT_DE.shared.focusOptions.slow, value: 'slow' as const, icon: 'schedule' }
+  { label: TEXT_DE.shared.focusOptions.weak, value: "weak" as const, icon: "trending_down" },
+  { label: TEXT_DE.shared.focusOptions.slow, value: "slow" as const, icon: "schedule" },
 ]
 </script>
 

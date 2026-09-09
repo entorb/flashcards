@@ -1,8 +1,8 @@
-import { MAX_TIME } from '@flashcards/shared'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { MAX_TIME } from "@flashcards/shared"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { STORAGE_KEYS } from '../constants'
-import type { Card, CardDeck, GameSettings } from '../types'
+import { STORAGE_KEYS } from "../constants"
+import type { Card, CardDeck, GameSettings } from "../types"
 
 // Reset modules before each test to get a fresh singleton baseStore
 beforeEach(() => {
@@ -11,27 +11,27 @@ beforeEach(() => {
 
 // Sample cards for mocking
 const MOCK_CARDS: Card[] = [
-  { voc: 'Where', de: 'Wo', level: 1, time: 60 },
-  { voc: 'Who', de: 'Wer', level: 2, time: 45 },
-  { voc: 'What', de: 'Was', level: 3, time: 30 }
+  { voc: "Where", de: "Wo", level: 1, time: 60 },
+  { voc: "Who", de: "Wer", level: 2, time: 45 },
+  { voc: "What", de: "Was", level: 3, time: 30 },
 ]
 
 const MOCK_DECKS: CardDeck[] = [
-  { name: 'en', cards: MOCK_CARDS },
-  { name: 'de', cards: [{ voc: 'Hallo', de: 'Hello', level: 1, time: 60 }] }
+  { name: "en", cards: MOCK_CARDS },
+  { name: "de", cards: [{ voc: "Hallo", de: "Hello", level: 1, time: 60 }] },
 ]
 
 const DEFAULT_SETTINGS: GameSettings = {
-  mode: 'multiple-choice',
-  focus: 'weak',
+  mode: "multiple-choice",
+  focus: "weak",
   levels: [1, 2, 3, 4, 5],
-  language: 'voc-de',
-  deck: 'en'
+  language: "voc-de",
+  deck: "en",
 }
 
 // Storage mock factory - called after resetModules in each test
 async function setupMocks(overrides: Record<string, unknown> = {}) {
-  vi.doMock('@/services/storage', () => ({
+  vi.doMock("@/services/storage", () => ({
     loadCards: vi.fn(() => [...MOCK_CARDS]),
     loadHistory: vi.fn(() => []),
     saveHistory: vi.fn(),
@@ -49,14 +49,14 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 1 })),
     getGameResult: vi.fn(() => null),
     clearGameResult: vi.fn(),
-    ...overrides
+    ...overrides,
   }))
 
-  vi.doMock('@/services/cardSelector', () => ({
-    selectCardsForRound: vi.fn(() => [...MOCK_CARDS])
+  vi.doMock("@/services/cardSelector", () => ({
+    selectCardsForRound: vi.fn(() => [...MOCK_CARDS]),
   }))
 
-  const { useGameStore } = await import('./useGameStore')
+  const { useGameStore } = await import("./useGameStore")
   return useGameStore()
 }
 
@@ -64,8 +64,8 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
 // Initialization
 // ============================================================================
 
-describe('useGameStore - initialization', () => {
-  it('starts with empty gameCards and zero points', async () => {
+describe("useGameStore - initialization", () => {
+  it("starts with empty gameCards and zero points", async () => {
     const store = await setupMocks()
     expect(store.gameCards.value).toHaveLength(0)
     expect(store.points.value).toBe(0)
@@ -73,58 +73,58 @@ describe('useGameStore - initialization', () => {
     expect(store.currentCardIndex.value).toBe(0)
   })
 
-  it('restores game state from sessionStorage when available', async () => {
+  it("restores game state from sessionStorage when available", async () => {
     const store = await setupMocks({
       loadGameState: vi.fn(() => ({
-        gameCards: [{ voc: 'Where', de: 'Wo', level: 2, time: 45 }],
+        gameCards: [{ voc: "Where", de: "Wo", level: 2, time: 45 }],
         currentCardIndex: 0,
         points: 10,
         correctAnswersCount: 1,
-        gameSettings: DEFAULT_SETTINGS
-      }))
+        gameSettings: DEFAULT_SETTINGS,
+      })),
     })
     expect(store.gameCards.value).toHaveLength(1)
     expect(store.points.value).toBe(10)
     expect(store.correctAnswersCount.value).toBe(1)
   })
 
-  it('restores game settings from saved state', async () => {
+  it("restores game settings from saved state", async () => {
     const savedSettings: GameSettings = {
-      mode: 'typing',
-      focus: 'weak',
+      mode: "typing",
+      focus: "weak",
       levels: [1, 2, 3, 4, 5],
-      language: 'de-voc',
-      deck: 'de'
+      language: "de-voc",
+      deck: "de",
     }
     const store = await setupMocks({
       loadGameState: vi.fn(() => ({
-        gameCards: [{ voc: 'Where', de: 'Wo', level: 1, time: 60 }],
+        gameCards: [{ voc: "Where", de: "Wo", level: 1, time: 60 }],
         currentCardIndex: 0,
         points: 5,
         correctAnswersCount: 1,
-        gameSettings: savedSettings
-      }))
+        gameSettings: savedSettings,
+      })),
     })
     expect(store.gameSettings.value).toEqual(savedSettings)
   })
 
-  it('does not restore state when savedGameState has no cards', async () => {
+  it("does not restore state when savedGameState has no cards", async () => {
     const store = await setupMocks({
       loadGameState: vi.fn(() => ({
         gameCards: [],
         currentCardIndex: 0,
         points: 5,
         correctAnswersCount: 1,
-        gameSettings: DEFAULT_SETTINGS
-      }))
+        gameSettings: DEFAULT_SETTINGS,
+      })),
     })
     expect(store.gameCards.value).toHaveLength(0)
     expect(store.points.value).toBe(0)
   })
 
-  it('does not restore state when loadGameState returns null', async () => {
+  it("does not restore state when loadGameState returns null", async () => {
     const store = await setupMocks({
-      loadGameState: vi.fn(() => null)
+      loadGameState: vi.fn(() => null),
     })
     expect(store.gameCards.value).toHaveLength(0)
     expect(store.points.value).toBe(0)
@@ -135,14 +135,14 @@ describe('useGameStore - initialization', () => {
 // startGame
 // ============================================================================
 
-describe('useGameStore - startGame', () => {
-  it('populates gameCards after startGame', async () => {
+describe("useGameStore - startGame", () => {
+  it("populates gameCards after startGame", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     expect(store.gameCards.value.length).toBeGreaterThan(0)
   })
 
-  it('resets points and index on new game', async () => {
+  it("resets points and index on new game", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     expect(store.points.value).toBe(0)
@@ -150,36 +150,36 @@ describe('useGameStore - startGame', () => {
     expect(store.correctAnswersCount.value).toBe(0)
   })
 
-  it('persists settings via game state flow', async () => {
+  it("persists settings via game state flow", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
-    const stored = JSON.parse(globalThis.localStorage.getItem(STORAGE_KEYS.SETTINGS) ?? 'null')
+    const stored = JSON.parse(globalThis.localStorage.getItem(STORAGE_KEYS.SETTINGS) ?? "null")
     expect(stored).toEqual(DEFAULT_SETTINGS)
   })
 
-  it('saves initial game state to sessionStorage', async () => {
+  it("saves initial game state to sessionStorage", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import('@/services/storage')
+    const { saveGameState } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
     expect(saveGameState).toHaveBeenCalled()
   })
 
-  it('calls selectCardsForRound with allCards and focus', async () => {
+  it("calls selectCardsForRound with allCards and focus", async () => {
     const store = await setupMocks()
-    const { selectCardsForRound } = await import('@/services/cardSelector')
+    const { selectCardsForRound } = await import("@/services/cardSelector")
     store.startGame(DEFAULT_SETTINGS)
     expect(selectCardsForRound).toHaveBeenCalledWith(expect.any(Array), DEFAULT_SETTINGS.focus)
   })
 
-  it('does not restart game if gameCards already populated (page reload)', async () => {
+  it("does not restart game if gameCards already populated (page reload)", async () => {
     const store = await setupMocks({
       loadGameState: vi.fn(() => ({
         gameCards: MOCK_CARDS,
         currentCardIndex: 1,
         points: 5,
         correctAnswersCount: 1,
-        gameSettings: DEFAULT_SETTINGS
-      }))
+        gameSettings: DEFAULT_SETTINGS,
+      })),
     })
     // gameCards already restored from session storage
     const initialCards = store.gameCards.value
@@ -188,32 +188,32 @@ describe('useGameStore - startGame', () => {
     expect(store.gameCards.value).toBe(initialCards)
   })
 
-  it('starts game with blind mode', async () => {
+  it("starts game with blind mode", async () => {
     const store = await setupMocks()
-    const blindSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: 'blind' }
+    const blindSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: "blind" }
     store.startGame(blindSettings)
-    expect(store.gameSettings.value?.mode).toBe('blind')
+    expect(store.gameSettings.value?.mode).toBe("blind")
     expect(store.gameCards.value.length).toBeGreaterThan(0)
   })
 
-  it('starts game with typing mode', async () => {
+  it("starts game with typing mode", async () => {
     const store = await setupMocks()
-    const typingSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: 'typing' }
+    const typingSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: "typing" }
     store.startGame(typingSettings)
-    expect(store.gameSettings.value?.mode).toBe('typing')
+    expect(store.gameSettings.value?.mode).toBe("typing")
     expect(store.gameCards.value.length).toBeGreaterThan(0)
   })
 
-  it('starts game with de-voc language direction', async () => {
+  it("starts game with de-voc language direction", async () => {
     const store = await setupMocks()
-    const deVocSettings: GameSettings = { ...DEFAULT_SETTINGS, language: 'de-voc' }
+    const deVocSettings: GameSettings = { ...DEFAULT_SETTINGS, language: "de-voc" }
     store.startGame(deVocSettings)
-    expect(store.gameSettings.value?.language).toBe('de-voc')
+    expect(store.gameSettings.value?.language).toBe("de-voc")
   })
 
-  it('switches deck when settings include a deck name', async () => {
+  it("switches deck when settings include a deck name", async () => {
     const store = await setupMocks()
-    const settingsWithDeck: GameSettings = { ...DEFAULT_SETTINGS, deck: 'de' }
+    const settingsWithDeck: GameSettings = { ...DEFAULT_SETTINGS, deck: "de" }
     store.startGame(settingsWithDeck)
     // switchDeck loads cards from the specified deck
     expect(store.allCards.value).toBeDefined()
@@ -224,13 +224,13 @@ describe('useGameStore - startGame', () => {
 // currentCard
 // ============================================================================
 
-describe('useGameStore - currentCard', () => {
-  it('returns null when no game is active', async () => {
+describe("useGameStore - currentCard", () => {
+  it("returns null when no game is active", async () => {
     const store = await setupMocks()
     expect(store.currentCard.value).toBeNull()
   })
 
-  it('returns first card after game starts', async () => {
+  it("returns first card after game starts", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     expect(store.currentCard.value).not.toBeNull()
@@ -242,106 +242,106 @@ describe('useGameStore - currentCard', () => {
 // handleAnswer - multiple-choice mode
 // ============================================================================
 
-describe('useGameStore - handleAnswer (multiple-choice mode)', () => {
-  it('grants points for correct answer', async () => {
+describe("useGameStore - handleAnswer (multiple-choice mode)", () => {
+  it("grants points for correct answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const initialPoints = store.points.value
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(store.points.value).toBeGreaterThan(initialPoints)
   })
 
-  it('increments correctAnswersCount for correct answer', async () => {
+  it("increments correctAnswersCount for correct answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(store.correctAnswersCount.value).toBe(1)
   })
 
-  it('does not grant points for incorrect answer', async () => {
+  it("does not grant points for incorrect answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const initialPoints = store.points.value
 
-    store.handleAnswer('incorrect', 5)
+    store.handleAnswer("incorrect", 5)
     expect(store.points.value).toBe(initialPoints)
   })
 
-  it('does not increment correctAnswersCount for incorrect answer', async () => {
+  it("does not increment correctAnswersCount for incorrect answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
-    store.handleAnswer('incorrect', 5)
+    store.handleAnswer("incorrect", 5)
     expect(store.correctAnswersCount.value).toBe(0)
   })
 
-  it('increments card level for correct answer', async () => {
+  it("increments card level for correct answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const card = store.currentCard.value!
     const initialLevel = card.level
 
-    store.handleAnswer('correct', 5)
-    const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
+    store.handleAnswer("correct", 5)
+    const updatedCard = store.allCards.value.find((c) => c.voc === card.voc)
     expect(updatedCard?.level).toBe(Math.min(5, initialLevel + 1))
   })
 
-  it('decrements card level for incorrect answer', async () => {
+  it("decrements card level for incorrect answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const card = store.currentCard.value!
     const initialLevel = card.level
 
-    store.handleAnswer('incorrect', 5)
-    const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
+    store.handleAnswer("incorrect", 5)
+    const updatedCard = store.allCards.value.find((c) => c.voc === card.voc)
     expect(updatedCard?.level).toBe(Math.max(1, initialLevel - 1))
   })
 
-  it('resets card time to MAX_TIME for incorrect answer', async () => {
+  it("resets card time to MAX_TIME for incorrect answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const card = store.currentCard.value!
 
-    store.handleAnswer('incorrect', 5)
-    const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
+    store.handleAnswer("incorrect", 5)
+    const updatedCard = store.allCards.value.find((c) => c.voc === card.voc)
     expect(updatedCard?.time).toBe(MAX_TIME)
   })
 
-  it('saves cards after answer', async () => {
+  it("saves cards after answer", async () => {
     const store = await setupMocks()
-    const { saveCards } = await import('@/services/storage')
+    const { saveCards } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
     vi.mocked(saveCards).mockClear()
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(saveCards).toHaveBeenCalled()
   })
 
-  it('saves game state after answer', async () => {
+  it("saves game state after answer", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import('@/services/storage')
+    const { saveGameState } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
     vi.mocked(saveGameState).mockClear()
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(saveGameState).toHaveBeenCalled()
   })
 
-  it('does nothing when no current card (no game started)', async () => {
+  it("does nothing when no current card (no game started)", async () => {
     const store = await setupMocks()
-    const { saveCards } = await import('@/services/storage')
+    const { saveCards } = await import("@/services/storage")
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(saveCards).not.toHaveBeenCalled()
   })
 
-  it('sets lastPointsBreakdown after correct answer', async () => {
+  it("sets lastPointsBreakdown after correct answer", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(store.lastPointsBreakdown.value).not.toBeNull()
     expect(store.lastPointsBreakdown.value?.totalPoints).toBeGreaterThan(0)
   })
@@ -351,60 +351,60 @@ describe('useGameStore - handleAnswer (multiple-choice mode)', () => {
 // handleAnswer - typing mode
 // ============================================================================
 
-describe('useGameStore - handleAnswer (typing mode)', () => {
-  const typingSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: 'typing' }
+describe("useGameStore - handleAnswer (typing mode)", () => {
+  const typingSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: "typing" }
 
-  it('grants more points for correct answer in typing mode', async () => {
+  it("grants more points for correct answer in typing mode", async () => {
     const mcStore = await setupMocks()
     mcStore.startGame(DEFAULT_SETTINGS)
-    mcStore.handleAnswer('correct', 5)
+    mcStore.handleAnswer("correct", 5)
     const mcPoints = mcStore.points.value
 
     vi.resetModules()
     const typingStore = await setupMocks()
     typingStore.startGame(typingSettings)
-    typingStore.handleAnswer('correct', 5)
+    typingStore.handleAnswer("correct", 5)
     const typingPoints = typingStore.points.value
 
     expect(typingPoints).toBeGreaterThan(mcPoints)
   })
 
-  it('grants points for close answer in typing mode', async () => {
+  it("grants points for close answer in typing mode", async () => {
     const store = await setupMocks()
     store.startGame(typingSettings)
     const initialPoints = store.points.value
 
-    store.handleAnswer('close', 5)
+    store.handleAnswer("close", 5)
     expect(store.points.value).toBeGreaterThanOrEqual(initialPoints)
   })
 
-  it('does not increment correctAnswersCount for close answer', async () => {
+  it("does not increment correctAnswersCount for close answer", async () => {
     const store = await setupMocks()
     store.startGame(typingSettings)
 
-    store.handleAnswer('close', 5)
+    store.handleAnswer("close", 5)
     // close does not count as a correct answer
     expect(store.correctAnswersCount.value).toBe(0)
   })
 
-  it('does not change card level for close answer', async () => {
+  it("does not change card level for close answer", async () => {
     const store = await setupMocks()
     store.startGame(typingSettings)
     const card = store.currentCard.value!
     const initialLevel = card.level
 
-    store.handleAnswer('close', 5)
-    const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
+    store.handleAnswer("close", 5)
+    const updatedCard = store.allCards.value.find((c) => c.voc === card.voc)
     expect(updatedCard?.level).toBe(initialLevel)
   })
 
-  it('updates card time on correct answer', async () => {
+  it("updates card time on correct answer", async () => {
     const store = await setupMocks()
     store.startGame(typingSettings)
     const card = store.currentCard.value!
 
-    store.handleAnswer('correct', 10)
-    const updatedCard = store.allCards.value.find(c => c.voc === card.voc)
+    store.handleAnswer("correct", 10)
+    const updatedCard = store.allCards.value.find((c) => c.voc === card.voc)
     expect(updatedCard?.time).toBeDefined()
   })
 })
@@ -413,24 +413,24 @@ describe('useGameStore - handleAnswer (typing mode)', () => {
 // handleAnswer - blind mode
 // ============================================================================
 
-describe('useGameStore - handleAnswer (blind mode)', () => {
-  const blindSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: 'blind' }
+describe("useGameStore - handleAnswer (blind mode)", () => {
+  const blindSettings: GameSettings = { ...DEFAULT_SETTINGS, mode: "blind" }
 
-  it('grants points for correct answer in blind mode', async () => {
+  it("grants points for correct answer in blind mode", async () => {
     const store = await setupMocks()
     store.startGame(blindSettings)
     const initialPoints = store.points.value
 
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(store.points.value).toBeGreaterThan(initialPoints)
   })
 
-  it('does not grant points for incorrect answer in blind mode', async () => {
+  it("does not grant points for incorrect answer in blind mode", async () => {
     const store = await setupMocks()
     store.startGame(blindSettings)
     const initialPoints = store.points.value
 
-    store.handleAnswer('incorrect', 5)
+    store.handleAnswer("incorrect", 5)
     expect(store.points.value).toBe(initialPoints)
   })
 })
@@ -439,20 +439,20 @@ describe('useGameStore - handleAnswer (blind mode)', () => {
 // handleAnswer - language direction bonus
 // ============================================================================
 
-describe('useGameStore - handleAnswer (language direction)', () => {
-  it('grants language bonus for correct answer in de-voc direction', async () => {
-    const deVocSettings: GameSettings = { ...DEFAULT_SETTINGS, language: 'de-voc' }
-    const vocDeSettings: GameSettings = { ...DEFAULT_SETTINGS, language: 'voc-de' }
+describe("useGameStore - handleAnswer (language direction)", () => {
+  it("grants language bonus for correct answer in de-voc direction", async () => {
+    const deVocSettings: GameSettings = { ...DEFAULT_SETTINGS, language: "de-voc" }
+    const vocDeSettings: GameSettings = { ...DEFAULT_SETTINGS, language: "voc-de" }
 
     const deVocStore = await setupMocks()
     deVocStore.startGame(deVocSettings)
-    deVocStore.handleAnswer('correct', 5)
+    deVocStore.handleAnswer("correct", 5)
     const deVocPoints = deVocStore.points.value
 
     vi.resetModules()
     const vocDeStore = await setupMocks()
     vocDeStore.startGame(vocDeSettings)
-    vocDeStore.handleAnswer('correct', 5)
+    vocDeStore.handleAnswer("correct", 5)
     const vocDePoints = vocDeStore.points.value
 
     expect(deVocPoints).toBeGreaterThan(vocDePoints)
@@ -463,8 +463,8 @@ describe('useGameStore - handleAnswer (language direction)', () => {
 // nextCard
 // ============================================================================
 
-describe('useGameStore - nextCard', () => {
-  it('advances currentCardIndex', async () => {
+describe("useGameStore - nextCard", () => {
+  it("advances currentCardIndex", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     expect(store.currentCardIndex.value).toBe(0)
@@ -473,7 +473,7 @@ describe('useGameStore - nextCard', () => {
     expect(store.currentCardIndex.value).toBe(1)
   })
 
-  it('returns false when more cards remain', async () => {
+  it("returns false when more cards remain", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     // 3 cards in mock, first nextCard should not be game over
@@ -481,7 +481,7 @@ describe('useGameStore - nextCard', () => {
     expect(isOver).toBe(false)
   })
 
-  it('returns true when all cards are exhausted', async () => {
+  it("returns true when all cards are exhausted", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     // 3 cards in mock: advance past all of them
@@ -491,9 +491,9 @@ describe('useGameStore - nextCard', () => {
     expect(isOver).toBe(true)
   })
 
-  it('saves game state after advancing (when not game over)', async () => {
+  it("saves game state after advancing (when not game over)", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import('@/services/storage')
+    const { saveGameState } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
     vi.mocked(saveGameState).mockClear()
 
@@ -506,36 +506,36 @@ describe('useGameStore - nextCard', () => {
 // finishGame
 // ============================================================================
 
-describe('useGameStore - finishGame', () => {
-  it('saves game result to sessionStorage', async () => {
+describe("useGameStore - finishGame", () => {
+  it("saves game result to sessionStorage", async () => {
     const store = await setupMocks()
-    const { setGameResult } = await import('@/services/storage')
+    const { setGameResult } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
 
     store.finishGame()
     expect(setGameResult).toHaveBeenCalledWith(
       expect.objectContaining({
         points: expect.any(Number),
         correctAnswers: expect.any(Number),
-        totalCards: expect.any(Number)
-      })
+        totalCards: expect.any(Number),
+      }),
     )
   })
 
-  it('clears game state from sessionStorage', async () => {
+  it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import('@/services/storage')
+    const { clearGameState } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
 
     store.finishGame()
     expect(clearGameState).toHaveBeenCalled()
   })
 
-  it('resets in-memory game state after finishing', async () => {
+  it("resets in-memory game state after finishing", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
 
     store.finishGame()
     expect(store.currentCardIndex.value).toBe(0)
@@ -543,7 +543,7 @@ describe('useGameStore - finishGame', () => {
     expect(store.correctAnswersCount.value).toBe(0)
   })
 
-  it('clears gameCards after finishing to prevent 11/10 bug', async () => {
+  it("clears gameCards after finishing to prevent 11/10 bug", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
@@ -551,7 +551,7 @@ describe('useGameStore - finishGame', () => {
     expect(store.gameCards.value).toHaveLength(0)
   })
 
-  it('does nothing when no game settings', async () => {
+  it("does nothing when no game settings", async () => {
     const store = await setupMocks()
     // No game started
     expect(() => {
@@ -559,7 +559,7 @@ describe('useGameStore - finishGame', () => {
     }).not.toThrow()
   })
 
-  it('adds entry to history', async () => {
+  it("adds entry to history", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const initialHistoryLength = store.history.value.length
@@ -573,20 +573,20 @@ describe('useGameStore - finishGame', () => {
 // discardGame
 // ============================================================================
 
-describe('useGameStore - discardGame', () => {
-  it('clears game state from sessionStorage', async () => {
+describe("useGameStore - discardGame", () => {
+  it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import('@/services/storage')
+    const { clearGameState } = await import("@/services/storage")
     store.startGame(DEFAULT_SETTINGS)
 
     store.discardGame()
     expect(clearGameState).toHaveBeenCalled()
   })
 
-  it('resets in-memory game state', async () => {
+  it("resets in-memory game state", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
 
     store.discardGame()
     expect(store.gameCards.value).toHaveLength(0)
@@ -600,79 +600,79 @@ describe('useGameStore - discardGame', () => {
 // Deck operations
 // ============================================================================
 
-describe('useGameStore - deck operations', () => {
-  it('getDecks returns all decks', async () => {
+describe("useGameStore - deck operations", () => {
+  it("getDecks returns all decks", async () => {
     const store = await setupMocks()
     const decks = store.getDecks()
     expect(decks).toHaveLength(2)
-    expect(decks[0]!.name).toBe('en')
-    expect(decks[1]!.name).toBe('de')
+    expect(decks[0]!.name).toBe("en")
+    expect(decks[1]!.name).toBe("de")
   })
 
-  it('addDeck creates a new deck with INITIAL_CARDS', async () => {
+  it("addDeck creates a new deck with INITIAL_CARDS", async () => {
     const store = await setupMocks()
-    const { saveDecks } = await import('@/services/storage')
+    const { saveDecks } = await import("@/services/storage")
 
-    const result = store.addDeck('fr')
+    const result = store.addDeck("fr")
     expect(result).toBe(true)
     expect(saveDecks).toHaveBeenCalled()
   })
 
-  it('addDeck returns false for duplicate deck name', async () => {
+  it("addDeck returns false for duplicate deck name", async () => {
     const store = await setupMocks()
-    const result = store.addDeck('en') // 'en' already exists in MOCK_DECKS
+    const result = store.addDeck("en") // 'en' already exists in MOCK_DECKS
     expect(result).toBe(false)
   })
 
-  it('switchDeck loads cards from the specified deck', async () => {
+  it("switchDeck loads cards from the specified deck", async () => {
     const store = await setupMocks()
-    store.switchDeck('de')
+    store.switchDeck("de")
     // After switching to 'de' deck, allCards should be the 'de' deck cards
     expect(store.allCards.value).toEqual(MOCK_DECKS[1]!.cards)
   })
 
-  it('switchDeck does nothing for unknown deck', async () => {
+  it("switchDeck does nothing for unknown deck", async () => {
     const store = await setupMocks()
     const initialCards = store.allCards.value
-    store.switchDeck('nonexistent')
+    store.switchDeck("nonexistent")
     expect(store.allCards.value).toEqual(initialCards)
   })
 
-  it('removeDeck removes an existing deck', async () => {
+  it("removeDeck removes an existing deck", async () => {
     const store = await setupMocks()
-    const { saveDecks } = await import('@/services/storage')
+    const { saveDecks } = await import("@/services/storage")
 
-    const result = store.removeDeck('de')
+    const result = store.removeDeck("de")
     expect(result).toBe(true)
     expect(saveDecks).toHaveBeenCalled()
   })
 
-  it('removeDeck returns false when only one deck remains', async () => {
+  it("removeDeck returns false when only one deck remains", async () => {
     const store = await setupMocks({
-      loadDecks: vi.fn(() => [{ name: 'en', cards: MOCK_CARDS }])
+      loadDecks: vi.fn(() => [{ name: "en", cards: MOCK_CARDS }]),
     })
-    const result = store.removeDeck('en')
+    const result = store.removeDeck("en")
     expect(result).toBe(false)
   })
 
-  it('renameDeck renames an existing deck', async () => {
+  it("renameDeck renames an existing deck", async () => {
     const store = await setupMocks()
-    const { saveDecks } = await import('@/services/storage')
+    const { saveDecks } = await import("@/services/storage")
 
-    const result = store.renameDeck('de', 'deutsch')
+    const result = store.renameDeck("de", "deutsch")
     expect(result).toBe(true)
     expect(saveDecks).toHaveBeenCalled()
   })
 
-  it('renameDeck returns false for duplicate name', async () => {
+  it("renameDeck returns false for duplicate name", async () => {
     const store = await setupMocks()
-    const result = store.renameDeck('de', 'en') // 'en' already exists
+    const result = store.renameDeck("de", "en") // 'en' already exists
     expect(result).toBe(false)
   })
 
-  it('renameDeck returns false for non-existent deck', async () => {
+  it("renameDeck returns false for non-existent deck", async () => {
     const store = await setupMocks()
-    const result = store.renameDeck('nonexistent', 'newname')
+    const result = store.renameDeck("nonexistent", "newname")
     expect(result).toBe(false)
   })
 })
@@ -681,22 +681,22 @@ describe('useGameStore - deck operations', () => {
 // importCards
 // ============================================================================
 
-describe('useGameStore - importCards', () => {
-  it('replaces allCards with imported cards', async () => {
+describe("useGameStore - importCards", () => {
+  it("replaces allCards with imported cards", async () => {
     const store = await setupMocks()
     const newCards: Card[] = [
-      { voc: 'Hello', de: 'Hallo', level: 1, time: 60 },
-      { voc: 'Goodbye', de: 'Auf Wiedersehen', level: 2, time: 45 }
+      { voc: "Hello", de: "Hallo", level: 1, time: 60 },
+      { voc: "Goodbye", de: "Auf Wiedersehen", level: 2, time: 45 },
     ]
 
     store.importCards(newCards)
     expect(store.allCards.value).toEqual(newCards)
   })
 
-  it('saves imported cards to storage', async () => {
+  it("saves imported cards to storage", async () => {
     const store = await setupMocks()
-    const { saveCards } = await import('@/services/storage')
-    const newCards: Card[] = [{ voc: 'Hello', de: 'Hallo', level: 1, time: 60 }]
+    const { saveCards } = await import("@/services/storage")
+    const newCards: Card[] = [{ voc: "Hello", de: "Hallo", level: 1, time: 60 }]
 
     store.importCards(newCards)
     expect(saveCards).toHaveBeenCalledWith(newCards)
@@ -707,13 +707,13 @@ describe('useGameStore - importCards', () => {
 // moveAllCards
 // ============================================================================
 
-describe('useGameStore - moveAllCards', () => {
-  it('moves all cards to specified level', async () => {
+describe("useGameStore - moveAllCards", () => {
+  it("moves all cards to specified level", async () => {
     const store = await setupMocks({
       loadCards: vi.fn(() => [
-        { voc: 'Where', de: 'Wo', level: 1, time: 60 },
-        { voc: 'Who', de: 'Wer', level: 3, time: 45 }
-      ])
+        { voc: "Where", de: "Wo", level: 1, time: 60 },
+        { voc: "Who", de: "Wer", level: 3, time: 45 },
+      ]),
     })
 
     store.moveAllCards(3)
@@ -723,14 +723,14 @@ describe('useGameStore - moveAllCards', () => {
     }
   })
 
-  it('throws for invalid level (0)', async () => {
+  it("throws for invalid level (0)", async () => {
     const store = await setupMocks()
     expect(() => {
       store.moveAllCards(0)
     }).toThrow()
   })
 
-  it('throws for invalid level (6)', async () => {
+  it("throws for invalid level (6)", async () => {
     const store = await setupMocks()
     expect(() => {
       store.moveAllCards(6)
@@ -742,51 +742,51 @@ describe('useGameStore - moveAllCards', () => {
 // Scoring safety invariants
 // ============================================================================
 
-describe('useGameStore - scoring safety invariants', () => {
-  it('points are always non-negative after multiple incorrect answers', async () => {
+describe("useGameStore - scoring safety invariants", () => {
+  it("points are always non-negative after multiple incorrect answers", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
-    store.handleAnswer('incorrect', 5)
-    store.handleAnswer('incorrect', 5)
-    store.handleAnswer('incorrect', 5)
+    store.handleAnswer("incorrect", 5)
+    store.handleAnswer("incorrect", 5)
+    store.handleAnswer("incorrect", 5)
     expect(store.points.value).toBeGreaterThanOrEqual(0)
   })
 
-  it('correctAnswersCount matches number of correct answers given', async () => {
+  it("correctAnswersCount matches number of correct answers given", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
-    store.handleAnswer('correct', 5)
-    store.handleAnswer('incorrect', 5)
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
+    store.handleAnswer("incorrect", 5)
+    store.handleAnswer("correct", 5)
 
     expect(store.correctAnswersCount.value).toBe(2)
   })
 
-  it('correctAnswersCount never exceeds total cards answered', async () => {
+  it("correctAnswersCount never exceeds total cards answered", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
 
-    store.handleAnswer('correct', 5)
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
+    store.handleAnswer("correct", 5)
 
     expect(store.correctAnswersCount.value).toBeLessThanOrEqual(store.gameCards.value.length)
   })
 
-  it('never grants points for incorrect answers', async () => {
+  it("never grants points for incorrect answers", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const initialPoints = store.points.value
-    store.handleAnswer('incorrect', 5)
+    store.handleAnswer("incorrect", 5)
     expect(store.points.value).toBe(initialPoints)
   })
 
-  it('grants points for correct answers', async () => {
+  it("grants points for correct answers", async () => {
     const store = await setupMocks()
     store.startGame(DEFAULT_SETTINGS)
     const initialPoints = store.points.value
-    store.handleAnswer('correct', 5)
+    store.handleAnswer("correct", 5)
     expect(store.points.value).toBeGreaterThan(initialPoints)
   })
 })

@@ -1,10 +1,10 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import fc from 'fast-check'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card, GameSettings } from '@/types'
-import HomePage from './HomePage.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import fc from "fast-check"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { Card, GameSettings } from "@/types"
+import HomePage from "./HomePage.vue"
 
 const mocks = vi.hoisted(() => ({
   loadGameStats: vi.fn(() => ({ gamesPlayed: 5, points: 100, correctAnswers: 42 })),
@@ -13,41 +13,41 @@ const mocks = vi.hoisted(() => ({
   saveSettings: vi.fn(),
   initializeCards: vi.fn(),
   startGame: vi.fn(),
-  getVirtualCardsForRange: vi.fn((): Card[] => [])
+  getVirtualCardsForRange: vi.fn((): Card[] => []),
 }))
 
-vi.mock('@/services/storage', () => ({
+vi.mock("@/services/storage", () => ({
   loadGameStats: mocks.loadGameStats,
   loadSettings: mocks.loadSettings,
   loadRange: mocks.loadRange,
   saveSettings: mocks.saveSettings,
   initializeCards: mocks.initializeCards,
-  getVirtualCardsForRange: mocks.getVirtualCardsForRange
+  getVirtualCardsForRange: mocks.getVirtualCardsForRange,
 }))
 
-vi.mock('@/services/cardSelector', () => ({
-  filterCardsByDivisor: (cards: Card[]) => cards
+vi.mock("@/services/cardSelector", () => ({
+  filterCardsByDivisor: (cards: Card[]) => cards,
 }))
 
-vi.mock('@/composables/useGameStore', () => ({
+vi.mock("@/composables/useGameStore", () => ({
   useGameStore: vi.fn(() => ({
     gameStats: { value: { gamesPlayed: 0, points: 0, correctAnswers: 0 } },
     gameSettings: { value: null },
-    startGame: mocks.startGame
-  }))
+    startGame: mocks.startGame,
+  })),
 }))
 
-describe('HomePage', () => {
+describe("HomePage", () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/HomePage', component: { template: '<div />' } },
-        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
-        { path: '/history', name: '/HistoryPage', component: { template: '<div />' } },
-        { path: '/cards', name: '/CardsManPage', component: { template: '<div />' } },
-        { path: '/info', name: '/InfoPage', component: { template: '<div />' } }
-      ]
+        { path: "/", name: "/HomePage", component: { template: "<div />" } },
+        { path: "/game", name: "/GamePage", component: { template: "<div />" } },
+        { path: "/history", name: "/HistoryPage", component: { template: "<div />" } },
+        { path: "/cards", name: "/CardsManPage", component: { template: "<div />" } },
+        { path: "/info", name: "/InfoPage", component: { template: "<div />" } },
+      ],
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -57,11 +57,11 @@ describe('HomePage', () => {
       provide: quasarProvide,
       stubs: {
         ...quasarStubs,
-        AppFooter: { template: '<div />' },
+        AppFooter: { template: "<div />" },
         HomeFocusSelector: {
           template: '<div data-cy="focus-selector" />',
-          props: ['modelValue'],
-          emits: ['update:modelValue']
+          props: ["modelValue"],
+          emits: ["update:modelValue"],
         },
         HomePageLayout: {
           template: `<div>
@@ -73,12 +73,12 @@ describe('HomePage', () => {
             <button data-cy="go-to-cards-button" @click="$emit('go-to-cards')">Cards</button>
             <button data-cy="go-to-info-button" @click="$emit('go-to-info')">Info</button>
           </div>`,
-          props: ['appTitle', 'basePath', 'statistics'],
-          emits: ['start-game', 'go-to-cards', 'go-to-history', 'go-to-info']
+          props: ["appTitle", "basePath", "statistics"],
+          emits: ["start-game", "go-to-cards", "go-to-history", "go-to-info"],
         },
-        ChickenMascot: { template: '<div data-cy="mascot" />' }
-      }
-    }
+        ChickenMascot: { template: '<div data-cy="mascot" />' },
+      },
+    },
   })
 
   beforeEach(() => {
@@ -94,7 +94,7 @@ describe('HomePage', () => {
   // Unit Tests (Task 12.3)
   // ==========================================================================
 
-  describe('mascot rendering', () => {
+  describe("mascot rendering", () => {
     it('renders ChickenMascot with data-cy="mascot"', async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -103,8 +103,8 @@ describe('HomePage', () => {
     })
   })
 
-  describe('focus selector', () => {
-    it('renders HomeFocusSelector', async () => {
+  describe("focus selector", () => {
+    it("renders HomeFocusSelector", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -112,8 +112,8 @@ describe('HomePage', () => {
     })
   })
 
-  describe('divisor button toggle', () => {
-    it('renders a button for each divisor 2–9', async () => {
+  describe("divisor button toggle", () => {
+    it("renders a button for each divisor 2–9", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -122,33 +122,33 @@ describe('HomePage', () => {
       }
     })
 
-    it('clicking a number when all are selected selects only that number', async () => {
+    it("clicking a number when all are selected selects only that number", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="table-selection-button-5"]').trigger('click')
+      await wrapper.find('[data-cy="table-selection-button-5"]').trigger("click")
       const vm = wrapper.vm as unknown as { select: number[] }
       expect(vm.select).toEqual([5])
     })
 
-    it('clicking an already-selected single number selects all in range', async () => {
+    it("clicking an already-selected single number selects all in range", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       // First click: isolate to [5]
-      await wrapper.find('[data-cy="table-selection-button-5"]').trigger('click')
+      await wrapper.find('[data-cy="table-selection-button-5"]').trigger("click")
       // Second click on 5: should restore all
-      await wrapper.find('[data-cy="table-selection-button-5"]').trigger('click')
+      await wrapper.find('[data-cy="table-selection-button-5"]').trigger("click")
       const vm = wrapper.vm as unknown as { select: number[] }
       expect(vm.select).toEqual([2, 3, 4, 5, 6, 7, 8, 9])
     })
 
-    it('clicking an unselected number adds it to the selection', async () => {
-      mocks.loadSettings.mockReturnValue({ select: [2, 3], focus: 'weak', levels: [1, 2, 3, 4, 5] })
+    it("clicking an unselected number adds it to the selection", async () => {
+      mocks.loadSettings.mockReturnValue({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] })
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="table-selection-button-7"]').trigger('click')
+      await wrapper.find('[data-cy="table-selection-button-7"]').trigger("click")
       const vm = wrapper.vm as unknown as { select: number[] }
       expect(vm.select).toContain(7)
       expect(vm.select).toContain(2)
@@ -156,29 +156,29 @@ describe('HomePage', () => {
     })
   })
 
-  describe('game start', () => {
-    it('navigates to /game when start game button is clicked', async () => {
+  describe("game start", () => {
+    it("navigates to /game when start game button is clicked", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
-      expect(router.push).toHaveBeenCalledWith({ name: '/GamePage' })
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
+      expect(router.push).toHaveBeenCalledWith({ name: "/GamePage" })
     })
 
-    it('saves settings when start game is clicked', async () => {
+    it("saves settings when start game is clicked", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
       expect(mocks.saveSettings).toHaveBeenCalled()
     })
 
-    it('calls storeStartGame when start game is clicked', async () => {
+    it("calls storeStartGame when start game is clicked", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      await wrapper.find('[data-cy="start-game-button"]').trigger('click')
+      await wrapper.find('[data-cy="start-game-button"]').trigger("click")
       expect(mocks.startGame).toHaveBeenCalled()
     })
   })
@@ -189,7 +189,7 @@ describe('HomePage', () => {
 
   // Feature: div-app, Property 7: Divisor toggle selection logic
   // **Validates: Requirements 7.3**
-  describe('Divisor toggle selection logic — property test', () => {
+  describe("Divisor toggle selection logic — property test", () => {
     /**
      * QBtn stub that forwards the `data-cy` attr and fires click events,
      * so we can trigger toggleSelect via the rendered buttons.
@@ -204,22 +204,22 @@ describe('HomePage', () => {
             ...base.global.stubs,
             QBtn: {
               template:
-                '<button :data-cy="$attrs[\'data-cy\']" @click="$emit(\'click\')"><slot /></button>',
-              props: ['outline', 'unelevated', 'color', 'size', 'icon', 'disable'],
-              emits: ['click'],
-              inheritAttrs: false
-            }
-          }
-        }
+                "<button :data-cy=\"$attrs['data-cy']\" @click=\"$emit('click')\"><slot /></button>",
+              props: ["outline", "unelevated", "color", "size", "icon", "disable"],
+              emits: ["click"],
+              inheritAttrs: false,
+            },
+          },
+        },
       }
     }
 
     const allDivisors = [2, 3, 4, 5, 6, 7, 8, 9]
     const divisorArb = fc.constantFrom(...allDivisors)
 
-    it('all selected + tap D → [D]', async () => {
+    it("all selected + tap D → [D]", async () => {
       await fc.assert(
-        fc.asyncProperty(divisorArb, async d => {
+        fc.asyncProperty(divisorArb, async (d) => {
           mocks.loadSettings.mockReturnValue(null) // defaults to all selected
           const router = createMockRouter()
           const wrapper = mount(HomePage, createPropertyMountOptions(router))
@@ -230,22 +230,22 @@ describe('HomePage', () => {
           expect(vm.select).toEqual(allDivisors)
 
           // Tap D
-          await wrapper.find(`[data-cy="table-selection-button-${d}"]`).trigger('click')
+          await wrapper.find(`[data-cy="table-selection-button-${d}"]`).trigger("click")
           expect(vm.select).toEqual([d])
 
           wrapper.unmount()
         }),
-        { numRuns: 20 }
+        { numRuns: 20 },
       )
     })
 
-    it('only [D] selected + tap D → all', async () => {
+    it("only [D] selected + tap D → all", async () => {
       await fc.assert(
-        fc.asyncProperty(divisorArb, async d => {
+        fc.asyncProperty(divisorArb, async (d) => {
           mocks.loadSettings.mockReturnValue({
             select: [d],
-            focus: 'weak',
-            levels: [1, 2, 3, 4, 5]
+            focus: "weak",
+            levels: [1, 2, 3, 4, 5],
           })
           const router = createMockRouter()
           const wrapper = mount(HomePage, createPropertyMountOptions(router))
@@ -255,16 +255,16 @@ describe('HomePage', () => {
           expect(vm.select).toEqual([d])
 
           // Tap D again
-          await wrapper.find(`[data-cy="table-selection-button-${d}"]`).trigger('click')
+          await wrapper.find(`[data-cy="table-selection-button-${d}"]`).trigger("click")
           expect(vm.select).toEqual(allDivisors)
 
           wrapper.unmount()
         }),
-        { numRuns: 20 }
+        { numRuns: 20 },
       )
     })
 
-    it('D not selected + tap D → add D', async () => {
+    it("D not selected + tap D → add D", async () => {
       // Generate a subset that does NOT include D, and is not all-selected
       const subsetWithoutD = fc
         .tuple(divisorArb, fc.subarray([2, 3, 4, 5, 6, 7, 8, 9], { minLength: 1, maxLength: 7 }))
@@ -274,8 +274,8 @@ describe('HomePage', () => {
         fc.asyncProperty(subsetWithoutD, async ([d, subset]) => {
           mocks.loadSettings.mockReturnValue({
             select: [...subset],
-            focus: 'weak',
-            levels: [1, 2, 3, 4, 5]
+            focus: "weak",
+            levels: [1, 2, 3, 4, 5],
           })
           const router = createMockRouter()
           const wrapper = mount(HomePage, createPropertyMountOptions(router))
@@ -285,7 +285,7 @@ describe('HomePage', () => {
           expect(vm.select).not.toContain(d)
 
           // Tap D
-          await wrapper.find(`[data-cy="table-selection-button-${d}"]`).trigger('click')
+          await wrapper.find(`[data-cy="table-selection-button-${d}"]`).trigger("click")
           expect(vm.select).toContain(d)
           // All previous selections should still be present
           for (const s of subset) {
@@ -294,7 +294,7 @@ describe('HomePage', () => {
 
           wrapper.unmount()
         }),
-        { numRuns: 20 }
+        { numRuns: 20 },
       )
     })
   })

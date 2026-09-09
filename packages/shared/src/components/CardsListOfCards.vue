@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { LEVEL_COLORS, MAX_TIME } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
+import { computed } from "vue"
+import { LEVEL_COLORS, MAX_TIME } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
 
 interface Props {
   allCards: BaseCard[]
@@ -17,11 +17,11 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  duplicateKeys: () => new Set()
+  duplicateKeys: () => new Set(),
 })
 
 function getLevelColor(level: number): string {
-  return LEVEL_COLORS[level] ?? '#ffffff'
+  return LEVEL_COLORS[level] ?? "#ffffff"
 }
 
 const sortedCards = computed(() => {

@@ -1,8 +1,8 @@
-import type { FocusType } from '@flashcards/shared'
-import { selectCardsByFocus } from '@flashcards/shared'
+import type { FocusType } from "@flashcards/shared"
+import { selectCardsByFocus } from "@flashcards/shared"
 
-import { parseCardQuestion } from '@/services/storage'
-import type { Card } from '@/types'
+import { parseCardQuestion } from "@/services/storage"
+import type { Card } from "@/types"
 
 /**
  * Filter cards where the divisor matches any number in the selection
@@ -10,7 +10,7 @@ import type { Card } from '@/types'
  */
 export function filterCardsByDivisor(cards: Card[], selection: number[]): Card[] {
   const selectSet = new Set(selection)
-  return cards.filter(card => {
+  return cards.filter((card) => {
     const { divisor } = parseCardQuestion(card.question)
     return selectSet.has(divisor)
   })
@@ -24,6 +24,6 @@ export function selectCardsForRound(cards: Card[], focus: FocusType, count: numb
   return selectCardsByFocus({
     cards,
     focus,
-    maxCards: count
+    maxCards: count,
   })
 }

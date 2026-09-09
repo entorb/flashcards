@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
-import { computed, onMounted, onUnmounted, type Ref, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useQuasar } from "quasar"
+import { computed, onMounted, onUnmounted, type Ref, ref } from "vue"
+import { useRouter } from "vue-router"
 
 import {
   CardManActions,
   CardsListOfCards,
   CardsManLevelDistribution,
   CardsTimeHistogram,
-  HomeDeckSelector
-} from '../components/index'
-import { useCardFiltering } from '../composables/useCardFiltering'
-import { useResetCards } from '../composables/useResetCards'
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
-import { getTimeFilterListTitle } from '../utils/helper'
+  HomeDeckSelector,
+} from "../components/index"
+import { useCardFiltering } from "../composables/useCardFiltering"
+import { useResetCards } from "../composables/useResetCards"
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
+import { getTimeFilterListTitle } from "../utils/helper"
 
 interface Props {
-  appPrefix: 'voc' | 'lwk'
+  appPrefix: "voc" | "lwk"
   title: string
   bannerHtml: string
   decksTitle: string
@@ -49,7 +49,7 @@ const {
   selectedTimeBucket,
   handleLevelClick,
   handleTimeBucketClick,
-  filteredCards
+  filteredCards,
 } = useCardFiltering(() => props.store.allCards.value)
 
 const targetLevel = ref(1)
@@ -82,21 +82,21 @@ const duplicateKeys = computed(() => {
 })
 
 function handleGoBack() {
-  void router.push({ name: '/HomePage' })
+  void router.push({ name: "/HomePage" })
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     handleGoBack()
   }
 }
 
 onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function handleEditCards() {
@@ -111,10 +111,10 @@ function handleMoveClick() {
   const level = Number(targetLevel.value)
   if (Number.isNaN(level) || level < MIN_LEVEL || level > MAX_LEVEL) {
     $q.notify({
-      type: 'negative',
+      type: "negative",
       message: TEXT_DE.shared.cardActions.invalidLevelError
-        .replace('{min}', MIN_LEVEL.toString())
-        .replace('{max}', MAX_LEVEL.toString())
+        .replace("{min}", MIN_LEVEL.toString())
+        .replace("{max}", MAX_LEVEL.toString()),
     })
     return
   }
@@ -122,9 +122,9 @@ function handleMoveClick() {
   $q.dialog({
     title: TEXT_DE.shared.cardActions.confirmMoveTitle,
     message: TEXT_DE.shared.cardActions.confirmMoveMessage
-      .replace('{count}', props.store.allCards.value.length.toString())
-      .replace('{level}', level.toString()),
-    cancel: true
+      .replace("{count}", props.store.allCards.value.length.toString())
+      .replace("{level}", level.toString()),
+    cancel: true,
   }).onOk(() => {
     props.store.moveAllCards(level)
   })

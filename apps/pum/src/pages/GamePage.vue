@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { NumericGamePage } from '@flashcards/shared/pages'
+import { NumericGamePage } from "@flashcards/shared/pages"
 
-import { useGameStore } from '@/composables/useGameStore'
-import { formatDisplayQuestion } from '@/utils/questionFormatter'
+import { useGameStore } from "@/composables/useGameStore"
+import { formatDisplayQuestion } from "@/utils/questionFormatter"
 
 const store = useGameStore()
 

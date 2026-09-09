@@ -1,91 +1,91 @@
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { BaseCard } from '../types'
-import { getTimeBucketIndex } from '../utils/helper'
-import CardsTimeHistogram from './CardsTimeHistogram.vue'
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import type { BaseCard } from "../types"
+import { getTimeBucketIndex } from "../utils/helper"
+import CardsTimeHistogram from "./CardsTimeHistogram.vue"
 
 const mountOptions = {
   global: {
     mocks: quasarMocks,
     provide: quasarProvide,
-    stubs: quasarStubs
-  }
+    stubs: quasarStubs,
+  },
 }
 
 function makeCards(times: number[]): BaseCard[] {
-  return times.map(time => ({ level: 1, time }))
+  return times.map((time) => ({ level: 1, time }))
 }
 
-describe('CardsTimeHistogram', () => {
+describe("CardsTimeHistogram", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders 5 time buckets', () => {
+  it("renders 5 time buckets", () => {
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards: [] },
-      ...mountOptions
+      ...mountOptions,
     })
-    expect(wrapper.findAll('.time-badge')).toHaveLength(5)
+    expect(wrapper.findAll(".time-badge")).toHaveLength(5)
   })
 
-  it('shows correct card count per bucket, excludes MAX_TIME sentinel (60s)', () => {
+  it("shows correct card count per bucket, excludes MAX_TIME sentinel (60s)", () => {
     // <5s: 2, <10s: 1, <15s: 1, <20s: 2, >=20s: 1 (two 60s sentinels excluded)
     const cards = makeCards([1, 4.9, 5, 12, 15, 19.9, 20, 60, 60])
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards },
-      ...mountOptions
+      ...mountOptions,
     })
-    const badges = wrapper.findAll('.time-badge')
-    const counts = badges.map(badge => badge.find('.text-h5').text())
-    expect(counts).toEqual(['1', '2', '1', '1', '2'])
+    const badges = wrapper.findAll(".time-badge")
+    const counts = badges.map((badge) => badge.find(".text-h5").text())
+    expect(counts).toEqual(["1", "2", "1", "1", "2"])
   })
 
-  it('shows bucket labels', () => {
+  it("shows bucket labels", () => {
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards: [] },
-      ...mountOptions
+      ...mountOptions,
     })
-    const labels = wrapper.findAll('.time-badge .text-caption').map(label => label.text())
-    expect(labels).toEqual(['≥20s', '<20s', '<15s', '<10s', '<5s'])
+    const labels = wrapper.findAll(".time-badge .text-caption").map((label) => label.text())
+    expect(labels).toEqual(["≥20s", "<20s", "<15s", "<10s", "<5s"])
   })
 
-  it('emits bucketClick with correct bucket when tile is clicked', async () => {
+  it("emits bucketClick with correct bucket when tile is clicked", async () => {
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards: [] },
-      ...mountOptions
+      ...mountOptions,
     })
-    const badges = wrapper.findAll('.time-badge')
+    const badges = wrapper.findAll(".time-badge")
     const firstBadge = badges[0]
     if (!firstBadge) {
-      throw new Error('First badge not found')
+      throw new Error("First badge not found")
     }
-    await firstBadge.trigger('click')
-    expect(wrapper.emitted('bucketClick')).toEqual([[4]])
+    await firstBadge.trigger("click")
+    expect(wrapper.emitted("bucketClick")).toEqual([[4]])
   })
 
-  it('selected bucket has primary border style', () => {
+  it("selected bucket has primary border style", () => {
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards: [], selectedBucket: 1 },
-      ...mountOptions
+      ...mountOptions,
     })
-    const selectedBadge = wrapper.findAll('.time-badge')[3]
-    expect(selectedBadge?.attributes('style')).toContain('3px solid var(--q-primary)')
+    const selectedBadge = wrapper.findAll(".time-badge")[3]
+    expect(selectedBadge?.attributes("style")).toContain("3px solid var(--q-primary)")
   })
 
-  it('non-selected buckets have transparent border', () => {
+  it("non-selected buckets have transparent border", () => {
     const wrapper = mount(CardsTimeHistogram, {
       props: { cards: [], selectedBucket: 1 },
-      ...mountOptions
+      ...mountOptions,
     })
-    const firstBadge = wrapper.findAll('.time-badge')[0]
-    expect(firstBadge?.attributes('style')).toContain('3px solid transparent')
+    const firstBadge = wrapper.findAll(".time-badge")[0]
+    expect(firstBadge?.attributes("style")).toContain("3px solid transparent")
   })
 })
 
-describe('getTimeBucketIndex', () => {
-  it('maps times to exclusive buckets', () => {
+describe("getTimeBucketIndex", () => {
+  it("maps times to exclusive buckets", () => {
     expect(getTimeBucketIndex(0.1)).toBe(0)
     expect(getTimeBucketIndex(4.9)).toBe(0)
     expect(getTimeBucketIndex(5)).toBe(1)

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { BaseCard } from '@flashcards/shared'
-import { TEXT_DE } from '@flashcards/shared'
-import { CardsManPage } from '@flashcards/shared/components'
+import type { BaseCard } from "@flashcards/shared"
+import { TEXT_DE } from "@flashcards/shared"
+import { CardsManPage } from "@flashcards/shared/components"
 
-import { useGameStore } from '../composables/useGameStore'
-import { loadSettings, saveSettings } from '../services/storage'
+import { useGameStore } from "../composables/useGameStore"
+import { loadSettings, saveSettings } from "../services/storage"
 
 const store = useGameStore()
 

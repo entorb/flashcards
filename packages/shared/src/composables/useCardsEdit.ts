@@ -1,9 +1,9 @@
-import { useQuasar } from 'quasar'
-import { type ComputedRef, computed, nextTick, type Ref, ref } from 'vue'
+import { useQuasar } from "quasar"
+import { type ComputedRef, computed, nextTick, type Ref, ref } from "vue"
 
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
-import { normalizeWhitespace } from '../utils/helper'
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
+import { normalizeWhitespace } from "../utils/helper"
 
 export interface PendingCardResult<TCard extends BaseCard> {
   card: TCard
@@ -43,7 +43,7 @@ export interface CardsEditReturn<TCard extends BaseCard> {
  * Shared by the lwk and voc card edit pages.
  */
 export function useCardsEdit<TCard extends BaseCard>(
-  options: CardsEditOptions<TCard>
+  options: CardsEditOptions<TCard>,
 ): CardsEditReturn<TCard> {
   const { editingCards, createEmptyCard, fieldOrder, prepareCard, duplicateMessage, getKey } =
     options
@@ -54,7 +54,7 @@ export function useCardsEdit<TCard extends BaseCard>(
   const rows = computed<TCard[]>(() => [...editingCards.value, newCard.value])
 
   function notifyError(message: string) {
-    $q.notify({ type: 'warning', message })
+    $q.notify({ type: "warning", message })
   }
 
   function focusField(field: string, scroll = false) {
@@ -63,9 +63,9 @@ export function useCardsEdit<TCard extends BaseCard>(
       const lastItem = items[items.length - 1]
       if (!lastItem) return
       if (scroll) {
-        lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        lastItem.scrollIntoView({ behavior: "smooth", block: "center" })
       }
-      const inputs = lastItem.querySelectorAll<HTMLInputElement>('input')
+      const inputs = lastItem.querySelectorAll<HTMLInputElement>("input")
       const target = inputs[fieldOrder.indexOf(field)]
       if (target) target.focus()
     })
@@ -74,13 +74,13 @@ export function useCardsEdit<TCard extends BaseCard>(
   function commitNewCard(moveFocus = true): boolean {
     const result = prepareCard(newCard.value)
     if (result === null) return true
-    if ('error' in result) {
+    if ("error" in result) {
       notifyError(result.error)
       newCard.value = createEmptyCard()
       return false
     }
     const { card, key } = result
-    if (editingCards.value.some(existing => normalizeWhitespace(getKey(existing)) === key)) {
+    if (editingCards.value.some((existing) => normalizeWhitespace(getKey(existing)) === key)) {
       notifyError(duplicateMessage(key))
       newCard.value = createEmptyCard()
       return false
@@ -96,7 +96,7 @@ export function useCardsEdit<TCard extends BaseCard>(
 
   function onInputKeydown(index: number, field: string, event: KeyboardEvent) {
     if (!isBlankRow(index)) return
-    if (event.key !== 'Enter' && event.key !== 'Tab') return
+    if (event.key !== "Enter" && event.key !== "Tab") return
     event.preventDefault()
     const nextField = fieldOrder[fieldOrder.indexOf(field) + 1]
     if (nextField === undefined) {
@@ -138,7 +138,7 @@ export function useCardsEdit<TCard extends BaseCard>(
 
   function removeCard(index: number) {
     if (editingCards.value.length <= 1) {
-      $q.notify({ type: 'negative', message: TEXT_DE.shared.cardActions.lastCardError })
+      $q.notify({ type: "negative", message: TEXT_DE.shared.cardActions.lastCardError })
       return
     }
     editingCards.value.splice(index, 1)
@@ -151,6 +151,6 @@ export function useCardsEdit<TCard extends BaseCard>(
     commitNewCard,
     onInputKeydown,
     onInputBlur,
-    removeCard
+    removeCard,
   }
 }

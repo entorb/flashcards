@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { getFocusText, TEXT_DE } from '@flashcards/shared'
-import { HistoryPage } from '@flashcards/shared/pages'
-import { onMounted, ref } from 'vue'
+import { getFocusText, TEXT_DE } from "@flashcards/shared"
+import { HistoryPage } from "@flashcards/shared/pages"
+import { onMounted, ref } from "vue"
 
-import { loadHistory } from '@/services/storage'
-import type { GameHistory } from '@/types'
+import { loadHistory } from "@/services/storage"
+import type { GameHistory } from "@/types"
 
 const history = ref<GameHistory[]>([])
 
@@ -13,7 +13,7 @@ onMounted(() => {
 })
 
 function formatSelection(select: number[]): string {
-  return select.join(', ')
+  return select.join(", ")
 }
 
 function formatDetails(game: GameHistory): string {

@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import type { BaseCard } from '@flashcards/shared'
-import { TEXT_DE, useCardFiltering, useResetCards } from '@flashcards/shared'
+import type { BaseCard } from "@flashcards/shared"
+import { TEXT_DE, useCardFiltering, useResetCards } from "@flashcards/shared"
 import {
   CardsListOfCards,
   CardsManLevelDistribution,
-  CardsTimeHistogram
-} from '@flashcards/shared/components'
-import { getTimeFilterListTitle } from '@flashcards/shared/utils'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  CardsTimeHistogram,
+} from "@flashcards/shared/components"
+import { getTimeFilterListTitle } from "@flashcards/shared/utils"
+import { computed, onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '@/composables/useGameStore'
-import { DEFAULT_RANGE } from '@/constants'
+import { useGameStore } from "@/composables/useGameStore"
+import { DEFAULT_RANGE } from "@/constants"
 import {
   getVirtualCardsForRange,
   loadCards,
   loadRange,
   parseCardQuestion,
   saveRange,
-  toggleFeature50
-} from '@/services/storage'
-import type { Card } from '@/types'
+  toggleFeature50,
+} from "@/services/storage"
+import type { Card } from "@/types"
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
@@ -35,7 +35,7 @@ const {
   selectedTimeBucket,
   handleLevelClick,
   handleTimeBucketClick,
-  filteredCards
+  filteredCards,
 } = useCardFiltering(() => cardsInRange.value)
 
 const listTitle = computed(() => {
@@ -58,7 +58,7 @@ const sortedFilteredCards = computed(() => {
 
 function getCardLabel(card: BaseCard): string {
   const c = card as unknown as { question: string; answer: number }
-  return `${c.question.replace(':', ' : ')} = ${c.answer}`
+  return `${c.question.replace(":", " : ")} = ${c.answer}`
 }
 
 function getCardKey(card: BaseCard): string {
@@ -67,7 +67,7 @@ function getCardKey(card: BaseCard): string {
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     goHome()
   }
 }
@@ -75,11 +75,11 @@ function handleKeyDown(event: KeyboardEvent) {
 onMounted(() => {
   cards.value = loadCards()
   range.value = loadRange()
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function resetCardsHandler() {
@@ -96,7 +96,7 @@ function toggleExtended() {
 }
 
 function goHome() {
-  void router.push({ name: '/HomePage' })
+  void router.push({ name: "/HomePage" })
 }
 </script>
 

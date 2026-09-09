@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { helperStatsDataWrite, TEXT_DE } from '@flashcards/shared'
-import { AppFooter, HomePwaInstallInfo } from '@flashcards/shared/components'
-import { ref } from 'vue'
+import { helperStatsDataWrite, TEXT_DE } from "@flashcards/shared"
+import { AppFooter, HomePwaInstallInfo } from "@flashcards/shared/components"
+import { ref } from "vue"
 
-import { useEtaStore } from '@/composables/useEtaStore'
-import { BASE_PATH } from '@/constants'
+import { useEtaStore } from "@/composables/useEtaStore"
+import { BASE_PATH } from "@/constants"
 
-import HourglassIcon from './HourglassIcon.vue'
+import HourglassIcon from "./HourglassIcon.vue"
 
 defineEmits<{
   goToInfo: []

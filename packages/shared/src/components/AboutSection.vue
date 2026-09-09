@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { QIcon } from 'quasar'
-import { onBeforeUnmount, ref } from 'vue'
+import { QIcon } from "quasar"
+import { onBeforeUnmount, ref } from "vue"
 
-import { SHARE_URL } from '../constants'
-import { TEXT_DE } from '../text-de'
+import { SHARE_URL } from "../constants"
+import { TEXT_DE } from "../text-de"
 
 defineProps<{
   contactOrigin: string
 }>()
 
-const shareIcon = ref<string>('share')
+const shareIcon = ref<string>("share")
 const shareLabel = ref<string>(TEXT_DE.shared.info.aboutShare)
 const shareButtonTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
@@ -24,7 +24,7 @@ const resetShareAfterDelay = (icon: string) => {
     clearTimeout(shareButtonTimeout.value)
   }
   shareButtonTimeout.value = setTimeout(() => {
-    shareIcon.value = 'share'
+    shareIcon.value = "share"
     shareLabel.value = TEXT_DE.shared.info.aboutShare
   }, 10_000)
   shareIcon.value = icon
@@ -34,9 +34,9 @@ const resetShareAfterDelay = (icon: string) => {
 const handleShare = async () => {
   try {
     await navigator.clipboard.writeText(SHARE_URL)
-    resetShareAfterDelay('check')
+    resetShareAfterDelay("check")
   } catch {
-    resetShareAfterDelay('error_outline')
+    resetShareAfterDelay("error_outline")
   }
 }
 </script>

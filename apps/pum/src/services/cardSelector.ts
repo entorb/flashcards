@@ -1,8 +1,8 @@
-import type { FocusType } from '@flashcards/shared'
-import { filterByLevels, selectCardsByFocus } from '@flashcards/shared'
+import type { FocusType } from "@flashcards/shared"
+import { filterByLevels, selectCardsByFocus } from "@flashcards/shared"
 
-import { getDifficultyFromQuestion, getOperationFromQuestion } from '@/services/storage'
-import type { Card, GameSettings } from '@/types'
+import { getDifficultyFromQuestion, getOperationFromQuestion } from "@/services/storage"
+import type { Card, GameSettings } from "@/types"
 
 /**
  * Filter cards by selected operations AND difficulties (intersection),
@@ -12,7 +12,7 @@ export function filterCards(cards: Card[], settings: GameSettings): Card[] {
   const opSet = new Set(settings.operations)
   const diffSet = new Set(settings.difficulties)
 
-  const selected = cards.filter(card => {
+  const selected = cards.filter((card) => {
     const op = getOperationFromQuestion(card.question)
     const diff = getDifficultyFromQuestion(card.question)
     return opSet.has(op) && diffSet.has(diff)
@@ -28,6 +28,6 @@ export function selectCardsForRound(cards: Card[], focus: FocusType, count: numb
   return selectCardsByFocus({
     cards,
     focus,
-    maxCards: count
+    maxCards: count,
   })
 }

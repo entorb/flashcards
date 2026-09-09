@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { useQuasar } from "quasar"
+import { onMounted, onUnmounted, ref } from "vue"
 
-import { TEXT_DE } from '../text-de'
-import type { BaseCard } from '../types'
+import { TEXT_DE } from "../text-de"
+import type { BaseCard } from "../types"
 
 interface Props {
-  appPrefix: 'voc' | 'lwk'
+  appPrefix: "voc" | "lwk"
   getDecks: () => Array<{ name: string; cards: Array<BaseCard> }>
   addDeck: (name: string) => boolean
   removeDeck: (name: string) => boolean
@@ -21,18 +21,18 @@ const $q = useQuasar()
 
 const decks = ref<Array<{ name: string; cards: Array<BaseCard> }>>([])
 const editingDeckName = ref<string | null>(null)
-const newDeckName = ref('')
+const newDeckName = ref("")
 
 function refreshDecks() {
   decks.value = props.getDecks()
 }
 
 function handleGoBack() {
-  emit('back')
+  emit("back")
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     if (editingDeckName.value) {
       cancelRename()
     } else {
@@ -42,12 +42,12 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
   refreshDecks()
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function handleAddDeck() {
@@ -56,15 +56,15 @@ function handleAddDeck() {
   let deckName: string
   do {
     deckName = `${prefix}${newIndex++}`
-  } while (decks.value.some(d => d.name === deckName))
+  } while (decks.value.some((d) => d.name === deckName))
 
   const success = props.addDeck(deckName)
   if (success) {
     refreshDecks()
   } else {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE[props.appPrefix].decks.duplicateNameError
+      type: "negative",
+      message: TEXT_DE[props.appPrefix].decks.duplicateNameError,
     })
   }
 }
@@ -72,16 +72,16 @@ function handleAddDeck() {
 function handleRemoveDeck(deckName: string) {
   if (decks.value.length <= 1) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE[props.appPrefix].decks.lastDeckError
+      type: "negative",
+      message: TEXT_DE[props.appPrefix].decks.lastDeckError,
     })
     return
   }
 
   $q.dialog({
     title: TEXT_DE[props.appPrefix].decks.confirmRemoveTitle,
-    message: TEXT_DE[props.appPrefix].decks.confirmRemoveMessage.replace('{name}', deckName),
-    cancel: true
+    message: TEXT_DE[props.appPrefix].decks.confirmRemoveMessage.replace("{name}", deckName),
+    cancel: true,
   }).onOk(() => {
     const success = props.removeDeck(deckName)
     if (success) {
@@ -101,8 +101,8 @@ function saveRename() {
   const trimmedName = newDeckName.value.trim()
   if (!trimmedName) {
     $q.notify({
-      type: 'negative',
-      message: TEXT_DE[props.appPrefix].decks.emptyNameError
+      type: "negative",
+      message: TEXT_DE[props.appPrefix].decks.emptyNameError,
     })
     return
   }
@@ -111,28 +111,28 @@ function saveRename() {
     const success = props.renameDeck(editingDeckName.value, trimmedName)
     if (!success) {
       $q.notify({
-        type: 'negative',
-        message: TEXT_DE[props.appPrefix].decks.duplicateNameError
+        type: "negative",
+        message: TEXT_DE[props.appPrefix].decks.duplicateNameError,
       })
       return
     }
   }
 
   editingDeckName.value = null
-  newDeckName.value = ''
+  newDeckName.value = ""
   refreshDecks()
 }
 
 function cancelRename() {
   editingDeckName.value = null
-  newDeckName.value = ''
+  newDeckName.value = ""
 }
 
 function handleRenameKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter') {
+  if (event.key === "Enter") {
     event.preventDefault()
     saveRename()
-  } else if (event.key === 'Escape') {
+  } else if (event.key === "Escape") {
     event.preventDefault()
     cancelRename()
   }

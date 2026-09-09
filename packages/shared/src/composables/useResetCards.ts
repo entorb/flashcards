@@ -1,6 +1,6 @@
-import { useQuasar } from 'quasar'
+import { useQuasar } from "quasar"
 
-import { TEXT_DE } from '../text-de'
+import { TEXT_DE } from "../text-de"
 
 /**
  * Composable for showing reset confirmation dialog and handling reset logic
@@ -16,20 +16,20 @@ export function useResetCards() {
       cancel: true,
       ok: {
         label: TEXT_DE.shared.common.reset,
-        color: 'negative'
+        color: "negative",
       },
-      persistent: true
+      persistent: true,
     }).onOk(() => {
       onConfirm()
       $q.notify({
-        type: 'positive',
+        type: "positive",
         message: TEXT_DE.shared.cardActions.resetSuccess,
-        position: 'top'
+        position: "top",
       })
     })
   }
 
   return {
-    showResetDialog
+    showResetDialog,
   }
 }

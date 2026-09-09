@@ -3,11 +3,11 @@
  * Provides common state management patterns used across all apps
  */
 
-import { type Ref, ref } from 'vue'
+import { type Ref, ref } from "vue"
 
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from '../constants'
-import type { PointsBreakdown } from '../services/scoring'
-import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from '../types'
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants"
+import type { PointsBreakdown } from "../services/scoring"
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from "../types"
 
 /**
  * Configuration for creating a base game store
@@ -34,7 +34,7 @@ export interface BaseGameStoreConfig<TCard extends BaseCard, THistory extends Ba
 export function createBaseGameStore<
   TCard extends BaseCard,
   THistory extends BaseGameHistory,
-  TSettings
+  TSettings,
 >(config: BaseGameStoreConfig<TCard, THistory>) {
   // Shared state
   const allCards = ref<TCard[]>([]) as Ref<TCard[]>
@@ -47,11 +47,11 @@ export function createBaseGameStore<
   const gameStats = ref<GameStats>({
     gamesPlayed: 0,
     points: 0,
-    correctAnswers: 0
+    correctAnswers: 0,
   })
 
   // Session mode (standard, endless-level1, 3-rounds)
-  const sessionMode = ref<SessionMode>('standard')
+  const sessionMode = ref<SessionMode>("standard")
 
   // Last points breakdown for display
   const lastPointsBreakdown = ref<PointsBreakdown | null>(null)
@@ -112,7 +112,7 @@ export function createBaseGameStore<
     points.value = 0
     correctAnswersCount.value = 0
     gameSettings.value = null
-    sessionMode.value = 'standard'
+    sessionMode.value = "standard"
   }
 
   /**
@@ -122,7 +122,7 @@ export function createBaseGameStore<
     if (!Number.isInteger(level) || level < MIN_LEVEL || level > MAX_LEVEL) {
       throw new Error(`Invalid level: ${level} (expected integer ${MIN_LEVEL}-${MAX_LEVEL})`)
     }
-    allCards.value = allCards.value.map(card => ({ ...card, level }))
+    allCards.value = allCards.value.map((card) => ({ ...card, level }))
     config.saveCards?.(allCards.value)
   }
 
@@ -130,7 +130,7 @@ export function createBaseGameStore<
    * Reset all cards to initial state (level 1, time 60s)
    */
   function resetAllCards() {
-    allCards.value = allCards.value.map(card => ({ ...card, level: MIN_LEVEL, time: MAX_TIME }))
+    allCards.value = allCards.value.map((card) => ({ ...card, level: MIN_LEVEL, time: MAX_TIME }))
     config.saveCards?.(allCards.value)
   }
 
@@ -138,7 +138,7 @@ export function createBaseGameStore<
    * Handle answer result - common logic for points and stats
    */
   function handleAnswerBase(result: AnswerStatus, pointsBreakdown: PointsBreakdown) {
-    if (result === 'correct') {
+    if (result === "correct") {
       correctAnswersCount.value++
     }
     lastPointsBreakdown.value = pointsBreakdown
@@ -146,7 +146,7 @@ export function createBaseGameStore<
 
     // Early persist: update gameStats and save to localStorage
     gameStats.value.points += pointsBreakdown.totalPoints
-    if (result === 'correct') {
+    if (result === "correct") {
       gameStats.value.correctAnswers++
     }
     config.saveGameStats(gameStats.value)
@@ -173,6 +173,6 @@ export function createBaseGameStore<
     discardGame,
     moveAllCards,
     resetAllCards,
-    handleAnswerBase
+    handleAnswerBase,
   }
 }

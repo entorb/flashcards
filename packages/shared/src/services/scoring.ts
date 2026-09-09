@@ -7,8 +7,8 @@ import {
   CLOSE_MATCH_SCORE_PERCENTAGE,
   MAX_LEVEL,
   MIN_LEVEL,
-  SPEED_BONUS_POINTS
-} from '../constants'
+  SPEED_BONUS_POINTS,
+} from "../constants"
 
 /**
  * Calculate base points from card level
@@ -68,7 +68,7 @@ export function calculatePointsBreakdown(config: {
     level,
     timeBonus = false,
     closeAdjustment = false,
-    languageBonus = 0
+    languageBonus = 0,
   } = config
 
   const levelPoints = calculateLevelPoints(level)
@@ -93,6 +93,6 @@ export function calculatePointsBreakdown(config: {
     closeAdjustment: penalty,
     languageBonus,
     timeBonus: !closeAdjustment && timeBonus ? SPEED_BONUS_POINTS : 0,
-    totalPoints
+    totalPoints,
   }
 }

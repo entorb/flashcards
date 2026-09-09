@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import type { SessionMode } from '@flashcards/shared'
-import { ALL_LEVELS, filterByLevels, TEXT_DE } from '@flashcards/shared'
+import type { SessionMode } from "@flashcards/shared"
+import { ALL_LEVELS, filterByLevels, TEXT_DE } from "@flashcards/shared"
 import {
   HomeFocusSelector,
   HomeGameModeButtons,
   HomeLevelSelector,
-  HomePageLayout
-} from '@flashcards/shared/components'
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+  HomePageLayout,
+} from "@flashcards/shared/components"
+import { computed, onMounted, ref, watch } from "vue"
+import { useRouter } from "vue-router"
 
-import FoxMascot from '../components/FoxMascot.vue'
-import { useGameStore } from '../composables/useGameStore'
-import { BASE_PATH } from '../constants'
-import { loadSettings, saveSettings } from '../services/storage'
-import type { GameSettings } from '../types'
+import FoxMascot from "../components/FoxMascot.vue"
+import { useGameStore } from "../composables/useGameStore"
+import { BASE_PATH } from "../constants"
+import { loadSettings, saveSettings } from "../services/storage"
+import type { GameSettings } from "../types"
 
 const router = useRouter()
 const { gameStats, startGame: startGameStore, getDecks, switchDeck, allCards } = useGameStore()
 
-const MODE_MULTIPLE_CHOICE = 'multiple-choice'
+const MODE_MULTIPLE_CHOICE = "multiple-choice"
 
 const settings = ref<GameSettings>({
   mode: MODE_MULTIPLE_CHOICE,
-  focus: 'weak',
-  language: 'voc-de',
-  deck: 'en',
-  levels: [...ALL_LEVELS]
+  focus: "weak",
+  language: "voc-de",
+  deck: "en",
+  levels: [...ALL_LEVELS],
 })
 
 const deckOptions = ref<{ label: string; value: string }[]>([])
@@ -35,32 +35,32 @@ const deckOptions = ref<{ label: string; value: string }[]>([])
 const levelFilteredCards = computed(() => filterByLevels(allCards.value, settings.value.levels))
 
 const hasLevel1Cards = computed<boolean>(() =>
-  levelFilteredCards.value.some(card => card.level === 1)
+  levelFilteredCards.value.some((card) => card.level === 1),
 )
 
 const hasLevel1Or2Cards = computed<boolean>(() =>
-  levelFilteredCards.value.some(card => card.level === 1 || card.level === 2)
+  levelFilteredCards.value.some((card) => card.level === 1 || card.level === 2),
 )
 
 const modeOptions = computed(() => [
   {
     label: TEXT_DE.voc.mode.multipleChoice,
-    value: 'multiple-choice' as const,
+    value: "multiple-choice" as const,
     disable: !hasLevel1Cards.value,
-    tooltip: hasLevel1Cards.value ? undefined : TEXT_DE.voc.mode.tooGoodForMultipleChoice
+    tooltip: hasLevel1Cards.value ? undefined : TEXT_DE.voc.mode.tooGoodForMultipleChoice,
   },
   {
     label: TEXT_DE.voc.mode.blind,
-    value: 'blind' as const,
+    value: "blind" as const,
     disable: !hasLevel1Or2Cards.value,
-    tooltip: hasLevel1Or2Cards.value ? undefined : TEXT_DE.voc.mode.tooGoodForMultipleChoice
+    tooltip: hasLevel1Or2Cards.value ? undefined : TEXT_DE.voc.mode.tooGoodForMultipleChoice,
   },
-  { label: TEXT_DE.voc.mode.typing, value: 'typing' as const }
+  { label: TEXT_DE.voc.mode.typing, value: "typing" as const },
 ])
 
 const languageOptions = [
-  { label: TEXT_DE.voc.direction.voc_de, value: 'voc-de' as const },
-  { label: TEXT_DE.voc.direction.de_voc, value: 'de-voc' as const }
+  { label: TEXT_DE.voc.direction.voc_de, value: "voc-de" as const },
+  { label: TEXT_DE.voc.direction.de_voc, value: "de-voc" as const },
 ]
 
 onMounted(() => {
@@ -72,9 +72,9 @@ onMounted(() => {
 
   // Refresh deck list and options
   const loadedDecks = getDecks()
-  deckOptions.value = loadedDecks.map(deck => ({
+  deckOptions.value = loadedDecks.map((deck) => ({
     label: deck.name,
-    value: deck.name
+    value: deck.name,
   }))
   // Ensure the selected mode is available for the current cards/levels
   ensureValidMode()
@@ -95,33 +95,33 @@ function ensureValidMode() {
   // Automatically switch to next available mode if current mode is disabled
   if (settings.value.mode === MODE_MULTIPLE_CHOICE && !hasLevel1Cards.value) {
     // Multiple choice disabled, try blind
-    settings.value.mode = hasLevel1Or2Cards.value ? 'blind' : 'typing'
-  } else if (settings.value.mode === 'blind' && !hasLevel1Or2Cards.value) {
+    settings.value.mode = hasLevel1Or2Cards.value ? "blind" : "typing"
+  } else if (settings.value.mode === "blind" && !hasLevel1Or2Cards.value) {
     // Blind disabled, switch to typing
-    settings.value.mode = 'typing'
+    settings.value.mode = "typing"
   }
 }
 
 function startGameWithMode(mode: SessionMode) {
   saveSettings(settings.value)
   startGameStore(settings.value, mode)
-  void router.push({ name: '/GamePage' })
+  void router.push({ name: "/GamePage" })
 }
 
 function startGame() {
-  startGameWithMode('standard')
+  startGameWithMode("standard")
 }
 
 function goToHistory() {
-  void router.push({ name: '/HistoryPage' })
+  void router.push({ name: "/HistoryPage" })
 }
 
 function goToCards() {
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function goToInfo() {
-  void router.push({ name: '/InfoPage' })
+  void router.push({ name: "/InfoPage" })
 }
 </script>
 

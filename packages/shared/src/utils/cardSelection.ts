@@ -17,7 +17,7 @@
  */
 export function weightedRandomSelection<T>(
   items: Array<{ item: T; weight: number }>,
-  count: number
+  count: number,
 ): T[] {
   const availableItems = [...items]
   const selected: T[] = []

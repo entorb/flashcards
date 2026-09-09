@@ -1,4 +1,4 @@
-import type { BaseCard } from '../types'
+import type { BaseCard } from "../types"
 
 export interface CardDeck<TCard extends BaseCard = BaseCard> {
   name: string
@@ -11,7 +11,7 @@ export interface DeckSettings {
 
 export interface DeckManagementOptions<
   TCard extends BaseCard,
-  TSettings extends DeckSettings = DeckSettings
+  TSettings extends DeckSettings = DeckSettings,
 > {
   loadDecks: () => Array<CardDeck<TCard>>
   saveDecks: (decks: Array<CardDeck<TCard>>) => void
@@ -21,7 +21,7 @@ export interface DeckManagementOptions<
 
 export function useDeckManagement<
   TCard extends BaseCard = BaseCard,
-  TSettings extends DeckSettings = DeckSettings
+  TSettings extends DeckSettings = DeckSettings,
 >(options: DeckManagementOptions<TCard, TSettings>) {
   const { loadDecks, saveDecks, loadSettings, saveSettings } = options
 
@@ -32,7 +32,7 @@ export function useDeckManagement<
   function addDeck(name: string): boolean {
     const decks = loadDecks()
     // Check for duplicate name
-    if (decks.some(d => d.name === name)) {
+    if (decks.some((d) => d.name === name)) {
       return false
     }
     decks.push({ name, cards: [] })
@@ -43,10 +43,10 @@ export function useDeckManagement<
   function renameDeck(oldName: string, newName: string): boolean {
     const decks = loadDecks()
     // Check for duplicate name
-    if (decks.some(d => d.name === newName)) {
+    if (decks.some((d) => d.name === newName)) {
       return false
     }
-    const deck = decks.find(d => d.name === oldName)
+    const deck = decks.find((d) => d.name === oldName)
     if (!deck) {
       return false
     }
@@ -67,7 +67,7 @@ export function useDeckManagement<
     if (decks.length <= 1) {
       return false
     }
-    const filtered = decks.filter(d => d.name !== name)
+    const filtered = decks.filter((d) => d.name !== name)
     if (filtered.length === decks.length) {
       return false // Deck not found
     }
@@ -86,6 +86,6 @@ export function useDeckManagement<
     getDecks,
     addDeck,
     renameDeck,
-    removeDeck
+    removeDeck,
   }
 }

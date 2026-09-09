@@ -1,13 +1,13 @@
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath } from "node:url"
 
-import { createAppViteConfig } from '../../vite.config.factory.ts'
+import { createAppViteConfig } from "../../vite.config.factory.ts"
 
 export default createAppViteConfig({
-  basePath: 'fc-div',
+  basePath: "fc-div",
   appTitle: "Diva's Division",
-  description: 'Division üben mit Diva dem Huhn und ihrem Lernkastensystem',
-  themeColor: '#DAA520',
+  description: "Division üben mit Diva dem Huhn und ihrem Lernkastensystem",
+  themeColor: "#DAA520",
   serverPort: 5177,
   previewPort: 4177,
-  srcDir: fileURLToPath(new URL('./src', import.meta.url))
+  srcDir: fileURLToPath(new URL("./src", import.meta.url)),
 })

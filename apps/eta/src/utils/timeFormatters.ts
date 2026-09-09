@@ -11,9 +11,9 @@ export function formatDuration(totalSeconds: number): string {
   const seconds = Math.floor(totalSeconds % 60)
 
   if (hours > 0) {
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
   }
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
 }
 
 /**
@@ -22,7 +22,7 @@ export function formatDuration(totalSeconds: number): string {
 export function formatClockTime(date: Date): string {
   const hours = date.getHours()
   const minutes = date.getMinutes()
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
 }
 
 /**

@@ -8,12 +8,12 @@ import {
   MAX_TIME,
   MIN_LEVEL,
   normalizeWhitespace,
-  parseLevel
-} from '@flashcards/shared'
+  parseLevel,
+} from "@flashcards/shared"
 
-import { LEVENSHTEIN_THRESHOLD } from '@/constants'
+import { LEVENSHTEIN_THRESHOLD } from "@/constants"
 
-import type { Card } from '../types'
+import type { Card } from "../types"
 
 /**
  * Check if user's spelling is correct or close match
@@ -25,15 +25,15 @@ export function validateTypingAnswer(userInput: string, correctWord: string): An
   const correct = normalizeWhitespace(correctWord)
 
   if (normalized === correct) {
-    return 'correct'
+    return "correct"
   }
 
   // Close match: Levenshtein distance (one insertion, deletion, or substitution)
   if (levenshteinDistance(normalized, correct) <= LEVENSHTEIN_THRESHOLD) {
-    return 'close'
+    return "close"
   }
 
-  return 'incorrect'
+  return "incorrect"
 }
 
 /**
@@ -48,8 +48,8 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
     return null
   }
 
-  const lines = text.trim().split('\n')
-  const firstLine = lines[0] ?? ''
+  const lines = text.trim().split("\n")
+  const firstLine = lines[0] ?? ""
   const delimiter = detectDelimiter(firstLine)
 
   // If no delimiter found, treat as newline-only separated words
@@ -77,10 +77,10 @@ export function parseCardsFromText(text: string): { cards: Card[]; delimiter: st
  * Detect delimiter from the first line
  */
 function detectDelimiter(firstLine: string): string | null {
-  if (firstLine.includes('\t')) return '\t'
-  if (firstLine.includes(';')) return ';'
-  if (firstLine.includes(',')) return ','
-  if (firstLine.includes('/')) return '/'
+  if (firstLine.includes("\t")) return "\t"
+  if (firstLine.includes(";")) return ";"
+  if (firstLine.includes(",")) return ","
+  if (firstLine.includes("/")) return "/"
   return null
 }
 
@@ -96,19 +96,19 @@ function parseNewlineOnlyCards(lines: string[]): { cards: Card[]; delimiter: str
       newCards.push({
         word,
         level: MIN_LEVEL,
-        time: MAX_TIME
+        time: MAX_TIME,
       })
     }
   }
 
-  return newCards.length > 0 ? { cards: newCards, delimiter: '\n' } : null
+  return newCards.length > 0 ? { cards: newCards, delimiter: "\n" } : null
 }
 
 /**
  * Check if line is a header line
  */
 function isHeaderLine(line: string, index: number): boolean {
-  return index === 0 && line.toLowerCase().includes('word') && line.toLowerCase().includes('level')
+  return index === 0 && line.toLowerCase().includes("word") && line.toLowerCase().includes("level")
 }
 
 /**
@@ -116,8 +116,8 @@ function isHeaderLine(line: string, index: number): boolean {
  */
 function parseCardFromLine(line: string, delimiter: string): Card | null {
   const parts = line.split(delimiter)
-  const word = normalizeWhitespace(parts[0] ?? '')
-  if (word === '') {
+  const word = normalizeWhitespace(parts[0] ?? "")
+  if (word === "") {
     return null
   }
 

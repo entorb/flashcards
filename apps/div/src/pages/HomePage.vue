@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import type { CardLevel, FocusType, SessionMode } from '@flashcards/shared'
-import { ALL_LEVELS, filterByLevels, TEXT_DE } from '@flashcards/shared'
+import type { CardLevel, FocusType, SessionMode } from "@flashcards/shared"
+import { ALL_LEVELS, filterByLevels, TEXT_DE } from "@flashcards/shared"
 import {
   HomeFocusSelector,
   HomeGameModeButtons,
   HomeLevelSelector,
-  HomePageLayout
-} from '@flashcards/shared/components'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  HomePageLayout,
+} from "@flashcards/shared/components"
+import { computed, onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import ChickenMascot from '@/components/ChickenMascot.vue'
-import { useGameStore } from '@/composables/useGameStore'
-import { BASE_PATH, DEFAULT_RANGE } from '@/constants'
-import { filterCardsByDivisor } from '@/services/cardSelector'
+import ChickenMascot from "@/components/ChickenMascot.vue"
+import { useGameStore } from "@/composables/useGameStore"
+import { BASE_PATH, DEFAULT_RANGE } from "@/constants"
+import { filterCardsByDivisor } from "@/services/cardSelector"
 import {
   getVirtualCardsForRange,
   loadGameStats,
   loadRange,
   loadSettings,
-  saveSettings
-} from '@/services/storage'
+  saveSettings,
+} from "@/services/storage"
 
 const router = useRouter()
 
 const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
 const select = ref<number[]>([...DEFAULT_RANGE])
-const focus = ref<FocusType>('weak')
+const focus = ref<FocusType>("weak")
 const range = ref<number[]>([...DEFAULT_RANGE])
 const levels = ref<CardLevel[]>([...ALL_LEVELS])
 
 // Divisor options based on current range (base 2-9, plus 11-12 when extended)
 const selectOptions = computed<number[]>(() =>
-  range.value.filter(n => (n >= 2 && n <= 9) || n === 11 || n === 12)
+  range.value.filter((n) => (n >= 2 && n <= 9) || n === 11 || n === 12),
 )
 
 // Check if a divisor number is selected
@@ -74,35 +74,35 @@ onMounted(() => {
 })
 
 function startGame() {
-  startGameWithMode('standard')
+  startGameWithMode("standard")
 }
 
 function startGameWithMode(mode: SessionMode) {
   const gameConfig = {
     select: select.value,
     focus: focus.value,
-    levels: [...levels.value]
+    levels: [...levels.value],
   }
   saveSettings(gameConfig)
   storeStartGame(gameConfig, mode, true)
-  void router.push({ name: '/GamePage' })
+  void router.push({ name: "/GamePage" })
 }
 
 function goToHistory() {
-  void router.push({ name: '/HistoryPage' })
+  void router.push({ name: "/HistoryPage" })
 }
 
 function goToCards() {
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function goToInfo() {
-  void router.push({ name: '/InfoPage' })
+  void router.push({ name: "/InfoPage" })
 }
 
 function toggleSelect(option: number) {
   // Check if all options in current range are selected
-  const allSelected = selectOptions.value.every(opt => select.value.includes(opt))
+  const allSelected = selectOptions.value.every((opt) => select.value.includes(opt))
 
   if (allSelected && select.value.length > 1) {
     // All selected + tap D → select only D

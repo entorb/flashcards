@@ -25,7 +25,7 @@ interface VocDeck {
  * @returns Array of cards from the first deck
  */
 export function getCardsFromStorage(win: Window): VocCard[] {
-  const stored = win.localStorage.getItem('fc-voc-cards')
+  const stored = win.localStorage.getItem("fc-voc-cards")
   const decks: VocDeck[] = stored ? JSON.parse(stored) : []
   return Array.isArray(decks) && decks.length > 0 && decks[0].cards ? decks[0].cards : []
 }
@@ -43,8 +43,8 @@ declare global {
   }
 }
 
-Cypress.Commands.add('getCardsFromStorage', () => {
-  return cy.window().then(win => {
+Cypress.Commands.add("getCardsFromStorage", () => {
+  return cy.window().then((win) => {
     return getCardsFromStorage(win)
   })
 })

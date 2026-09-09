@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from '@flashcards/shared'
-import { GameOverPage } from '@flashcards/shared/pages'
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from "@flashcards/shared"
+import { GameOverPage } from "@flashcards/shared/pages"
 
-import ChickenMascot from '@/components/ChickenMascot.vue'
-import { useGameStore } from '@/composables/useGameStore'
-import { BASE_PATH } from '@/constants'
+import ChickenMascot from "@/components/ChickenMascot.vue"
+import { useGameStore } from "@/composables/useGameStore"
+import { BASE_PATH } from "@/constants"
 import {
   clearGameResult,
   clearGameState,
@@ -12,8 +12,8 @@ import {
   incrementDailyGames,
   saveGameStats,
   saveHistory,
-  setGameResult
-} from '@/services/storage'
+  setGameResult,
+} from "@/services/storage"
 
 const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
 </script>

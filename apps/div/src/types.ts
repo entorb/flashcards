@@ -3,7 +3,7 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from "@flashcards/shared"
 
 // ============================================================================
 // Card Definition (extends BaseCard)

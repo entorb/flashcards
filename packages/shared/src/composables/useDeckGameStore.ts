@@ -4,33 +4,33 @@
  * Each app provides app-specific callbacks for card selection, scoring, and deck management.
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue"
 
-import { LOOP_COUNT, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
-import { calculatePointsBreakdown } from '../services/scoring'
+import { LOOP_COUNT, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants"
+import { calculatePointsBreakdown } from "../services/scoring"
 import type {
   AnswerStatus,
   BaseCard,
   BaseGameHistory,
   GameResult,
   GameStats,
-  SessionMode
-} from '../types'
-import { shuffleArray } from '../utils/cardSelection'
+  SessionMode,
+} from "../types"
+import { shuffleArray } from "../utils/cardSelection"
 import {
   filterBelowMaxLevel,
   filterByLevels,
   filterLevel1Cards,
   handleNextCard,
   isEndlessMode,
-  repeatCards
-} from '../utils/gameModeUtils'
-import { roundTime } from '../utils/helper'
+  repeatCards,
+} from "../utils/gameModeUtils"
+import { roundTime } from "../utils/helper"
 
-import { createBaseGameStore } from './useBaseGameStore'
-import { useDeckManagement } from './useDeckManagement'
-import type { GameStateFlowConfig } from './useGameStateFlow'
-import { initializeGameFlow } from './useGameStateFlow'
+import { createBaseGameStore } from "./useBaseGameStore"
+import { useDeckManagement } from "./useDeckManagement"
+import type { GameStateFlowConfig } from "./useGameStateFlow"
+import { initializeGameFlow } from "./useGameStateFlow"
 
 export interface SavedGameState<TCard, TSettings> {
   gameCards: TCard[]
@@ -45,7 +45,7 @@ export interface SavedGameState<TCard, TSettings> {
 export interface DeckGameStoreConfig<
   TCard extends BaseCard,
   THistory extends BaseGameHistory,
-  TSettings extends { focus: string; deck?: string; levels?: number[] }
+  TSettings extends { focus: string; deck?: string; levels?: number[] },
 > {
   storage: {
     loadCards: () => TCard[]
@@ -77,7 +77,7 @@ export interface DeckGameStoreConfig<
     card: TCard,
     answerTime: number | undefined,
     result: AnswerStatus,
-    settings: TSettings
+    settings: TSettings,
   ) => boolean
   /** Optional extra points for a correct answer (voc: de-voc language bonus) */
   getLanguageBonus?: (result: AnswerStatus, settings: TSettings) => number
@@ -99,18 +99,18 @@ function updateCardLevelAndTime<TCard extends BaseCard>(
   card: TCard,
   result: AnswerStatus,
   answerTime: number | undefined,
-  trackTime: boolean
+  trackTime: boolean,
 ): Partial<TCard> {
   const updates: Partial<TCard> = {}
-  if (result === 'correct') {
+  if (result === "correct") {
     updates.level = Math.min(MAX_LEVEL, card.level + 1)
-  } else if (result === 'incorrect') {
+  } else if (result === "incorrect") {
     updates.level = Math.max(MIN_LEVEL, card.level - 1)
     if (trackTime) {
       updates.time = MAX_TIME
     }
   }
-  if (result === 'correct' && trackTime && answerTime !== undefined) {
+  if (result === "correct" && trackTime && answerTime !== undefined) {
     const clampedTime = Math.max(MIN_TIME, Math.min(MAX_TIME, answerTime))
     updates.time = roundTime(clampedTime)
   }
@@ -124,15 +124,15 @@ function selectCardsByMode<TCard extends BaseCard, TSettings>(
   pool: TCard[],
   mode: SessionMode,
   settings: TSettings,
-  selectCards: (cards: TCard[], settings: TSettings) => TCard[]
+  selectCards: (cards: TCard[], settings: TSettings) => TCard[],
 ): TCard[] {
-  if (mode === 'endless-level1') {
+  if (mode === "endless-level1") {
     return shuffleArray(filterLevel1Cards(pool))
   }
-  if (mode === 'endless-level5') {
+  if (mode === "endless-level5") {
     return shuffleArray(filterBelowMaxLevel(pool))
   }
-  if (mode === '3-rounds') {
+  if (mode === "3-rounds") {
     const focusSelected = selectCards(pool, settings)
     return repeatCards(focusSelected, LOOP_COUNT)
   }
@@ -146,7 +146,7 @@ function selectCardsByMode<TCard extends BaseCard, TSettings>(
 export function createDeckGameStore<
   TCard extends BaseCard,
   THistory extends BaseGameHistory,
-  TSettings extends { focus: string; deck?: string; levels?: number[] }
+  TSettings extends { focus: string; deck?: string; levels?: number[] },
 >(config: DeckGameStoreConfig<TCard, THistory, TSettings>) {
   const { storage } = config
 
@@ -157,7 +157,7 @@ export function createDeckGameStore<
     saveHistory: storage.saveHistory,
     loadGameStats: storage.loadGameStats,
     saveGameStats: storage.saveGameStats,
-    saveCards: storage.saveCards
+    saveCards: storage.saveCards,
   })
 
   // Deck management composable
@@ -165,27 +165,27 @@ export function createDeckGameStore<
     loadDecks: storage.loadDecks,
     saveDecks: storage.saveDecks,
     loadSettings: storage.loadSettings,
-    saveSettings: storage.saveSettings
+    saveSettings: storage.saveSettings,
   })
 
   function buildPointsBreakdown(
     result: AnswerStatus,
     card: TCard,
     settings: TSettings,
-    answerTime: number | undefined
+    answerTime: number | undefined,
   ) {
     return calculatePointsBreakdown({
       difficultyPoints: config.getDifficultyPoints(settings),
       level: card.level,
       timeBonus: config.timeBonusPredicate(card, answerTime, result, settings),
-      closeAdjustment: result === 'close',
-      languageBonus: config.getLanguageBonus ? config.getLanguageBonus(result, settings) : 0
+      closeAdjustment: result === "close",
+      languageBonus: config.getLanguageBonus ? config.getLanguageBonus(result, settings) : 0,
     })
   }
 
   function applyAnswerUpdates(updates: Partial<TCard>, card: TCard) {
-    baseStore.allCards.value = baseStore.allCards.value.map(c =>
-      config.getKey(c) === config.getKey(card) ? { ...c, ...updates } : c
+    baseStore.allCards.value = baseStore.allCards.value.map((c) =>
+      config.getKey(c) === config.getKey(card) ? { ...c, ...updates } : c,
     )
     // Also update the in-memory gameCards entry (needed for endless mode card removal check)
     if (updates.level !== undefined) card.level = updates.level
@@ -211,7 +211,7 @@ export function createDeckGameStore<
       baseStore.currentCardIndex.value = savedGameState.currentCardIndex
       baseStore.points.value = savedGameState.points
       baseStore.correctAnswersCount.value = savedGameState.correctAnswersCount
-      baseStore.sessionMode.value = savedGameState.sessionMode ?? 'standard'
+      baseStore.sessionMode.value = savedGameState.sessionMode ?? "standard"
       initialCardCount.value = savedGameState.initialCardCount ?? savedGameState.gameCards.length
     }
 
@@ -224,7 +224,7 @@ export function createDeckGameStore<
         correctAnswersCount: baseStore.correctAnswersCount.value,
         gameSettings: baseStore.gameSettings.value as TSettings,
         sessionMode: baseStore.sessionMode.value,
-        initialCardCount: initialCardCount.value
+        initialCardCount: initialCardCount.value,
       })
     }
 
@@ -233,7 +233,7 @@ export function createDeckGameStore<
         baseStore.gameCards,
         baseStore.currentCardIndex,
         baseStore.sessionMode.value,
-        config.getKey
+        config.getKey,
       )
 
       if (!isGameOver) {
@@ -242,7 +242,7 @@ export function createDeckGameStore<
       return isGameOver
     }
 
-    function startGame(settings: TSettings, mode: SessionMode = 'standard') {
+    function startGame(settings: TSettings, mode: SessionMode = "standard") {
       // Only start a new game if there are no cards in session storage (new game)
       // If cards exist, user reloaded page during game - just resume (return early)
       if (baseStore.gameCards.value.length > 0) {
@@ -250,7 +250,7 @@ export function createDeckGameStore<
       }
 
       // Ensure the correct deck is loaded before starting the game
-      if (settings.deck !== undefined && settings.deck !== '') {
+      if (settings.deck !== undefined && settings.deck !== "") {
         switchDeck(settings.deck)
       }
 
@@ -277,7 +277,7 @@ export function createDeckGameStore<
       const settings = baseStore.gameSettings.value
       if (!(card && settings)) return
 
-      if (result === 'correct' || result === 'close') {
+      if (result === "correct" || result === "close") {
         baseStore.handleAnswerBase(result, buildPointsBreakdown(result, card, settings, answerTime))
       }
 
@@ -306,7 +306,7 @@ export function createDeckGameStore<
         points: baseStore.points.value,
         settings,
         correctAnswers: baseStore.correctAnswersCount.value,
-        totalCards
+        totalCards,
       } as unknown as THistory
 
       // Update history and stats in memory only - GameOverPage will save to localStorage
@@ -318,14 +318,14 @@ export function createDeckGameStore<
       storage.setGameResult({
         points: baseStore.points.value,
         correctAnswers: baseStore.correctAnswersCount.value,
-        totalCards
+        totalCards,
       })
 
       // Clear game state from sessionStorage
       storage.clearGameState()
 
       // Clear session mode
-      baseStore.sessionMode.value = 'standard'
+      baseStore.sessionMode.value = "standard"
 
       // Reset in-memory game state to prevent "11/10" bug when starting a new game
       baseStore.resetGameState()
@@ -343,9 +343,9 @@ export function createDeckGameStore<
     function resetCards() {
       storage.clearGameState()
       config.resetCards({
-        setAllCards: cards => {
+        setAllCards: (cards) => {
           baseStore.allCards.value = cards
-        }
+        },
       })
     }
 
@@ -360,7 +360,7 @@ export function createDeckGameStore<
 
     function switchDeck(deckName: string) {
       const decks = storage.loadDecks()
-      const deck = decks.find(d => d.name === deckName)
+      const deck = decks.find((d) => d.name === deckName)
       if (!deck) {
         return
       }
@@ -371,7 +371,7 @@ export function createDeckGameStore<
     function addDeck(name: string): boolean {
       const decks = storage.loadDecks()
       // Check for duplicate name
-      if (decks.some(d => d.name === name)) {
+      if (decks.some((d) => d.name === name)) {
         return false
       }
       decks.push({ name, cards: config.newDeckCards() })
@@ -389,7 +389,7 @@ export function createDeckGameStore<
       if (success && isCurrentDeck) {
         // Active deck was removed, switch to the new default deck
         const newSettings = storage.loadSettings()
-        if (newSettings?.deck !== undefined && newSettings.deck !== '') {
+        if (newSettings?.deck !== undefined && newSettings.deck !== "") {
           switchDeck(newSettings.deck)
         }
       }
@@ -430,7 +430,7 @@ export function createDeckGameStore<
       addDeck,
       removeDeck: removeDeckAndSwitch,
       renameDeck: deckManagement.renameDeck,
-      switchDeck
+      switchDeck,
     }
   }
 }

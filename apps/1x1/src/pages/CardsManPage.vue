@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import type { BaseCard } from '@flashcards/shared'
+import type { BaseCard } from "@flashcards/shared"
 import {
   BG_COLORS,
   LEVEL_COLORS,
   TEXT_DE,
   useCardFiltering,
-  useResetCards
-} from '@flashcards/shared'
+  useResetCards,
+} from "@flashcards/shared"
 import {
   CardsListOfCards,
   CardsManLevelDistribution,
-  CardsTimeHistogram
-} from '@flashcards/shared/components'
-import { getTimeFilterListTitle } from '@flashcards/shared/utils'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  CardsTimeHistogram,
+} from "@flashcards/shared/components"
+import { getTimeFilterListTitle } from "@flashcards/shared/utils"
+import { computed, onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '@/composables/useGameStore'
-import { DEFAULT_RANGE } from '@/constants'
+import { useGameStore } from "@/composables/useGameStore"
+import { DEFAULT_RANGE } from "@/constants"
 import {
   createDefaultCard,
   loadCards,
   loadRange,
   parseCardQuestion,
   saveRange,
-  toggleFeature
-} from '@/services/storage'
-import type { Card } from '@/types'
+  toggleFeature,
+} from "@/services/storage"
+import type { Card } from "@/types"
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
@@ -36,7 +36,7 @@ const range = ref<number[]>([...DEFAULT_RANGE])
 
 // Get virtual cards for current range (includes non-existent cards with defaults)
 const cardsInRange = computed(() => {
-  const cardMap = new Map(cards.value.map(c => [c.question, c]))
+  const cardMap = new Map(cards.value.map((c) => [c.question, c]))
   const virtualCards: Card[] = []
 
   for (const y of range.value) {
@@ -62,7 +62,7 @@ const {
   selectedTimeBucket,
   handleLevelClick,
   handleTimeBucketClick,
-  filteredCards
+  filteredCards,
 } = useCardFiltering(() => cardsInRange.value)
 
 const listTitle = computed(() => {
@@ -102,7 +102,7 @@ const yValues = computed(() => range.value)
 const xValues = computed(() => range.value)
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     goHome()
   }
 }
@@ -110,15 +110,15 @@ function handleKeyDown(event: KeyboardEvent) {
 onMounted(() => {
   cards.value = loadCards()
   range.value = loadRange()
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function getCard(y: number, x: number): Card {
-  const card = cardsInRange.value.find(card => card.question === `${y}x${x}`)
+  const card = cardsInRange.value.find((card) => card.question === `${y}x${x}`)
   if (card) return card
 
   // Fallback to default card (should not be needed as cardsInRange includes all)
@@ -131,7 +131,7 @@ function getCellStyle(y: number, x: number): Record<string, string> {
 
   return {
     backgroundColor: LEVEL_COLORS[card.level] ?? BG_COLORS.disabled,
-    color: '#212121'
+    color: "#212121",
   }
 }
 
@@ -142,7 +142,7 @@ function resetCardsHandler() {
   })
 }
 
-function toggleExtendedFeature(feature: 'feature1x2' | 'feature1x12' | 'feature1x20') {
+function toggleExtendedFeature(feature: "feature1x2" | "feature1x12" | "feature1x20") {
   // Toggle feature by updating range
   const newRange = toggleFeature(range.value, feature)
   range.value = newRange
@@ -150,7 +150,7 @@ function toggleExtendedFeature(feature: 'feature1x2' | 'feature1x12' | 'feature1
 }
 
 function goHome() {
-  void router.push({ name: '/HomePage' })
+  void router.push({ name: "/HomePage" })
 }
 </script>
 
