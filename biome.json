@@ -31,24 +31,16 @@
     "indentWidth": 2,
     "lineEnding": "lf",
     "lineWidth": 100,
-    "bracketSameLine": false,
-    "bracketSpacing": true,
-    "attributePosition": "multiline",
-    "useEditorconfig": true
+    "attributePosition": "multiline"
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "single",
+      "quoteStyle": "double",
       "jsxQuoteStyle": "double",
-      "quoteProperties": "asNeeded",
-      "trailingCommas": "none",
-      "semicolons": "asNeeded",
-      "arrowParentheses": "asNeeded",
-      "bracketSameLine": false,
-      "bracketSpacing": true,
-      "attributePosition": "multiline"
+      "semicolons": "asNeeded"
     }
   },
+
   "html": {
     "formatter": {
       "indentScriptAndStyle": false,
