@@ -5,11 +5,11 @@ import {
   PROD_HOSTNAME,
   STATS_PENDING_STORAGE_KEY,
   TIME_BUCKET_BOUNDS,
-  WEB_STATS_URL
-} from '../constants'
-import { TEXT_DE } from '../text-de'
-import type { DailyBonusConfig } from '../types'
-import { isNumber, isRecord } from './validators'
+  WEB_STATS_URL,
+} from "../constants"
+import { TEXT_DE } from "../text-de"
+import type { DailyBonusConfig } from "../types"
+import { isNumber, isRecord } from "./validators"
 
 /**
  * Get focus type text from focus value
@@ -18,11 +18,11 @@ import { isNumber, isRecord } from './validators'
  */
 export const getFocusText = (focus: string): string => {
   switch (focus) {
-    case 'weak':
+    case "weak":
       return TEXT_DE.shared.focusOptions.weak
-    case 'medium':
+    case "medium":
       return TEXT_DE.shared.focusOptions.medium
-    case 'strong':
+    case "strong":
       return TEXT_DE.shared.focusOptions.strong
     default:
       return TEXT_DE.shared.focusOptions.slow
@@ -44,7 +44,7 @@ export const helperStatsDataRead = async (basePath: string): Promise<number> => 
     }
 
     const respData = await response.json()
-    if (typeof respData.accesscounts === 'number' && respData.accesscounts >= 0) {
+    if (typeof respData.accesscounts === "number" && respData.accesscounts >= 0) {
       return respData.accesscounts
     }
 
@@ -62,7 +62,7 @@ export const helperStatsDataRead = async (basePath: string): Promise<number> => 
 function loadPendingStats(): Record<string, number> {
   try {
     const stored = globalThis.localStorage.getItem(STATS_PENDING_STORAGE_KEY)
-    if (stored === null || stored === '') return {}
+    if (stored === null || stored === "") return {}
     const parsed: unknown = JSON.parse(stored)
     if (!isRecord(parsed)) return {}
     const pending: Record<string, number> = {}
@@ -189,14 +189,14 @@ export const helperStatsDataWrite = async (basePath: string): Promise<void> => {
  */
 export const calculateDailyBonuses = (
   dailyInfo: { isFirstGame: boolean; gamesPlayedToday: number },
-  bonusConfig: DailyBonusConfig
+  bonusConfig: DailyBonusConfig,
 ): Array<{ label: string; points: number }> => {
   const bonuses: Array<{ label: string; points: number }> = []
 
   if (dailyInfo.isFirstGame) {
     bonuses.push({
       label: TEXT_DE.shared.words.firstGameBonus,
-      points: bonusConfig.firstGameBonus
+      points: bonusConfig.firstGameBonus,
     })
   }
 
@@ -207,7 +207,7 @@ export const calculateDailyBonuses = (
   ) {
     bonuses.push({
       label: TEXT_DE.shared.words.streakGameBonus,
-      points: bonusConfig.streakGameBonus
+      points: bonusConfig.streakGameBonus,
     })
   }
 
@@ -285,12 +285,12 @@ export function levenshteinDistance(str1: string, str2: string): number {
  */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString('de-DE', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return date.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   })
 }
 
@@ -322,7 +322,7 @@ export function parseLevel(levelStr: string | undefined): number {
  * Use on card fields at import/entry and on user input before validation.
  */
 export function normalizeWhitespace(str: string): string {
-  return str.trim().replace(/\s+/g, ' ')
+  return str.trim().replace(/\s+/g, " ")
 }
 
 /**

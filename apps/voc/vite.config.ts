@@ -1,13 +1,13 @@
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath } from "node:url"
 
-import { createAppViteConfig } from '../../vite.config.factory.ts'
+import { createAppViteConfig } from "../../vite.config.factory.ts"
 
 export default createAppViteConfig({
-  basePath: 'fc-voc',
+  basePath: "fc-voc",
   appTitle: "Rabat's Vokabeln",
-  description: 'Vokabeln üben mit Rabat dem Fuchs und seinem Lernkastensystem',
-  themeColor: '#f97316',
+  description: "Vokabeln üben mit Rabat dem Fuchs und seinem Lernkastensystem",
+  themeColor: "#f97316",
   serverPort: 5174,
   previewPort: 4174,
-  srcDir: fileURLToPath(new URL('./src', import.meta.url))
+  srcDir: fileURLToPath(new URL("./src", import.meta.url)),
 })

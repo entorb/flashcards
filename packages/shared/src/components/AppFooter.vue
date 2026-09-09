@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { QIcon } from 'quasar'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { QIcon } from "quasar"
+import { onBeforeUnmount, onMounted, ref } from "vue"
 
-import { SHARE_URL } from '../constants'
-import { TEXT_DE } from '../text-de'
-import { helperStatsDataRead } from '../utils/helper'
+import { SHARE_URL } from "../constants"
+import { TEXT_DE } from "../text-de"
+import { helperStatsDataRead } from "../utils/helper"
 
 interface Props {
   basePath: string
@@ -13,7 +13,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const numTotalGamesPlayedByAll = ref<number>(0)
-const shareIcon = ref<string>('share')
+const shareIcon = ref<string>("share")
 const shareLabel = ref<string>(TEXT_DE.shared.cardActions.share)
 const shareButtonTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
@@ -33,7 +33,7 @@ const resetIconAfterDelay = (icon: string) => {
     clearTimeout(shareButtonTimeout.value)
   }
   shareButtonTimeout.value = setTimeout(() => {
-    shareIcon.value = 'share'
+    shareIcon.value = "share"
     shareLabel.value = TEXT_DE.shared.cardActions.share
   }, 10_000)
   shareIcon.value = icon
@@ -43,9 +43,9 @@ const resetIconAfterDelay = (icon: string) => {
 const handleShare = async () => {
   try {
     await navigator.clipboard.writeText(SHARE_URL)
-    resetIconAfterDelay('check')
+    resetIconAfterDelay("check")
   } catch {
-    resetIconAfterDelay('error_outline')
+    resetIconAfterDelay("error_outline")
   }
 }
 </script>

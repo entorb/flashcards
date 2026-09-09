@@ -10,17 +10,17 @@ import {
   isValidBaseSettings,
   MAX_TIME,
   MIN_LEVEL,
-  saveJSON
-} from '@flashcards/shared'
+  saveJSON,
+} from "@flashcards/shared"
 
-import { DEFAULT_RANGE, STORAGE_KEYS } from '@/constants'
-import type { Card, GameHistory, GameSettings } from '@/types'
+import { DEFAULT_RANGE, STORAGE_KEYS } from "@/constants"
+import type { Card, GameHistory, GameSettings } from "@/types"
 
 /** GameSettings shape check: base fields + numeric select array */
 function isValidSettings(value: unknown): boolean {
   if (!(isValidBaseSettings(value) && isRecord(value))) return false
   const { select } = value
-  return Array.isArray(select) && select.every(n => isNumber(n))
+  return Array.isArray(select) && select.every((n) => isNumber(n))
 }
 
 // ============================================================================
@@ -33,9 +33,9 @@ function isValidSettings(value: unknown): boolean {
  * @returns Object with dividend and divisor numbers, or { dividend: 0, divisor: 0 } for invalid input
  */
 export function parseCardQuestion(question: string): { dividend: number; divisor: number } {
-  const [dividendStr, divisorStr] = question.split(':')
-  const dividend = Number.parseInt(dividendStr ?? '', 10) || 0
-  const divisor = Number.parseInt(divisorStr ?? '', 10) || 0
+  const [dividendStr, divisorStr] = question.split(":")
+  const dividend = Number.parseInt(dividendStr ?? "", 10) || 0
+  const divisor = Number.parseInt(divisorStr ?? "", 10) || 0
   return { dividend, divisor }
 }
 
@@ -51,7 +51,7 @@ export function createDefaultCard(dividend: number, divisor: number, answer: num
     question: `${dividend}:${divisor}`,
     answer,
     level: MIN_LEVEL,
-    time: MAX_TIME
+    time: MAX_TIME,
   }
 }
 
@@ -67,7 +67,7 @@ const factory = createAppStorageFactory<Card, GameHistory, GameSettings>({
     const { dividend, divisor } = parseCardQuestion(question)
     const answer = divisor === 0 ? 0 : dividend / divisor
     return createDefaultCard(dividend, divisor, answer)
-  }
+  },
 })
 
 // ============================================================================
@@ -114,7 +114,7 @@ function resolveCard(
   cardMap: Map<string, Card>,
   dividend: number,
   divisor: number,
-  answer: number
+  answer: number,
 ): Card {
   return cardMap.get(question) ?? createDefaultCard(dividend, divisor, answer)
 }
@@ -139,7 +139,7 @@ function generateBaseVirtualCards(cardMap: Map<string, Card>): Card[] {
       } else {
         cards.push(
           resolveCard(`${z}:${x}`, cardMap, z, x, y),
-          resolveCard(`${z}:${y}`, cardMap, z, y, x)
+          resolveCard(`${z}:${y}`, cardMap, z, y, x),
         )
       }
     }
@@ -155,7 +155,7 @@ function generateBaseVirtualCards(cardMap: Map<string, Card>): Card[] {
  */
 function generateExtendedVirtualCards(
   cardMap: Map<string, Card>,
-  baseQuestions: Set<string>
+  baseQuestions: Set<string>,
 ): Card[] {
   const cards: Card[] = []
   const seen = new Set<string>()
@@ -184,16 +184,16 @@ function generateExtendedVirtualCards(
  */
 export function getVirtualCardsForRange(
   range: number[],
-  storedCards: Card[] = factory.loadCards()
+  storedCards: Card[] = factory.loadCards(),
 ): Card[] {
-  const cardMap = new Map(storedCards.map(c => [c.question, c]))
+  const cardMap = new Map(storedCards.map((c) => [c.question, c]))
 
   const baseCards = generateBaseVirtualCards(cardMap)
-  const isExtended = range.some(n => n > 9)
+  const isExtended = range.some((n) => n > 9)
 
   if (!isExtended) return baseCards
 
-  const baseQuestions = new Set(baseCards.map(c => c.question))
+  const baseQuestions = new Set(baseCards.map((c) => c.question))
   const extendedCards = generateExtendedVirtualCards(cardMap, baseQuestions)
 
   return [...baseCards, ...extendedCards]
@@ -208,7 +208,7 @@ export function getVirtualCardsForRange(
  */
 export function toggleFeature50(current: number[]): number[] {
   // Check if extended range is currently active (any number > 9 present)
-  const hasExtended = current.some(n => n > 9)
+  const hasExtended = current.some((n) => n > 9)
 
   if (hasExtended) {
     // Deactivate: revert to default range
@@ -238,7 +238,7 @@ export const {
   saveGameState,
   loadGameState,
   clearGameState,
-  loadRange
+  loadRange,
 } = factory
 
 // Only used in .vue page files
@@ -248,5 +248,5 @@ export const {
   incrementDailyGames,
   saveRange,
   loadSettings,
-  saveSettings
+  saveSettings,
 } = factory

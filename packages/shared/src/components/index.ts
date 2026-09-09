@@ -1,24 +1,24 @@
 // Shared Vue components
 // Export your shared components here
 
-export { default as CardsManPage } from '../pages/CardsManPage.vue'
-export { default as AboutSection } from './AboutSection.vue'
-export { default as AppFooter } from './AppFooter.vue'
-export { default as CardsListOfCards } from './CardsListOfCards.vue'
-export { default as CardManActions } from './CardsManActions.vue'
-export { default as CardsManLevelDistribution } from './CardsManLevelDistribution.vue'
-export { default as CardsTimeHistogram } from './CardsTimeHistogram.vue'
-export { default as GameAnswerFeedback } from './GameAnswerFeedback.vue'
-export { default as GameFeedbackNegative } from './GameFeedbackNegative.vue'
-export { default as GameHeader } from './GameHeader.vue'
-export { default as GameInputSubmit } from './GameInputSubmit.vue'
-export { default as GameNextCardButton } from './GameNextCardButton.vue'
-export { default as GamePointsBreakdown } from './GamePointsBreakdown.vue'
-export { default as GameShowCardQuestion } from './GameShowCardQuestion.vue'
-export { default as HomeDeckSelector } from './HomeDeckSelector.vue'
-export { default as HomeFocusSelector } from './HomeFocusSelector.vue'
-export { default as HomeGameModeButtons } from './HomeGameModeButtons.vue'
-export { default as HomeLevelSelector } from './HomeLevelSelector.vue'
-export { default as HomePageLayout } from './HomePageLayout.vue'
-export { default as HomePwaInstallInfo } from './HomePwaInstallInfo.vue'
-export { default as HomeStatisticsCard } from './HomeStatisticsCard.vue'
+export { default as CardsManPage } from "../pages/CardsManPage.vue"
+export { default as AboutSection } from "./AboutSection.vue"
+export { default as AppFooter } from "./AppFooter.vue"
+export { default as CardsListOfCards } from "./CardsListOfCards.vue"
+export { default as CardManActions } from "./CardsManActions.vue"
+export { default as CardsManLevelDistribution } from "./CardsManLevelDistribution.vue"
+export { default as CardsTimeHistogram } from "./CardsTimeHistogram.vue"
+export { default as GameAnswerFeedback } from "./GameAnswerFeedback.vue"
+export { default as GameFeedbackNegative } from "./GameFeedbackNegative.vue"
+export { default as GameHeader } from "./GameHeader.vue"
+export { default as GameInputSubmit } from "./GameInputSubmit.vue"
+export { default as GameNextCardButton } from "./GameNextCardButton.vue"
+export { default as GamePointsBreakdown } from "./GamePointsBreakdown.vue"
+export { default as GameShowCardQuestion } from "./GameShowCardQuestion.vue"
+export { default as HomeDeckSelector } from "./HomeDeckSelector.vue"
+export { default as HomeFocusSelector } from "./HomeFocusSelector.vue"
+export { default as HomeGameModeButtons } from "./HomeGameModeButtons.vue"
+export { default as HomeLevelSelector } from "./HomeLevelSelector.vue"
+export { default as HomePageLayout } from "./HomePageLayout.vue"
+export { default as HomePwaInstallInfo } from "./HomePwaInstallInfo.vue"
+export { default as HomeStatisticsCard } from "./HomeStatisticsCard.vue"

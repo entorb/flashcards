@@ -3,14 +3,14 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from "@flashcards/shared"
 
 // ============================================================================
 // App-Specific Types
 // ============================================================================
 
 /** Selection type for multiplication tables */
-export type SelectionType = number[] | 'all' | 'x²'
+export type SelectionType = number[] | "all" | "x²"
 
 // ============================================================================
 // Card Definition (extends BaseCard)

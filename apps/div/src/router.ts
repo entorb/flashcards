@@ -1,37 +1,37 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router"
 
 export const router = createRouter({
-  history: createWebHistory('/fc-div/'),
+  history: createWebHistory("/fc-div/"),
   routes: [
     {
-      path: '/',
-      name: '/HomePage',
-      component: async () => import('./pages/HomePage.vue')
+      path: "/",
+      name: "/HomePage",
+      component: async () => import("./pages/HomePage.vue"),
     },
     {
-      path: '/game',
-      name: '/GamePage',
-      component: async () => import('./pages/GamePage.vue')
+      path: "/game",
+      name: "/GamePage",
+      component: async () => import("./pages/GamePage.vue"),
     },
     {
-      path: '/game-over',
-      name: '/GameOverPage',
-      component: async () => import('./pages/GameOverPage.vue')
+      path: "/game-over",
+      name: "/GameOverPage",
+      component: async () => import("./pages/GameOverPage.vue"),
     },
     {
-      path: '/history',
-      name: '/HistoryPage',
-      component: async () => import('./pages/HistoryPage.vue')
+      path: "/history",
+      name: "/HistoryPage",
+      component: async () => import("./pages/HistoryPage.vue"),
     },
     {
-      path: '/cards',
-      name: '/CardsManPage',
-      component: async () => import('./pages/CardsManPage.vue')
+      path: "/cards",
+      name: "/CardsManPage",
+      component: async () => import("./pages/CardsManPage.vue"),
     },
     {
-      path: '/info',
-      name: '/InfoPage',
-      component: async () => import('./pages/InfoPage.vue')
-    }
-  ]
+      path: "/info",
+      name: "/InfoPage",
+      component: async () => import("./pages/InfoPage.vue"),
+    },
+  ],
 })

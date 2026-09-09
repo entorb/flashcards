@@ -1,11 +1,11 @@
 // Feature: game-modes-endless-and-loops, Property 4
 // **Validates: Requirements 5.4**
 
-import { calculatePointsBreakdown, LOOP_COUNT, MAX_TIME } from '@flashcards/shared'
-import * as fc from 'fast-check'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { calculatePointsBreakdown, LOOP_COUNT, MAX_TIME } from "@flashcards/shared"
+import * as fc from "fast-check"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { Card } from '@/types'
+import type { Card } from "@/types"
 
 /**
  * Helper: create a card with a given question string and level.
@@ -30,7 +30,7 @@ async function setup3RoundsMocks(cards: Card[]) {
     cardMap.set(c.question, c)
   }
 
-  vi.doMock('@/services/storage', () => ({
+  vi.doMock("@/services/storage", () => ({
     loadCards: vi.fn(() => cards),
     loadHistory: vi.fn(() => []),
     saveHistory: vi.fn(),
@@ -56,22 +56,22 @@ async function setup3RoundsMocks(cards: Card[]) {
     getGameResult: vi.fn(() => null),
     clearGameResult: vi.fn(),
     parseCardQuestion: vi.fn((question: string) => {
-      const [yStr, xStr] = question.split('x')
+      const [yStr, xStr] = question.split("x")
       return {
-        y: Number.parseInt(yStr ?? '', 10) || 0,
-        x: Number.parseInt(xStr ?? '', 10) || 0
+        y: Number.parseInt(yStr ?? "", 10) || 0,
+        x: Number.parseInt(xStr ?? "", 10) || 0,
       }
-    })
+    }),
   }))
 
-  vi.doMock('@/services/cardSelector', () => ({
+  vi.doMock("@/services/cardSelector", () => ({
     filterCardsAll: vi.fn(() => [...cards]),
     filterCardsBySelection: vi.fn(() => [...cards]),
     filterCardsSquares: vi.fn(() => [...cards]),
-    selectCardsForRound: vi.fn((c: Card[]) => [...c])
+    selectCardsForRound: vi.fn((c: Card[]) => [...c]),
   }))
 
-  const { useGameStore } = await import('./useGameStore')
+  const { useGameStore } = await import("./useGameStore")
   return useGameStore()
 }
 
@@ -81,24 +81,24 @@ async function setup3RoundsMocks(cards: Card[]) {
  */
 const cardsArb = fc
   .integer({ min: 1, max: 5 })
-  .chain(n =>
+  .chain((n) =>
     fc.tuple(
       ...Array.from({ length: n }, (_, i) =>
-        fc.integer({ min: 1, max: 5 }).map(level => makeCard(`${i + 3}x${i + 3}`, level))
-      )
-    )
+        fc.integer({ min: 1, max: 5 }).map((level) => makeCard(`${i + 3}x${i + 3}`, level)),
+      ),
+    ),
   )
 
-describe('useGameStore - 3-rounds mode independent scoring (Property 4)', () => {
-  it('each card appearance is scored independently and total equals sum of individual scores', {
-    timeout: 30_000
+describe("useGameStore - 3-rounds mode independent scoring (Property 4)", () => {
+  it("each card appearance is scored independently and total equals sum of individual scores", {
+    timeout: 30_000,
   }, async () => {
     await fc.assert(
-      fc.asyncProperty(cardsArb, async cards => {
+      fc.asyncProperty(cardsArb, async (cards) => {
         vi.resetModules()
         const store = await setup3RoundsMocks(cards)
 
-        store.startGame({ select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] }, '3-rounds', true)
+        store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] }, "3-rounds", true)
 
         const totalAppearances = cards.length * LOOP_COUNT
         expect(store.gameCards.value).toHaveLength(totalAppearances)
@@ -112,9 +112,9 @@ describe('useGameStore - 3-rounds mode independent scoring (Property 4)', () => 
           if (!card) break
 
           // Parse question to get difficulty (same logic as handleAnswer)
-          const [yStr, xStr] = card.question.split('x')
-          const x = Number.parseInt(xStr ?? '', 10) || 0
-          const y = Number.parseInt(yStr ?? '', 10) || 0
+          const [yStr, xStr] = card.question.split("x")
+          const x = Number.parseInt(xStr ?? "", 10) || 0
+          const y = Number.parseInt(yStr ?? "", 10) || 0
           const difficultyPoints = Math.min(x, y)
 
           // Calculate expected points for this individual appearance
@@ -122,19 +122,19 @@ describe('useGameStore - 3-rounds mode independent scoring (Property 4)', () => 
             difficultyPoints,
             level: card.level,
             timeBonus: false,
-            closeAdjustment: false
+            closeAdjustment: false,
           })
           expectedTotalPoints += breakdown.totalPoints
 
           // Answer correctly with a time that won't trigger time bonus
-          store.handleAnswer('correct', MAX_TIME)
+          store.handleAnswer("correct", MAX_TIME)
           store.nextCard()
         }
 
         // The accumulated store points should equal the sum of individual calculations
         expect(store.points.value).toBe(expectedTotalPoints)
       }),
-      { numRuns: 20 }
+      { numRuns: 20 },
     )
   })
 })

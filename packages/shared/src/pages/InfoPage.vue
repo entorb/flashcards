@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { QIcon } from 'quasar'
+import { QIcon } from "quasar"
 
-import AboutSection from '../components/AboutSection.vue'
+import AboutSection from "../components/AboutSection.vue"
 import {
   FIRST_GAME_BONUS,
   SPEED_BONUS_POINTS,
   STREAK_GAME_BONUS,
-  STREAK_GAME_INTERVAL
-} from '../constants'
-import { TEXT_DE } from '../text-de'
+  STREAK_GAME_INTERVAL,
+} from "../constants"
+import { TEXT_DE } from "../text-de"
 
 defineProps<{
-  appName: '1x1' | 'div' | 'lwk' | 'pum' | 'voc'
+  appName: "1x1" | "div" | "lwk" | "pum" | "voc"
   pointsModeHidden?: number
   pointsModeBlind?: number
   pointsModeTyping?: number

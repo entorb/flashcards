@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { TEXT_DE } from '@flashcards/shared'
-import { computed, ref } from 'vue'
+import { TEXT_DE } from "@flashcards/shared"
+import { computed, ref } from "vue"
 
-import { useEtaStore } from '@/composables/useEtaStore'
+import { useEtaStore } from "@/composables/useEtaStore"
 import {
   calculateTimePerTask as calcTimePerTask,
-  calculateTotalRuntime
-} from '@/utils/measurementCalculations'
-import { formatClockTime, formatDuration } from '@/utils/timeFormatters'
+  calculateTotalRuntime,
+} from "@/utils/measurementCalculations"
+import { formatClockTime, formatDuration } from "@/utils/timeFormatters"
 
-import HourglassIcon from './HourglassIcon.vue'
+import HourglassIcon from "./HourglassIcon.vue"
 
 const store = useEtaStore()
 const inputValue = ref<number | null>(null)
-const inputMode = ref<'completed' | 'remaining'>('completed')
+const inputMode = ref<"completed" | "remaining">("completed")
 
 // Local computed refs for template access
 const sessionData = computed(() => store.sessionData.value)
@@ -21,7 +21,7 @@ const currentCompleted = computed(() => store.currentCompleted.value)
 const progressPercentage = computed(() => store.progressPercentage.value)
 
 const inputIcon = computed(() => {
-  return inputMode.value === 'completed' ? 'check_circle' : 'pending'
+  return inputMode.value === "completed" ? "check_circle" : "pending"
 })
 
 // Validation for input
@@ -30,7 +30,7 @@ const isInputValid = computed(() => {
     return true // No validation when empty
   }
 
-  if (inputMode.value === 'completed') {
+  if (inputMode.value === "completed") {
     // In completed mode: must be > current completed and <= total
     return (
       inputValue.value > currentCompleted.value && inputValue.value <= sessionData.value.totalTasks
@@ -47,7 +47,7 @@ function handleSubmit() {
   }
 
   let completedTasks = inputValue.value
-  if (inputMode.value === 'remaining' && store.sessionData.value) {
+  if (inputMode.value === "remaining" && store.sessionData.value) {
     completedTasks = store.sessionData.value.totalTasks - inputValue.value
   }
 
@@ -69,7 +69,7 @@ function handlePlusOne() {
 }
 
 function toggleMode() {
-  inputMode.value = inputMode.value === 'completed' ? 'remaining' : 'completed'
+  inputMode.value = inputMode.value === "completed" ? "remaining" : "completed"
   inputValue.value = null
 }
 
@@ -82,7 +82,7 @@ const timeEstimate = computed(() => store.getTimeEstimates())
 const remainingTimeFormatted = computed(() => {
   // If all tasks are complete, show 00:00
   if (sessionData.value && store.isComplete()) {
-    return '00:00'
+    return "00:00"
   }
 
   if (!timeEstimate.value) {
@@ -151,7 +151,7 @@ const tableData = computed(() => {
       ...measurement,
       id: originalIndex,
       timePerTask,
-      barWidth: barWidth / 100 // Normalized for q-linear-progress
+      barWidth: barWidth / 100, // Normalized for q-linear-progress
     }
   })
 })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  status: 'close' | 'incorrect'
+  status: "close" | "incorrect"
   userAnswer: string
   correctAnswer: string
 }

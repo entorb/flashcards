@@ -8,7 +8,7 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   smile: false,
   grin: false,
-  size: 60
+  size: 60,
 })
 </script>
 

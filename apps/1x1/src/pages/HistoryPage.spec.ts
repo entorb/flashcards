@@ -2,35 +2,35 @@ import {
   quasarDirectives,
   quasarMocks,
   quasarProvide,
-  quasarStubs
-} from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import { initializeCards } from '@/services/storage'
-import type { GameHistory } from '@/types'
-import HistoryPage from './HistoryPage.vue'
+  quasarStubs,
+} from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { createMemoryHistory, createRouter } from "vue-router"
+import { initializeCards } from "@/services/storage"
+import type { GameHistory } from "@/types"
+import HistoryPage from "./HistoryPage.vue"
 
 const storageMocks = vi.hoisted(() => ({
   loadHistory: vi.fn(() => [] as GameHistory[]),
   loadRange: vi.fn(() => [3, 4, 5, 6, 7, 8, 9]),
-  initializeCards: vi.fn()
+  initializeCards: vi.fn(),
 }))
 
-vi.mock('@/services/storage', () => ({
+vi.mock("@/services/storage", () => ({
   loadHistory: storageMocks.loadHistory,
   loadRange: storageMocks.loadRange,
-  initializeCards: storageMocks.initializeCards
+  initializeCards: storageMocks.initializeCards,
 }))
 
-describe('1x1 HistoryPage', () => {
+describe("1x1 HistoryPage", () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/HomePage', component: { template: '<div>Home</div>' } },
-        { path: '/history', name: '/HistoryPage', component: { template: '<div>History</div>' } }
-      ]
+        { path: "/", name: "/HomePage", component: { template: "<div>Home</div>" } },
+        { path: "/history", name: "/HistoryPage", component: { template: "<div>History</div>" } },
+      ],
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -41,9 +41,9 @@ describe('1x1 HistoryPage', () => {
       directives: quasarDirectives,
       stubs: {
         ...quasarStubs,
-        AppFooter: { template: '<div />' }
-      }
-    }
+        AppFooter: { template: "<div />" },
+      },
+    },
   })
 
   beforeEach(() => {
@@ -53,14 +53,14 @@ describe('1x1 HistoryPage', () => {
     initializeCards()
   })
 
-  it('mounts without errors', async () => {
+  it("mounts without errors", async () => {
     const router = createMockRouter()
     const wrapper = mount(HistoryPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('renders with empty history', async () => {
+  it("renders with empty history", async () => {
     storageMocks.loadHistory.mockReturnValue([])
     const router = createMockRouter()
     const wrapper = mount(HistoryPage, createMountOptions(router))
@@ -69,24 +69,24 @@ describe('1x1 HistoryPage', () => {
     // No history items rendered
     const items = wrapper
       .findAll('[data-cy^="history-game-"]')
-      .filter(el => /^history-game-\d+$/.test(el.attributes('data-cy') ?? ''))
+      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(0)
   })
 
-  it('renders history entries', async () => {
+  it("renders history entries", async () => {
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 42,
         correctAnswers: 8,
-        settings: { select: [3, 4, 5], focus: 'weak', levels: [1, 2, 3, 4, 5] }
+        settings: { select: [3, 4, 5], focus: "weak", levels: [1, 2, 3, 4, 5] },
       },
       {
-        date: '2024-01-14T09:00:00.000Z',
+        date: "2024-01-14T09:00:00.000Z",
         points: 30,
         correctAnswers: 6,
-        settings: { select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] }
-      }
+        settings: { select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -97,18 +97,18 @@ describe('1x1 HistoryPage', () => {
     // Match only top-level items (not sub-elements like history-game-0-points)
     const items = wrapper
       .findAll('[data-cy^="history-game-"]')
-      .filter(el => /^history-game-\d+$/.test(el.attributes('data-cy') ?? ''))
+      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(2)
   })
 
-  it('formatDetails formats array selection as comma-separated numbers', async () => {
+  it("formatDetails formats array selection as comma-separated numbers", async () => {
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 42,
         correctAnswers: 8,
-        settings: { select: [3, 4, 5], focus: 'weak', levels: [1, 2, 3, 4, 5] }
-      }
+        settings: { select: [3, 4, 5], focus: "weak", levels: [1, 2, 3, 4, 5] },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -117,18 +117,18 @@ describe('1x1 HistoryPage', () => {
     await wrapper.vm.$nextTick()
 
     const entry = wrapper.find('[data-cy="history-game-0"]')
-    expect(entry.text()).toContain('3, 4, 5')
+    expect(entry.text()).toContain("3, 4, 5")
   })
 
   it('formatDetails formats "all" selection as min-max range', async () => {
     storageMocks.loadRange.mockReturnValue([3, 4, 5, 6, 7, 8, 9])
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 42,
         correctAnswers: 8,
-        settings: { select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] }
-      }
+        settings: { select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -137,17 +137,17 @@ describe('1x1 HistoryPage', () => {
     await wrapper.vm.$nextTick()
 
     const entry = wrapper.find('[data-cy="history-game-0"]')
-    expect(entry.text()).toContain('3-9')
+    expect(entry.text()).toContain("3-9")
   })
 
-  it('getPoints returns game points', async () => {
+  it("getPoints returns game points", async () => {
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 99,
         correctAnswers: 10,
-        settings: { select: [3, 4], focus: 'slow', levels: [1, 2, 3, 4, 5] }
-      }
+        settings: { select: [3, 4], focus: "slow", levels: [1, 2, 3, 4, 5] },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -155,17 +155,17 @@ describe('1x1 HistoryPage', () => {
     const wrapper = mount(HistoryPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('[data-cy="history-game-0-points"]').text()).toContain('99')
+    expect(wrapper.find('[data-cy="history-game-0-points"]').text()).toContain("99")
   })
 
-  it('getCorrectAnswers returns correct answers as string', async () => {
+  it("getCorrectAnswers returns correct answers as string", async () => {
     const mockHistory: GameHistory[] = [
       {
-        date: '2024-01-15T10:00:00.000Z',
+        date: "2024-01-15T10:00:00.000Z",
         points: 50,
         correctAnswers: 7,
-        settings: { select: [5, 6], focus: 'slow', levels: [1, 2, 3, 4, 5] }
-      }
+        settings: { select: [5, 6], focus: "slow", levels: [1, 2, 3, 4, 5] },
+      },
     ]
     storageMocks.loadHistory.mockReturnValue(mockHistory)
 
@@ -173,32 +173,32 @@ describe('1x1 HistoryPage', () => {
     const wrapper = mount(HistoryPage, createMountOptions(router))
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('[data-cy="history-game-0-correct"]').text()).toContain('7')
+    expect(wrapper.find('[data-cy="history-game-0-correct"]').text()).toContain("7")
   })
 
-  it('back button navigates to home', async () => {
+  it("back button navigates to home", async () => {
     const router = createMockRouter()
-    vi.spyOn(router, 'push')
+    vi.spyOn(router, "push")
     const wrapper = mount(HistoryPage, createMountOptions(router))
     await router.isReady()
 
-    await wrapper.find('[data-cy="back-button"]').trigger('click')
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    await wrapper.find('[data-cy="back-button"]').trigger("click")
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('Escape key navigates to home', async () => {
+  it("Escape key navigates to home", async () => {
     const router = createMockRouter()
-    vi.spyOn(router, 'push')
+    vi.spyOn(router, "push")
     mount(HistoryPage, createMountOptions(router))
     await router.isReady()
 
-    globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
     await Promise.resolve()
 
-    expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+    expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
   })
 
-  it('loads history and range on mount', async () => {
+  it("loads history and range on mount", async () => {
     const router = createMockRouter()
     mount(HistoryPage, createMountOptions(router))
     await router.isReady()

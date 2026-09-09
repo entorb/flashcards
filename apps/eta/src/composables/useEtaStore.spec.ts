@@ -1,22 +1,22 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { calculateRegression, predictRemainingTime } from '@/services/regression'
-import { clearSession, loadSession, saveSession } from '@/services/storage'
-import type { SessionData } from '@/types'
-import { useEtaStore } from './useEtaStore'
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { calculateRegression, predictRemainingTime } from "@/services/regression"
+import { clearSession, loadSession, saveSession } from "@/services/storage"
+import type { SessionData } from "@/types"
+import { useEtaStore } from "./useEtaStore"
 
 // Mock the services
-vi.mock('@/services/regression', () => ({
+vi.mock("@/services/regression", () => ({
   calculateRegression: vi.fn(),
-  predictRemainingTime: vi.fn()
+  predictRemainingTime: vi.fn(),
 }))
 
-vi.mock('@/services/storage', () => ({
+vi.mock("@/services/storage", () => ({
   loadSession: vi.fn(),
   saveSession: vi.fn(),
-  clearSession: vi.fn()
+  clearSession: vi.fn(),
 }))
 
-describe('useEtaStore', () => {
+describe("useEtaStore", () => {
   beforeEach(() => {
     // Reset shared module-level state between tests, then clear mock call counts
     const store = useEtaStore()
@@ -24,8 +24,8 @@ describe('useEtaStore', () => {
     vi.clearAllMocks()
   })
 
-  describe('initialization', () => {
-    it('should initialize with no session', () => {
+  describe("initialization", () => {
+    it("should initialize with no session", () => {
       const store = useEtaStore()
 
       expect(store.isSessionActive.value).toBe(false)
@@ -34,7 +34,7 @@ describe('useEtaStore', () => {
       expect(store.progressPercentage.value).toBe(0)
     })
 
-    it('should not load session when loadSession returns null', () => {
+    it("should not load session when loadSession returns null", () => {
       vi.mocked(loadSession).mockReturnValue(null)
 
       const store = useEtaStore()
@@ -44,11 +44,11 @@ describe('useEtaStore', () => {
       expect(store.sessionData.value).toBeNull()
     })
 
-    it('should load session on initialize', () => {
+    it("should load session on initialize", () => {
       const mockSession: SessionData = {
         totalTasks: 10,
-        startTime: new Date('2024-01-01T10:00:00'),
-        measurements: [{ timestamp: new Date('2024-01-01T10:05:00'), completedTasks: 5 }]
+        startTime: new Date("2024-01-01T10:00:00"),
+        measurements: [{ timestamp: new Date("2024-01-01T10:05:00"), completedTasks: 5 }],
       }
       vi.mocked(loadSession).mockReturnValue(mockSession)
 
@@ -63,8 +63,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('startSession', () => {
-    it('should not start session with invalid totalTasks', () => {
+  describe("startSession", () => {
+    it("should not start session with invalid totalTasks", () => {
       const store = useEtaStore()
       store.resetSession()
 
@@ -78,7 +78,7 @@ describe('useEtaStore', () => {
       expect(store.isSessionActive.value).toBe(false)
     })
 
-    it('should start session with valid totalTasks', () => {
+    it("should start session with valid totalTasks", () => {
       const store = useEtaStore()
 
       store.startSession(10)
@@ -90,8 +90,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('addMeasurement', () => {
-    it('should not add measurement without active session', () => {
+  describe("addMeasurement", () => {
+    it("should not add measurement without active session", () => {
       const store = useEtaStore()
       store.resetSession()
 
@@ -101,7 +101,7 @@ describe('useEtaStore', () => {
       expect(saveSession).not.toHaveBeenCalled()
     })
 
-    it('should not add invalid completedTasks', () => {
+    it("should not add invalid completedTasks", () => {
       const store = useEtaStore()
       store.startSession(10)
 
@@ -110,7 +110,7 @@ describe('useEtaStore', () => {
       expect(saveSession).toHaveBeenCalledTimes(1) // only from startSession
     })
 
-    it('should not add measurement if not greater than current', () => {
+    it("should not add measurement if not greater than current", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(5)
@@ -120,7 +120,7 @@ describe('useEtaStore', () => {
       expect(result).toBe(false)
     })
 
-    it('should add valid measurement', () => {
+    it("should add valid measurement", () => {
       const store = useEtaStore()
       store.startSession(10)
 
@@ -133,8 +133,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('deleteMeasurement', () => {
-    it('should not delete without active session', () => {
+  describe("deleteMeasurement", () => {
+    it("should not delete without active session", () => {
       const store = useEtaStore()
 
       store.deleteMeasurement(0)
@@ -142,7 +142,7 @@ describe('useEtaStore', () => {
       expect(clearSession).not.toHaveBeenCalled()
     })
 
-    it('should not delete invalid index', () => {
+    it("should not delete invalid index", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(5)
@@ -153,7 +153,7 @@ describe('useEtaStore', () => {
       expect(store.sessionData.value?.measurements).toHaveLength(1)
     })
 
-    it('should delete valid measurement', () => {
+    it("should delete valid measurement", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(5)
@@ -165,8 +165,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('resetSession', () => {
-    it('should reset session', () => {
+  describe("resetSession", () => {
+    it("should reset session", () => {
       const store = useEtaStore()
       store.startSession(10)
 
@@ -178,8 +178,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('getTimeEstimates', () => {
-    it('should return null without session', () => {
+  describe("getTimeEstimates", () => {
+    it("should return null without session", () => {
       const store = useEtaStore()
 
       const result = store.getTimeEstimates()
@@ -187,7 +187,7 @@ describe('useEtaStore', () => {
       expect(result).toBeNull()
     })
 
-    it('should return null with insufficient measurements', () => {
+    it("should return null with insufficient measurements", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(5)
@@ -197,11 +197,11 @@ describe('useEtaStore', () => {
       expect(result).toBeNull()
     })
 
-    it('should return estimates with valid data', () => {
+    it("should return estimates with valid data", () => {
       vi.mocked(calculateRegression).mockReturnValue({ slope: 0.1, intercept: 0 })
       vi.mocked(predictRemainingTime).mockReturnValue({
         remainingSeconds: 500,
-        completionTime: new Date('2024-01-01T10:10:00')
+        completionTime: new Date("2024-01-01T10:10:00"),
       })
 
       const store = useEtaStore()
@@ -221,14 +221,14 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('isComplete', () => {
-    it('should return false without session', () => {
+  describe("isComplete", () => {
+    it("should return false without session", () => {
       const store = useEtaStore()
 
       expect(store.isComplete()).toBe(false)
     })
 
-    it('should return false when not complete', () => {
+    it("should return false when not complete", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(5)
@@ -236,7 +236,7 @@ describe('useEtaStore', () => {
       expect(store.isComplete()).toBe(false)
     })
 
-    it('should return true when complete', () => {
+    it("should return true when complete", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(10)
@@ -245,15 +245,15 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('currentCompleted', () => {
-    it('returns 0 when session has no measurements', () => {
+  describe("currentCompleted", () => {
+    it("returns 0 when session has no measurements", () => {
       const store = useEtaStore()
       store.startSession(10)
 
       expect(store.currentCompleted.value).toBe(0)
     })
 
-    it('returns last measurement completedTasks', () => {
+    it("returns last measurement completedTasks", () => {
       vi.useFakeTimers()
       const store = useEtaStore()
       store.startSession(10)
@@ -266,14 +266,14 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('progressPercentage', () => {
-    it('returns 0 when no session', () => {
+  describe("progressPercentage", () => {
+    it("returns 0 when no session", () => {
       const store = useEtaStore()
 
       expect(store.progressPercentage.value).toBe(0)
     })
 
-    it('returns correct percentage after measurement', () => {
+    it("returns correct percentage after measurement", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(5)
@@ -281,7 +281,7 @@ describe('useEtaStore', () => {
       expect(store.progressPercentage.value).toBe(50)
     })
 
-    it('returns 100 when all tasks complete', () => {
+    it("returns 100 when all tasks complete", () => {
       const store = useEtaStore()
       store.startSession(10)
       store.addMeasurement(10)
@@ -290,8 +290,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('getTimeEstimates edge cases', () => {
-    it('returns null when regression returns null', () => {
+  describe("getTimeEstimates edge cases", () => {
+    it("returns null when regression returns null", () => {
       vi.mocked(calculateRegression).mockReturnValue(null)
 
       const store = useEtaStore()
@@ -308,8 +308,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('addMeasurement equal to total tasks', () => {
-    it('allows adding measurement equal to totalTasks (completion)', () => {
+  describe("addMeasurement equal to total tasks", () => {
+    it("allows adding measurement equal to totalTasks (completion)", () => {
       const store = useEtaStore()
       store.startSession(5)
 
@@ -320,8 +320,8 @@ describe('useEtaStore', () => {
     })
   })
 
-  describe('addMeasurement duplicate timestamp guard', () => {
-    it('rejects measurement with same timestamp as last measurement', () => {
+  describe("addMeasurement duplicate timestamp guard", () => {
+    it("rejects measurement with same timestamp as last measurement", () => {
       vi.useFakeTimers()
       const store = useEtaStore()
       store.startSession(10)
@@ -334,7 +334,7 @@ describe('useEtaStore', () => {
       expect(store.sessionData.value?.measurements).toHaveLength(1)
     })
 
-    it('accepts measurement after time has advanced', () => {
+    it("accepts measurement after time has advanced", () => {
       vi.useFakeTimers()
       const store = useEtaStore()
       store.startSession(10)

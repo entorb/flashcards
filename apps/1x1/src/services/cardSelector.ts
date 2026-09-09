@@ -1,8 +1,8 @@
-import type { FocusType } from '@flashcards/shared'
-import { selectCardsByFocus } from '@flashcards/shared'
+import type { FocusType } from "@flashcards/shared"
+import { selectCardsByFocus } from "@flashcards/shared"
 
-import { parseCardQuestion } from '@/services/storage'
-import type { Card } from '@/types'
+import { parseCardQuestion } from "@/services/storage"
+import type { Card } from "@/types"
 
 /**
  * Filter cards by selection (number array)
@@ -12,10 +12,10 @@ import type { Card } from '@/types'
 export function filterCardsBySelection(
   cards: Card[],
   selection: number[],
-  range: Set<number>
+  range: Set<number>,
 ): Card[] {
   const selectSet = new Set(selection)
-  return cards.filter(card => {
+  return cards.filter((card) => {
     const { x, y } = parseCardQuestion(card.question)
     return (selectSet.has(x) || selectSet.has(y)) && range.has(x) && range.has(y)
   })
@@ -26,7 +26,7 @@ export function filterCardsBySelection(
  * Returns cards where x === y within the range
  */
 export function filterCardsSquares(cards: Card[], range: Set<number>): Card[] {
-  return cards.filter(card => {
+  return cards.filter((card) => {
     const { x, y } = parseCardQuestion(card.question)
     return x === y && range.has(x)
   })
@@ -37,7 +37,7 @@ export function filterCardsSquares(cards: Card[], range: Set<number>): Card[] {
  * Both x and y must be in range
  */
 export function filterCardsAll(cards: Card[], range: Set<number>): Card[] {
-  return cards.filter(card => {
+  return cards.filter((card) => {
     const { x, y } = parseCardQuestion(card.question)
     return range.has(x) && range.has(y)
   })
@@ -51,6 +51,6 @@ export function selectCardsForRound(cards: Card[], focus: FocusType, count: numb
   return selectCardsByFocus({
     cards,
     focus,
-    maxCards: count
+    maxCards: count,
   })
 }

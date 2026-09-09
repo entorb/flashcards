@@ -10,11 +10,11 @@ import {
   isValidBaseSettings,
   MAX_TIME,
   MIN_LEVEL,
-  saveJSON
-} from '@flashcards/shared'
+  saveJSON,
+} from "@flashcards/shared"
 
-import { DEFAULT_RANGE, STORAGE_KEYS } from '@/constants'
-import type { Card, GameHistory, GameSettings } from '@/types'
+import { DEFAULT_RANGE, STORAGE_KEYS } from "@/constants"
+import type { Card, GameHistory, GameSettings } from "@/types"
 
 /** GameSettings shape check: base fields + valid select */
 function isValidSettings(value: unknown): boolean {
@@ -23,7 +23,9 @@ function isValidSettings(value: unknown): boolean {
   }
   const { select } = value
   return (
-    select === 'all' || select === 'x²' || (Array.isArray(select) && select.every(n => isNumber(n)))
+    select === "all" ||
+    select === "x²" ||
+    (Array.isArray(select) && select.every((n) => isNumber(n)))
   )
 }
 
@@ -37,9 +39,9 @@ function isValidSettings(value: unknown): boolean {
  * @returns Object with x and y numbers
  */
 export function parseCardQuestion(question: string): { x: number; y: number } {
-  const [yStr, xStr] = question.split('x')
-  const y = Number.parseInt(yStr ?? '', 10) || 0
-  const x = Number.parseInt(xStr ?? '', 10) || 0
+  const [yStr, xStr] = question.split("x")
+  const y = Number.parseInt(yStr ?? "", 10) || 0
+  const x = Number.parseInt(xStr ?? "", 10) || 0
   return { x, y }
 }
 
@@ -54,7 +56,7 @@ export function createDefaultCard(y: number, x: number): Card {
     question: `${y}x${x}`,
     answer: x * y,
     level: MIN_LEVEL,
-    time: MAX_TIME
+    time: MAX_TIME,
   }
 }
 
@@ -69,7 +71,7 @@ const factory = createAppStorageFactory<Card, GameHistory, GameSettings>({
   createCardFromQuestion: (question: string) => {
     const { x, y } = parseCardQuestion(question)
     return createDefaultCard(y, x)
-  }
+  },
 })
 
 // ============================================================================
@@ -101,7 +103,7 @@ export function initializeCards(): Card[] {
  */
 export function getVirtualCardsForRange(range: number[]): Card[] {
   const storedCards = factory.loadCards()
-  const cardMap = new Map(storedCards.map(c => [c.question, c]))
+  const cardMap = new Map(storedCards.map((c) => [c.question, c]))
   const virtualCards: Card[] = []
 
   for (const y of range) {
@@ -129,38 +131,38 @@ export function getVirtualCardsForRange(range: number[]): Card[] {
  */
 export function toggleFeature(
   current: number[],
-  feature: 'feature1x2' | 'feature1x12' | 'feature1x20'
+  feature: "feature1x2" | "feature1x12" | "feature1x20",
 ): number[] {
   const currentSet = new Set(current)
 
   switch (feature) {
-    case 'feature1x2': {
+    case "feature1x2": {
       // Toggle 2 in range
       if (currentSet.has(2)) {
         // Deactivate: remove 2
-        return current.filter(n => n !== 2)
+        return current.filter((n) => n !== 2)
       }
       // Activate: add 2 at beginning
       return [2, ...current]
     }
-    case 'feature1x12': {
+    case "feature1x12": {
       // Toggle 11, 12 in range
       if (currentSet.has(11) || currentSet.has(12)) {
         // Deactivate: remove 11, 12, and also remove 13-20 if present (1x20 depends on 1x12)
-        return current.filter(n => n < 11)
+        return current.filter((n) => n < 11)
       }
       // Activate: add 11, 12
-      const base = current.filter(n => n < 11)
+      const base = current.filter((n) => n < 11)
       return [...base, 11, 12]
     }
-    case 'feature1x20': {
+    case "feature1x20": {
       // Toggle 13-20 in range (and auto-enable 1x12)
       if (currentSet.has(13)) {
         // Deactivate: remove 13-20
-        return current.filter(n => n < 13)
+        return current.filter((n) => n < 13)
       }
       // Activate: add 11-20 (auto-enables 1x12)
-      const base = current.filter(n => n < 11)
+      const base = current.filter((n) => n < 11)
       return [...base, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     }
   }
@@ -192,5 +194,5 @@ export const {
   saveRange,
   loadSettings,
   saveSettings,
-  resetAll
+  resetAll,
 } = factory

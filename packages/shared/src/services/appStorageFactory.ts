@@ -4,16 +4,16 @@
  * Each app provides app-specific config (storage keys, default range, card creation).
  */
 
-import { MAX_TIME, MIN_LEVEL, MIN_TIME } from '../constants'
-import type { BaseCard, CardLevel, GameResult, GameStats, SessionMode } from '../types'
+import { MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants"
+import type { BaseCard, CardLevel, GameResult, GameStats, SessionMode } from "../types"
 import {
   isNumber,
   isRecord,
   isString,
   isValidBaseCard,
   isValidBaseSettings,
-  isValidHistoryEntry
-} from '../utils/validators'
+  isValidHistoryEntry,
+} from "../utils/validators"
 
 import {
   createAppGameStorage,
@@ -22,8 +22,8 @@ import {
   createStatsOperations,
   loadArray,
   loadJSON,
-  saveJSON
-} from './storage'
+  saveJSON,
+} from "./storage"
 
 export interface AppStorageConfig<TCard extends BaseCard> {
   storageKeys: {
@@ -60,7 +60,7 @@ export interface AppGameState<TCard> {
 export function createAppStorageFactory<
   TCard extends BaseCard & { question: string },
   THistory,
-  TSettings extends { levels?: CardLevel[] }
+  TSettings extends { levels?: CardLevel[] },
 >(config: AppStorageConfig<TCard>) {
   const { storageKeys, defaultRange, createCardFromQuestion } = config
 
@@ -75,13 +75,13 @@ export function createAppStorageFactory<
   const isValidRange = (value: unknown): boolean =>
     Array.isArray(value) &&
     value.length > 0 &&
-    value.every(item => isNumber(item) && Number.isInteger(item))
+    value.every((item) => isNumber(item) && Number.isInteger(item))
 
   // Game persistence factory for session storage
   const gamePersistence = createGamePersistence<TSettings, AppGameState<TCard>>(
     storageKeys.GAME_CONFIG,
     storageKeys.GAME_STATE,
-    config.isValidSettings ?? isValidBaseSettings
+    config.isValidSettings ?? isValidBaseSettings,
   )
 
   // History operations
@@ -91,14 +91,14 @@ export function createAppStorageFactory<
   const statsOps = createStatsOperations<GameStats>(storageKeys.STATS, {
     gamesPlayed: 0,
     points: 0,
-    correctAnswers: 0
+    correctAnswers: 0,
   })
 
   // Game storage (result, daily stats, game state clear)
   const gameStorage = createAppGameStorage(
     storageKeys.GAME_RESULT,
     storageKeys.GAME_STATE,
-    storageKeys.DAILY_STATS
+    storageKeys.DAILY_STATS,
   )
 
   // ── Card Operations ─────────────────────────────────────────────────
@@ -113,7 +113,7 @@ export function createAppStorageFactory<
 
   function updateCard(question: string, updates: Partial<TCard>): void {
     const cards = loadCards()
-    const index = cards.findIndex(c => c.question === question)
+    const index = cards.findIndex((c) => c.question === question)
 
     // Clamp time within allowed range
     if (updates.time !== undefined) {
@@ -126,7 +126,7 @@ export function createAppStorageFactory<
       cards.push({
         ...newCard,
         level: updates.level ?? MIN_LEVEL,
-        time: updates.time ?? MAX_TIME
+        time: updates.time ?? MAX_TIME,
       })
     } else {
       // Card exists, update it
@@ -236,7 +236,7 @@ export function createAppStorageFactory<
     return loadJSON<TSettings | null>(
       storageKeys.SETTINGS,
       null,
-      config.isValidSettings ?? isValidBaseSettings
+      config.isValidSettings ?? isValidBaseSettings,
     )
   }
 
@@ -281,6 +281,6 @@ export function createAppStorageFactory<
     saveRange,
     loadSettings,
     saveSettings,
-    resetAll
+    resetAll,
   }
 }

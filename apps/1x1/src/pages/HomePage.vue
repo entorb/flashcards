@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import type { CardLevel, FocusType, SessionMode } from '@flashcards/shared'
-import { ALL_LEVELS, filterByLevels, TEXT_DE } from '@flashcards/shared'
+import type { CardLevel, FocusType, SessionMode } from "@flashcards/shared"
+import { ALL_LEVELS, filterByLevels, TEXT_DE } from "@flashcards/shared"
 import {
   HomeFocusSelector,
   HomeGameModeButtons,
   HomeLevelSelector,
-  HomePageLayout
-} from '@flashcards/shared/components'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  HomePageLayout,
+} from "@flashcards/shared/components"
+import { computed, onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import GroundhogMascot from '@/components/GroundhogMascot.vue'
-import { useGameStore } from '@/composables/useGameStore'
-import { BASE_PATH, DEFAULT_RANGE } from '@/constants'
-import { filterCardsAll, filterCardsBySelection, filterCardsSquares } from '@/services/cardSelector'
+import GroundhogMascot from "@/components/GroundhogMascot.vue"
+import { useGameStore } from "@/composables/useGameStore"
+import { BASE_PATH, DEFAULT_RANGE } from "@/constants"
+import { filterCardsAll, filterCardsBySelection, filterCardsSquares } from "@/services/cardSelector"
 import {
   getVirtualCardsForRange,
   loadGameStats,
   loadRange,
   loadSettings,
-  saveSettings
-} from '@/services/storage'
-import type { SelectionType } from '@/types'
+  saveSettings,
+} from "@/services/storage"
+import type { SelectionType } from "@/types"
 
 const router = useRouter()
 
 const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
 const select = ref<SelectionType>([...DEFAULT_RANGE])
-const focus = ref<FocusType>('weak')
+const focus = ref<FocusType>("weak")
 const range = ref<number[]>([...DEFAULT_RANGE])
 const levels = ref<CardLevel[]>([...ALL_LEVELS])
 
@@ -37,7 +37,7 @@ const selectOptions = computed<number[]>(() => range.value)
 
 // Check if a number is selected
 const isNumberSelected = computed(() => (num: number) => {
-  if (typeof select.value === 'string') return false
+  if (typeof select.value === "string") return false
   if (!Array.isArray(select.value)) return false
   return select.value.includes(num)
 })
@@ -47,10 +47,12 @@ const isNumberSelected = computed(() => (num: number) => {
 const allRowsSelected = computed(() => {
   if (!Array.isArray(select.value)) return false
   const selected = select.value
-  return selectOptions.value.length > 0 && selectOptions.value.every(opt => selected.includes(opt))
+  return (
+    selectOptions.value.length > 0 && selectOptions.value.every((opt) => selected.includes(opt))
+  )
 })
 
-const isSquaresSelected = computed(() => select.value === 'x²' || allRowsSelected.value)
+const isSquaresSelected = computed(() => select.value === "x²" || allRowsSelected.value)
 
 // Compute filtered cards for the current selection
 const basePool = computed(() => {
@@ -58,7 +60,7 @@ const basePool = computed(() => {
   const allAvailableCards = getVirtualCardsForRange(currentRange)
   const rangeSet = new Set(currentRange)
 
-  if (select.value === 'x²') {
+  if (select.value === "x²") {
     return filterCardsSquares(allAvailableCards, rangeSet)
   }
   if (Array.isArray(select.value)) {
@@ -97,41 +99,41 @@ onMounted(() => {
 })
 
 function startGame() {
-  startGameWithMode('standard')
+  startGameWithMode("standard")
 }
 
 function startGameWithMode(mode: SessionMode) {
   const gameConfig = {
     select: select.value,
     focus: focus.value,
-    levels: [...levels.value]
+    levels: [...levels.value],
   }
   saveSettings(gameConfig)
   storeStartGame(gameConfig, mode, true)
-  void router.push({ name: '/GamePage' })
+  void router.push({ name: "/GamePage" })
 }
 
 function goToHistory() {
-  void router.push({ name: '/HistoryPage' })
+  void router.push({ name: "/HistoryPage" })
 }
 
 function goToCards() {
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function goToInfo() {
-  void router.push({ name: '/InfoPage' })
+  void router.push({ name: "/InfoPage" })
 }
 
 function toggleSelect(option: number) {
   // Handle undefined select (should not happen, but defensive)
-  if (!Array.isArray(select.value) && typeof select.value !== 'string') {
+  if (!Array.isArray(select.value) && typeof select.value !== "string") {
     select.value = [option]
     return
   }
 
   // Convert string selections to array first
-  if (typeof select.value === 'string') {
+  if (typeof select.value === "string") {
     select.value = [option]
     return
   }
@@ -139,7 +141,7 @@ function toggleSelect(option: number) {
   // Check if all options in current range are selected
   const allSelected =
     Array.isArray(select.value) &&
-    selectOptions.value.every(opt => (select.value as number[]).includes(opt))
+    selectOptions.value.every((opt) => (select.value as number[]).includes(opt))
 
   if (allSelected && Array.isArray(select.value) && select.value.length > 1) {
     // If all are selected and clicking one number, select only that number
@@ -154,12 +156,12 @@ function toggleSelect(option: number) {
 }
 
 function toggleSquares() {
-  if (select.value === 'x²') {
+  if (select.value === "x²") {
     // If x² is already selected, deselect and go to all in range
     select.value = [...selectOptions.value]
   } else {
     // Select x² mode
-    select.value = 'x²'
+    select.value = "x²"
   }
 }
 </script>

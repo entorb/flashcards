@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref } from "vue"
 
-import ConfigView from './components/ConfigView.vue'
-import EtaInfoPage from './components/EtaInfoPage.vue'
-import TrackingView from './components/TrackingView.vue'
-import { useEtaStore } from './composables/useEtaStore'
+import ConfigView from "./components/ConfigView.vue"
+import EtaInfoPage from "./components/EtaInfoPage.vue"
+import TrackingView from "./components/TrackingView.vue"
+import { useEtaStore } from "./composables/useEtaStore"
 
 const store = useEtaStore()
 const showInfo = ref(false)

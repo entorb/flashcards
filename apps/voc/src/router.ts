@@ -1,47 +1,47 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router"
 
 export const router = createRouter({
-  history: createWebHistory('/fc-voc/'),
+  history: createWebHistory("/fc-voc/"),
   routes: [
     {
-      path: '/',
-      name: '/HomePage',
-      component: async () => import('./pages/HomePage.vue')
+      path: "/",
+      name: "/HomePage",
+      component: async () => import("./pages/HomePage.vue"),
     },
     {
-      path: '/game',
-      name: '/GamePage',
-      component: async () => import('./pages/GamePage.vue')
+      path: "/game",
+      name: "/GamePage",
+      component: async () => import("./pages/GamePage.vue"),
     },
     {
-      path: '/game-over',
-      name: '/GameOverPage',
-      component: async () => import('./pages/GameOverPage.vue')
+      path: "/game-over",
+      name: "/GameOverPage",
+      component: async () => import("./pages/GameOverPage.vue"),
     },
     {
-      path: '/cards',
-      name: '/CardsManPage',
-      component: async () => import('./pages/CardsManPage.vue')
+      path: "/cards",
+      name: "/CardsManPage",
+      component: async () => import("./pages/CardsManPage.vue"),
     },
     {
-      path: '/cards-edit',
-      name: '/CardsEditPage',
-      component: async () => import('./pages/CardsEditPage.vue')
+      path: "/cards-edit",
+      name: "/CardsEditPage",
+      component: async () => import("./pages/CardsEditPage.vue"),
     },
     {
-      path: '/decks-edit',
-      name: '/DecksEditPage',
-      component: async () => import('./pages/DecksEditPage.vue')
+      path: "/decks-edit",
+      name: "/DecksEditPage",
+      component: async () => import("./pages/DecksEditPage.vue"),
     },
     {
-      path: '/history',
-      name: '/HistoryPage',
-      component: async () => import('./pages/HistoryPage.vue')
+      path: "/history",
+      name: "/HistoryPage",
+      component: async () => import("./pages/HistoryPage.vue"),
     },
     {
-      path: '/info',
-      name: '/InfoPage',
-      component: async () => import('./pages/InfoPage.vue')
-    }
-  ]
+      path: "/info",
+      name: "/InfoPage",
+      component: async () => import("./pages/InfoPage.vue"),
+    },
+  ],
 })

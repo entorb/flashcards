@@ -14,10 +14,10 @@ import {
   loadJSON,
   loadSessionJSON,
   saveJSON,
-  saveSessionJSON
-} from '../services/storage'
-import type { DailyBonusConfig, GameResult, GameStats } from '../types'
-import { isValidGameResult, isValidGameStats, isValidHistoryEntry } from '../utils/validators'
+  saveSessionJSON,
+} from "../services/storage"
+import type { DailyBonusConfig, GameResult, GameStats } from "../types"
+import { isValidGameResult, isValidGameStats, isValidHistoryEntry } from "../utils/validators"
 
 export interface GameStateFlowConfig {
   /** localStorage key for game settings */
@@ -41,7 +41,7 @@ export interface GameStateFlowConfig {
 export function initializeGameFlow<TSettings, TCard>(
   config: GameStateFlowConfig,
   settings: TSettings,
-  selectedCards: TCard[]
+  selectedCards: TCard[],
 ): void {
   // Store game settings to localStorage (persists across sessions)
   saveJSON(config.settingsKey, settings)
@@ -66,7 +66,7 @@ export function removeCardFromGame<TCard>(config: GameStateFlowConfig, cardIndex
   const cards = getGameCards<TCard>(config)
   if (cardIndex < 0 || cardIndex >= cards.length) {
     throw new Error(
-      `Internal error in removeCardFromGame: Invalid card index ${cardIndex} (valid range: 0-${cards.length - 1}). This may indicate a bug in the game state management.`
+      `Internal error in removeCardFromGame: Invalid card index ${cardIndex} (valid range: 0-${cards.length - 1}). This may indicate a bug in the game state management.`,
     )
   }
   cards.splice(cardIndex, 1)
@@ -84,7 +84,7 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
   bonusConfig: DailyBonusConfig,
   historyEntry: THistory,
   saveHistoryFn: (history: THistory[]) => void,
-  saveStatsFn: (stats: GameStats) => void
+  saveStatsFn: (stats: GameStats) => void,
 ): {
   bonusPoints: number
   totalPoints: number
@@ -93,7 +93,7 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
   // Get game result from sessionStorage
   const result = loadSessionJSON<GameResult | null>(config.gameResultKey, null, isValidGameResult)
   if (!result) {
-    throw new Error('No game result found in sessionStorage')
+    throw new Error("No game result found in sessionStorage")
   }
 
   // Calculate daily bonuses
@@ -135,6 +135,6 @@ export function transferGameResultsWithBonuses<THistory extends { date: string; 
   return {
     bonusPoints,
     totalPoints: finalPoints,
-    dailyInfo
+    dailyInfo,
   }
 }

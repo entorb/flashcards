@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { DecksEditPage } from '@flashcards/shared/pages'
-import { useRouter } from 'vue-router'
+import { DecksEditPage } from "@flashcards/shared/pages"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '../composables/useGameStore'
+import { useGameStore } from "../composables/useGameStore"
 
 const router = useRouter()
 const { getDecks, addDeck, removeDeck, renameDeck } = useGameStore()
 
 function getNamingPattern() {
-  return { prefix: 'deck_', startIndex: 0 }
+  return { prefix: "deck_", startIndex: 0 }
 }
 
 function handleBack() {
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 </script>
 

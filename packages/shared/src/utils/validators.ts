@@ -5,21 +5,21 @@
  * entries can never crash or poison the app.
  */
 
-import { MAX_LEVEL, MIN_LEVEL } from '../constants'
-import type { CardLevel } from '../types'
+import { MAX_LEVEL, MIN_LEVEL } from "../constants"
+import type { CardLevel } from "../types"
 
 /** Non-null, non-array object */
 export function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
+  return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
 /** Finite number (excludes NaN/Infinity) */
 export function isNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value)
+  return typeof value === "number" && Number.isFinite(value)
 }
 
 export function isString(value: unknown): value is string {
-  return typeof value === 'string'
+  return typeof value === "string"
 }
 
 /** Card level: integer within [MIN_LEVEL, MAX_LEVEL] */
@@ -31,7 +31,7 @@ export function isArrayOfCardLevels(value: unknown): boolean {
   return Array.isArray(value) && value.every(isValidCardLevel)
 }
 
-const FOCUS_TYPES = new Set(['weak', 'medium', 'strong', 'slow'])
+const FOCUS_TYPES = new Set(["weak", "medium", "strong", "slow"])
 
 /** Base card fields: valid level + finite time */
 export function isValidBaseCard(value: unknown): boolean {
@@ -44,7 +44,7 @@ export function isValidBaseCard(value: unknown): boolean {
 export function isValidBaseSettings(value: unknown): boolean {
   if (!isRecord(value)) return false
   const { focus, levels } = value
-  return typeof focus === 'string' && FOCUS_TYPES.has(focus) && isArrayOfCardLevels(levels)
+  return typeof focus === "string" && FOCUS_TYPES.has(focus) && isArrayOfCardLevels(levels)
 }
 
 /** GameStats shape: three numeric counters */

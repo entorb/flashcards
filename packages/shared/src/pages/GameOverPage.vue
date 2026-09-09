@@ -1,15 +1,15 @@
 <script setup lang="ts" generic="T extends BaseGameHistory">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
 import {
   type BaseGameHistory,
   calculateDailyBonuses,
   type DailyBonusConfig,
   type GameResult,
-  helperStatsDataWrite
-} from '../index'
-import { TEXT_DE } from '../text-de'
+  helperStatsDataWrite,
+} from "../index"
+import { TEXT_DE } from "../text-de"
 
 /** @lintignore */
 export interface StorageFunctions<T extends BaseGameHistory> {
@@ -67,13 +67,13 @@ const isMascotGrinning = computed(() => {
 })
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape' || event.key === 'Enter') {
+  if (event.key === "Escape" || event.key === "Enter") {
     goHome()
   }
 }
 
 function hasTotalCards(entry: BaseGameHistory): entry is BaseGameHistory & { totalCards: number } {
-  return 'totalCards' in entry && typeof entry.totalCards === 'number'
+  return "totalCards" in entry && typeof entry.totalCards === "number"
 }
 
 function reconstructResultFromHistory(): GameResult | null {
@@ -83,7 +83,7 @@ function reconstructResultFromHistory(): GameResult | null {
   return {
     points: lastEntry.points,
     correctAnswers: lastEntry.correctAnswers,
-    totalCards: lastEntry.totalCards
+    totalCards: lastEntry.totalCards,
   }
 }
 
@@ -125,7 +125,7 @@ onMounted(async () => {
   // No result found, redirect to home
   if (!result.value) {
     if (router) {
-      await router.push({ name: '/HomePage' })
+      await router.push({ name: "/HomePage" })
     } else {
       globalThis.location.href = `/${props.basePath}/`
     }
@@ -141,13 +141,13 @@ onMounted(async () => {
     applyBonusesAndPersist(result.value)
   }
 
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
   // Update usage stats in DB
   await helperStatsDataWrite(props.basePath)
 })
 
 onUnmounted(() => {
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
 })
 
 function goHome() {
@@ -157,7 +157,7 @@ function goHome() {
   props.storageFunctions.clearGameState()
 
   if (router) {
-    void router.push({ name: '/HomePage' })
+    void router.push({ name: "/HomePage" })
   } else {
     globalThis.location.href = `/${props.basePath}/`
   }

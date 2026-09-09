@@ -1,20 +1,20 @@
-import { defineConfig } from '@playwright/test'
+import { defineConfig } from "@playwright/test"
 
-import basePlaywrightConfig from '../../playwright.config.base'
+import basePlaywrightConfig from "../../playwright.config.base"
 
-import { BASE_PATH } from './src/constants'
+import { BASE_PATH } from "./src/constants"
 
 export default defineConfig({
   ...basePlaywrightConfig,
-  testDir: './playwright/tests',
+  testDir: "./playwright/tests",
   use: {
     ...basePlaywrightConfig.use,
-    baseURL: `http://localhost:5177/${BASE_PATH}/`
+    baseURL: `http://localhost:5177/${BASE_PATH}/`,
   },
   webServer: {
-    command: 'pnpm dev',
+    command: "pnpm dev",
     url: `http://localhost:5177/${BASE_PATH}/`,
     timeout: 120_000,
-    reuseExistingServer: !process.env.CI
-  }
+    reuseExistingServer: !process.env.CI,
+  },
 })

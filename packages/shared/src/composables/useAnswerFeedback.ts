@@ -4,9 +4,9 @@
  * Used by both 1x1 and voc apps for consistent feedback behavior
  */
 
-import { ref } from 'vue'
+import { ref } from "vue"
 
-import type { AnswerStatus } from '../types'
+import type { AnswerStatus } from "../types"
 
 export interface UseAnswerFeedbackOptions {
   /** Duration in milliseconds to auto-close after correct answer */
@@ -115,7 +115,7 @@ export function useAnswerFeedback(options: UseAnswerFeedbackOptions = {}) {
     buttonDisableCountdownInterval = setInterval(() => {
       buttonDisableCountdown.value = Math.max(
         0,
-        buttonDisableCountdown.value - countdownInterval / 1000
+        buttonDisableCountdown.value - countdownInterval / 1000,
       )
     }, countdownInterval)
 
@@ -151,6 +151,6 @@ export function useAnswerFeedback(options: UseAnswerFeedbackOptions = {}) {
     startAutoClose,
     startButtonDisable,
     clearTimers,
-    reset
+    reset,
   }
 }

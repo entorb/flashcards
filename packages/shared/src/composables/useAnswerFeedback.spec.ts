@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useAnswerFeedback } from './useAnswerFeedback'
+import { useAnswerFeedback } from "./useAnswerFeedback"
 
-describe('useAnswerFeedback', () => {
+describe("useAnswerFeedback", () => {
   beforeEach(() => {
     vi.useFakeTimers()
   })
@@ -11,41 +11,41 @@ describe('useAnswerFeedback', () => {
     vi.useRealTimers()
   })
 
-  describe('initial state', () => {
-    it('showFeedback is false', () => {
+  describe("initial state", () => {
+    it("showFeedback is false", () => {
       const { showFeedback } = useAnswerFeedback()
       expect(showFeedback.value).toBe(false)
     })
 
-    it('answerStatus is null', () => {
+    it("answerStatus is null", () => {
       const { answerStatus } = useAnswerFeedback()
       expect(answerStatus.value).toBeNull()
     })
 
-    it('isButtonDisabled is false', () => {
+    it("isButtonDisabled is false", () => {
       const { isButtonDisabled } = useAnswerFeedback()
       expect(isButtonDisabled.value).toBe(false)
     })
 
-    it('feedbackCountdown is 0', () => {
+    it("feedbackCountdown is 0", () => {
       const { feedbackCountdown } = useAnswerFeedback()
       expect(feedbackCountdown.value).toBe(0)
     })
 
-    it('buttonDisableCountdown is 0', () => {
+    it("buttonDisableCountdown is 0", () => {
       const { buttonDisableCountdown } = useAnswerFeedback()
       expect(buttonDisableCountdown.value).toBe(0)
     })
   })
 
-  describe('startAutoClose', () => {
-    it('sets feedbackCountdown to duration in seconds', () => {
+  describe("startAutoClose", () => {
+    it("sets feedbackCountdown to duration in seconds", () => {
       const { feedbackCountdown, startAutoClose } = useAnswerFeedback({ autoCloseDuration: 3000 })
       startAutoClose(vi.fn())
       expect(feedbackCountdown.value).toBe(3)
     })
 
-    it('calls callback after autoCloseDuration', () => {
+    it("calls callback after autoCloseDuration", () => {
       const onAutoClose = vi.fn()
       const { startAutoClose } = useAnswerFeedback({ autoCloseDuration: 2000 })
       startAutoClose(onAutoClose)
@@ -54,7 +54,7 @@ describe('useAnswerFeedback', () => {
       expect(onAutoClose).toHaveBeenCalledOnce()
     })
 
-    it('does not call callback before duration elapses', () => {
+    it("does not call callback before duration elapses", () => {
       const onAutoClose = vi.fn()
       const { startAutoClose } = useAnswerFeedback({ autoCloseDuration: 3000 })
       startAutoClose(onAutoClose)
@@ -62,10 +62,10 @@ describe('useAnswerFeedback', () => {
       expect(onAutoClose).not.toHaveBeenCalled()
     })
 
-    it('decrements feedbackCountdown over time', () => {
+    it("decrements feedbackCountdown over time", () => {
       const { feedbackCountdown, startAutoClose } = useAnswerFeedback({
         autoCloseDuration: 3000,
-        countdownInterval: 100
+        countdownInterval: 100,
       })
       startAutoClose(vi.fn())
       expect(feedbackCountdown.value).toBe(3)
@@ -73,7 +73,7 @@ describe('useAnswerFeedback', () => {
       expect(feedbackCountdown.value).toBeCloseTo(2, 0)
     })
 
-    it('resets feedbackCountdown to 0 after callback fires', () => {
+    it("resets feedbackCountdown to 0 after callback fires", () => {
       const { feedbackCountdown, startAutoClose } = useAnswerFeedback({ autoCloseDuration: 1000 })
       startAutoClose(vi.fn())
       vi.advanceTimersByTime(1000)
@@ -81,26 +81,26 @@ describe('useAnswerFeedback', () => {
     })
   })
 
-  describe('startButtonDisable', () => {
-    it('sets isButtonDisabled to true immediately', () => {
+  describe("startButtonDisable", () => {
+    it("sets isButtonDisabled to true immediately", () => {
       const { isButtonDisabled, startButtonDisable } = useAnswerFeedback({
-        buttonDisableDuration: 3000
+        buttonDisableDuration: 3000,
       })
       startButtonDisable(vi.fn())
       expect(isButtonDisabled.value).toBe(true)
     })
 
-    it('sets buttonDisableCountdown to duration in seconds', () => {
+    it("sets buttonDisableCountdown to duration in seconds", () => {
       const { buttonDisableCountdown, startButtonDisable } = useAnswerFeedback({
-        buttonDisableDuration: 3000
+        buttonDisableDuration: 3000,
       })
       startButtonDisable(vi.fn())
       expect(buttonDisableCountdown.value).toBe(3)
     })
 
-    it('re-enables button after buttonDisableDuration', () => {
+    it("re-enables button after buttonDisableDuration", () => {
       const { isButtonDisabled, startButtonDisable } = useAnswerFeedback({
-        buttonDisableDuration: 2000
+        buttonDisableDuration: 2000,
       })
       startButtonDisable(vi.fn())
       expect(isButtonDisabled.value).toBe(true)
@@ -108,7 +108,7 @@ describe('useAnswerFeedback', () => {
       expect(isButtonDisabled.value).toBe(false)
     })
 
-    it('calls onButtonEnable callback after duration', () => {
+    it("calls onButtonEnable callback after duration", () => {
       const onButtonEnable = vi.fn()
       const { startButtonDisable } = useAnswerFeedback({ buttonDisableDuration: 1500 })
       startButtonDisable(onButtonEnable)
@@ -117,9 +117,9 @@ describe('useAnswerFeedback', () => {
       expect(onButtonEnable).toHaveBeenCalledOnce()
     })
 
-    it('does not re-enable button before duration elapses', () => {
+    it("does not re-enable button before duration elapses", () => {
       const { isButtonDisabled, startButtonDisable } = useAnswerFeedback({
-        buttonDisableDuration: 3000
+        buttonDisableDuration: 3000,
       })
       startButtonDisable(vi.fn())
       vi.advanceTimersByTime(2999)
@@ -127,24 +127,24 @@ describe('useAnswerFeedback', () => {
     })
   })
 
-  describe('reset', () => {
-    it('sets showFeedback to false', () => {
+  describe("reset", () => {
+    it("sets showFeedback to false", () => {
       const { showFeedback, reset } = useAnswerFeedback()
       showFeedback.value = true
       reset()
       expect(showFeedback.value).toBe(false)
     })
 
-    it('sets answerStatus to null', () => {
+    it("sets answerStatus to null", () => {
       const { answerStatus, reset } = useAnswerFeedback()
-      answerStatus.value = 'correct'
+      answerStatus.value = "correct"
       reset()
       expect(answerStatus.value).toBeNull()
     })
 
-    it('sets isButtonDisabled to false', () => {
+    it("sets isButtonDisabled to false", () => {
       const { isButtonDisabled, startButtonDisable, reset } = useAnswerFeedback({
-        buttonDisableDuration: 5000
+        buttonDisableDuration: 5000,
       })
       startButtonDisable(vi.fn())
       expect(isButtonDisabled.value).toBe(true)
@@ -152,7 +152,7 @@ describe('useAnswerFeedback', () => {
       expect(isButtonDisabled.value).toBe(false)
     })
 
-    it('cancels pending autoClose timer', () => {
+    it("cancels pending autoClose timer", () => {
       const onAutoClose = vi.fn()
       const { startAutoClose, reset } = useAnswerFeedback({ autoCloseDuration: 2000 })
       startAutoClose(onAutoClose)
@@ -161,7 +161,7 @@ describe('useAnswerFeedback', () => {
       expect(onAutoClose).not.toHaveBeenCalled()
     })
 
-    it('cancels pending buttonDisable timer', () => {
+    it("cancels pending buttonDisable timer", () => {
       const onButtonEnable = vi.fn()
       const { startButtonDisable, reset } = useAnswerFeedback({ buttonDisableDuration: 2000 })
       startButtonDisable(onButtonEnable)
@@ -170,9 +170,9 @@ describe('useAnswerFeedback', () => {
       expect(onButtonEnable).not.toHaveBeenCalled()
     })
 
-    it('resets feedbackCountdown to 0', () => {
+    it("resets feedbackCountdown to 0", () => {
       const { feedbackCountdown, startAutoClose, reset } = useAnswerFeedback({
-        autoCloseDuration: 3000
+        autoCloseDuration: 3000,
       })
       startAutoClose(vi.fn())
       expect(feedbackCountdown.value).toBe(3)
@@ -180,9 +180,9 @@ describe('useAnswerFeedback', () => {
       expect(feedbackCountdown.value).toBe(0)
     })
 
-    it('resets buttonDisableCountdown to 0', () => {
+    it("resets buttonDisableCountdown to 0", () => {
       const { buttonDisableCountdown, startButtonDisable, reset } = useAnswerFeedback({
-        buttonDisableDuration: 3000
+        buttonDisableDuration: 3000,
       })
       startButtonDisable(vi.fn())
       expect(buttonDisableCountdown.value).toBe(3)
@@ -191,11 +191,11 @@ describe('useAnswerFeedback', () => {
     })
   })
 
-  describe('clearTimers', () => {
-    it('cancels pending autoClose timer without changing showFeedback', () => {
+  describe("clearTimers", () => {
+    it("cancels pending autoClose timer without changing showFeedback", () => {
       const onAutoClose = vi.fn()
       const { showFeedback, startAutoClose, clearTimers } = useAnswerFeedback({
-        autoCloseDuration: 2000
+        autoCloseDuration: 2000,
       })
       showFeedback.value = true
       startAutoClose(onAutoClose)
@@ -205,10 +205,10 @@ describe('useAnswerFeedback', () => {
       expect(showFeedback.value).toBe(true)
     })
 
-    it('cancels pending buttonDisable timer without changing isButtonDisabled', () => {
+    it("cancels pending buttonDisable timer without changing isButtonDisabled", () => {
       const onButtonEnable = vi.fn()
       const { isButtonDisabled, startButtonDisable, clearTimers } = useAnswerFeedback({
-        buttonDisableDuration: 2000
+        buttonDisableDuration: 2000,
       })
       startButtonDisable(onButtonEnable)
       clearTimers()
@@ -218,9 +218,9 @@ describe('useAnswerFeedback', () => {
       expect(isButtonDisabled.value).toBe(true)
     })
 
-    it('resets feedbackCountdown to 0', () => {
+    it("resets feedbackCountdown to 0", () => {
       const { feedbackCountdown, startAutoClose, clearTimers } = useAnswerFeedback({
-        autoCloseDuration: 3000
+        autoCloseDuration: 3000,
       })
       startAutoClose(vi.fn())
       expect(feedbackCountdown.value).toBe(3)
@@ -228,9 +228,9 @@ describe('useAnswerFeedback', () => {
       expect(feedbackCountdown.value).toBe(0)
     })
 
-    it('resets buttonDisableCountdown to 0', () => {
+    it("resets buttonDisableCountdown to 0", () => {
       const { buttonDisableCountdown, startButtonDisable, clearTimers } = useAnswerFeedback({
-        buttonDisableDuration: 3000
+        buttonDisableDuration: 3000,
       })
       startButtonDisable(vi.fn())
       expect(buttonDisableCountdown.value).toBe(3)
@@ -238,11 +238,11 @@ describe('useAnswerFeedback', () => {
       expect(buttonDisableCountdown.value).toBe(0)
     })
 
-    it('does not change answerStatus', () => {
+    it("does not change answerStatus", () => {
       const { answerStatus, clearTimers } = useAnswerFeedback()
-      answerStatus.value = 'incorrect'
+      answerStatus.value = "incorrect"
       clearTimers()
-      expect(answerStatus.value).toBe('incorrect')
+      expect(answerStatus.value).toBe("incorrect")
     })
   })
 })

@@ -1,17 +1,17 @@
-import type { SessionMode } from '@flashcards/shared'
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card, GameSettings } from '@/types'
-import GamePage from './GamePage.vue'
+import type { SessionMode } from "@flashcards/shared"
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { ref } from "vue"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { Card, GameSettings } from "@/types"
+import GamePage from "./GamePage.vue"
 
 const mocks = vi.hoisted(() => ({
   handleAnswer: vi.fn(),
   nextCard: vi.fn(() => false),
   finishGame: vi.fn(),
-  discardGame: vi.fn()
+  discardGame: vi.fn(),
 }))
 
 const storeState = {
@@ -21,10 +21,10 @@ const storeState = {
   currentCard: ref<Card | null>(null),
   gameSettings: ref<GameSettings | null>(null),
   lastPointsBreakdown: ref(null),
-  sessionMode: ref<SessionMode>('standard')
+  sessionMode: ref<SessionMode>("standard"),
 }
 
-vi.mock('@/composables/useGameStore', () => ({
+vi.mock("@/composables/useGameStore", () => ({
   useGameStore: vi.fn(() => ({
     gameCards: storeState.gameCards,
     currentCardIndex: storeState.currentCardIndex,
@@ -36,29 +36,29 @@ vi.mock('@/composables/useGameStore', () => ({
     nextCard: mocks.nextCard,
     finishGame: mocks.finishGame,
     discardGame: mocks.discardGame,
-    lastPointsBreakdown: storeState.lastPointsBreakdown
-  }))
+    lastPointsBreakdown: storeState.lastPointsBreakdown,
+  })),
 }))
 
-vi.mock('@/utils/questionFormatter', () => ({
-  formatDisplayQuestion: vi.fn((q: string) => q.replace(/\+/g, ' + ').replace(/-/g, ' - '))
+vi.mock("@/utils/questionFormatter", () => ({
+  formatDisplayQuestion: vi.fn((q: string) => q.replace(/\+/g, " + ").replace(/-/g, " - ")),
 }))
 
 const NumericGamePageStub = {
-  name: 'NumericGamePage',
+  name: "NumericGamePage",
   template: '<div data-cy="numeric-game-page" />',
-  props: ['store', 'formatQuestion']
+  props: ["store", "formatQuestion"],
 }
 
-describe('pum GamePage', () => {
+describe("pum GamePage", () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/HomePage', component: { template: '<div />' } },
-        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
-        { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
-      ]
+        { path: "/", name: "/HomePage", component: { template: "<div />" } },
+        { path: "/game", name: "/GamePage", component: { template: "<div />" } },
+        { path: "/game-over", name: "/GameOverPage", component: { template: "<div />" } },
+      ],
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -68,20 +68,20 @@ describe('pum GamePage', () => {
       provide: quasarProvide,
       stubs: {
         ...quasarStubs,
-        NumericGamePage: NumericGamePageStub
-      }
-    }
+        NumericGamePage: NumericGamePageStub,
+      },
+    },
   })
 
   const withCard = () => {
-    const card: Card = { question: '7+3', answer: 10, level: 1, time: 60 }
+    const card: Card = { question: "7+3", answer: 10, level: 1, time: 60 }
     storeState.currentCard.value = card
     storeState.gameCards.value = [card]
     storeState.gameSettings.value = {
-      operations: ['plus'],
-      difficulties: ['simple'],
-      focus: 'weak',
-      levels: [1, 2, 3, 4, 5]
+      operations: ["plus"],
+      difficulties: ["simple"],
+      focus: "weak",
+      levels: [1, 2, 3, 4, 5],
     }
     storeState.currentCardIndex.value = 0
   }
@@ -96,11 +96,11 @@ describe('pum GamePage', () => {
     storeState.currentCardIndex.value = 0
     storeState.points.value = 0
     storeState.lastPointsBreakdown.value = null
-    storeState.sessionMode.value = 'standard'
+    storeState.sessionMode.value = "standard"
     mocks.nextCard.mockReturnValue(false)
   })
 
-  it('mounts with valid game state and renders without errors', async () => {
+  it("mounts with valid game state and renders without errors", async () => {
     withCard()
     const router = createMockRouter()
     const wrapper = mount(GamePage, createMountOptions(router))
@@ -108,7 +108,7 @@ describe('pum GamePage', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('renders the NumericGamePage component', async () => {
+  it("renders the NumericGamePage component", async () => {
     withCard()
     const router = createMockRouter()
     const wrapper = mount(GamePage, createMountOptions(router))
@@ -116,23 +116,23 @@ describe('pum GamePage', () => {
     expect(wrapper.find('[data-cy="numeric-game-page"]').exists()).toBe(true)
   })
 
-  it('passes store to NumericGamePage', async () => {
+  it("passes store to NumericGamePage", async () => {
     withCard()
     const router = createMockRouter()
     const wrapper = mount(GamePage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     const ngp = wrapper.findComponent(NumericGamePageStub)
-    expect(ngp.props('store')).toBeDefined()
+    expect(ngp.props("store")).toBeDefined()
   })
 
-  it('passes formatQuestion to NumericGamePage', async () => {
+  it("passes formatQuestion to NumericGamePage", async () => {
     withCard()
     const router = createMockRouter()
     const wrapper = mount(GamePage, createMountOptions(router))
     await wrapper.vm.$nextTick()
     const ngp = wrapper.findComponent(NumericGamePageStub)
-    const formatQuestion = ngp.props('formatQuestion') as (q: string) => string
-    expect(typeof formatQuestion).toBe('function')
-    expect(formatQuestion('7+3')).toBe('7 + 3')
+    const formatQuestion = ngp.props("formatQuestion") as (q: string) => string
+    expect(typeof formatQuestion).toBe("function")
+    expect(formatQuestion("7+3")).toBe("7 + 3")
   })
 })

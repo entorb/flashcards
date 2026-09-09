@@ -1,18 +1,18 @@
-import type { SessionMode } from '@flashcards/shared'
-import { quasarMocks, quasarProvide, quasarStubs } from '@flashcards/shared/test-utils'
-import { mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import type { Card, GameSettings } from '@/types'
-import GamePage from './GamePage.vue'
+import type { SessionMode } from "@flashcards/shared"
+import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
+import { mount } from "@vue/test-utils"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { ref } from "vue"
+import { createMemoryHistory, createRouter } from "vue-router"
+import type { Card, GameSettings } from "@/types"
+import GamePage from "./GamePage.vue"
 
 // Hoisted mock functions (plain vi.fn, no refs here)
 const mocks = vi.hoisted(() => ({
   handleAnswer: vi.fn(),
   nextCard: vi.fn(() => false),
   finishGame: vi.fn(),
-  discardGame: vi.fn()
+  discardGame: vi.fn(),
 }))
 
 // Reactive store state — must be real Vue refs so the component's watch() works
@@ -23,10 +23,10 @@ const storeState = {
   currentCard: ref<Card | null>(null),
   gameSettings: ref<GameSettings | null>(null),
   lastPointsBreakdown: ref(null),
-  sessionMode: ref<SessionMode>('standard')
+  sessionMode: ref<SessionMode>("standard"),
 }
 
-vi.mock('@/composables/useGameStore', () => ({
+vi.mock("@/composables/useGameStore", () => ({
   useGameStore: vi.fn(() => ({
     gameCards: storeState.gameCards,
     currentCardIndex: storeState.currentCardIndex,
@@ -38,19 +38,19 @@ vi.mock('@/composables/useGameStore', () => ({
     nextCard: mocks.nextCard,
     finishGame: mocks.finishGame,
     discardGame: mocks.discardGame,
-    lastPointsBreakdown: storeState.lastPointsBreakdown
-  }))
+    lastPointsBreakdown: storeState.lastPointsBreakdown,
+  })),
 }))
 
-describe('GamePage', () => {
+describe("GamePage", () => {
   const createMockRouter = () =>
     createRouter({
       history: createMemoryHistory(),
       routes: [
-        { path: '/', name: '/HomePage', component: { template: '<div />' } },
-        { path: '/game', name: '/GamePage', component: { template: '<div />' } },
-        { path: '/game-over', name: '/GameOverPage', component: { template: '<div />' } }
-      ]
+        { path: "/", name: "/HomePage", component: { template: "<div />" } },
+        { path: "/game", name: "/GamePage", component: { template: "<div />" } },
+        { path: "/game-over", name: "/GameOverPage", component: { template: "<div />" } },
+      ],
     })
 
   const createMountOptions = (router: ReturnType<typeof createMockRouter>) => ({
@@ -65,43 +65,43 @@ describe('GamePage', () => {
             <span data-cy="card-counter">{{ currentIndex + 1 }} / {{ totalCards }}</span>
             <button data-cy="back-button" @click="$emit('back')">Back</button>
           </div>`,
-          props: ['currentIndex', 'totalCards', 'points'],
-          emits: ['back']
+          props: ["currentIndex", "totalCards", "points"],
+          emits: ["back"],
         },
         GameShowCardQuestion: {
           template: '<div data-cy="question-display">{{ displayQuestion }}</div>',
-          props: ['currentCard', 'displayQuestion', 'showCorrectAnswer']
+          props: ["currentCard", "displayQuestion", "showCorrectAnswer"],
         },
         GameInputSubmit: {
           template: `<div>
             <input data-cy="answer-input" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
             <button data-cy="submit-answer-button" @click="onSubmit()">Submit</button>
           </div>`,
-          props: ['modelValue', 'buttonDisabled', 'onSubmit', 'inputType'],
-          emits: ['update:modelValue']
+          props: ["modelValue", "buttonDisabled", "onSubmit", "inputType"],
+          emits: ["update:modelValue"],
         },
         GameFeedbackNegative: {
           template: '<div data-cy="feedback-negative">{{ userAnswer }} / {{ correctAnswer }}</div>',
-          props: ['status', 'userAnswer', 'correctAnswer']
+          props: ["status", "userAnswer", "correctAnswer"],
         },
         GamePointsBreakdown: {
           template: '<div data-cy="points-breakdown" />',
-          props: ['answerStatus', 'pointsBreakdown']
+          props: ["answerStatus", "pointsBreakdown"],
         },
         GameNextCardButton: {
           template: '<button data-cy="next-card-button" @click="$emit(\'click\')">Next</button>',
-          props: ['answerStatus'],
-          emits: ['click', 'disabledChange']
-        }
-      }
-    }
+          props: ["answerStatus"],
+          emits: ["click", "disabledChange"],
+        },
+      },
+    },
   })
 
   const withCard = () => {
-    const card: Card = { question: '18:3', answer: 6, level: 1, time: 60 }
+    const card: Card = { question: "18:3", answer: 6, level: 1, time: 60 }
     storeState.currentCard.value = card
     storeState.gameCards.value = [card]
-    storeState.gameSettings.value = { select: [3], focus: 'weak', levels: [1, 2, 3, 4, 5] }
+    storeState.gameSettings.value = { select: [3], focus: "weak", levels: [1, 2, 3, 4, 5] }
     storeState.currentCardIndex.value = 0
   }
 
@@ -116,12 +116,12 @@ describe('GamePage', () => {
     storeState.currentCardIndex.value = 0
     storeState.points.value = 0
     storeState.lastPointsBreakdown.value = null
-    storeState.sessionMode.value = 'standard'
+    storeState.sessionMode.value = "standard"
     mocks.nextCard.mockReturnValue(false)
   })
 
-  describe('mounting', () => {
-    it('mounts with valid game state and renders without errors', async () => {
+  describe("mounting", () => {
+    it("mounts with valid game state and renders without errors", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
@@ -129,35 +129,35 @@ describe('GamePage', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('redirects to / when no game cards and no settings', async () => {
+    it("redirects to / when no game cards and no settings", async () => {
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       mount(GamePage, createMountOptions(router))
       await Promise.resolve()
-      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+      expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
     })
 
-    it('does not redirect when game cards are present', async () => {
+    it("does not redirect when game cards are present", async () => {
       withCard()
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       mount(GamePage, createMountOptions(router))
       await Promise.resolve()
       expect(router.push).not.toHaveBeenCalled()
     })
   })
 
-  describe('question display', () => {
+  describe("question display", () => {
     it('shows the formatted division question (e.g., "18 : 3")', async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       expect(wrapper.find('[data-cy="question-display"]').exists()).toBe(true)
-      expect(wrapper.find('[data-cy="question-display"]').text()).toContain('18 : 3')
+      expect(wrapper.find('[data-cy="question-display"]').text()).toContain("18 : 3")
     })
 
-    it('renders answer input when no feedback shown', async () => {
+    it("renders answer input when no feedback shown", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
@@ -167,98 +167,98 @@ describe('GamePage', () => {
     })
   })
 
-  describe('card counter', () => {
-    it('renders card-counter with correct index', async () => {
+  describe("card counter", () => {
+    it("renders card-counter with correct index", async () => {
       withCard()
       storeState.gameCards.value = [
-        { question: '18:3', answer: 6, level: 1, time: 60 },
-        { question: '24:4', answer: 6, level: 1, time: 60 }
+        { question: "18:3", answer: 6, level: 1, time: 60 },
+        { question: "24:4", answer: 6, level: 1, time: 60 },
       ]
       storeState.currentCardIndex.value = 0
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
-      expect(wrapper.find('[data-cy="card-counter"]').text()).toContain('1 / 2')
+      expect(wrapper.find('[data-cy="card-counter"]').text()).toContain("1 / 2")
     })
   })
 
-  describe('submitAnswer', () => {
-    it('shows feedback with correct status when answer is right', async () => {
+  describe("submitAnswer", () => {
+    it("shows feedback with correct status when answer is right", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      await wrapper.find('[data-cy="answer-input"]').setValue('6')
+      await wrapper.find('[data-cy="answer-input"]').setValue("6")
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
-      expect(mocks.handleAnswer).toHaveBeenCalledWith('correct', expect.any(Number))
+      expect(mocks.handleAnswer).toHaveBeenCalledWith("correct", expect.any(Number))
       expect(wrapper.find('[data-cy="next-card-button"]').exists()).toBe(true)
     })
 
-    it('shows feedback with incorrect status when answer is wrong', async () => {
+    it("shows feedback with incorrect status when answer is wrong", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      await wrapper.find('[data-cy="answer-input"]').setValue('5')
+      await wrapper.find('[data-cy="answer-input"]').setValue("5")
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
-      expect(mocks.handleAnswer).toHaveBeenCalledWith('incorrect', expect.any(Number))
+      expect(mocks.handleAnswer).toHaveBeenCalledWith("incorrect", expect.any(Number))
       expect(wrapper.find('[data-cy="feedback-negative"]').exists()).toBe(true)
     })
 
-    it('does not submit when userAnswer is null', async () => {
+    it("does not submit when userAnswer is null", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
       // Click submit without entering a value
-      await wrapper.find('[data-cy="submit-answer-button"]').trigger('click')
+      await wrapper.find('[data-cy="submit-answer-button"]').trigger("click")
       await wrapper.vm.$nextTick()
 
       expect(mocks.handleAnswer).not.toHaveBeenCalled()
     })
   })
 
-  describe('feedback section', () => {
-    it('shows next card button after submitting an answer', async () => {
+  describe("feedback section", () => {
+    it("shows next card button after submitting an answer", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      await wrapper.find('[data-cy="answer-input"]').setValue('6')
+      await wrapper.find('[data-cy="answer-input"]').setValue("6")
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-cy="next-card-button"]').exists()).toBe(true)
     })
 
-    it('hides answer input after submitting', async () => {
+    it("hides answer input after submitting", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      await wrapper.find('[data-cy="answer-input"]').setValue('6')
+      await wrapper.find('[data-cy="answer-input"]').setValue("6")
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-cy="answer-input"]').exists()).toBe(false)
     })
 
-    it('shows negative feedback for incorrect answer', async () => {
+    it("shows negative feedback for incorrect answer", async () => {
       withCard()
       const router = createMockRouter()
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      await wrapper.find('[data-cy="answer-input"]').setValue('5')
+      await wrapper.find('[data-cy="answer-input"]').setValue("5")
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
@@ -266,35 +266,35 @@ describe('GamePage', () => {
     })
   })
 
-  describe('back button', () => {
-    it('calls handleGoHome (discardGame + navigate to /) when back button clicked', async () => {
+  describe("back button", () => {
+    it("calls handleGoHome (discardGame + navigate to /) when back button clicked", async () => {
       withCard()
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      await wrapper.find('[data-cy="back-button"]').trigger('click')
+      await wrapper.find('[data-cy="back-button"]').trigger("click")
       await wrapper.vm.$nextTick()
 
       expect(mocks.discardGame).toHaveBeenCalled()
-      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+      expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
     })
   })
 
-  describe('keyboard navigation', () => {
-    it('navigates home when Escape key is pressed', async () => {
+  describe("keyboard navigation", () => {
+    it("navigates home when Escape key is pressed", async () => {
       withCard()
       const router = createMockRouter()
-      vi.spyOn(router, 'push')
+      vi.spyOn(router, "push")
       const wrapper = mount(GamePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
 
-      globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      globalThis.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
       await wrapper.vm.$nextTick()
 
       expect(mocks.discardGame).toHaveBeenCalled()
-      expect(router.push).toHaveBeenCalledWith({ name: '/HomePage' })
+      expect(router.push).toHaveBeenCalledWith({ name: "/HomePage" })
     })
   })
 })

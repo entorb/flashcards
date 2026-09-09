@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from "vue"
 
-import { TEXT_DE } from '../text-de'
+import { TEXT_DE } from "../text-de"
 
 const isPwaInstalled = ref(false)
 
 onMounted(() => {
   // Detect if running in standalone mode (installed PWA)
   const isStandalone =
-    globalThis.matchMedia('(display-mode: standalone)').matches ||
+    globalThis.matchMedia("(display-mode: standalone)").matches ||
     (globalThis.navigator as Navigator & { standalone?: boolean }).standalone === true
 
   isPwaInstalled.value = isStandalone

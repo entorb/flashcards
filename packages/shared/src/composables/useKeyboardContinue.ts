@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, type Ref } from 'vue'
+import { onMounted, onUnmounted, type Ref } from "vue"
 
 /**
  * Shared composable for handling Enter key to proceed to next card
@@ -13,25 +13,25 @@ export function useKeyboardContinue(canProceed: Ref<boolean>, onContinue: () => 
   function handleKeyDown(event: KeyboardEvent) {
     // Don't trigger if user is typing in an input field
     const target = event.target as HTMLElement
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
       return
     }
 
-    if (event.key === 'Enter' && canProceed.value) {
+    if (event.key === "Enter" && canProceed.value) {
       event.preventDefault()
       onContinue()
     }
   }
 
   onMounted(() => {
-    globalThis.addEventListener('keydown', handleKeyDown)
+    globalThis.addEventListener("keydown", handleKeyDown)
   })
 
   onUnmounted(() => {
-    globalThis.removeEventListener('keydown', handleKeyDown)
+    globalThis.removeEventListener("keydown", handleKeyDown)
   })
 
   return {
-    handleKeyDown
+    handleKeyDown,
   }
 }

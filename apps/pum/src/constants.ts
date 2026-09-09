@@ -2,13 +2,13 @@
  * Central configuration for the pum app
  */
 
-import type { GameStateFlowConfig } from '@flashcards/shared'
-import type { Difficulty, Operation } from './types'
+import type { GameStateFlowConfig } from "@flashcards/shared"
+import type { Difficulty, Operation } from "./types"
 
 /**
  * Base path for the pum app — used in routing, PWA config, and database
  */
-export const BASE_PATH = 'fc-pum'
+export const BASE_PATH = "fc-pum"
 
 // --- Storage Keys ---
 
@@ -17,16 +17,16 @@ export const BASE_PATH = 'fc-pum'
  * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
  */
 export const STORAGE_KEYS = {
-  CARDS: 'fc-pum-cards',
-  HISTORY: 'fc-pum-history',
-  STATS: 'fc-pum-stats',
-  SETTINGS: 'fc-pum-settings',
-  GAME_CONFIG: 'fc-pum-game-config',
-  SELECTED_CARDS: 'fc-pum-selected-cards',
-  GAME_RESULT: 'fc-pum-game-result',
-  DAILY_STATS: 'fc-pum-daily-stats',
-  GAME_STATE: 'fc-pum-game-state',
-  RANGE: 'fc-pum-range'
+  CARDS: "fc-pum-cards",
+  HISTORY: "fc-pum-history",
+  STATS: "fc-pum-stats",
+  SETTINGS: "fc-pum-settings",
+  GAME_CONFIG: "fc-pum-game-config",
+  SELECTED_CARDS: "fc-pum-selected-cards",
+  GAME_RESULT: "fc-pum-game-result",
+  DAILY_STATS: "fc-pum-daily-stats",
+  GAME_STATE: "fc-pum-game-state",
+  RANGE: "fc-pum-range",
 }
 
 // --- Game State Flow Configuration ---
@@ -41,7 +41,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,
-  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS,
 }
 
 // --- Game Logic ---
@@ -58,9 +58,9 @@ export const MAX_CARDS_PER_GAME = 10
 /**
  * Default operations — all operations selected
  */
-export const DEFAULT_OPERATIONS: Operation[] = ['plus', 'minus']
+export const DEFAULT_OPERATIONS: Operation[] = ["plus", "minus"]
 
 /**
  * Default difficulties — all difficulties selected
  */
-export const DEFAULT_DIFFICULTIES: Difficulty[] = ['simple', 'medium', 'advanced']
+export const DEFAULT_DIFFICULTIES: Difficulty[] = ["simple", "medium", "advanced"]

@@ -4,22 +4,22 @@ import {
   isEndlessMode,
   useGameNavigation,
   useGameTimer,
-  useKeyboardContinue
-} from '@flashcards/shared'
+  useKeyboardContinue,
+} from "@flashcards/shared"
 import {
   GameFeedbackNegative,
   GameHeader,
   GameInputSubmit,
   GameNextCardButton,
   GamePointsBreakdown,
-  GameShowCardQuestion
-} from '@flashcards/shared/components'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+  GameShowCardQuestion,
+} from "@flashcards/shared/components"
+import { computed, onMounted, onUnmounted, ref, watch } from "vue"
+import { useRouter } from "vue-router"
 
-import { useGameStore } from '../composables/useGameStore'
-import { WORD_DISPLAY_DURATION } from '../constants'
-import { validateTypingAnswer } from '../utils/helpers'
+import { useGameStore } from "../composables/useGameStore"
+import { WORD_DISPLAY_DURATION } from "../constants"
+import { validateTypingAnswer } from "../utils/helpers"
 
 const router = useRouter()
 const {
@@ -33,15 +33,15 @@ const {
   handleAnswer,
   nextCard,
   finishGame,
-  discardGame
+  discardGame,
 } = useGameStore()
 
 // For endless mode, show remaining cards count (shrinks as cards are removed)
 const totalCardsOverride = computed(() =>
-  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined
+  isEndlessMode(sessionMode.value) ? gameCards.value.length : undefined,
 )
 
-const userInput = ref('')
+const userInput = ref("")
 const showWord = ref(false)
 const countdown = ref(0)
 const isSubmitting = ref(false)
@@ -63,7 +63,7 @@ const { handleNextCard, handleGoHome } = useGameNavigation({
   nextCard,
   finishGame,
   discardGame,
-  router
+  router,
 })
 
 // Track button disabled state for keyboard control
@@ -71,12 +71,12 @@ const isProceedDisabled = ref(false)
 
 // Enable keyboard continue when feedback is shown and button is enabled
 const canProceed = computed(
-  () => showFeedback.value && showProceedButton.value && !isProceedDisabled.value
+  () => showFeedback.value && showProceedButton.value && !isProceedDisabled.value,
 )
 
 // Use the breakdown captured by the store at answer time (before level mutation)
 const pointsBreakdown = computed(() => {
-  if (!answerStatus.value || answerStatus.value === 'incorrect') return null
+  if (!answerStatus.value || answerStatus.value === "incorrect") return null
   return lastPointsBreakdown.value
 })
 
@@ -96,7 +96,7 @@ watch(
     showFeedback.value = false
     showProceedButton.value = false
     answerStatus.value = null
-    userInput.value = ''
+    userInput.value = ""
     isSubmitting.value = false
     isHiddenModeActive.value = false
 
@@ -105,7 +105,7 @@ watch(
       clearTimeout(startHiddenTimeout.value)
       startHiddenTimeout.value = null
     }
-    if (gameSettings.value.mode === 'copy') {
+    if (gameSettings.value.mode === "copy") {
       showWord.value = true
       readyToStart.value = false
     } else {
@@ -118,26 +118,26 @@ watch(
       }, 150)
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Handle Escape key
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
+  if (event.key === "Escape") {
     handleGoHome()
   }
 }
 
 onMounted(() => {
   if (!currentCard.value) {
-    void router.push({ name: '/HomePage' })
+    void router.push({ name: "/HomePage" })
     return
   }
 
   totalCards.value = gameCards.value.length
 
   // Initialize based on mode
-  if (gameSettings.value?.mode === 'copy') {
+  if (gameSettings.value?.mode === "copy") {
     // Copy mode: word always visible, start timer immediately
     showWord.value = true
   } else {
@@ -146,12 +146,12 @@ onMounted(() => {
     readyToStart.value = true
   }
 
-  globalThis.addEventListener('keydown', handleKeyDown)
+  globalThis.addEventListener("keydown", handleKeyDown)
 })
 
 onUnmounted(() => {
   // Clean up keyboard listener
-  globalThis.removeEventListener('keydown', handleKeyDown)
+  globalThis.removeEventListener("keydown", handleKeyDown)
   // Clean up countdown interval if still running
   if (countdownInterval.value !== null) {
     clearInterval(countdownInterval.value)
@@ -195,15 +195,15 @@ function submitAnswer() {
   const result = validateTypingAnswer(userInput.value, currentCard.value.word)
 
   let resultType: AnswerStatus
-  if (result === 'correct') {
-    resultType = 'correct'
-    handleAnswer('correct', answerTime)
-  } else if (result === 'close') {
-    resultType = 'close'
-    handleAnswer('close', answerTime)
+  if (result === "correct") {
+    resultType = "correct"
+    handleAnswer("correct", answerTime)
+  } else if (result === "close") {
+    resultType = "close"
+    handleAnswer("close", answerTime)
   } else {
-    resultType = 'incorrect'
-    handleAnswer('incorrect', answerTime)
+    resultType = "incorrect"
+    handleAnswer("incorrect", answerTime)
   }
 
   // Show feedback

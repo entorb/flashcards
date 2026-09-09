@@ -1,17 +1,17 @@
-import type { MeasurementPoint, RegressionResult, TimeEstimate } from '@/types'
+import type { MeasurementPoint, RegressionResult, TimeEstimate } from "@/types"
 
 /**
  * Convert measurement points to X (seconds) and Y (tasks) arrays for regression
  */
 export function convertToXY(
   measurements: MeasurementPoint[],
-  sessionStartTime: Date
+  sessionStartTime: Date,
 ): { seconds: number[]; tasks: number[] } {
-  const tasks = measurements.map(point => point.completedTasks)
-  const timestampsMs = measurements.map(point => point.timestamp.getTime())
+  const tasks = measurements.map((point) => point.completedTasks)
+  const timestampsMs = measurements.map((point) => point.timestamp.getTime())
   const firstTimestamp = sessionStartTime.getTime()
 
-  const seconds = timestampsMs.map(timestamp => (timestamp - firstTimestamp) / 1000)
+  const seconds = timestampsMs.map((timestamp) => (timestamp - firstTimestamp) / 1000)
   return { seconds, tasks }
 }
 
@@ -31,7 +31,7 @@ export function calculateLinearRegression(X: number[], Y: number[]): RegressionR
   const avgY = sumY / n
 
   const numerator = X.reduce((sum, x, i) => sum + (x - avgX) * ((Y[i] ?? 0) - avgY), 0)
-  const denominator = X.map(x => (x - avgX) ** 2).reduce((prev, curr) => prev + curr, 0)
+  const denominator = X.map((x) => (x - avgX) ** 2).reduce((prev, curr) => prev + curr, 0)
 
   if (denominator === 0) {
     return null
@@ -48,7 +48,7 @@ export function calculateLinearRegression(X: number[], Y: number[]): RegressionR
  */
 export function calculateRegression(
   measurements: MeasurementPoint[],
-  sessionStartTime: Date
+  sessionStartTime: Date,
 ): RegressionResult | null {
   const n = measurements.length
   if (n <= 1) {
@@ -80,7 +80,7 @@ export function calculateRegression(
 export function predictRemainingTime(
   regression: RegressionResult,
   totalTasks: number,
-  currentElapsedSeconds: number
+  currentElapsedSeconds: number,
 ): TimeEstimate | null {
   if (regression.slope <= 0) {
     return null
@@ -93,6 +93,6 @@ export function predictRemainingTime(
 
   return {
     remainingSeconds,
-    completionTime
+    completionTime,
   }
 }

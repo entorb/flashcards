@@ -1,11 +1,11 @@
 // Feature: game-modes-endless-and-loops, Property 2
 // **Validates: Requirements 3.2, 3.3**
 
-import { MIN_LEVEL } from '@flashcards/shared'
-import * as fc from 'fast-check'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { MIN_LEVEL } from "@flashcards/shared"
+import * as fc from "fast-check"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { Card } from '@/types'
+import type { Card } from "@/types"
 
 /**
  * Helper: create a Level 1 card with a given question string.
@@ -32,7 +32,7 @@ async function setupEndlessMocks(cards: Card[]) {
     cardMap.set(c.question, c)
   }
 
-  vi.doMock('@/services/storage', () => ({
+  vi.doMock("@/services/storage", () => ({
     loadCards: vi.fn(() => cards),
     loadHistory: vi.fn(() => []),
     saveHistory: vi.fn(),
@@ -58,22 +58,22 @@ async function setupEndlessMocks(cards: Card[]) {
     getGameResult: vi.fn(() => null),
     clearGameResult: vi.fn(),
     parseCardQuestion: vi.fn((question: string) => {
-      const [yStr, xStr] = question.split('x')
+      const [yStr, xStr] = question.split("x")
       return {
-        y: Number.parseInt(yStr ?? '', 10) || 0,
-        x: Number.parseInt(xStr ?? '', 10) || 0
+        y: Number.parseInt(yStr ?? "", 10) || 0,
+        x: Number.parseInt(xStr ?? "", 10) || 0,
       }
-    })
+    }),
   }))
 
-  vi.doMock('@/services/cardSelector', () => ({
+  vi.doMock("@/services/cardSelector", () => ({
     filterCardsAll: vi.fn(() => [...cards]),
     filterCardsBySelection: vi.fn(() => [...cards]),
     filterCardsSquares: vi.fn(() => [...cards]),
-    selectCardsForRound: vi.fn((c: Card[]) => c)
+    selectCardsForRound: vi.fn((c: Card[]) => c),
   }))
 
-  const { useGameStore } = await import('./useGameStore')
+  const { useGameStore } = await import("./useGameStore")
   return useGameStore()
 }
 
@@ -82,21 +82,21 @@ async function setupEndlessMocks(cards: Card[]) {
  */
 const level1CardsArb = fc
   .integer({ min: 1, max: 20 })
-  .map(n => Array.from({ length: n }, (_, i) => makeLevel1Card(`${i + 3}x${i + 3}`)))
+  .map((n) => Array.from({ length: n }, (_, i) => makeLevel1Card(`${i + 3}x${i + 3}`)))
 
-describe('useGameStore - Endless mode correct/incorrect card removal (Property 2)', () => {
-  it('correct answer removes the answered card, reducing count by 1', {
-    timeout: 30_000
+describe("useGameStore - Endless mode correct/incorrect card removal (Property 2)", () => {
+  it("correct answer removes the answered card, reducing count by 1", {
+    timeout: 30_000,
   }, async () => {
     await fc.assert(
-      fc.asyncProperty(level1CardsArb, async cards => {
+      fc.asyncProperty(level1CardsArb, async (cards) => {
         vi.resetModules()
         const store = await setupEndlessMocks(cards)
 
         store.startGame(
-          { select: 'all', focus: 'weak', levels: [1, 2, 3, 4, 5] },
-          'endless-level1',
-          true
+          { select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] },
+          "endless-level1",
+          true,
         )
 
         const countBefore = store.gameCards.value.length
@@ -106,30 +106,30 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         expect(answeredCard).not.toBeNull()
 
         // Answer correctly — card level gets promoted via mock updateCard
-        store.handleAnswer('correct', 5)
+        store.handleAnswer("correct", 5)
 
         // nextCard should detect the promoted card and remove it
         store.nextCard()
 
         expect(store.gameCards.value).toHaveLength(countBefore - 1)
         // The removed card should no longer be in gameCards
-        const remaining = store.gameCards.value.map(c => c.question)
+        const remaining = store.gameCards.value.map((c) => c.question)
         expect(remaining).not.toContain(answeredCard?.question)
       }),
-      { numRuns: 20 }
+      { numRuns: 20 },
     )
   })
 
-  it('incorrect answer keeps the card, count stays the same', async () => {
+  it("incorrect answer keeps the card, count stays the same", async () => {
     await fc.assert(
-      fc.asyncProperty(level1CardsArb, async cards => {
+      fc.asyncProperty(level1CardsArb, async (cards) => {
         vi.resetModules()
         const store = await setupEndlessMocks(cards)
 
         store.startGame(
-          { select: 'all', focus: 'slow', levels: [1, 2, 3, 4, 5] },
-          'endless-level1',
-          true
+          { select: "all", focus: "slow", levels: [1, 2, 3, 4, 5] },
+          "endless-level1",
+          true,
         )
 
         const countBefore = store.gameCards.value.length
@@ -139,17 +139,17 @@ describe('useGameStore - Endless mode correct/incorrect card removal (Property 2
         expect(answeredCard).not.toBeNull()
 
         // Answer incorrectly — card stays at MIN_LEVEL
-        store.handleAnswer('incorrect', 5)
+        store.handleAnswer("incorrect", 5)
 
         // nextCard should keep the card
         store.nextCard()
 
         expect(store.gameCards.value).toHaveLength(countBefore)
         // The card should still be in gameCards
-        const remaining = store.gameCards.value.map(c => c.question)
+        const remaining = store.gameCards.value.map((c) => c.question)
         expect(remaining).toContain(answeredCard?.question)
       }),
-      { numRuns: 20 }
+      { numRuns: 20 },
     )
   })
 })

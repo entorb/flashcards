@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import type { SessionMode } from '@flashcards/shared'
-import { ALL_LEVELS, filterByLevels, TEXT_DE } from '@flashcards/shared'
+import type { SessionMode } from "@flashcards/shared"
+import { ALL_LEVELS, filterByLevels, TEXT_DE } from "@flashcards/shared"
 import {
   HomeFocusSelector,
   HomeGameModeButtons,
   HomeLevelSelector,
-  HomePageLayout
-} from '@flashcards/shared/components'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+  HomePageLayout,
+} from "@flashcards/shared/components"
+import { computed, onMounted, ref } from "vue"
+import { useRouter } from "vue-router"
 
-import EisiMascot from '../components/EisiMascot.vue'
-import { useGameStore } from '../composables/useGameStore'
-import { BASE_PATH } from '../constants'
-import { clearGameConfig, clearGameState, loadSettings, saveSettings } from '../services/storage'
-import type { GameSettings } from '../types'
+import EisiMascot from "../components/EisiMascot.vue"
+import { useGameStore } from "../composables/useGameStore"
+import { BASE_PATH } from "../constants"
+import { clearGameConfig, clearGameState, loadSettings, saveSettings } from "../services/storage"
+import type { GameSettings } from "../types"
 
 const router = useRouter()
 const { gameStats, startGame: startGameStore, getDecks, switchDeck, allCards } = useGameStore()
 
 const settings = ref<GameSettings>({
-  mode: 'copy',
-  focus: 'weak',
-  deck: '', // Will be set in onMounted
-  levels: [...ALL_LEVELS]
+  mode: "copy",
+  focus: "weak",
+  deck: "", // Will be set in onMounted
+  levels: [...ALL_LEVELS],
 })
 
 const deckOptions = ref<{ label: string; value: string }[]>([])
@@ -32,39 +32,39 @@ const deckOptions = ref<{ label: string; value: string }[]>([])
 const levelFilteredCards = computed(() => filterByLevels(allCards.value, settings.value.levels))
 
 const hasLevel1Or2Cards = computed<boolean>(() =>
-  levelFilteredCards.value.some(card => card.level < 3)
+  levelFilteredCards.value.some((card) => card.level < 3),
 )
 
 const modeOptions = computed(() => [
   {
     label: TEXT_DE.lwk.mode.copy,
-    value: 'copy' as const,
-    icon: 'edit',
+    value: "copy" as const,
+    icon: "edit",
     disable: !hasLevel1Or2Cards.value,
-    tooltip: hasLevel1Or2Cards.value ? undefined : TEXT_DE.lwk.mode.tooGoodForCopy
+    tooltip: hasLevel1Or2Cards.value ? undefined : TEXT_DE.lwk.mode.tooGoodForCopy,
   },
   {
     label: TEXT_DE.lwk.mode.hidden,
-    value: 'hidden' as const,
-    icon: 'visibility_off'
-  }
+    value: "hidden" as const,
+    icon: "visibility_off",
+  },
 ])
 
 onMounted(() => {
   // Refresh deck list and options
   const loadedDecks = getDecks()
-  deckOptions.value = loadedDecks.map(deck => ({
+  deckOptions.value = loadedDecks.map((deck) => ({
     label: deck.name,
-    value: deck.name
+    value: deck.name,
   }))
 
   // Load last settings if available and validate deck
   const lastSettings = loadSettings()
-  if (lastSettings && loadedDecks.some(d => d.name === lastSettings.deck)) {
+  if (lastSettings && loadedDecks.some((d) => d.name === lastSettings.deck)) {
     settings.value = { ...settings.value, ...lastSettings }
   } else if (loadedDecks.length > 0) {
     // Default to first deck if no valid saved settings or deck is invalid
-    settings.value.deck = loadedDecks[0]?.name ?? ''
+    settings.value.deck = loadedDecks[0]?.name ?? ""
     // Save settings to ensure deck info is persisted for card operations
     saveSettings(settings.value)
   }
@@ -86,8 +86,8 @@ function handleDeckChange(deckName: string) {
 
 function ensureValidMode() {
   // Automatically switch to hidden if copy mode is disabled
-  if (settings.value.mode === 'copy' && !hasLevel1Or2Cards.value) {
-    settings.value.mode = 'hidden'
+  if (settings.value.mode === "copy" && !hasLevel1Or2Cards.value) {
+    settings.value.mode = "hidden"
   }
 }
 
@@ -97,23 +97,23 @@ function startGameWithMode(mode: SessionMode) {
   clearGameConfig()
   saveSettings(settings.value)
   startGameStore(settings.value, mode)
-  void router.push({ name: '/GamePage' })
+  void router.push({ name: "/GamePage" })
 }
 
 function startGame() {
-  startGameWithMode('standard')
+  startGameWithMode("standard")
 }
 
 function goToHistory() {
-  void router.push({ name: '/HistoryPage' })
+  void router.push({ name: "/HistoryPage" })
 }
 
 function goToCards() {
-  void router.push({ name: '/CardsManPage' })
+  void router.push({ name: "/CardsManPage" })
 }
 
 function goToInfo() {
-  void router.push({ name: '/InfoPage' })
+  void router.push({ name: "/InfoPage" })
 }
 </script>
 

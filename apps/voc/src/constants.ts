@@ -2,14 +2,14 @@
  * Central configuration for the voc app
  */
 
-import type { GameStateFlowConfig } from '@flashcards/shared'
+import type { GameStateFlowConfig } from "@flashcards/shared"
 
-import type { Card } from './types'
+import type { Card } from "./types"
 
 /**
  * Base path for the voc app — used in routing, PWA config, and database
  */
-export const BASE_PATH = 'fc-voc'
+export const BASE_PATH = "fc-voc"
 
 // --- Storage Keys ---
 
@@ -18,14 +18,14 @@ export const BASE_PATH = 'fc-voc'
  * Key naming: UPPERCASE_WITH_UNDERSCORES for constant names, lowercase-with-hyphens for actual keys
  */
 export const STORAGE_KEYS = {
-  CARDS: 'fc-voc-cards',
-  HISTORY: 'fc-voc-history',
-  SETTINGS: 'fc-voc-settings',
-  STATS: 'fc-voc-stats',
-  DAILY_STATS: 'fc-voc-daily-stats',
-  GAME_STATE: 'fc-voc-game-state',
-  GAME_SETTINGS: 'fc-voc-game-settings',
-  GAME_RESULT: 'fc-voc-game-result'
+  CARDS: "fc-voc-cards",
+  HISTORY: "fc-voc-history",
+  SETTINGS: "fc-voc-settings",
+  STATS: "fc-voc-stats",
+  DAILY_STATS: "fc-voc-daily-stats",
+  GAME_STATE: "fc-voc-game-state",
+  GAME_SETTINGS: "fc-voc-game-settings",
+  GAME_RESULT: "fc-voc-game-result",
 }
 
 // --- Game State Flow Configuration ---
@@ -40,7 +40,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
   gameResultKey: STORAGE_KEYS.GAME_RESULT,
   historyKey: STORAGE_KEYS.HISTORY,
   statsKey: STORAGE_KEYS.STATS,
-  dailyStatsKey: STORAGE_KEYS.DAILY_STATS
+  dailyStatsKey: STORAGE_KEYS.DAILY_STATS,
 }
 
 // --- Game Logic ---
@@ -81,16 +81,16 @@ export const LANGUAGE_BONUS_DE_VOC = 1
  * Initial cards for new users
  */
 export const INITIAL_CARDS: Card[] = [
-  { voc: 'Where', de: 'Wo', level: 1, time: 60 },
-  { voc: 'Who', de: 'Wer', level: 1, time: 60 },
-  { voc: 'What', de: 'Was', level: 2, time: 60 },
-  { voc: 'Why', de: 'Warum', level: 2, time: 60 },
-  { voc: 'When', de: 'Wann', level: 3, time: 60 },
-  { voc: 'How', de: 'Wie', level: 3, time: 60 },
-  { voc: 'Which', de: 'Welche/Welcher/Welches', level: 4, time: 60 },
-  { voc: 'From where', de: 'Woher', level: 4, time: 60 },
-  { voc: 'Where to', de: 'Wohin', level: 5, time: 60 },
-  { voc: 'How much', de: 'Wie viel', level: 5, time: 60 }
+  { voc: "Where", de: "Wo", level: 1, time: 60 },
+  { voc: "Who", de: "Wer", level: 1, time: 60 },
+  { voc: "What", de: "Was", level: 2, time: 60 },
+  { voc: "Why", de: "Warum", level: 2, time: 60 },
+  { voc: "When", de: "Wann", level: 3, time: 60 },
+  { voc: "How", de: "Wie", level: 3, time: 60 },
+  { voc: "Which", de: "Welche/Welcher/Welches", level: 4, time: 60 },
+  { voc: "From where", de: "Woher", level: 4, time: 60 },
+  { voc: "Where to", de: "Wohin", level: 5, time: 60 },
+  { voc: "How much", de: "Wie viel", level: 5, time: 60 },
 ]
 
 /**
@@ -99,7 +99,7 @@ export const INITIAL_CARDS: Card[] = [
  */
 export const DEFAULT_DECKS = [
   {
-    name: 'en',
-    cards: INITIAL_CARDS
-  }
+    name: "en",
+    cards: INITIAL_CARDS,
+  },
 ]

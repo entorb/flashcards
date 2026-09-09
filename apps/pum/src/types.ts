@@ -3,14 +3,14 @@
  * Extends shared types from @flashcards/shared with app-specific types
  */
 
-import type { BaseCard, BaseGameHistory, BaseGameSettings } from '@flashcards/shared'
+import type { BaseCard, BaseGameHistory, BaseGameSettings } from "@flashcards/shared"
 
 // ============================================================================
 // Operations and Difficulties
 // ============================================================================
 
-export type Operation = 'plus' | 'minus'
-export type Difficulty = 'simple' | 'medium' | 'advanced'
+export type Operation = "plus" | "minus"
+export type Difficulty = "simple" | "medium" | "advanced"
 
 // ============================================================================
 // Card Definition (extends BaseCard)

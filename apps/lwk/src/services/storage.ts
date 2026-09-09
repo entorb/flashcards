@@ -3,25 +3,25 @@
  * Handles localStorage operations for decks, cards, history, settings, and stats
  */
 
-import type { GameResult, SessionMode } from '@flashcards/shared'
+import type { GameResult, SessionMode } from "@flashcards/shared"
 import {
   createAppGameStorage,
   createGamePersistence,
   createHistoryOperations,
   createStatsOperations,
   loadJSON,
-  saveJSON
-} from '@flashcards/shared'
+  saveJSON,
+} from "@flashcards/shared"
 import {
   isRecord,
   isString,
   isValidBaseCard,
   isValidBaseSettings,
-  isValidHistoryEntry
-} from '@flashcards/shared/utils'
+  isValidHistoryEntry,
+} from "@flashcards/shared/utils"
 
-import { DEFAULT_DECKS, STORAGE_KEYS } from '../constants'
-import type { Card, CardDeck, GameHistory, GameSettings } from '../types'
+import { DEFAULT_DECKS, STORAGE_KEYS } from "../constants"
+import type { Card, CardDeck, GameHistory, GameSettings } from "../types"
 
 /** Card shape check: word string + valid BaseCard level/time */
 function isValidCard(value: unknown): boolean {
@@ -42,8 +42,8 @@ function isValidSettings(value: unknown): boolean {
   if (!(isValidBaseSettings(value) && isRecord(value))) return false
   const { mode, deck } = value
   return (
-    typeof mode === 'string' &&
-    ['copy', 'hidden'].includes(mode) &&
+    typeof mode === "string" &&
+    ["copy", "hidden"].includes(mode) &&
     (deck === undefined || isString(deck))
   )
 }
@@ -62,7 +62,7 @@ interface GameState {
 const gamePersistence = createGamePersistence<GameSettings, GameState>(
   STORAGE_KEYS.SELECTED_CARDS,
   STORAGE_KEYS.GAME_STATE,
-  isValidSettings
+  isValidSettings,
 )
 
 // ============================================================================
@@ -75,7 +75,7 @@ const gamePersistence = createGamePersistence<GameSettings, GameState>(
  */
 export function loadDecks(): CardDeck[] {
   const stored = localStorage.getItem(STORAGE_KEYS.DECKS)
-  if (stored === null || stored === '') {
+  if (stored === null || stored === "") {
     saveDecks(DEFAULT_DECKS)
     return DEFAULT_DECKS
   }
@@ -109,7 +109,7 @@ export function saveDecks(decks: CardDeck[]): void {
 function getCurrentDeckName(): string {
   const settings = loadSettings()
   const firstDeck = DEFAULT_DECKS[0]
-  return settings?.deck ?? (firstDeck ? firstDeck.name : '')
+  return settings?.deck ?? (firstDeck ? firstDeck.name : "")
 }
 
 // ============================================================================
@@ -121,7 +121,7 @@ function getCurrentDeckName(): string {
  */
 export function loadCards(): Card[] {
   const decks = loadDecks()
-  const deck = decks.find(d => d.name === getCurrentDeckName())
+  const deck = decks.find((d) => d.name === getCurrentDeckName())
   return deck?.cards ?? []
 }
 
@@ -130,7 +130,7 @@ export function loadCards(): Card[] {
  */
 export function saveCards(cards: Card[]): void {
   const decks = loadDecks()
-  const deckIndex = decks.findIndex(d => d.name === getCurrentDeckName())
+  const deckIndex = decks.findIndex((d) => d.name === getCurrentDeckName())
   if (deckIndex !== -1) {
     const deck = decks[deckIndex]
     if (deck) {
@@ -161,7 +161,7 @@ export function saveHistory(history: GameHistory[]): void {
 const DEFAULT_STATS = {
   gamesPlayed: 0,
   points: 0,
-  correctAnswers: 0
+  correctAnswers: 0,
 }
 
 const statsOps = createStatsOperations(STORAGE_KEYS.STATS, DEFAULT_STATS)
@@ -206,7 +206,7 @@ export const loadGameState = gamePersistence.loadState
 const gameStorage = createAppGameStorage(
   STORAGE_KEYS.GAME_RESULT,
   STORAGE_KEYS.GAME_STATE,
-  STORAGE_KEYS.DAILY_STATS
+  STORAGE_KEYS.DAILY_STATS,
 )
 
 export const { clearGameState } = gameStorage

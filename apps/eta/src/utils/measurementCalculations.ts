@@ -2,7 +2,7 @@
  * Measurement calculation utilities
  */
 
-import type { MeasurementPoint, SessionData } from '@/types'
+import type { MeasurementPoint, SessionData } from "@/types"
 
 /**
  * Calculate time per task for a specific measurement
@@ -14,7 +14,7 @@ import type { MeasurementPoint, SessionData } from '@/types'
 export function calculateTimePerTask(
   measurements: MeasurementPoint[],
   sessionStartTime: Date,
-  index: number
+  index: number,
 ): number | null {
   const current = measurements[index]
   if (!current) {
