@@ -16,8 +16,8 @@ console.warn = (...args: unknown[]) => {
   originalWarn(...args)
 }
 
-globalThis.localStorage = new LocalStorageMock()
-globalThis.sessionStorage = new LocalStorageMock()
+vi.stubGlobal("localStorage", new LocalStorageMock())
+vi.stubGlobal("sessionStorage", new LocalStorageMock())
 
 // Mock matchMedia
 Object.defineProperty(globalThis, "matchMedia", {
