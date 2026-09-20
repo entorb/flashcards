@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "vite build",
-    "cy:open": "cypress open --e2e",
-    "cy:run": "cypress run --e2e --quiet",
+    "cy:open": "cypress open --e2e --browser chrome",
+    "cy:run": "cypress run --e2e --quiet --browser chrome",
     "dev": "vite",
     "pw:open": "playwright test --ui",
     "pw:run": "playwright test",
@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@flashcards/shared": "workspace:*",
-    "@quasar/extras": "^2.0.3",
-    "quasar": "^2.24.0",
-    "vue": "^3.5.41"
+    "@quasar/extras": "^2.1.0",
+    "quasar": "^2.32.3",
+    "vue": "^3.5.42"
   }
 }
