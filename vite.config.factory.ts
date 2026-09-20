@@ -23,6 +23,7 @@ export function createAppViteConfig(config: AppConfig) {
     defineConfig({
       base: `/${config.basePath}/`,
       server: {
+        host: true,
         port: config.serverPort,
         strictPort: true,
       },
