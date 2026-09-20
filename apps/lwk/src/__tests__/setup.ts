@@ -3,8 +3,8 @@
 import { LocalStorageMock } from "@flashcards/shared"
 import { vi } from "vitest"
 
-globalThis.localStorage = new LocalStorageMock()
-globalThis.sessionStorage = new LocalStorageMock()
+vi.stubGlobal("localStorage", new LocalStorageMock())
+vi.stubGlobal("sessionStorage", new LocalStorageMock())
 
 // Mock matchMedia
 Object.defineProperty(globalThis, "matchMedia", {
