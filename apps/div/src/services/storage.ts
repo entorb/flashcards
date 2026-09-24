@@ -120,103 +120,32 @@ function resolveCard(
 }
 
 /**
- * Valid divisors for extended ≤50 mode
+ * Generate virtual cards for all triples X ≤ Y in [2,9] (Z = X × Y)
+ * Non-square triples yield two cards, square triples one (64 total)
  */
-const EXTENDED_DIVISORS = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12]
-
-/**
- * Generate base virtual cards for all triples where X ≤ Y and both are in [2,9]
- * Non-square triples (X < Y) yield two cards, square triples (X = Y) yield one card
- */
-function generateBaseVirtualCards(cardMap: Map<string, Card>): Card[] {
+export function getVirtualCards(storedCards: Card[] = factory.loadCards()): Card[] {
+  const cardMap = new Map(storedCards.map((c) => [c.question, c]))
   const cards: Card[] = []
 
   for (let x = 2; x <= 9; x++) {
     for (let y = x; y <= 9; y++) {
       const z = x * y
-      if (x === y) {
-        cards.push(resolveCard(`${z}:${x}`, cardMap, z, x, x))
-      } else {
-        cards.push(
-          resolveCard(`${z}:${x}`, cardMap, z, x, y),
-          resolveCard(`${z}:${y}`, cardMap, z, y, x),
-        )
-      }
+      cards.push(resolveCard(`${z}:${x}`, cardMap, z, x, y))
+      if (x !== y) cards.push(resolveCard(`${z}:${y}`, cardMap, z, y, x))
     }
   }
 
   return cards
 }
 
+// TODO: delete after 1.10.2026
 /**
- * Generate extended virtual cards for ≤50 mode
- * Enumerates all Z ∈ [2,50], divisor ∈ EXTENDED_DIVISORS where Z % divisor === 0
- * Skips cards already in the base set (both factors in [2,9])
+ * Migration: delete stored cards with divisor 11 or 12 (removed feature)
  */
-function generateExtendedVirtualCards(
-  cardMap: Map<string, Card>,
-  baseQuestions: Set<string>,
-): Card[] {
-  const cards: Card[] = []
-  const seen = new Set<string>()
-
-  for (let z = 2; z <= 50; z++) {
-    for (const divisor of EXTENDED_DIVISORS) {
-      if (z % divisor !== 0) continue
-      const answer = z / divisor
-      if (answer < 2 || divisor === answer) continue
-
-      const question = `${z}:${divisor}`
-      if (baseQuestions.has(question) || seen.has(question)) continue
-
-      cards.push(resolveCard(question, cardMap, z, divisor, answer))
-      seen.add(question)
-    }
-  }
-
-  return cards
-}
-
-/**
- * Generate virtual cards for the current mode
- * Base mode (no extended): cards with both factors in [2,9]
- * Extended mode: base cards + all Z ≤ 50 cards with divisor ∈ {2..9, 11, 12}
- */
-export function getVirtualCardsForRange(
-  range: number[],
-  storedCards: Card[] = factory.loadCards(),
-): Card[] {
-  const cardMap = new Map(storedCards.map((c) => [c.question, c]))
-
-  const baseCards = generateBaseVirtualCards(cardMap)
-  const isExtended = range.some((n) => n > 9)
-
-  if (!isExtended) return baseCards
-
-  const baseQuestions = new Set(baseCards.map((c) => c.question))
-  const extendedCards = generateExtendedVirtualCards(cardMap, baseQuestions)
-
-  return [...baseCards, ...extendedCards]
-}
-
-/**
- * Toggle the ≤50 extended range feature
- * When activated: adds divisors 11 and 12 (signals extended mode for card generation)
- * When deactivated: reverts to DEFAULT_RANGE
- * @param current - Current range array
- * @returns New range array
- */
-export function toggleFeature50(current: number[]): number[] {
-  // Check if extended range is currently active (any number > 9 present)
-  const hasExtended = current.some((n) => n > 9)
-
-  if (hasExtended) {
-    // Deactivate: revert to default range
-    return [...DEFAULT_RANGE]
-  }
-
-  // Activate: add 11 and 12 as extended divisors
-  return [...current, 11, 12].sort((a, b) => a - b)
+export function removeLegacyDivisorCards(): void {
+  const cards = factory.loadCards()
+  const kept = cards.filter((c) => parseCardQuestion(c.question).divisor <= 9)
+  if (kept.length !== cards.length) factory.saveCards(kept)
 }
 
 // ============================================================================
@@ -242,11 +171,5 @@ export const {
 } = factory
 
 // Only used in .vue page files
-export const {
-  getGameResult,
-  clearGameResult,
-  incrementDailyGames,
-  saveRange,
-  loadSettings,
-  saveSettings,
-} = factory
+export const { getGameResult, clearGameResult, incrementDailyGames, loadSettings, saveSettings } =
+  factory

@@ -15,11 +15,6 @@ const storageMocks = vi.hoisted(() => ({
     { question: "6:2", answer: 3, level: 1, time: 60 },
     { question: "12:3", answer: 4, level: 2, time: 45 },
   ]),
-  loadRange: vi.fn(() => [2, 3, 4, 5, 6, 7, 8, 9]),
-  saveRange: vi.fn(),
-  toggleFeature50: vi.fn((current: number[]) =>
-    current.some((n) => n > 9) ? [2, 3, 4, 5, 6, 7, 8, 9] : [...current, 11, 12],
-  ),
   parseCardQuestion: vi.fn((question: string) => {
     const [dividendStr, divisorStr] = question.split(":")
     return {
@@ -27,16 +22,13 @@ const storageMocks = vi.hoisted(() => ({
       divisor: Number.parseInt(divisorStr ?? "", 10) || 0,
     }
   }),
-  getVirtualCardsForRange: vi.fn((_range: number[], cards: Card[]) => cards),
+  getVirtualCards: vi.fn((cards: Card[]) => cards),
 }))
 
 vi.mock("@/services/storage", () => ({
   loadCards: storageMocks.loadCards,
-  loadRange: storageMocks.loadRange,
-  saveRange: storageMocks.saveRange,
-  toggleFeature50: storageMocks.toggleFeature50,
   parseCardQuestion: storageMocks.parseCardQuestion,
-  getVirtualCardsForRange: storageMocks.getVirtualCardsForRange,
+  getVirtualCards: storageMocks.getVirtualCards,
 }))
 
 // ---------------------------------------------------------------------------
@@ -113,7 +105,6 @@ describe("div CardsManPage", () => {
     localStorage.clear()
     sessionStorage.clear()
     vi.clearAllMocks()
-    storageMocks.loadRange.mockReturnValue([2, 3, 4, 5, 6, 7, 8, 9])
     storageMocks.loadCards.mockReturnValue(loadedCards)
   })
 
@@ -162,10 +153,7 @@ describe("div CardsManPage", () => {
 
       expect(gameStoreMocks.resetCards).toHaveBeenCalled()
       expect(storageMocks.loadCards).toHaveBeenCalled()
-      expect(storageMocks.getVirtualCardsForRange).toHaveBeenLastCalledWith(
-        [2, 3, 4, 5, 6, 7, 8, 9],
-        resetCards,
-      )
+      expect(storageMocks.getVirtualCards).toHaveBeenLastCalledWith(resetCards)
     })
   })
 })

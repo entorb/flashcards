@@ -44,7 +44,7 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     setGameResult: vi.fn(),
     updateCard: vi.fn(),
     resetCards: vi.fn(),
-    getVirtualCardsForRange: vi.fn(() => [...defaultMockCards]),
+    getVirtualCards: vi.fn(() => [...defaultMockCards]),
     initializeCards: vi.fn(),
     incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 1 })),
     getGameResult: vi.fn(() => null),
@@ -110,7 +110,7 @@ describe("useGameStore - Property Tests", () => {
             setGameResult: vi.fn(),
             updateCard: vi.fn(),
             resetCards: vi.fn(),
-            getVirtualCardsForRange: vi.fn(() => [card]),
+            getVirtualCards: vi.fn(() => [card]),
             initializeCards: vi.fn(),
             incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 1 })),
             getGameResult: vi.fn(() => null),
@@ -183,7 +183,7 @@ describe("useGameStore - Property Tests", () => {
               capturedUpdate = updates
             }),
             resetCards: vi.fn(),
-            getVirtualCardsForRange: vi.fn(() => [card]),
+            getVirtualCards: vi.fn(() => [card]),
             initializeCards: vi.fn(),
             incrementDailyGames: vi.fn(() => ({ isFirstGame: false, gamesPlayedToday: 1 })),
             getGameResult: vi.fn(() => null),
@@ -371,7 +371,7 @@ describe("useGameStore - handleAnswer", () => {
     // Use a card with level > 1 so decrement is visible
     const lvl2Card = { question: "12:3", answer: 4, level: 2, time: 45 }
     const store = await setupMocks({
-      getVirtualCardsForRange: vi.fn(() => [lvl2Card]),
+      getVirtualCards: vi.fn(() => [lvl2Card]),
     })
     const { updateCard } = await import("@/services/storage")
     store.startGame({ select: [3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
@@ -389,7 +389,7 @@ describe("useGameStore - handleAnswer", () => {
     // Card with previous time of 10s, answer in 5s → should get speed bonus
     const fastCard = { question: "6:2", answer: 3, level: 1, time: 10 }
     const store = await setupMocks({
-      getVirtualCardsForRange: vi.fn(() => [fastCard]),
+      getVirtualCards: vi.fn(() => [fastCard]),
     })
     store.startGame({ select: [2], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
 

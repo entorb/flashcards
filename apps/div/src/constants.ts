@@ -46,8 +46,7 @@ export const GAME_STATE_FLOW_CONFIG: GameStateFlowConfig = {
 // --- Game Logic ---
 
 /**
- * Default range configuration (all divisors 2-9)
- * Extended feature can add: ≤50 range via feature toggle
+ * Selectable divisors (2-9), all selected by default
  */
 export const DEFAULT_RANGE = [2, 3, 4, 5, 6, 7, 8, 9]
 
