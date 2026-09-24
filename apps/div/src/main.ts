@@ -5,12 +5,16 @@ import { createApp } from "vue"
 
 import App from "./App.vue"
 import { router } from "./router"
+import { removeLegacyDivisorCards } from "./services/storage"
 
 // Import Quasar css
 import "quasar/src/css/index.sass"
 
 // Import icon libraries
 import "@quasar/extras/material-icons/material-icons.css"
+
+// TODO: delete after 1.10.2026
+removeLegacyDivisorCards()
 
 const app = createApp(App)
 

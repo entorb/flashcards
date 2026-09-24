@@ -9,20 +9,18 @@ import HomePage from "./HomePage.vue"
 const mocks = vi.hoisted(() => ({
   loadGameStats: vi.fn(() => ({ gamesPlayed: 5, points: 100, correctAnswers: 42 })),
   loadSettings: vi.fn(() => null as null | GameSettings),
-  loadRange: vi.fn(() => [2, 3, 4, 5, 6, 7, 8, 9]),
   saveSettings: vi.fn(),
   initializeCards: vi.fn(),
   startGame: vi.fn(),
-  getVirtualCardsForRange: vi.fn((): Card[] => []),
+  getVirtualCards: vi.fn((): Card[] => []),
 }))
 
 vi.mock("@/services/storage", () => ({
   loadGameStats: mocks.loadGameStats,
   loadSettings: mocks.loadSettings,
-  loadRange: mocks.loadRange,
   saveSettings: mocks.saveSettings,
   initializeCards: mocks.initializeCards,
-  getVirtualCardsForRange: mocks.getVirtualCardsForRange,
+  getVirtualCards: mocks.getVirtualCards,
 }))
 
 vi.mock("@/services/cardSelector", () => ({
@@ -87,7 +85,6 @@ describe("HomePage", () => {
     vi.clearAllMocks()
     mocks.loadGameStats.mockReturnValue({ gamesPlayed: 5, points: 100, correctAnswers: 42 })
     mocks.loadSettings.mockReturnValue(null)
-    mocks.loadRange.mockReturnValue([2, 3, 4, 5, 6, 7, 8, 9])
   })
 
   // ==========================================================================

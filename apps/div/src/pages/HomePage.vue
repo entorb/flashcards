@@ -14,13 +14,7 @@ import ChickenMascot from "@/components/ChickenMascot.vue"
 import { useGameStore } from "@/composables/useGameStore"
 import { BASE_PATH, DEFAULT_RANGE } from "@/constants"
 import { filterCardsByDivisor } from "@/services/cardSelector"
-import {
-  getVirtualCardsForRange,
-  loadGameStats,
-  loadRange,
-  loadSettings,
-  saveSettings,
-} from "@/services/storage"
+import { getVirtualCards, loadGameStats, loadSettings, saveSettings } from "@/services/storage"
 
 const router = useRouter()
 
@@ -28,20 +22,14 @@ const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
 const select = ref<number[]>([...DEFAULT_RANGE])
 const focus = ref<FocusType>("weak")
-const range = ref<number[]>([...DEFAULT_RANGE])
 const levels = ref<CardLevel[]>([...ALL_LEVELS])
-
-// Divisor options based on current range (base 2-9, plus 11-12 when extended)
-const selectOptions = computed<number[]>(() =>
-  range.value.filter((n) => (n >= 2 && n <= 9) || n === 11 || n === 12),
-)
 
 // Check if a divisor number is selected
 const isNumberSelected = computed(() => (num: number) => select.value.includes(num))
 
 // Compute filtered cards for the current selection
 const basePool = computed(() => {
-  const allAvailableCards = getVirtualCardsForRange(range.value)
+  const allAvailableCards = getVirtualCards()
   return filterCardsByDivisor(allAvailableCards, select.value)
 })
 
@@ -49,9 +37,6 @@ const basePool = computed(() => {
 const levelFilteredCards = computed(() => filterByLevels(basePool.value, levels.value))
 
 onMounted(() => {
-  // Load range configuration
-  range.value = loadRange()
-
   // Load saved settings
   const savedSettings = loadSettings()
   if (savedSettings) {
@@ -59,7 +44,7 @@ onMounted(() => {
     focus.value = savedSettings.focus
     levels.value = savedSettings.levels
   } else {
-    select.value = [...selectOptions.value]
+    select.value = [...DEFAULT_RANGE]
   }
 
   // Restore select and focus from gameSettings in store if available (overrides saved)
@@ -101,18 +86,18 @@ function goToInfo() {
 }
 
 function toggleSelect(option: number) {
-  // Check if all options in current range are selected
-  const allSelected = selectOptions.value.every((opt) => select.value.includes(opt))
+  // Check if all default divisors (2-9) are selected
+  const allSelected = DEFAULT_RANGE.every((opt) => select.value.includes(opt))
 
   if (allSelected && select.value.length > 1) {
     // All selected + tap D → select only D
     select.value = [option]
   } else if (select.value.includes(option) && select.value.length === 1) {
     // Only [D] selected + tap D → select all (DEFAULT_RANGE)
-    select.value = [...selectOptions.value]
+    select.value = [...DEFAULT_RANGE]
   } else if (select.value.includes(option)) {
     // D is selected (but not the only one and not all) → select all
-    select.value = [...selectOptions.value]
+    select.value = [...DEFAULT_RANGE]
   } else {
     // D not selected + tap D → add D to selection
     select.value = [...select.value, option].sort((a, b) => a - b)
@@ -147,7 +132,7 @@ function toggleSelect(option: number) {
         </div>
         <div class="row q-gutter-xs">
           <q-btn
-            v-for="option in selectOptions"
+            v-for="option in DEFAULT_RANGE"
             :key="option"
             :outline="!isNumberSelected(option)"
             :unelevated="isNumberSelected(option)"

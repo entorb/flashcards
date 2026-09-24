@@ -11,24 +11,15 @@ import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 import { useGameStore } from "@/composables/useGameStore"
-import { DEFAULT_RANGE } from "@/constants"
-import {
-  getVirtualCardsForRange,
-  loadCards,
-  loadRange,
-  parseCardQuestion,
-  saveRange,
-  toggleFeature50,
-} from "@/services/storage"
+import { getVirtualCards, loadCards, parseCardQuestion } from "@/services/storage"
 import type { Card } from "@/types"
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
 const { resetCards } = useGameStore()
 const cards = ref<Card[]>([])
-const range = ref<number[]>([...DEFAULT_RANGE])
 
-const cardsInRange = computed(() => getVirtualCardsForRange(range.value, cards.value))
+const cardsInRange = computed(() => getVirtualCards(cards.value))
 
 const {
   selectedLevel,
@@ -74,7 +65,6 @@ function handleKeyDown(event: KeyboardEvent) {
 
 onMounted(() => {
   cards.value = loadCards()
-  range.value = loadRange()
   globalThis.addEventListener("keydown", handleKeyDown)
 })
 
@@ -87,12 +77,6 @@ function resetCardsHandler() {
     resetCards()
     cards.value = loadCards()
   })
-}
-
-function toggleExtended() {
-  const newRange = toggleFeature50(range.value)
-  range.value = newRange
-  saveRange(newRange)
 }
 
 function goHome() {
@@ -152,31 +136,6 @@ function goHome() {
         :get-key="getCardKey"
         :title="listTitle ?? ''"
       />
-
-      <!-- Extended Cards Section -->
-      <q-card class="q-mt-md">
-        <q-card-section>
-          <div class="text-h6 q-mb-md">
-            <q-icon
-              name="extension"
-              size="18px"
-              class="q-mr-xs"
-            />
-            {{ TEXT_DE.multiply.extendedCards.title }}
-          </div>
-          <div class="row items-center q-gutter-md">
-            <!-- ≤50 Toggle Button -->
-            <q-btn
-              :pressed="range.some(n => n > 9)"
-              unelevated
-              label="≥50"
-              data-cy="feature-50-toggle"
-              :color="range.some(n => n > 9) ? 'primary' : 'grey-5'"
-              @click="toggleExtended"
-            />
-          </div>
-        </q-card-section>
-      </q-card>
     </div>
   </q-page>
 </template>

@@ -4,7 +4,7 @@ import { createGameStoreFactory, filterByLevels } from "@flashcards/shared"
 import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from "@/constants"
 import { filterCardsByDivisor, selectCardsForRound } from "@/services/cardSelector"
 import {
-  getVirtualCardsForRange,
+  getVirtualCards,
   initializeCards,
   parseCardQuestion,
   clearGameState as storageClearGameState,
@@ -40,7 +40,7 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
       storageSetGameConfig(...args)
     },
     loadRange: (...args) => storageLoadRange(...args),
-    getVirtualCardsForRange: (...args) => getVirtualCardsForRange(...args),
+    getVirtualCardsForRange: () => getVirtualCards(),
     initializeCards: (...args) => initializeCards(...args),
     saveGameState: (...args) => {
       storageSaveGameState(...args)
