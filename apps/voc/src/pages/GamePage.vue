@@ -296,24 +296,20 @@ onUnmounted(() => {
           <!-- Multiple Choice -->
           <div
             v-else-if="gameSettings?.mode === 'multiple-choice'"
-            class="row q-col-gutter-sm"
+            class="mc-grid"
           >
-            <div
+            <q-btn
               v-for="option in options"
               :key="option"
-              class="col-6"
-            >
-              <q-btn
-                :disable="!!answerStatus"
-                outline
-                color="grey-8"
-                :label="option"
-                no-caps
-                class="full-width"
-                data-cy="multiple-choice-option"
-                @click="handleMultipleChoiceSubmit(option)"
-              />
-            </div>
+              :disable="!!answerStatus"
+              outline
+              color="grey-8"
+              :label="option"
+              no-caps
+              class="mc-option"
+              data-cy="multiple-choice-option"
+              @click="handleMultipleChoiceSubmit(option)"
+            />
           </div>
 
           <!-- Blind Mode -->
@@ -375,3 +371,19 @@ onUnmounted(() => {
     </div>
   </q-page>
 </template>
+
+<style scoped>
+/* 2x2 grid, equal cell heights, long options wrap */
+.mc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  gap: 8px;
+}
+
+.mc-option {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+</style>
