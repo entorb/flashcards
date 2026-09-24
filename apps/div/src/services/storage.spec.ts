@@ -2,16 +2,16 @@ import { MAX_TIME, MIN_LEVEL } from "@flashcards/shared"
 import fc from "fast-check"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { DEFAULT_RANGE, STORAGE_KEYS } from "../constants"
+import { STORAGE_KEYS } from "../constants"
 import type { Card } from "../types"
 import {
   createDefaultCard,
-  getVirtualCardsForRange,
+  getVirtualCards,
   initializeCards,
   loadCards,
   parseCardQuestion,
+  removeLegacyDivisorCards,
   saveCards,
-  toggleFeature50,
 } from "./storage"
 
 // ---------------------------------------------------------------------------
@@ -220,121 +220,54 @@ describe("div storage — unit tests", () => {
     })
   })
 
-  // ─── getVirtualCardsForRange ────────────────────────────────────────────
+  // ─── removeLegacyDivisorCards ───────────────────────────────────────────
 
-  describe("getVirtualCardsForRange", () => {
-    it("returns all base cards regardless of range subset", () => {
-      const cards = getVirtualCardsForRange([2, 3])
-      // Base cards are always all [2,9] pairs = 64 cards
-      expect(cards).toHaveLength(64)
+  describe("removeLegacyDivisorCards", () => {
+    it("deletes stored cards with divisor 11 or 12 and keeps the rest", () => {
+      saveCards([
+        { question: "6:2", answer: 3, level: 5, time: 10 },
+        { question: "22:11", answer: 2, level: 4, time: 7 },
+        { question: "48:12", answer: 4, level: 3, time: 8 },
+      ])
+      removeLegacyDivisorCards()
+      expect(loadCards().map((c) => c.question)).toEqual(["6:2"])
     })
+  })
 
-    it("returns empty array for empty range", () => {
-      const cards = getVirtualCardsForRange([])
-      // Still returns all base cards (range only controls extended mode)
-      expect(cards).toHaveLength(64)
-    })
+  // ─── getVirtualCards ────────────────────────────────────────────────────
 
-    it("returns base cards for single-element range", () => {
-      const cards = getVirtualCardsForRange([5])
+  describe("getVirtualCards", () => {
+    it("returns 64 cards with divisors 2-9 and answers 2-9", () => {
+      const cards = getVirtualCards()
       expect(cards).toHaveLength(64)
+      for (const card of cards) {
+        const { divisor } = parseCardQuestion(card.question)
+        expect(divisor).toBeGreaterThanOrEqual(2)
+        expect(divisor).toBeLessThanOrEqual(9)
+        expect(card.answer).toBeGreaterThanOrEqual(2)
+        expect(card.answer).toBeLessThanOrEqual(9)
+      }
     })
 
     it("uses stored card data when available", () => {
       const storedCard: Card = { question: "6:2", answer: 3, level: 5, time: 10 }
       saveCards([storedCard])
-      const cards = getVirtualCardsForRange(DEFAULT_RANGE)
-      const found = cards.find((c) => c.question === "6:2")
-      expect(found?.level).toBe(5)
-      expect(found?.time).toBe(10)
+      const cards = getVirtualCards()
+      expect(cards.find((c) => c.question === "6:2")?.level).toBe(5)
+      expect(cards.find((c) => c.question === "6:2")?.time).toBe(10)
     })
 
     it("creates default cards for missing entries", () => {
       saveCards([])
-      const cards = getVirtualCardsForRange(DEFAULT_RANGE)
-      for (const card of cards) {
+      for (const card of getVirtualCards()) {
         expect(card.level).toBe(MIN_LEVEL)
         expect(card.time).toBe(MAX_TIME)
       }
     })
 
-    it("returns 64 base cards for DEFAULT_RANGE", () => {
-      const cards = getVirtualCardsForRange(DEFAULT_RANGE)
-      expect(cards).toHaveLength(64)
-    })
-
-    it("extended mode includes cards like 50:2=25 and 48:12=4", () => {
-      const extendedRange = toggleFeature50([...DEFAULT_RANGE])
-      const cards = getVirtualCardsForRange(extendedRange)
-      expect(cards.find((c) => c.question === "50:2")).toBeDefined()
-      expect(cards.find((c) => c.question === "48:12")).toBeDefined()
-    })
-
-    it("extended mode excludes cards with divisor 13+ or Z > 50", () => {
-      const extendedRange = toggleFeature50([...DEFAULT_RANGE])
-      const cards = getVirtualCardsForRange(extendedRange)
-      // No card with divisor 13
-      expect(cards.find((c) => c.question === "39:13")).toBeUndefined()
-      // No card with Z > 50 (except base cards where both factors ≤ 9)
-      expect(cards.find((c) => c.question === "52:2")).toBeUndefined()
-    })
-
-    it("extended mode does not remove any base cards", () => {
-      const baseCards = getVirtualCardsForRange(DEFAULT_RANGE)
-      const extendedRange = toggleFeature50([...DEFAULT_RANGE])
-      const extendedCards = getVirtualCardsForRange(extendedRange)
-      for (const baseCard of baseCards) {
-        const found = extendedCards.find((c) => c.question === baseCard.question)
-        expect(found).toBeDefined()
-      }
-    })
-
-    it("extended cards have divisor in {2..9, 11, 12} and Z ≤ 50", () => {
-      const baseQuestions = new Set(getVirtualCardsForRange(DEFAULT_RANGE).map((c) => c.question))
-      const extendedRange = toggleFeature50([...DEFAULT_RANGE])
-      const allCards = getVirtualCardsForRange(extendedRange)
-      const extendedOnly = allCards.filter((c) => !baseQuestions.has(c.question))
-
-      for (const card of extendedOnly) {
-        const { dividend, divisor } = parseCardQuestion(card.question)
-        expect(dividend).toBeLessThanOrEqual(50)
-        expect([2, 3, 4, 5, 6, 7, 8, 9, 11, 12].includes(divisor)).toBe(true)
-      }
-    })
-  })
-
-  // ─── toggleFeature40 ───────────────────────────────────────────────────
-
-  describe("toggleFeature50", () => {
-    it("activates: adds only 11 and 12 as extended divisors", () => {
-      const result = toggleFeature50([...DEFAULT_RANGE])
-      const extended = result.filter((n) => n > 9)
-      expect(extended).toEqual([11, 12])
-    })
-
-    it("does not add 10 or numbers > 12", () => {
-      const result = toggleFeature50([...DEFAULT_RANGE])
-      expect(result).not.toContain(10)
-      expect(result).not.toContain(13)
-    })
-
-    it("deactivates: reverts to DEFAULT_RANGE when extended numbers present", () => {
-      const extended = [...DEFAULT_RANGE, 11, 12]
-      const result = toggleFeature50(extended)
-      expect(result).toEqual(DEFAULT_RANGE)
-    })
-
-    it("result is sorted ascending", () => {
-      const result = toggleFeature50([...DEFAULT_RANGE])
-      for (let i = 1; i < result.length; i++) {
-        expect(result[i]).toBeGreaterThan(result[i - 1] ?? Number.NEGATIVE_INFINITY)
-      }
-    })
-
-    it("toggle on then off returns DEFAULT_RANGE", () => {
-      const activated = toggleFeature50([...DEFAULT_RANGE])
-      const deactivated = toggleFeature50(activated)
-      expect(deactivated).toEqual(DEFAULT_RANGE)
+    it("has unique questions", () => {
+      const questions = getVirtualCards().map((c) => c.question)
+      expect(new Set(questions).size).toBe(questions.length)
     })
   })
 
