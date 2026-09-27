@@ -10,10 +10,11 @@ import { LEVENSHTEIN_THRESHOLD } from "../constants"
 import type { Card } from "../types"
 
 /**
- * Normalize a string for comparison (lowercase, trim)
+ * Normalize a string for comparison (lowercase, trim, commas treated as spaces
+ * so "go, went, gone" / "go,went,gone" / "go went gone" all match)
  */
 export function normalizeString(str: string): string {
-  return normalizeWhitespace(str).toLowerCase()
+  return normalizeWhitespace(str.replace(/,/g, " ")).toLowerCase()
 }
 
 /**
