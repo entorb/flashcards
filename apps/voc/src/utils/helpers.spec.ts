@@ -36,6 +36,12 @@ describe("helpers - Typing Answer Validation", () => {
       const result = validateTypingAnswer("hallo", "hello / hallo", "voc-de")
       expect(result).toBe("correct")
     })
+
+    it("should treat comma-space, comma-only and space-only forms as equal", () => {
+      expect(validateTypingAnswer("go,went,gone", "go, went, gone", "voc-de")).toBe("correct")
+      expect(validateTypingAnswer("go went gone", "go, went, gone", "voc-de")).toBe("correct")
+      expect(validateTypingAnswer("go, went, gone", "go,went,gone", "voc-de")).toBe("correct")
+    })
   })
 
   describe("Close matches (Levenshtein distance <= 2)", () => {
