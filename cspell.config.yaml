@@ -1,6 +1,6 @@
 ---
 $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
-version: '0.2'
+version: "0.2"
 useCache: true
 useGitignore: true
 dictionaryDefinitions:
@@ -11,11 +11,11 @@ dictionaries:
   - cspell-words
 language: en-US
 ignorePaths:
-  - '.*.ts'
-  - '.*'
-  - '*.spec.ts'
-  - '*.svg'
-  - '/*.json'
+  - ".*.ts"
+  - ".*"
+  - "*.spec.ts"
+  - "*.svg"
+  - "/*.json"
   - /.vscode/
   - /LICENSE
   - biome.json
