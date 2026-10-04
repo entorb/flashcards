@@ -1,7 +1,6 @@
 #!/bin/sh
-
-script_dir=$(cd $(dirname $0) && pwd)
-cd $script_dir/..
+set -e
+cd "$(dirname "$0")/.."
 
 # PNG: manually done via Inkscape UI instead
 # Favicon: manually done via Gimp
