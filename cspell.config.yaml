@@ -13,9 +13,9 @@ language: en-US
 ignorePaths:
   - '.*.ts'
   - '.*'
-  - '.*'
   - '*.spec.ts'
   - '*.svg'
+  - '/*.json'
   - /.vscode/
   - /LICENSE
   - biome.json
