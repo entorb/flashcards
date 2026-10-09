@@ -163,6 +163,7 @@ Exception: **eta** has its own session-based architecture (no game store pattern
 12. **Storage loads validate types** — every localStorage/sessionStorage read goes through `loadJSON`/`loadSessionJSON`/`loadArray` (or ops factories) in `packages/shared/src/services/storage.ts` with runtime validators from `@flashcards/shared/utils/validators`. Missing keys, corrupt JSON, or wrong-typed values fall back to defaults (arrays drop invalid items). Do not add blind `JSON.parse(...) as T` casts or legacy migration shims — invalid data self-heals to defaults instead.
 13. **PWA uses Quasar Dialog** — the `updateSW` callback opens `Dialog.create({...})` (not `confirm()`). See pattern in `apps/*/src/main.ts`.
 14. **SonarCloud lcov path fix** — CI runs `sed 's|^SF:src/|SF:$dir/src/|'` on coverage files because Vitest generates relative paths but SonarCloud resolves from project root.
+15. **iPhone 7 support (iOS/Safari 15.4+)** — `build.target` in `vite.config.base.ts` is `["safari15", "ios15"]`; never `esnext` (ships untranspiled syntax). Vite transpiles syntax only, not APIs: deps already need Safari 15.4 (`Array.at`, `Object.hasOwn`, `findLastIndex`, CSS `:has`/`dvh`). Avoid APIs newer than Safari 15.4 (`toSorted`/`toReversed`/`.with`, `Object.groupBy`, `Promise.withResolvers`, Set `union`/`intersection`, regex lookbehind/`v` flag) and plain-CSS nesting outside SCSS. Quasar 2.34 Screen plugin crashes without `screen.orientation` (Safari 16.4+): every `main.ts` calls `polyfillScreenOrientation()` before `app.use(Quasar)`.
 
 ## PWA Config
 
