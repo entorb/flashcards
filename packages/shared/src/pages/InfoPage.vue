@@ -303,6 +303,9 @@ defineEmits<{
                 )
               }}
             </li>
+            <li>
+              {{ TEXT_DE.voc.info.ignoreAccentsDescription }}
+            </li>
           </ul>
         </div>
 

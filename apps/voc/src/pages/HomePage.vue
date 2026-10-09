@@ -183,6 +183,14 @@ function goToInfo() {
             </q-tooltip>
           </q-btn>
         </div>
+        <q-toggle
+          v-if="settings.mode === 'typing'"
+          v-model="settings.ignoreAccents"
+          :label="TEXT_DE.voc.ignoreAccents"
+          dense
+          class="q-mt-xs"
+          data-cy="ignore-accents-toggle"
+        />
       </div>
 
       <!-- Language Direction -->

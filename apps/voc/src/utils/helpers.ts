@@ -12,9 +12,11 @@ import type { Card } from "../types"
 /**
  * Normalize a string for comparison (lowercase, trim, commas treated as spaces
  * so "go, went, gone" / "go,went,gone" / "go went gone" all match)
+ * ignoreAccents strips diacritics ("école" → "ecole"); ligatures like "œ" stay
  */
-export function normalizeString(str: string): string {
-  return normalizeWhitespace(str.replace(/,/g, " ")).toLowerCase()
+export function normalizeString(str: string, ignoreAccents = false): string {
+  const base = ignoreAccents ? str.normalize("NFD").replace(/\p{M}/gu, "") : str
+  return normalizeWhitespace(base.replace(/,/g, " ")).toLowerCase()
 }
 
 /**
@@ -27,9 +29,10 @@ export function validateTypingAnswer(
   userInput: string,
   correctAnswer: string,
   language: "voc-de" | "de-voc",
+  ignoreAccents = false,
 ): AnswerStatus {
-  const normalizedUserAnswer = normalizeString(userInput)
-  const possibleAnswers = correctAnswer.split("/").map(normalizeString)
+  const normalizedUserAnswer = normalizeString(userInput, ignoreAccents)
+  const possibleAnswers = correctAnswer.split("/").map((ans) => normalizeString(ans, ignoreAccents))
 
   // If DE->Voc, also accept answers without the leading "to "
   if (language === "de-voc") {

@@ -7,6 +7,7 @@ import {
   getCurrentDeckName,
   loadCards,
   loadDecks,
+  loadSettings,
   saveCards,
   saveDecks,
   saveSettings,
@@ -248,6 +249,20 @@ describe("Deck Storage", () => {
       const loaded = loadDecks()
       expect(loaded).toHaveLength(1)
       expect(loaded[0]!.name).toBe("good")
+    })
+  })
+
+  describe("Settings ignoreAccents validation", () => {
+    const base = { mode: "typing", focus: "weak", language: "de-voc", levels: [1, 2, 3, 4, 5] }
+
+    it("keeps boolean ignoreAccents", () => {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ...base, ignoreAccents: true }))
+      expect(loadSettings()?.ignoreAccents).toBe(true)
+    })
+
+    it("rejects non-boolean ignoreAccents", () => {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ...base, ignoreAccents: "x" }))
+      expect(loadSettings()).toBeNull()
     })
   })
 })

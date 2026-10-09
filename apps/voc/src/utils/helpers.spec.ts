@@ -116,6 +116,26 @@ describe("helpers - Typing Answer Validation", () => {
     })
   })
 
+  describe("Ignore accents option", () => {
+    it("accepts missing accents when enabled", () => {
+      expect(validateTypingAnswer("ecole", "école", "de-voc", true)).toBe("correct")
+      expect(validateTypingAnswer("garcon", "garçon", "de-voc", true)).toBe("correct")
+      expect(validateTypingAnswer("tres", "très", "de-voc", true)).toBe("correct")
+    })
+
+    it("accepts accented input for unaccented answer when enabled", () => {
+      expect(validateTypingAnswer("schön", "schon", "voc-de", true)).toBe("correct")
+    })
+
+    it("works with slash alternatives", () => {
+      expect(validateTypingAnswer("etre", "être/exister", "de-voc", true)).toBe("correct")
+    })
+
+    it("is strict when disabled (close match only)", () => {
+      expect(validateTypingAnswer("ecole", "école", "de-voc")).toBe("close")
+    })
+  })
+
   describe("Helper function: levenshteinDistance", () => {
     it("should return 0 for identical strings", () => {
       expect(levenshteinDistance("hello", "hello")).toBe(0)

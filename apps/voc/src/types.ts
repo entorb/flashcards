@@ -30,6 +30,7 @@ export interface GameSettings extends BaseGameSettings {
   mode: GameMode
   language: Direction
   deck?: string // Optional deck name (for future compatibility)
+  ignoreAccents?: boolean // Typing mode: treat é/è/ç/ä... as e/e/c/a...
 }
 
 // Game History (extends BaseGameHistory)
