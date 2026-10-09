@@ -26,7 +26,8 @@ export const baseViteConfig: UserConfig = {
     cssCodeSplit: true,
     minify: "esbuild",
     sourcemap: false,
-    target: "esnext",
+    // iPhone 7 tops out at iOS 15.8; deps (vue-router, quasar) need iOS 15.4+ runtime APIs. Also drives cssTarget
+    target: ["safari15", "ios15"],
   },
 
   optimizeDeps: {

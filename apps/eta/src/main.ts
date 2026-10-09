@@ -1,5 +1,5 @@
 import { registerSW } from "virtual:pwa-register"
-import { TEXT_DE } from "@flashcards/shared"
+import { polyfillScreenOrientation, TEXT_DE } from "@flashcards/shared"
 import { Dialog, Notify, Quasar } from "quasar"
 import { createApp } from "vue"
 
@@ -17,6 +17,7 @@ const app = createApp(App)
 // - Only essential plugins are imported (Dialog, Notify)
 // - Components are auto-imported by Vue based on template usage
 // - This significantly reduces bundle size through tree-shaking
+polyfillScreenOrientation()
 app.use(Quasar, {
   plugins: {
     Dialog,
