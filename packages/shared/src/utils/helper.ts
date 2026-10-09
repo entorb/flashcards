@@ -357,3 +357,22 @@ export function getTimeBucketLabel(bucket: number): string {
 export function getTimeFilterListTitle(bucket: number): string {
   return `${TEXT_DE.shared.cards.timeFilterPrefix} ${getTimeBucketLabel(bucket)}`
 }
+
+/**
+ * Safari < 16.4 (iPhone 7, iOS 15) lacks `screen.orientation`; Quasar's Screen plugin
+ * destructures it on install and crashes. Call before `app.use(Quasar)`.
+ * ponytail: static stub, `type` reflects load-time orientation only and never fires "change".
+ */
+export const polyfillScreenOrientation = (scr: Screen = globalThis.screen): void => {
+  if ("orientation" in scr) return
+  const portrait = globalThis.innerHeight >= globalThis.innerWidth
+  Object.defineProperty(scr, "orientation", {
+    configurable: true,
+    value: {
+      type: portrait ? "portrait-primary" : "landscape-primary",
+      angle: 0,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    },
+  })
+}

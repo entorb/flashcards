@@ -8,6 +8,7 @@ import {
   helperStatsDataRead,
   helperStatsDataWrite,
   levenshteinDistance,
+  polyfillScreenOrientation,
   roundTime,
 } from "../utils/helper"
 
@@ -358,5 +359,25 @@ describe("levenshteinDistance — property tests", () => {
         return levenshteinDistance(a, "") === a.length && levenshteinDistance("", a) === a.length
       }),
     )
+  })
+})
+
+describe("polyfillScreenOrientation", () => {
+  it("adds a stub when screen.orientation is missing", () => {
+    const scr = {} as Screen
+    polyfillScreenOrientation(scr)
+    const { type, angle } = scr.orientation
+    expect(type).toMatch(/^(portrait|landscape)-primary$/)
+    expect(angle).toBe(0)
+    expect(() => {
+      scr.orientation.addEventListener("change", () => undefined)
+    }).not.toThrow()
+  })
+
+  it("keeps an existing screen.orientation", () => {
+    const orientation = { type: "landscape-secondary" }
+    const scr = { orientation } as unknown as Screen
+    polyfillScreenOrientation(scr)
+    expect(scr.orientation).toBe(orientation)
   })
 })
