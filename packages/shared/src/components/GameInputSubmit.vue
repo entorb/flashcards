@@ -35,6 +35,10 @@ const canSubmit = computed(
       type="text"
       :inputmode="props.inputType"
       :pattern="pattern"
+      autocorrect="off"
+      autocapitalize="off"
+      autocomplete="off"
+      spellcheck="false"
       outlined
       class="q-mb-md"
       autofocus
