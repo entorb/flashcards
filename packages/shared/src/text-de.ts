@@ -203,6 +203,7 @@ export const TEXT_DE = {
       typing: "Schreiben",
       tooGoodForMultipleChoice: "Dafür bist du zu gut",
     },
+    ignoreAccents: "Akzente ignorieren (é = e)",
     game: {
       revealAnswer: "Antwort aufdecken",
       wasYourAnswerCorrect: "War deine Antwort richtig?",
@@ -261,6 +262,8 @@ export const TEXT_DE = {
         '"Fast richtig": Im Schreib-Modus erhältst du bei kleinen Fehlern 75% der Punkte.',
       additionalRuleLangDirection:
         "Sprachrichtung: Für die Richtung Deutsch → Voc +{points} Punkte.",
+      ignoreAccentsDescription:
+        '"Akzente ignorieren": Im Schreib-Modus zählt "e" auch für "é/è/ê", "c" für "ç", "a" für "ä" usw.',
     },
   },
   // LWK app specific

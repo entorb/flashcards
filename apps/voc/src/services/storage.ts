@@ -37,16 +37,17 @@ function isValidDeck(value: unknown): value is CardDeck {
   return isString(name) && name.length > 0 && Array.isArray(cards) && cards.every(isValidCard)
 }
 
-/** GameSettings shape check: base fields + mode/language literals + optional deck */
+/** GameSettings shape check: base fields + mode/language literals + optional deck/ignoreAccents */
 function isValidSettings(value: unknown): boolean {
   if (!(isValidBaseSettings(value) && isRecord(value))) return false
-  const { mode, language, deck } = value
+  const { mode, language, deck, ignoreAccents } = value
   return (
     typeof mode === "string" &&
     ["multiple-choice", "blind", "typing"].includes(mode) &&
     typeof language === "string" &&
     ["voc-de", "de-voc"].includes(language) &&
-    (deck === undefined || isString(deck))
+    (deck === undefined || isString(deck)) &&
+    (ignoreAccents === undefined || typeof ignoreAccents === "boolean")
   )
 }
 

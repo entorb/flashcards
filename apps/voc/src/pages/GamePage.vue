@@ -191,6 +191,7 @@ function handleTypingSubmit() {
     userAnswer.value,
     correctAnswer.value,
     gameSettings.value.language,
+    gameSettings.value.ignoreAccents === true,
   )
   submitAnswer(result)
 }
