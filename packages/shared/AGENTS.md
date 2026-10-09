@@ -18,7 +18,7 @@ import { quasarStubs, quasarMocks } from '@flashcards/shared/test-utils'
 src/
 ├── components/           # Shared Vue components (21)
 ├── composables/          # Shared composables (12)
-├── pages/                # Shared pages (6; CardsManPage is re-exported as a component)
+├── pages/                # Shared pages (5; CardsManPage is re-exported as a component)
 ├── services/
 │   ├── storage.ts        # localStorage/sessionStorage CRUD
 │   ├── appStorageFactory.ts # createAppStorageFactory (app storage adapters)
@@ -90,6 +90,7 @@ type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 | `useGameNavigation`   | Router navigation helpers for game flow                              |
 | `useResetCards`       | Reset all card levels to 1                                           |
 | `useDeckManagement`   | CRUD operations for card decks (voc, lwk)                            |
+| `useDeckDialogs`      | Create/rename/remove deck dialogs (Quasar prompt, `data-cy="deck-name-input"`) used by CardsManPage |
 
 ## Services
 
@@ -101,11 +102,11 @@ type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 
 ## Pages
 
-`HistoryPage`, `GameOverPage`, `DecksEditPage`, `InfoPage`, `NumericGamePage` (shared game page used by numeric apps via thin app wrappers). `CardsManPage` lives in `pages/` but is exported as a component (`@flashcards/shared/components`).
+`HistoryPage`, `GameOverPage`, `InfoPage`, `NumericGamePage` (shared game page used by numeric apps via thin app wrappers). `CardsManPage` lives in `pages/` but is exported as a component (`@flashcards/shared/components`).
 
 ## Components
 
-`AboutSection`, `AppFooter`, `CardManActions`, `CardsListOfCards`, `CardsManLevelDistribution`, `CardsManPage`, `CardsTimeHistogram`, `GameAnswerFeedback`, `GameFeedbackNegative`, `GameHeader`, `GameInputSubmit`, `GameNextCardButton`, `GamePointsBreakdown`, `GameShowCardQuestion`, `HomeDeckSelector`, `HomeFocusSelector`, `HomeGameModeButtons`, `HomeLevelSelector`, `HomePageLayout`, `HomePwaInstallInfo`, `HomeStatisticsCard`
+`AboutSection`, `AppFooter`, `CardManActions`, `CardsListOfCards`, `CardsManLevelDistribution`, `CardsManPage`, `CardsTimeHistogram`, `EmptyDeckHint`, `GameAnswerFeedback`, `GameFeedbackNegative`, `GameHeader`, `GameInputSubmit`, `GameNextCardButton`, `GamePointsBreakdown`, `GameShowCardQuestion`, `HomeDeckSelector`, `HomeFocusSelector`, `HomeGameModeButtons`, `HomeLevelSelector`, `HomePageLayout`, `HomePwaInstallInfo`, `HomeStatisticsCard`
 
 ## Unit Test Patterns
 
@@ -114,6 +115,8 @@ type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
 **Quasar mocks** — use `vi.mock('quasar', () => ({ ... }))` without `importOriginal` (saves ~300ms per spec). Exception: `../utils/helper` needs `importOriginal`.
 
 **App tests using shared composables that call `$q`** — a test file's `vi.mock('quasar')` does NOT reach modules inside the shared package (distinct module graph). The shared composable's real `useQuasar()` reads the app's injected `_q_`, so the app spec must also provide one whose `notify` is the spec's mock: `provide: { _q_: { ...quasarMocks.$q, notify: mockNotify } }` instead of `provide: quasarProvide`. (Root cause: page-level `$q.notify` calls hit the mock, shared-composable ones silently hit `quasarMocks.$q.notify`.) See `apps/voc` + `apps/lwk` CardsEditPage.spec.ts.
+
+**Quasar prompt `data-cy`**: extra keys in `$q.dialog({ prompt: {...} })` are spread onto the QInput and land on the native `<input>`; same for `data-cy` on QInput/QSelect (use-field forwards attrs to the control). To assert a QSelect's displayed text in e2e, put `data-cy` on a wrapper element.
 
 **v-ripple directive**: Add `directives: { ripple: {} }` to mount options for components using `v-ripple`.
 
