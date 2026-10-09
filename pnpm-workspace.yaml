@@ -12,3 +12,4 @@ allowBuilds:
 
 overrides:
   glob@^11.1.0: '^13.0.6'
+  source-map-js@>=1.0.0 <1.2.2: ^1.2.2

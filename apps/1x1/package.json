@@ -16,13 +16,13 @@
     "test:cov": "vitest --watch=false --silent=passed-only --coverage"
   },
   "devDependencies": {
-    "fast-check": "^4.10.0"
+    "fast-check": "^4.10.2"
   },
   "dependencies": {
     "@flashcards/shared": "workspace:*",
     "@quasar/extras": "^2.1.0",
-    "quasar": "^2.32.3",
-    "vue": "^3.5.42",
+    "quasar": "^2.34.0",
+    "vue": "^3.5.43",
     "vue-router": "^5.3.1"
   }
 }
