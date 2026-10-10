@@ -181,7 +181,7 @@ describe("useCardsEdit", () => {
   })
 
   describe("removeCard", () => {
-    it("removes a card when more than one exists", () => {
+    it("removes a card", () => {
       const options = singleFieldOptions([
         { word: "Jahr", level: 1, time: 60 },
         { word: "Haus", level: 1, time: 60 },
@@ -192,13 +192,12 @@ describe("useCardsEdit", () => {
       expect(options.editingCards.value).toEqual([{ word: "Haus", level: 1, time: 60 }])
     })
 
-    it("refuses to remove the last card", () => {
+    it("removes the last card", () => {
       const options = singleFieldOptions([{ word: "Jahr", level: 1, time: 60 }])
       const { removeCard } = useCardsEdit(options)
 
       removeCard(0)
-      expect(options.editingCards.value).toHaveLength(1)
-      expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }))
+      expect(options.editingCards.value).toEqual([])
     })
   })
 })

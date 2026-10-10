@@ -32,6 +32,7 @@ export const TEXT_DE = {
       history: "Verlauf",
       cards: "Karten",
       backToHome: "Zurück zur Startseite",
+      back: "Zurück",
       infoTooltip: "Info",
     },
     cards: {
@@ -129,7 +130,6 @@ export const TEXT_DE = {
       emptyTextError: "Das Textfeld ist leer.",
       clipboardError: "Zugriff auf Zwischenablage fehlgeschlagen.",
       invalidLevelError: "Bitte gib ein Level zwischen {min} und {max} ein.",
-      lastCardError: "Die letzte Karte kann nicht entfernt werden.",
     },
     pwa: {
       install: {
@@ -244,10 +244,13 @@ export const TEXT_DE = {
       confirmRemoveTitle: "Kiste entfernen",
       confirmRemoveMessage:
         'Möchtest du die Kiste "{name}" wirklich entfernen? Alle Karten darin gehen verloren.',
-      emptyNameError: "Der Kisten-Name darf nicht leer sein.",
-      editDecksTitle: "Kisten bearbeiten",
+      renameDeckTitle: "Kiste umbenennen",
       addDeck: "Kiste hinzufügen",
       deckNamePlaceholder: "Kisten-Name",
+      newDeckTitle: "Neue Kiste",
+      newDeckMessage: "Wie soll die Kiste heißen?",
+      emptyDeck: "Diese Kiste ist noch leer.",
+      addCards: "Karten hinzufügen",
     },
     info: {
       modeMultipleChoice: "Multiple Choice: einfach",
@@ -302,10 +305,13 @@ export const TEXT_DE = {
       confirmRemoveTitle: "Kiste entfernen",
       confirmRemoveMessage:
         'Möchtest du die Kiste "{name}" wirklich entfernen? Alle Wörter darin gehen verloren.',
-      emptyNameError: "Der Kisten-Name darf nicht leer sein.",
-      editDecksTitle: "Kisten bearbeiten",
+      renameDeckTitle: "Kiste umbenennen",
       addDeck: "Kiste hinzufügen",
       deckNamePlaceholder: "Kisten-Name",
+      newDeckTitle: "Neue Kiste",
+      newDeckMessage: "Wie soll die Kiste heißen?",
+      emptyDeck: "Diese Kiste ist noch leer.",
+      addCards: "Wörter hinzufügen",
     },
     gameOver: {},
     info: {

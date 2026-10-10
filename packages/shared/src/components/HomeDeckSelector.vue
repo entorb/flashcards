@@ -39,7 +39,7 @@ function loadDecksAndSettings() {
   // Load deck options
   const decks = props.getDecks()
   deckOptions.value = decks.map((deck) => ({
-    label: deck.name,
+    label: `${deck.name} (${deck.cards.length})`,
     value: deck.name,
   }))
 
@@ -81,7 +81,7 @@ defineExpose({ refresh })
     :options="deckOptions"
     emit-value
     map-options
-    style="min-width: 200px"
+    style="min-width: 150px"
     @update:model-value="handleDeckChange"
   />
 </template>

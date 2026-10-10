@@ -200,6 +200,7 @@ describe("HomePage", () => {
         removeDeck: vi.fn(),
         renameDeck: vi.fn(),
         switchDeck: vi.fn(),
+        selectDeck: vi.fn(),
         moveAllCards: mockMoveAllCards,
         sessionMode: ref("standard"),
       })

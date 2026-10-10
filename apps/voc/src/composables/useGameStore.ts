@@ -1,4 +1,4 @@
-import { createDeckGameStore, MAX_TIME } from "@flashcards/shared"
+import { ALL_LEVELS, createDeckGameStore, MAX_TIME } from "@flashcards/shared"
 
 import {
   DEFAULT_DECKS,
@@ -72,7 +72,12 @@ export const useGameStore = createDeckGameStore<Card, GameHistory, GameSettings>
   getLanguageBonus: (result, settings) =>
     result === "correct" && settings.language === "de-voc" ? 1 : 0,
   isValidImportCard: (card) => card.voc.trim().length > 0 && card.de.trim().length > 0,
-  newDeckCards: () => [...INITIAL_CARDS],
+  defaultSettings: () => ({
+    mode: "multiple-choice",
+    focus: "weak",
+    language: "voc-de",
+    levels: [...ALL_LEVELS],
+  }),
   getDefaultDeckName: () => DEFAULT_DECKS[0]?.name ?? "",
   resetCards: ({ setAllCards }) => {
     setAllCards(INITIAL_CARDS)

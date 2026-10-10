@@ -38,7 +38,7 @@ describe("LWK Navigation Smoke Tests", () => {
     cy.get('[data-cy="app-title"]').should("be.visible")
   })
 
-  it("navigate Home to Cards, Decks, and back to CardsMan", () => {
+  it("navigate Home to Cards and reload", () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should("be.visible")
 
@@ -49,26 +49,6 @@ describe("LWK Navigation Smoke Tests", () => {
 
     // Test page reload persistence
     cy.reload()
-    cy.get('[data-cy="edit-cards-button"]').should("be.visible")
-
-    // Navigate to Decks edit
-    cy.get('[data-cy="edit-decks-button"]').click()
-    cy.url().should("include", "/decks")
-    cy.get('[data-cy="add-deck-button"]').should("be.visible")
-
-    // Back to CardsMan
-    cy.get('[data-cy="back-button"]').click()
-    cy.url().should("include", "/cards")
-    cy.url().should("not.include", "/decks")
-    cy.get('[data-cy="edit-cards-button"]').should("be.visible")
-
-    // Navigate to Decks again for escape key test
-    cy.get('[data-cy="edit-decks-button"]').click()
-    cy.url().should("include", "/decks")
-    cy.get('[data-cy="add-deck-button"]').should("be.visible")
-    cy.get("body").type("{esc}")
-    cy.url().should("include", "/cards")
-    cy.url().should("not.include", "/decks")
     cy.get('[data-cy="edit-cards-button"]').should("be.visible")
   })
 

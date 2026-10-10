@@ -40,12 +40,10 @@ describe("VOC Typing Mode Game - DE to Voc", () => {
           cy.get('[data-cy="submit-answer-button"]').click()
 
           cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should("be.visible")
-          cy.get("body").then(($body) => {
-            // cspell:disable-next-line
-            if ($body.text().includes("Falsch") || $body.text().includes("Fast richtig")) {
-              cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should("not.be.disabled")
-            }
-          })
+          // Wrong/close answers disable the button for a countdown (label + icon re-render)
+          if (strategy !== "correct") {
+            cy.get('[data-cy="continue-button"]', { timeout: 5000 }).should("not.be.disabled")
+          }
           cy.get('[data-cy="continue-button"]').click()
         })
     })

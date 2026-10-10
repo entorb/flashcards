@@ -92,31 +92,6 @@ describe("VOC Navigation Smoke Tests", () => {
     cy.url().should("include", "/cards")
   })
 
-  it("navigate Cards to DecksEdit and back to CardsMan", () => {
-    // Navigate to Cards first
-    cy.get('[data-cy="cards-button"]').click()
-    cy.url().should("include", "/cards")
-
-    // Navigate to DecksEdit
-    cy.get('[data-cy="edit-decks-button"]').click()
-    cy.url().should("include", "/decks-edit")
-    cy.get('[data-cy="add-deck-button"]').should("be.visible")
-
-    // Test back via button goes to CardsMan
-    cy.get('[data-cy="back-button"]').click()
-    cy.url().should("include", "/cards")
-    cy.url().should("not.include", "/decks-edit")
-    cy.get('[data-cy="edit-cards-button"]').should("be.visible")
-
-    // Navigate again for escape key test
-    cy.get('[data-cy="edit-decks-button"]').click()
-    cy.url().should("include", "/decks-edit")
-    cy.get("body").type("{esc}")
-    cy.url().should("include", "/cards")
-    cy.url().should("not.include", "/decks-edit")
-    cy.get('[data-cy="edit-cards-button"]').should("be.visible")
-  })
-
   it("navigate Home to Game and back", () => {
     // Verify we're on the home page
     cy.get('[data-cy="app-title"]').should("be.visible")

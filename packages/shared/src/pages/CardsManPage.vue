@@ -8,9 +8,11 @@ import {
   CardsListOfCards,
   CardsManLevelDistribution,
   CardsTimeHistogram,
+  EmptyDeckHint,
   HomeDeckSelector,
 } from "../components/index"
 import { useCardFiltering } from "../composables/useCardFiltering"
+import { useDeckDialogs } from "../composables/useDeckDialogs"
 import { useResetCards } from "../composables/useResetCards"
 import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants"
 import { TEXT_DE } from "../text-de"
@@ -23,12 +25,12 @@ interface Props {
   bannerHtml: string
   decksTitle: string
   editCardsRoute: string
-  editDecksRoute: string
   getDecks: () => { name: string; cards: BaseCard[] }[]
-  switchDeck: (name: string) => void
+  addDeck: (name: string) => boolean
+  renameDeck: (oldName: string, newName: string) => boolean
+  removeDeck: (name: string) => boolean
+  selectDeck: (name: string) => void
   loadSettings: () => { deck?: string } | null
-  // biome-ignore lint/suspicious/noExplicitAny: Shared component accepts different GameSettings types from voc/lwk apps
-  saveSettings: (settings: any) => void
   store: {
     allCards: Ref<BaseCard[]>
     moveAllCards: (level: number) => void
@@ -43,6 +45,29 @@ const props = defineProps<Props>()
 const router = useRouter()
 const $q = useQuasar()
 const { showResetDialog } = useResetCards()
+
+const deckSelectorRef = ref<{ refresh: () => void } | null>(null)
+const deckCount = ref(0)
+
+function refreshDecks() {
+  deckCount.value = props.getDecks().length
+  deckSelectorRef.value?.refresh()
+}
+
+const { promptCreateDeck, promptRenameDeck, confirmRemoveDeck } = useDeckDialogs(
+  {
+    appPrefix: () => props.appPrefix,
+    addDeck: (name) => props.addDeck(name),
+    renameDeck: (oldName, newName) => props.renameDeck(oldName, newName),
+    removeDeck: (name) => props.removeDeck(name),
+    selectDeck: (name) => props.selectDeck(name),
+  },
+  refreshDecks,
+)
+
+function currentDeckName(): string {
+  return props.loadSettings()?.deck ?? props.getDecks()[0]?.name ?? ""
+}
 
 const {
   selectedLevel,
@@ -86,13 +111,15 @@ function handleGoBack() {
 }
 
 function handleKeyDown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
+  // Escape inside an open dialog only closes the dialog
+  if (event.key === "Escape" && !globalThis.document.querySelector(".q-dialog")) {
     handleGoBack()
   }
 }
 
 onMounted(() => {
   globalThis.addEventListener("keydown", handleKeyDown)
+  deckCount.value = props.getDecks().length
 })
 
 onUnmounted(() => {
@@ -101,10 +128,6 @@ onUnmounted(() => {
 
 function handleEditCards() {
   void router.push(props.editCardsRoute)
-}
-
-function handleEditDecks() {
-  void router.push(props.editDecksRoute)
 }
 
 function handleMoveClick() {
@@ -197,24 +220,52 @@ function handleResetCardsToDefaultSet() {
             />
             {{ decksTitle }}
           </div>
-          <div class="row items-center q-gutter-md">
-            <div class="col">
+          <div class="row items-center q-gutter-sm">
+            <div
+              class="col"
+              data-cy="deck-selector"
+            >
               <HomeDeckSelector
+                ref="deckSelectorRef"
                 :get-decks="getDecks"
-                :switch-deck="switchDeck"
+                :switch-deck="selectDeck"
                 :load-settings="loadSettings"
-                :save-settings="saveSettings"
               />
             </div>
             <q-btn
               outline
+              round
+              color="primary"
+              icon="add"
+              :aria-label="TEXT_DE[appPrefix].decks.addDeck"
+              data-cy="add-deck-button"
+              @click="promptCreateDeck"
+            >
+              <q-tooltip>{{ TEXT_DE[appPrefix].decks.addDeck }}</q-tooltip>
+            </q-btn>
+            <q-btn
+              outline
+              round
               color="primary"
               icon="edit"
-              :label="TEXT_DE.shared.cards.edit"
-              no-caps
-              data-cy="edit-decks-button"
-              @click="handleEditDecks"
-            />
+              :aria-label="TEXT_DE.shared.cards.rename"
+              data-cy="rename-deck-button"
+              @click="promptRenameDeck(currentDeckName())"
+            >
+              <q-tooltip>{{ TEXT_DE.shared.cards.rename }}</q-tooltip>
+            </q-btn>
+            <q-btn
+              outline
+              round
+              color="negative"
+              icon="delete"
+              :aria-label="TEXT_DE.shared.cards.delete"
+              :disable="deckCount <= 1"
+              data-cy="remove-deck-button"
+              @click="confirmRemoveDeck(currentDeckName())"
+            >
+              <q-tooltip>{{ TEXT_DE.shared.cards.delete }}</q-tooltip>
+            </q-btn>
           </div>
         </q-card-section>
       </q-card>
@@ -242,38 +293,46 @@ function handleResetCardsToDefaultSet() {
         </q-card-section>
       </q-card>
 
-      <!-- Level Distribution -->
-      <CardsManLevelDistribution
-        :cards="props.store.allCards.value"
-        :selected-level="selectedLevel"
-        @reset="handleResetCards"
-        @level-click="handleLevelClick"
-      />
-
-      <!-- Time Histogram -->
-      <CardsTimeHistogram
-        :cards="props.store.allCards.value"
-        :selected-bucket="selectedTimeBucket"
-        @bucket-click="handleTimeBucketClick"
-      />
-
-      <!-- Current Deck Cards -->
-      <CardsListOfCards
-        :all-cards="props.store.allCards.value"
-        :cards-to-show="cardsToShow"
-        :selected-level="selectedLevel"
-        :get-label="getCardLabel"
-        :get-key="getCardKey"
-        :duplicate-keys="duplicateKeys"
-        :title="listTitle ?? ''"
-      />
-
-      <CardManActions
-        v-model="targetLevel"
+      <EmptyDeckHint
+        v-if="store.allCards.value.length === 0"
         :app-prefix="appPrefix"
-        @move-click="handleMoveClick"
-        @reset-click="handleResetCardsToDefaultSet"
+        @add="handleEditCards"
       />
+
+      <template v-else>
+        <!-- Level Distribution -->
+        <CardsManLevelDistribution
+          :cards="props.store.allCards.value"
+          :selected-level="selectedLevel"
+          @reset="handleResetCards"
+          @level-click="handleLevelClick"
+        />
+
+        <!-- Time Histogram -->
+        <CardsTimeHistogram
+          :cards="props.store.allCards.value"
+          :selected-bucket="selectedTimeBucket"
+          @bucket-click="handleTimeBucketClick"
+        />
+
+        <!-- Current Deck Cards -->
+        <CardsListOfCards
+          :all-cards="props.store.allCards.value"
+          :cards-to-show="cardsToShow"
+          :selected-level="selectedLevel"
+          :get-label="getCardLabel"
+          :get-key="getCardKey"
+          :duplicate-keys="duplicateKeys"
+          :title="listTitle ?? ''"
+        />
+
+        <CardManActions
+          v-model="targetLevel"
+          :app-prefix="appPrefix"
+          @move-click="handleMoveClick"
+          @reset-click="handleResetCardsToDefaultSet"
+        />
+      </template>
     </div>
   </q-page>
 </template>
