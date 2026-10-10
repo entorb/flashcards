@@ -15,7 +15,6 @@ const { SharedCardsManPageStub } = vi.hoisted(() => ({
     template: `<div data-cy="shared-cards-man-page">
       <button data-cy="back-button" @click="$emit('back')" />
       <button data-cy="edit-cards-button" @click="$emit('editCards')" />
-      <button data-cy="edit-decks-button" @click="$emit('editDecks')" />
     </div>`,
     props: [
       "appPrefix",
@@ -23,16 +22,17 @@ const { SharedCardsManPageStub } = vi.hoisted(() => ({
       "bannerHtml",
       "decksTitle",
       "editCardsRoute",
-      "editDecksRoute",
       "getDecks",
-      "switchDeck",
+      "addDeck",
+      "renameDeck",
+      "removeDeck",
+      "selectDeck",
       "loadSettings",
-      "saveSettings",
       "store",
       "getCardLabel",
       "getCardKey",
     ],
-    emits: ["back", "editCards", "editDecks"],
+    emits: ["back", "editCards"],
   },
 }))
 
@@ -45,7 +45,10 @@ const mockAllCards = ref<BaseCard[]>([{ level: 1, time: 60 }])
 const mockMoveAllCards = vi.fn()
 const mockResetCards = vi.fn()
 const mockGetDecks = vi.fn(() => [{ name: "en", cards: mockAllCards.value }])
-const mockSwitchDeck = vi.fn()
+const mockSelectDeck = vi.fn()
+const mockAddDeck = vi.fn(() => true)
+const mockRenameDeck = vi.fn(() => true)
+const mockRemoveDeck = vi.fn(() => true)
 
 vi.mock("@/composables/useGameStore", () => ({
   useGameStore: vi.fn(() => ({
@@ -53,13 +56,15 @@ vi.mock("@/composables/useGameStore", () => ({
     moveAllCards: mockMoveAllCards,
     resetCards: mockResetCards,
     getDecks: mockGetDecks,
-    switchDeck: mockSwitchDeck,
+    selectDeck: mockSelectDeck,
+    addDeck: mockAddDeck,
+    renameDeck: mockRenameDeck,
+    removeDeck: mockRemoveDeck,
   })),
 }))
 
 vi.mock("@/services/storage", () => ({
   loadSettings: vi.fn(() => null),
-  saveSettings: vi.fn(),
 }))
 
 describe("voc CardsManPage", () => {
@@ -70,7 +75,6 @@ describe("voc CardsManPage", () => {
         { path: "/", name: "/HomePage", component: { template: "<div />" } },
         { path: "/cards", name: "/CardsManPage", component: { template: "<div />" } },
         { path: "/cards-edit", name: "/CardsEditPage", component: { template: "<div />" } },
-        { path: "/decks-edit", name: "/decks-edit", component: { template: "<div />" } },
       ],
     })
 
@@ -121,14 +125,6 @@ describe("voc CardsManPage", () => {
       expect(shared.props("editCardsRoute")).toBe("/cards-edit")
     })
 
-    it('passes editDecksRoute="/decks-edit"', async () => {
-      const router = createMockRouter()
-      const wrapper = mount(CardsManPage, createMountOptions(router))
-      await wrapper.vm.$nextTick()
-      const shared = wrapper.findComponent(SharedCardsManPageStub)
-      expect(shared.props("editDecksRoute")).toBe("/decks-edit")
-    })
-
     it("passes store with allCards, moveAllCards, resetCards", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
@@ -156,24 +152,27 @@ describe("voc CardsManPage", () => {
       expect(result[0]!.name).toBe("en")
     })
 
-    it("passes switchDeck function from store", async () => {
+    it("passes deck functions that delegate to store", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const shared = wrapper.findComponent(SharedCardsManPageStub)
-      const switchDeck = shared.props("switchDeck") as (name: string) => void
-      expect(typeof switchDeck).toBe("function")
-      switchDeck("fr")
-      expect(mockSwitchDeck).toHaveBeenCalledWith("fr")
+      ;(shared.props("selectDeck") as (name: string) => void)("fr")
+      expect(mockSelectDeck).toHaveBeenCalledWith("fr")
+      ;(shared.props("addDeck") as (name: string) => boolean)("neu")
+      expect(mockAddDeck).toHaveBeenCalledWith("neu")
+      ;(shared.props("renameDeck") as (a: string, b: string) => boolean)("fr", "neu")
+      expect(mockRenameDeck).toHaveBeenCalledWith("fr", "neu")
+      ;(shared.props("removeDeck") as (name: string) => boolean)("fr")
+      expect(mockRemoveDeck).toHaveBeenCalledWith("fr")
     })
 
-    it("passes loadSettings and saveSettings from storage", async () => {
+    it("passes loadSettings from storage", async () => {
       const router = createMockRouter()
       const wrapper = mount(CardsManPage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       const shared = wrapper.findComponent(SharedCardsManPageStub)
       expect(typeof shared.props("loadSettings")).toBe("function")
-      expect(typeof shared.props("saveSettings")).toBe("function")
     })
 
     it("passes getCardLabel function", async () => {

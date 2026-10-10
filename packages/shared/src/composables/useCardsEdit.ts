@@ -1,7 +1,6 @@
 import { useQuasar } from "quasar"
 import { type ComputedRef, computed, nextTick, type Ref, ref } from "vue"
 
-import { TEXT_DE } from "../text-de"
 import type { BaseCard } from "../types"
 import { normalizeWhitespace } from "../utils/helper"
 
@@ -137,10 +136,6 @@ export function useCardsEdit<TCard extends BaseCard>(
   }
 
   function removeCard(index: number) {
-    if (editingCards.value.length <= 1) {
-      $q.notify({ type: "negative", message: TEXT_DE.shared.cardActions.lastCardError })
-      return
-    }
     editingCards.value.splice(index, 1)
   }
 

@@ -2,6 +2,7 @@
 import type { SessionMode } from "@flashcards/shared"
 import { ALL_LEVELS, filterByLevels, TEXT_DE } from "@flashcards/shared"
 import {
+  EmptyDeckHint,
   HomeFocusSelector,
   HomeGameModeButtons,
   HomeLevelSelector,
@@ -120,6 +121,10 @@ function goToCards() {
   void router.push({ name: "/CardsManPage" })
 }
 
+function goToCardsEdit() {
+  void router.push({ name: "/CardsEditPage" })
+}
+
 function goToInfo() {
   void router.push({ name: "/InfoPage" })
 }
@@ -159,6 +164,12 @@ function goToInfo() {
           @update:model-value="handleDeckChange"
         />
       </div>
+
+      <EmptyDeckHint
+        v-if="allCards.length === 0"
+        app-prefix="voc"
+        @add="goToCardsEdit"
+      />
 
       <!-- Mode Selection -->
       <div class="q-mb-sm">

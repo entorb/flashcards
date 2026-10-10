@@ -38,7 +38,7 @@ test.describe("LWK Navigation Smoke Tests", () => {
     await expect(page.getByTestId("app-title")).toBeVisible()
   })
 
-  test("navigate Home to Cards, Decks, and back to CardsMan", async ({ page }) => {
+  test("navigate Home to Cards and reload", async ({ page }) => {
     // Verify we're on the home page
     await expect(page.getByTestId("app-title")).toBeVisible()
 
@@ -49,26 +49,6 @@ test.describe("LWK Navigation Smoke Tests", () => {
 
     // Test page reload persistence
     await page.reload()
-    await expect(page.getByTestId("edit-cards-button")).toBeVisible()
-
-    // Navigate to Decks edit
-    await page.getByTestId("edit-decks-button").click()
-    await expect(page).toHaveURL(/\/decks/)
-    await expect(page.getByTestId("add-deck-button")).toBeVisible()
-
-    // Back to CardsMan
-    await page.getByTestId("back-button").click()
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/decks/)
-    await expect(page.getByTestId("edit-cards-button")).toBeVisible()
-
-    // Navigate to Decks again for escape key test
-    await page.getByTestId("edit-decks-button").click()
-    await expect(page).toHaveURL(/\/decks/)
-    await expect(page.getByTestId("add-deck-button")).toBeVisible()
-    await page.keyboard.press("Escape")
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/decks/)
     await expect(page.getByTestId("edit-cards-button")).toBeVisible()
   })
 

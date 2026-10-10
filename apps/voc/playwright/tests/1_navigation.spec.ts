@@ -94,31 +94,6 @@ test.describe("VOC Navigation Smoke Tests", () => {
     await expect(page).toHaveURL(/\/cards/)
   })
 
-  test("navigate Cards to DecksEdit and back to CardsMan", async ({ page }) => {
-    // Navigate to Cards first
-    await page.getByTestId("cards-button").click()
-    await expect(page).toHaveURL(/\/cards/)
-
-    // Navigate to DecksEdit
-    await page.getByTestId("edit-decks-button").click()
-    await expect(page).toHaveURL(/\/decks-edit/)
-    await expect(page.getByTestId("add-deck-button")).toBeVisible()
-
-    // Test back via button goes to CardsMan
-    await page.getByTestId("back-button").click()
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/decks-edit/)
-    await expect(page.getByTestId("edit-cards-button")).toBeVisible()
-
-    // Navigate again for escape key test
-    await page.getByTestId("edit-decks-button").click()
-    await expect(page).toHaveURL(/\/decks-edit/)
-    await page.keyboard.press("Escape")
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/decks-edit/)
-    await expect(page.getByTestId("edit-cards-button")).toBeVisible()
-  })
-
   test("navigate Home to Game and back", async ({ page }) => {
     // Verify we're on the home page
     await expect(page.getByTestId("app-title")).toBeVisible()

@@ -4,7 +4,7 @@ import { TEXT_DE } from "@flashcards/shared"
 import { CardsManPage } from "@flashcards/shared/components"
 
 import { useGameStore } from "../composables/useGameStore"
-import { loadSettings, saveSettings } from "../services/storage"
+import { loadSettings } from "../services/storage"
 
 const store = useGameStore()
 
@@ -26,11 +26,12 @@ function getCardKey(card: BaseCard): string {
     :banner-html="TEXT_DE.voc.cards.header"
     :decks-title="TEXT_DE.voc.decks.title"
     edit-cards-route="/cards-edit"
-    edit-decks-route="/decks-edit"
     :get-decks="() => store.getDecks()"
-    :switch-deck="name => store.switchDeck(name)"
+    :add-deck="store.addDeck"
+    :rename-deck="store.renameDeck"
+    :remove-deck="store.removeDeck"
+    :select-deck="store.selectDeck"
     :load-settings="loadSettings"
-    :save-settings="saveSettings"
     :store="store"
     :get-card-label="getCardLabel"
     :get-card-key="getCardKey"

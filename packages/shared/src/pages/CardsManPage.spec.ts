@@ -31,12 +31,24 @@ function makeDialogWithOk(cb?: () => void) {
     onDismiss: vi.fn(),
   } as ReturnType<typeof dialogMock>
 }
+
+// Dialog mock whose prompt resolves with the given value
+function makeDialogWithValue(value: string) {
+  return {
+    onOk: (fn: (val: string) => void) => {
+      fn(value)
+      return { onOk: vi.fn(), onCancel: vi.fn(), onDismiss: vi.fn() }
+    },
+    onCancel: vi.fn(),
+    onDismiss: vi.fn(),
+  } as unknown as ReturnType<typeof dialogMock>
+}
+
 const router = createRouter({
   history: createMemoryHistory(),
   routes: [
     { path: "/", component: { template: "<div />" } },
     { path: "/cards-edit", component: { template: "<div />" } },
-    { path: "/decks-edit", component: { template: "<div />" } },
   ],
 })
 
@@ -61,11 +73,15 @@ function makeProps(store: ReturnType<typeof makeMockStore>) {
     bannerHtml: "<strong>Info</strong>",
     decksTitle: "Decks",
     editCardsRoute: "/cards-edit",
-    editDecksRoute: "/decks-edit",
-    getDecks: vi.fn(() => [{ name: "LWK_1", cards: mockCards }]),
-    switchDeck: vi.fn(),
+    getDecks: vi.fn(() => [
+      { name: "LWK_1", cards: mockCards },
+      { name: "LWK_2", cards: [] },
+    ]),
+    addDeck: vi.fn(() => true),
+    renameDeck: vi.fn(() => true),
+    removeDeck: vi.fn(() => true),
+    selectDeck: vi.fn(),
     loadSettings: vi.fn(() => ({ deck: "LWK_1" })),
-    saveSettings: vi.fn(),
     store,
     getCardLabel: (card: BaseCard) => `Level ${card.level}`,
     getCardKey: (card: BaseCard) => `${card.level}-${card.time}`,
@@ -75,7 +91,7 @@ function makeProps(store: ReturnType<typeof makeMockStore>) {
 // Reusable stubs — plain versions for navigation tests
 const plainStubs = {
   ...quasarStubs,
-  HomeDeckSelector: { template: "<div />" },
+  HomeDeckSelector: { template: "<div />", methods: { refresh: vi.fn() } },
   CardsManLevelDistribution: { template: "<div />" },
   CardsListOfCards: {
     props: ["title", "selectedLevel"],
@@ -121,11 +137,66 @@ describe("CardsManPage (shared)", () => {
     expect(router.push).toHaveBeenCalledWith("/cards-edit")
   })
 
-  it("edit-decks button navigates to editDecksRoute", async () => {
-    const store = makeMockStore()
-    const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
-    await wrapper.find('[data-cy="edit-decks-button"]').trigger("click")
-    expect(router.push).toHaveBeenCalledWith("/decks-edit")
+  describe("deck management", () => {
+    it("add creates the trimmed deck and selects it", async () => {
+      const props = makeProps(makeMockStore())
+      dialogMock.mockReturnValueOnce(makeDialogWithValue("  Neu  "))
+      const wrapper = mount(CardsManPage, { props, global: globalOpts })
+      await wrapper.find('[data-cy="add-deck-button"]').trigger("click")
+      expect(props.addDeck).toHaveBeenCalledWith("Neu")
+      expect(props.selectDeck).toHaveBeenCalledWith("Neu")
+    })
+
+    it("add with duplicate name notifies and does not select", async () => {
+      const props = makeProps(makeMockStore())
+      props.addDeck.mockReturnValue(false)
+      dialogMock.mockReturnValueOnce(makeDialogWithValue("LWK_1"))
+      const wrapper = mount(CardsManPage, { props, global: globalOpts })
+      await wrapper.find('[data-cy="add-deck-button"]').trigger("click")
+      expect(notifyMock).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }))
+      expect(props.selectDeck).not.toHaveBeenCalled()
+    })
+
+    it("rename renames the current deck", async () => {
+      const props = makeProps(makeMockStore())
+      dialogMock.mockReturnValueOnce(makeDialogWithValue("Englisch"))
+      const wrapper = mount(CardsManPage, { props, global: globalOpts })
+      await wrapper.find('[data-cy="rename-deck-button"]').trigger("click")
+      expect(props.renameDeck).toHaveBeenCalledWith("LWK_1", "Englisch")
+    })
+
+    it("rename with unchanged name does nothing", async () => {
+      const props = makeProps(makeMockStore())
+      dialogMock.mockReturnValueOnce(makeDialogWithValue("LWK_1"))
+      const wrapper = mount(CardsManPage, { props, global: globalOpts })
+      await wrapper.find('[data-cy="rename-deck-button"]').trigger("click")
+      expect(props.renameDeck).not.toHaveBeenCalled()
+    })
+
+    it("remove deletes the current deck after confirmation", async () => {
+      const props = makeProps(makeMockStore())
+      dialogMock.mockReturnValueOnce(makeDialogWithOk())
+      const wrapper = mount(CardsManPage, { props, global: globalOpts })
+      await wrapper.find('[data-cy="remove-deck-button"]').trigger("click")
+      expect(props.removeDeck).toHaveBeenCalledWith("LWK_1")
+    })
+
+    it("remove button is disabled for the last deck", async () => {
+      const props = makeProps(makeMockStore())
+      props.getDecks.mockReturnValue([{ name: "LWK_1", cards: mockCards }])
+      const wrapper = mount(CardsManPage, { props, global: globalOpts })
+      expect(wrapper.find('[data-cy="remove-deck-button"]').attributes("disable")).toBe("true")
+    })
+
+    it("empty deck shows hint instead of stats", async () => {
+      const store = makeMockStore()
+      store.allCards.value = []
+      const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
+      expect(wrapper.find('[data-cy="empty-deck-hint"]').exists()).toBe(true)
+      expect(wrapper.find(".list-stub").exists()).toBe(false)
+      wrapper.findComponent({ name: "EmptyDeckHint" }).vm.$emit("add")
+      expect(router.push).toHaveBeenCalledWith("/cards-edit")
+    })
   })
 
   it("Escape key triggers navigation to /", () => {
