@@ -68,7 +68,7 @@ function createStore(
     saveDecks: vi.fn((decks: Array<{ name: string; cards: TestCard[] }>) => {
       decksState = decks
     }),
-    loadSettings: vi.fn(() => ({ ...settingsState })),
+    loadSettings: vi.fn((): TestSettings | null => ({ ...settingsState })),
     saveSettings: vi.fn((settings: TestSettings) => {
       settingsState = { ...settings }
     }),
@@ -87,7 +87,7 @@ function createStore(
     tracksTime: () => true,
     timeBonusPredicate: () => false,
     isValidImportCard: (card) => card.word.trim().length > 0,
-    newDeckCards: () => [{ word: "new-card", level: 1, time: 60 }],
+    defaultSettings: () => ({ ...SETTINGS }),
     getDefaultDeckName: () => "deck-a",
     resetCards: ({ setAllCards }) => {
       setAllCards([{ ...CARD_A }])
@@ -296,15 +296,29 @@ describe("useDeckGameStore - deck operations", () => {
     expect(store.allCards.value).toEqual([CARD_A, CARD_B, CARD_C])
   })
 
-  it("addDeck rejects duplicates and initializes new decks", () => {
+  it("addDeck rejects duplicates and creates empty decks", () => {
     const { storage, store } = createStore()
     expect(store.addDeck("deck-a")).toBe(false)
     expect(store.addDeck("deck-c")).toBe(true)
     expect(storage.saveDecks).toHaveBeenLastCalledWith(
-      expect.arrayContaining([
-        { name: "deck-c", cards: [{ word: "new-card", level: 1, time: 60 }] },
-      ]),
+      expect.arrayContaining([{ name: "deck-c", cards: [] }]),
     )
+  })
+
+  it("selectDeck switches cards and persists the deck in settings", () => {
+    const { storage, store } = createStore()
+    store.selectDeck("deck-b")
+    expect(storage.saveSettings).toHaveBeenLastCalledWith(
+      expect.objectContaining({ deck: "deck-b" }),
+    )
+    expect(store.allCards.value).toEqual([CARD_C])
+  })
+
+  it("selectDeck falls back to default settings when none are stored", () => {
+    const { storage, store } = createStore()
+    storage.loadSettings.mockReturnValueOnce(null)
+    store.selectDeck("deck-b")
+    expect(storage.saveSettings).toHaveBeenLastCalledWith({ ...SETTINGS, deck: "deck-b" })
   })
 
   it("removeDeck of the active deck switches to the new default", () => {
@@ -332,9 +346,16 @@ describe("useDeckGameStore - importCards and resetCards", () => {
     expect(storage.saveCards).toHaveBeenCalled()
   })
 
-  it("importCards ignores an empty list", () => {
+  it("importCards saves an empty list", () => {
     const { storage, store } = createStore()
     store.importCards([])
+    expect(store.allCards.value).toEqual([])
+    expect(storage.saveCards).toHaveBeenCalledWith([])
+  })
+
+  it("importCards ignores a list of only invalid cards", () => {
+    const { storage, store } = createStore()
+    store.importCards([{ word: "   ", level: 1, time: 60 }])
     expect(storage.saveCards).not.toHaveBeenCalled()
   })
 

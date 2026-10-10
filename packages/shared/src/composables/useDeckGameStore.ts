@@ -83,8 +83,8 @@ export interface DeckGameStoreConfig<
   getLanguageBonus?: (result: AnswerStatus, settings: TSettings) => number
   /** Validate an imported card */
   isValidImportCard: (card: TCard) => boolean
-  /** Cards used to initialize a newly created deck */
-  newDeckCards: () => TCard[]
+  /** Settings used when none are stored yet (needed to persist the selected deck) */
+  defaultSettings: () => TSettings
   /** Fallback deck name when the current deck is removed */
   getDefaultDeckName: () => string
   /** Reset all cards to the app default set (voc: INITIAL_CARDS, lwk: default deck) */
@@ -350,9 +350,9 @@ export function createDeckGameStore<
     }
 
     function importCards(newCards: TCard[]) {
-      if (newCards.length === 0) return
       const validCards = newCards.filter(config.isValidImportCard)
-      if (validCards.length === 0) return
+      // Empty list is a valid save (all cards deleted); all-invalid input is not
+      if (newCards.length > 0 && validCards.length === 0) return
       baseStore.allCards.value = validCards
       // Explicitly save to ensure cards are persisted immediately
       storage.saveCards(validCards)
@@ -368,13 +368,20 @@ export function createDeckGameStore<
       baseStore.allCards.value = deck.cards
     }
 
+    /** Switch to a deck and persist it as the active deck */
+    function selectDeck(deckName: string) {
+      const settings = storage.loadSettings() ?? config.defaultSettings()
+      storage.saveSettings({ ...settings, deck: deckName })
+      switchDeck(deckName)
+    }
+
     function addDeck(name: string): boolean {
       const decks = storage.loadDecks()
       // Check for duplicate name
       if (decks.some((d) => d.name === name)) {
         return false
       }
-      decks.push({ name, cards: config.newDeckCards() })
+      decks.push({ name, cards: [] })
       storage.saveDecks(decks)
       return true
     }
@@ -431,6 +438,7 @@ export function createDeckGameStore<
       removeDeck: removeDeckAndSwitch,
       renameDeck: deckManagement.renameDeck,
       switchDeck,
+      selectDeck,
     }
   }
 }

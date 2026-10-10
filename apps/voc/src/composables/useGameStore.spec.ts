@@ -609,13 +609,13 @@ describe("useGameStore - deck operations", () => {
     expect(decks[1]!.name).toBe("de")
   })
 
-  it("addDeck creates a new deck with INITIAL_CARDS", async () => {
+  it("addDeck creates a new empty deck", async () => {
     const store = await setupMocks()
     const { saveDecks } = await import("@/services/storage")
 
     const result = store.addDeck("fr")
     expect(result).toBe(true)
-    expect(saveDecks).toHaveBeenCalled()
+    expect(saveDecks).toHaveBeenLastCalledWith(expect.arrayContaining([{ name: "fr", cards: [] }]))
   })
 
   it("addDeck returns false for duplicate deck name", async () => {

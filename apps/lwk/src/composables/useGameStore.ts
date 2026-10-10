@@ -1,4 +1,4 @@
-import { createDeckGameStore, MAX_TIME } from "@flashcards/shared"
+import { ALL_LEVELS, createDeckGameStore, MAX_TIME } from "@flashcards/shared"
 
 import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from "../constants"
 import { selectCards } from "../services/cardSelector"
@@ -49,7 +49,7 @@ export const useGameStore = createDeckGameStore<Card, GameHistory, GameSettings>
     card.time < MAX_TIME &&
     answerTime <= card.time,
   isValidImportCard: (card) => card.word.trim().length > 0,
-  newDeckCards: () => [],
+  defaultSettings: () => ({ mode: "copy", focus: "weak", levels: [...ALL_LEVELS] }),
   getDefaultDeckName: () => DEFAULT_DECKS[0]?.name ?? "",
   resetCards: ({ setAllCards }) => {
     const defaultDeck = DEFAULT_DECKS[0]
