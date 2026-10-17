@@ -10,7 +10,6 @@ import {
   initializeCards,
   loadCards,
   parseCardQuestion,
-  removeLegacyDivisorCards,
   saveCards,
 } from "./storage"
 
@@ -217,20 +216,6 @@ describe("div storage — unit tests", () => {
         expect(found).toBeDefined()
         expect(found?.answer).toBe(expected.answer)
       }
-    })
-  })
-
-  // ─── removeLegacyDivisorCards ───────────────────────────────────────────
-
-  describe("removeLegacyDivisorCards", () => {
-    it("deletes stored cards with divisor 11 or 12 and keeps the rest", () => {
-      saveCards([
-        { question: "6:2", answer: 3, level: 5, time: 10 },
-        { question: "22:11", answer: 2, level: 4, time: 7 },
-        { question: "48:12", answer: 4, level: 3, time: 8 },
-      ])
-      removeLegacyDivisorCards()
-      expect(loadCards().map((c) => c.question)).toEqual(["6:2"])
     })
   })
 

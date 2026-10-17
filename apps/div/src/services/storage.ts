@@ -138,16 +138,6 @@ export function getVirtualCards(storedCards: Card[] = factory.loadCards()): Card
   return cards
 }
 
-// TODO: delete after 1.10.2026
-/**
- * Migration: delete stored cards with divisor 11 or 12 (removed feature)
- */
-export function removeLegacyDivisorCards(): void {
-  const cards = factory.loadCards()
-  const kept = cards.filter((c) => parseCardQuestion(c.question).divisor <= 9)
-  if (kept.length !== cards.length) factory.saveCards(kept)
-}
-
 // ============================================================================
 // RE-EXPORT SHARED FACTORY FUNCTIONS (preserves public API)
 // ============================================================================
