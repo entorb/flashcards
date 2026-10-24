@@ -234,4 +234,11 @@ const isActive = computed(() => props.progress > 0 && props.progress < 100)
     transform: scale(1.2);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .falling-sand,
+  .star {
+    animation: none;
+  }
+}
 </style>

@@ -250,8 +250,8 @@ function goHome() {
                   class="grid-cell"
                   :style="getCellStyle(y, x)"
                 >
-                  <div class="cell-content q-pa-xs">
-                    <div class="text-caption text-weight-medium">
+                  <div class="cell-content">
+                    <div class="cell-caption text-weight-medium">
                       <!-- Level -->
                       L{{ (y < x ? getCard(x, y) : getCard(y, x)).level }}
                     </div>
@@ -260,7 +260,7 @@ function goHome() {
                       {{ y }}x{{ x }}<br />= {{ x * y }}
                     </div>
                     <!-- Time -->
-                    <div class="text-caption text-weight-medium">
+                    <div class="cell-caption text-weight-medium">
                       {{ (y < x ? getCard(x, y) : getCard(y, x)).time.toFixed(1) }}s
                     </div>
                   </div>
@@ -362,6 +362,12 @@ function goHome() {
 .cell-content {
   text-align: center;
   width: 100%;
+  padding: 4px;
+}
+
+.cell-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.03333em;
 }
 
 .cell-answer {
@@ -384,7 +390,7 @@ function goHome() {
   }
 
   .cell-content {
-    padding: 2px !important;
+    padding: 2px;
   }
 
   .cell-answer {
@@ -392,8 +398,14 @@ function goHome() {
     line-height: 1.1;
   }
 
-  .text-caption {
-    font-size: 0.65rem !important;
+  .cell-caption {
+    font-size: 0.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-cell {
+    transition: none;
   }
 }
 </style>
