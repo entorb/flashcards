@@ -14,7 +14,7 @@ onMounted(() => {
   range.value = loadRange()
 })
 
-function formatSelection(select: number[] | string): string {
+function formatSelection(select: number[] | string, squares: boolean | undefined = false): string {
   if (typeof select === "string") {
     if (select === "all") {
       // Display 'all' as range representation (min-max of current range)
@@ -24,11 +24,13 @@ function formatSelection(select: number[] | string): string {
     }
     return select
   }
-  return select.join(", ")
+  const tables = select.join(", ")
+  if (!squares) return tables
+  return `${tables}, ${TEXT_DE.multiply.selectionSquares}`
 }
 
 function formatDetails(game: GameHistory): string {
-  const selection = `${TEXT_DE.multiply.selection}: ${formatSelection(game.settings.select)}`
+  const selection = `${TEXT_DE.multiply.selection}: ${formatSelection(game.settings.select, game.settings.squares)}`
   const focus = `${TEXT_DE.shared.words.focus}: ${getFocusText(game.settings.focus)}`
   return `${selection} | ${focus}`
 }

@@ -120,6 +120,25 @@ describe("1x1 HistoryPage", () => {
     expect(entry.text()).toContain("3, 4, 5")
   })
 
+  it("formatDetails appends x² when squares were selected", async () => {
+    const mockHistory: GameHistory[] = [
+      {
+        date: "2024-01-15T10:00:00.000Z",
+        points: 42,
+        correctAnswers: 8,
+        settings: { select: [4, 7], squares: true, focus: "weak", levels: [1, 2, 3, 4, 5] },
+      },
+    ]
+    storageMocks.loadHistory.mockReturnValue(mockHistory)
+
+    const router = createMockRouter()
+    const wrapper = mount(HistoryPage, createMountOptions(router))
+    await wrapper.vm.$nextTick()
+
+    const entry = wrapper.find('[data-cy="history-game-0"]')
+    expect(entry.text()).toContain("4, 7, x²")
+  })
+
   it('formatDetails formats "all" selection as min-max range', async () => {
     storageMocks.loadRange.mockReturnValue([3, 4, 5, 6, 7, 8, 9])
     const mockHistory: GameHistory[] = [

@@ -9,7 +9,10 @@ import type { BaseCard, BaseGameHistory, BaseGameSettings } from "@flashcards/sh
 // App-Specific Types
 // ============================================================================
 
-/** Selection type for multiplication tables */
+/**
+ * Selection type for multiplication tables
+ * 'x²' only appears in history entries saved before squares became a separate toggle
+ */
 export type SelectionType = number[] | "all" | "x²"
 
 // ============================================================================
@@ -26,7 +29,8 @@ export interface Card extends BaseCard {
 // ============================================================================
 
 export interface GameSettings extends BaseGameSettings {
-  select: SelectionType // Array of numbers 3-9, e.g. [3, 5, 7], or 'all', or 'x²'
+  select: SelectionType // Array of numbers 3-9, e.g. [3, 5, 7], or 'all'
+  squares?: boolean // Include x² cards in addition to the selected tables
 }
 
 // ============================================================================

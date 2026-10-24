@@ -67,9 +67,7 @@ describe("useGameStore - SessionMode round-trip through sessionStorage (Property
         }))
 
         vi.doMock("@/services/cardSelector", () => ({
-          filterCardsAll: vi.fn(() => [...defaultCards]),
-          filterCardsBySelection: vi.fn(() => [...defaultCards]),
-          filterCardsSquares: vi.fn(() => [...defaultCards]),
+          filterCardsBySettings: vi.fn(() => [...defaultCards]),
           selectCardsForRound: vi.fn((c: Card[]) => c),
         }))
 
@@ -116,9 +114,7 @@ describe("useGameStore - SessionMode round-trip through sessionStorage (Property
         }))
 
         vi.doMock("@/services/cardSelector", () => ({
-          filterCardsAll: vi.fn(() => [...defaultCards]),
-          filterCardsBySelection: vi.fn(() => [...defaultCards]),
-          filterCardsSquares: vi.fn(() => [...defaultCards]),
+          filterCardsBySettings: vi.fn(() => [...defaultCards]),
           selectCardsForRound: vi.fn((c: Card[]) => c),
         }))
 
