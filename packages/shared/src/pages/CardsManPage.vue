@@ -171,7 +171,7 @@ function handleResetCardsToDefaultSet() {
 
 <template>
   <q-page
-    class="q-pa-md card-management-page"
+    class="q-px-md q-pt-md card-management-page"
     style="max-width: 700px; margin: 0 auto"
   >
     <!-- Header with back button -->
@@ -340,7 +340,7 @@ function handleResetCardsToDefaultSet() {
 <style scoped>
 .card-management-page {
   min-height: 100vh;
-  padding-bottom: 100px !important;
+  padding-bottom: 100px;
 }
 
 </style>
