@@ -31,9 +31,7 @@ vi.mock("@/services/storage", () => ({
 }))
 
 vi.mock("@/services/cardSelector", () => ({
-  filterCardsAll: (cards: Card[]) => cards,
-  filterCardsBySelection: (cards: Card[]) => cards,
-  filterCardsSquares: (cards: Card[]) => cards,
+  filterCardsBySettings: (cards: Card[]) => cards,
 }))
 
 vi.mock("@/composables/useGameStore", () => ({
@@ -231,13 +229,14 @@ describe("HomePage", () => {
       expect((vm.select as number[]).length).toBeGreaterThan(1)
     })
 
-    it("clicking squares selects x² mode", async () => {
+    it("clicking squares when all tables are selected selects only squares", async () => {
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="table-selection-button-squares"]').trigger("click")
-      const vm = wrapper.vm as unknown as { select: number[] | string }
-      expect(vm.select).toBe("x²")
+      const vm = wrapper.vm as unknown as { select: number[] | string; squares: boolean }
+      expect(vm.select).toEqual([])
+      expect(vm.squares).toBe(true)
     })
 
     it("clicking squares again deselects and returns to all in range", async () => {
@@ -246,8 +245,22 @@ describe("HomePage", () => {
       await wrapper.vm.$nextTick()
       await wrapper.find('[data-cy="table-selection-button-squares"]').trigger("click")
       await wrapper.find('[data-cy="table-selection-button-squares"]').trigger("click")
-      const vm = wrapper.vm as unknown as { select: number[] | string }
+      const vm = wrapper.vm as unknown as { select: number[] | string; squares: boolean }
       expect(Array.isArray(vm.select)).toBe(true)
+      expect((vm.select as number[]).length).toBeGreaterThan(1)
+      expect(vm.squares).toBe(false)
+    })
+
+    it("clicking squares adds x² to the selected tables", async () => {
+      const router = createMockRouter()
+      const wrapper = mount(HomePage, createMountOptions(router))
+      await wrapper.vm.$nextTick()
+      await wrapper.find('[data-cy="table-selection-button-4"]').trigger("click")
+      await wrapper.find('[data-cy="table-selection-button-7"]').trigger("click")
+      await wrapper.find('[data-cy="table-selection-button-squares"]').trigger("click")
+      const vm = wrapper.vm as unknown as { select: number[] | string; squares: boolean }
+      expect(vm.select).toEqual([4, 7])
+      expect(vm.squares).toBe(true)
     })
   })
 

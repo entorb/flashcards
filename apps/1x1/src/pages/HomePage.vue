@@ -13,7 +13,7 @@ import { useRouter } from "vue-router"
 import GroundhogMascot from "@/components/GroundhogMascot.vue"
 import { useGameStore } from "@/composables/useGameStore"
 import { BASE_PATH, DEFAULT_RANGE } from "@/constants"
-import { filterCardsAll, filterCardsBySelection, filterCardsSquares } from "@/services/cardSelector"
+import { filterCardsBySettings } from "@/services/cardSelector"
 import {
   getVirtualCardsForRange,
   loadGameStats,
@@ -28,6 +28,7 @@ const router = useRouter()
 const { gameStats, gameSettings, startGame: storeStartGame } = useGameStore()
 
 const select = ref<SelectionType>([...DEFAULT_RANGE])
+const squares = ref(false)
 const focus = ref<FocusType>("weak")
 const range = ref<number[]>([...DEFAULT_RANGE])
 const levels = ref<CardLevel[]>([...ALL_LEVELS])
@@ -52,21 +53,18 @@ const allRowsSelected = computed(() => {
   )
 })
 
-const isSquaresSelected = computed(() => select.value === "x²" || allRowsSelected.value)
+const isSquaresSelected = computed(() => squares.value || allRowsSelected.value)
 
 // Compute filtered cards for the current selection
 const basePool = computed(() => {
   const currentRange = range.value
   const allAvailableCards = getVirtualCardsForRange(currentRange)
-  const rangeSet = new Set(currentRange)
-
-  if (select.value === "x²") {
-    return filterCardsSquares(allAvailableCards, rangeSet)
-  }
-  if (Array.isArray(select.value)) {
-    return filterCardsBySelection(allAvailableCards, select.value, rangeSet)
-  }
-  return filterCardsAll(allAvailableCards, rangeSet)
+  return filterCardsBySettings(
+    allAvailableCards,
+    select.value,
+    squares.value,
+    new Set(currentRange),
+  )
 })
 
 // Cards matching the selected levels
@@ -80,6 +78,7 @@ onMounted(() => {
   const savedSettings = loadSettings()
   if (savedSettings) {
     select.value = savedSettings.select
+    squares.value = savedSettings.squares ?? false
     focus.value = savedSettings.focus
     levels.value = savedSettings.levels
   } else {
@@ -90,6 +89,7 @@ onMounted(() => {
   // Restore select and focus from gameSettings in store if available (overrides saved)
   if (gameSettings.value) {
     select.value = gameSettings.value.select
+    squares.value = gameSettings.value.squares ?? false
     focus.value = gameSettings.value.focus
     levels.value = gameSettings.value.levels
   }
@@ -105,6 +105,7 @@ function startGame() {
 function startGameWithMode(mode: SessionMode) {
   const gameConfig = {
     select: select.value,
+    squares: squares.value,
     focus: focus.value,
     levels: [...levels.value],
   }
@@ -156,12 +157,19 @@ function toggleSelect(option: number) {
 }
 
 function toggleSquares() {
-  if (select.value === "x²") {
-    // If x² is already selected, deselect and go to all in range
-    select.value = [...selectOptions.value]
+  if (squares.value) {
+    // Turn x² off; when only squares were selected, fall back to all tables
+    squares.value = false
+    if (Array.isArray(select.value) && select.value.length === 0) {
+      select.value = [...selectOptions.value]
+    }
+  } else if (allRowsSelected.value) {
+    // All tables already include the squares, so clicking switches to squares only
+    select.value = []
+    squares.value = true
   } else {
-    // Select x² mode
-    select.value = "x²"
+    // Add x² on top of the selected tables
+    squares.value = true
   }
 }
 </script>

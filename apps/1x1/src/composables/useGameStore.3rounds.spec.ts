@@ -65,9 +65,7 @@ async function setup3RoundsMocks(cards: Card[]) {
   }))
 
   vi.doMock("@/services/cardSelector", () => ({
-    filterCardsAll: vi.fn(() => [...cards]),
-    filterCardsBySelection: vi.fn(() => [...cards]),
-    filterCardsSquares: vi.fn(() => [...cards]),
+    filterCardsBySettings: vi.fn(() => [...cards]),
     selectCardsForRound: vi.fn((c: Card[]) => [...c]),
   }))
 

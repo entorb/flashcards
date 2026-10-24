@@ -2,12 +2,7 @@ import type { FocusType } from "@flashcards/shared"
 import { createGameStoreFactory, filterByLevels } from "@flashcards/shared"
 
 import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from "@/constants"
-import {
-  filterCardsAll,
-  filterCardsBySelection,
-  filterCardsSquares,
-  selectCardsForRound,
-} from "@/services/cardSelector"
+import { filterCardsBySettings, selectCardsForRound } from "@/services/cardSelector"
 import {
   getVirtualCardsForRange,
   initializeCards,
@@ -66,15 +61,12 @@ export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettin
   },
   filterCards: (allCards, settings, range) => {
     const rangeSet = new Set(range)
-    let selected: Card[]
-    if (settings.select === "x²") {
-      selected = filterCardsSquares(allCards, rangeSet)
-    } else if (settings.select === "all") {
-      selected = filterCardsAll(allCards, rangeSet)
-    } else {
-      const selectArray = Array.isArray(settings.select) ? settings.select : []
-      selected = filterCardsBySelection(allCards, selectArray, rangeSet)
-    }
+    const selected = filterCardsBySettings(
+      allCards,
+      settings.select,
+      settings.squares === true,
+      rangeSet,
+    )
     return filterByLevels(selected, settings.levels)
   },
   getDifficultyPoints: (card) => {

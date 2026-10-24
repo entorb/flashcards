@@ -41,17 +41,9 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
   }))
 
   vi.doMock("@/services/cardSelector", () => ({
-    filterCardsAll: vi.fn(() => [
+    filterCardsBySettings: vi.fn(() => [
       { question: "3x3", answer: 9, level: 1, time: 60 },
       { question: "4x3", answer: 12, level: 2, time: 45 },
-      { question: "4x4", answer: 16, level: 1, time: 60 },
-    ]),
-    filterCardsBySelection: vi.fn(() => [
-      { question: "3x3", answer: 9, level: 1, time: 60 },
-      { question: "4x3", answer: 12, level: 2, time: 45 },
-    ]),
-    filterCardsSquares: vi.fn(() => [
-      { question: "3x3", answer: 9, level: 1, time: 60 },
       { question: "4x4", answer: 16, level: 1, time: 60 },
     ]),
     selectCardsForRound: vi.fn((cards) => cards),
@@ -101,12 +93,10 @@ describe("useGameStore - initialization", () => {
 describe("useGameStore - startGame", () => {
   it("starts a game with select=all and populates gameCards", async () => {
     vi.doMock("@/services/cardSelector", () => ({
-      filterCardsAll: vi.fn(() => [
+      filterCardsBySettings: vi.fn(() => [
         { question: "3x3", answer: 9, level: 1, time: 60 },
         { question: "4x3", answer: 12, level: 2, time: 45 },
       ]),
-      filterCardsBySelection: vi.fn(() => []),
-      filterCardsSquares: vi.fn(() => []),
       selectCardsForRound: vi.fn((cards) => cards),
     }))
     vi.doMock("@/services/storage", () => ({
@@ -134,19 +124,22 @@ describe("useGameStore - startGame", () => {
     }))
     const { useGameStore } = await import("./useGameStore")
     const store = useGameStore()
-    const { filterCardsAll } = await import("@/services/cardSelector")
+    const { filterCardsBySettings } = await import("@/services/cardSelector")
 
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
 
-    expect(filterCardsAll).toHaveBeenCalled()
+    expect(filterCardsBySettings).toHaveBeenCalledWith(
+      expect.any(Array),
+      "all",
+      false,
+      expect.any(Set),
+    )
     expect(store.gameCards.value.length).toBeGreaterThan(0)
   })
 
-  it("starts a game with select=x² using filterCardsSquares", async () => {
+  it("starts a game with squares only using filterCardsBySettings", async () => {
     vi.doMock("@/services/cardSelector", () => ({
-      filterCardsAll: vi.fn(() => []),
-      filterCardsBySelection: vi.fn(() => []),
-      filterCardsSquares: vi.fn(() => [
+      filterCardsBySettings: vi.fn(() => [
         { question: "3x3", answer: 9, level: 1, time: 60 },
         { question: "4x4", answer: 16, level: 1, time: 60 },
       ]),
@@ -177,22 +170,20 @@ describe("useGameStore - startGame", () => {
     }))
     const { useGameStore } = await import("./useGameStore")
     const store = useGameStore()
-    const { filterCardsSquares } = await import("@/services/cardSelector")
+    const { filterCardsBySettings } = await import("@/services/cardSelector")
 
-    store.startGame({ select: "x²", focus: "weak", levels: [1, 2, 3, 4, 5] })
+    store.startGame({ select: [], squares: true, focus: "weak", levels: [1, 2, 3, 4, 5] })
 
-    expect(filterCardsSquares).toHaveBeenCalled()
+    expect(filterCardsBySettings).toHaveBeenCalledWith(expect.any(Array), [], true, expect.any(Set))
     expect(store.gameCards.value.length).toBeGreaterThan(0)
   })
 
-  it("starts a game with select=[3,4] using filterCardsBySelection", async () => {
+  it("starts a game with select=[3,4] using filterCardsBySettings", async () => {
     vi.doMock("@/services/cardSelector", () => ({
-      filterCardsAll: vi.fn(() => []),
-      filterCardsBySelection: vi.fn(() => [
+      filterCardsBySettings: vi.fn(() => [
         { question: "3x3", answer: 9, level: 1, time: 60 },
         { question: "4x3", answer: 12, level: 2, time: 45 },
       ]),
-      filterCardsSquares: vi.fn(() => []),
       selectCardsForRound: vi.fn((cards) => cards),
     }))
     vi.doMock("@/services/storage", () => ({
@@ -220,11 +211,16 @@ describe("useGameStore - startGame", () => {
     }))
     const { useGameStore } = await import("./useGameStore")
     const store = useGameStore()
-    const { filterCardsBySelection } = await import("@/services/cardSelector")
+    const { filterCardsBySettings } = await import("@/services/cardSelector")
 
     store.startGame({ select: [3, 4], focus: "weak", levels: [1, 2, 3, 4, 5] })
 
-    expect(filterCardsBySelection).toHaveBeenCalled()
+    expect(filterCardsBySettings).toHaveBeenCalledWith(
+      expect.any(Array),
+      [3, 4],
+      false,
+      expect.any(Set),
+    )
     expect(store.gameCards.value.length).toBeGreaterThan(0)
   })
 
@@ -271,9 +267,7 @@ describe("useGameStore - startGame", () => {
       clearGameResult: vi.fn(),
     }))
     vi.doMock("@/services/cardSelector", () => ({
-      filterCardsAll: vi.fn((cards) => cards),
-      filterCardsBySelection: vi.fn(() => []),
-      filterCardsSquares: vi.fn(() => []),
+      filterCardsBySettings: vi.fn((cards) => cards),
       selectCardsForRound: vi.fn((cards) => cards),
     }))
     const { useGameStore } = await import("./useGameStore")

@@ -21,11 +21,12 @@ function isValidSettings(value: unknown): boolean {
   if (!(isValidBaseSettings(value) && isRecord(value))) {
     return false
   }
-  const { select } = value
+  const { select, squares } = value
   return (
-    select === "all" ||
-    select === "x²" ||
-    (Array.isArray(select) && select.every((n) => isNumber(n)))
+    (select === "all" ||
+      (Array.isArray(select) && select.every((n) => isNumber(n))) ||
+      select === "x²") &&
+    typeof squares === "boolean"
   )
 }
 

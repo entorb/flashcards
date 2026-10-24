@@ -191,7 +191,7 @@ export const TEXT_DE = {
     },
     info: {
       difficulty: "Das 1x1: 4x8 -> 4",
-      modeDescription: "Wähle die Zahlenreihen (2-10 oder x²), die geübt werden sollen.",
+      modeDescription: "Wähle die Zahlenreihen (2-10) und optional x², die geübt werden sollen.",
     },
   },
 
