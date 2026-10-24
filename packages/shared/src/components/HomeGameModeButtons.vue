@@ -38,6 +38,17 @@ const hasBelowMaxLevelCards = computed(() => filterBelowMaxLevel(props.cards).le
       color="light-green"
       size="lg"
       class="col"
+      icon="task_alt"
+      :disable="!hasAnyCards"
+      data-cy="start-all-correct"
+      @click="emit('start', 'all-correct')"
+    >
+      &nbsp; <span class="text-body1">{{ TEXT_DE.shared.gameModes.allCorrect }}</span>
+    </q-btn>
+    <q-btn
+      color="light-green"
+      size="lg"
+      class="col"
       icon="looks_3"
       :disable="!hasAnyCards"
       data-cy="start-three-rounds"

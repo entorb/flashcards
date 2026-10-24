@@ -33,6 +33,15 @@ describe("HomeGameModeButtons", () => {
     expect(wrapper.emitted("start")).toEqual([["3-rounds"], ["endless-level5"]])
   })
 
+  it("emits all-correct start", async () => {
+    const wrapper = mount(HomeGameModeButtons, {
+      props: { cards: [{ level: 3, time: 20 }] },
+      global: { stubs },
+    })
+    await wrapper.find('[data-cy="start-all-correct"]').trigger("click")
+    expect(wrapper.emitted("start")).toEqual([["all-correct"]])
+  })
+
   it("disables buttons when no cards match the mode", () => {
     const wrapper = mount(HomeGameModeButtons, {
       props: { cards: [{ level: 3, time: 20 }] },
