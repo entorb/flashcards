@@ -177,6 +177,13 @@ defineEmits<{
             </li>
             <li>
               <QIcon
+                name="task_alt"
+                size="xs"
+                class="q-mr-xs"
+              />{{ TEXT_DE.shared.info.startAllCorrect }}
+            </li>
+            <li>
+              <QIcon
                 name="looks_3"
                 size="xs"
                 class="q-mr-xs"

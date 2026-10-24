@@ -132,6 +132,9 @@ function selectCardsByMode<TCard extends BaseCard, TSettings>(
   if (mode === "endless-level5") {
     return shuffleArray(filterBelowMaxLevel(pool))
   }
+  if (mode === "all-correct") {
+    return shuffleArray(pool)
+  }
   if (mode === "3-rounds") {
     const focusSelected = selectCards(pool, settings)
     return repeatCards(focusSelected, LOOP_COUNT)
@@ -198,6 +201,8 @@ export function createDeckGameStore<
 
     // Track initial card count for endless mode (where gameCards shrinks)
     const initialCardCount = ref(0)
+    let lastCorrect = false
+    const recentKeys: string[] = []
 
     // Restore game state and settings if page was reloaded during a game
     // Only restore if there was an active game saved
@@ -234,6 +239,8 @@ export function createDeckGameStore<
         baseStore.currentCardIndex,
         baseStore.sessionMode.value,
         config.getKey,
+        lastCorrect,
+        recentKeys,
       )
 
       if (!isGameOver) {
@@ -277,7 +284,8 @@ export function createDeckGameStore<
       const settings = baseStore.gameSettings.value
       if (!(card && settings)) return
 
-      if (result === "correct" || result === "close") {
+      lastCorrect = result === "correct" || result === "close"
+      if (lastCorrect) {
         baseStore.handleAnswerBase(result, buildPointsBreakdown(result, card, settings, answerTime))
       }
 

@@ -7,7 +7,7 @@ import { shuffleArray } from "./cardSelection.js"
  * Check if a session mode is an endless mode (cards are removed as they're mastered)
  */
 export function isEndlessMode(mode: SessionMode): boolean {
-  return mode === "endless-level1" || mode === "endless-level5"
+  return mode === "endless-level1" || mode === "endless-level5" || mode === "all-correct"
 }
 
 /**
@@ -48,37 +48,34 @@ export function repeatCards<T>(cards: T[], count: number): T[] {
   return repeated
 }
 
+/** Number of most recently shown cards that should not be picked again if avoidable */
+const AVOID_RECENT_COUNT = 2
+
 /**
- * Avoid showing the same card twice in a row by swapping cards in the array.
- * If the card at `nextIndex` has the same key as `previousKey`, find the nearest
- * card with a different key (searching forward) and swap it into `nextIndex`.
- * This ensures no cards are skipped — only reordered.
- *
- * For endless mode (shrinking pools), the caller should pass the mutable array.
+ * Pick the index of the next card, starting from the random index `startIndex`.
+ * Searches `[from, cards.length)` cyclically for the first card whose key is not in
+ * `avoidKeys` (most recent first). If none exists, falls back to any card that
+ * differs from the most recent one, and finally to `startIndex`.
  */
-export function avoidConsecutiveRepeat<T>(
+export function pickIndexAvoiding<T>(
   cards: T[],
-  nextIndex: number,
-  previousKey: string,
+  from: number,
+  startIndex: number,
+  avoidKeys: string[],
   getKey: (card: T) => string,
 ): number {
-  if (cards.length <= 1) return nextIndex
-  const nextCard = cards[nextIndex]
-  if (nextCard !== undefined && getKey(nextCard) === previousKey) {
-    // Search forward for a card with a different key to swap with
-    for (let offset = 1; offset < cards.length; offset++) {
-      const swapIndex = (nextIndex + offset) % cards.length
-      const swapCard = cards[swapIndex]
-      const currentCard = cards[nextIndex]
-      if (swapCard !== undefined && currentCard !== undefined && getKey(swapCard) !== previousKey) {
-        // Swap the cards in-place
-        cards[nextIndex] = swapCard
-        cards[swapIndex] = currentCard
-        break
-      }
-    }
+  const span = cards.length - from
+  const candidates: number[] = []
+  for (let offset = 0; offset < span; offset++) {
+    candidates.push(from + ((startIndex - from + offset) % span))
   }
-  return nextIndex
+  const keyAt = (i: number) => {
+    const card = cards[i]
+    return card === undefined ? "" : getKey(card)
+  }
+  const notRecent = candidates.find((i) => !avoidKeys.includes(keyAt(i)))
+  if (notRecent !== undefined) return notRecent
+  return candidates.find((i) => keyAt(i) !== avoidKeys[0]) ?? startIndex
 }
 
 /**
@@ -90,14 +87,18 @@ function nextEndlessCard<T extends BaseCard>(
   gameCards: { value: T[] },
   currentCardIndex: { value: number },
   sessionMode: SessionMode,
-  previousKey: string,
+  avoidKeys: string[],
   getKey: (card: T) => string,
+  lastCorrect: boolean,
 ): boolean {
   const currentCard = gameCards.value[currentCardIndex.value]
-  const mastered =
-    sessionMode === "endless-level1"
-      ? currentCard !== undefined && currentCard.level > MIN_LEVEL
-      : currentCard !== undefined && currentCard.level >= MAX_LEVEL
+  let mastered = currentCard !== undefined && currentCard.level >= MAX_LEVEL
+  if (sessionMode === "endless-level1") {
+    mastered = currentCard !== undefined && currentCard.level > MIN_LEVEL
+  } else if (sessionMode === "all-correct") {
+    // level can't tell "answered correctly" (level 1 stays 1 when wrong, 5 stays 5 when right)
+    mastered = currentCard !== undefined && lastCorrect
+  }
   if (mastered) {
     // Card was mastered (correct answer) — remove it
     gameCards.value = gameCards.value.filter((_, i) => i !== currentCardIndex.value)
@@ -105,13 +106,8 @@ function nextEndlessCard<T extends BaseCard>(
   if (gameCards.value.length === 0) return true
 
   // Game randomness only, no security requirement
-  currentCardIndex.value = Math.floor(Math.random() * gameCards.value.length) // NOSONAR typescript:S2245
-  currentCardIndex.value = avoidConsecutiveRepeat(
-    gameCards.value,
-    currentCardIndex.value,
-    previousKey,
-    getKey,
-  )
+  const randomIndex = Math.floor(Math.random() * gameCards.value.length) // NOSONAR typescript:S2245
+  currentCardIndex.value = pickIndexAvoiding(gameCards.value, 0, randomIndex, avoidKeys, getKey)
 
   // When only one unmastered card remains, the same object reference is picked
   // again. UI watchers that key on card identity (e.g. `watch(currentCard)`)
@@ -132,25 +128,15 @@ function nextEndlessCard<T extends BaseCard>(
 function nextRandomUnplayedCard<T extends BaseCard>(
   gameCards: { value: T[] },
   currentCardIndex: { value: number },
-  previousKey: string,
+  avoidKeys: string[],
   getKey: (card: T) => string,
 ): boolean {
   const nextIndex = currentCardIndex.value + 1
   if (nextIndex >= gameCards.value.length) return true
 
   // Game randomness only, no security requirement
-  let pickIndex = nextIndex + Math.floor(Math.random() * (gameCards.value.length - nextIndex)) // NOSONAR typescript:S2245
-  const pickedCard = gameCards.value[pickIndex]
-  if (pickedCard !== undefined && getKey(pickedCard) === previousKey) {
-    // Avoid an immediate repeat if another card is available
-    for (let i = nextIndex + 1; i < gameCards.value.length; i++) {
-      const candidate = gameCards.value[i]
-      if (candidate !== undefined && getKey(candidate) !== previousKey) {
-        pickIndex = i
-        break
-      }
-    }
-  }
+  const randomIndex = nextIndex + Math.floor(Math.random() * (gameCards.value.length - nextIndex)) // NOSONAR typescript:S2245
+  const pickIndex = pickIndexAvoiding(gameCards.value, nextIndex, randomIndex, avoidKeys, getKey)
 
   const finalPick = gameCards.value[pickIndex]
   const nextSlot = gameCards.value[nextIndex]
@@ -173,6 +159,8 @@ function nextRandomUnplayedCard<T extends BaseCard>(
  * @param currentCardIndex - reactive ref to the current card index
  * @param sessionMode - current session mode
  * @param getKey - function to extract the unique identity key from a card
+ * @param lastCorrect - whether the current card was just answered correctly (all-correct mode)
+ * @param recentKeys - mutable history of recently shown card keys (most recent first), kept by the caller
  * @returns true if the game is over
  */
 export function handleNextCard<T extends BaseCard>(
@@ -180,13 +168,25 @@ export function handleNextCard<T extends BaseCard>(
   currentCardIndex: { value: number },
   sessionMode: SessionMode,
   getKey: (card: T) => string,
+  lastCorrect = false,
+  recentKeys: string[] = [],
 ): boolean {
   const previousCard = gameCards.value[currentCardIndex.value]
-  const previousKey = previousCard === undefined ? "" : getKey(previousCard)
-
-  if (sessionMode === "endless-level1" || sessionMode === "endless-level5") {
-    return nextEndlessCard(gameCards, currentCardIndex, sessionMode, previousKey, getKey)
+  if (previousCard !== undefined) {
+    recentKeys.unshift(getKey(previousCard))
+    recentKeys.length = Math.min(recentKeys.length, AVOID_RECENT_COUNT)
   }
 
-  return nextRandomUnplayedCard(gameCards, currentCardIndex, previousKey, getKey)
+  if (isEndlessMode(sessionMode)) {
+    return nextEndlessCard(
+      gameCards,
+      currentCardIndex,
+      sessionMode,
+      recentKeys,
+      getKey,
+      lastCorrect,
+    )
+  }
+
+  return nextRandomUnplayedCard(gameCards, currentCardIndex, recentKeys, getKey)
 }

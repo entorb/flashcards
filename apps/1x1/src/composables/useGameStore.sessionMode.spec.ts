@@ -21,7 +21,12 @@ beforeEach(() => {
 /**
  * Arbitrary: generates a valid SessionMode value.
  */
-const sessionModeArb = fc.constantFrom<SessionMode>("standard", "endless-level1", "3-rounds")
+const sessionModeArb = fc.constantFrom<SessionMode>(
+  "standard",
+  "endless-level1",
+  "3-rounds",
+  "all-correct",
+)
 
 describe("useGameStore - SessionMode round-trip through sessionStorage (Property 6)", () => {
   it("persisting sessionMode via startGame and restoring it via loadGameState yields the same value", async () => {
