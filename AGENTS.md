@@ -75,6 +75,7 @@ pnpm --filter {app} exec playwright test --spec "playwright/tests/{spec}.spec.ts
 - Cognitive complexity < 15.
 - No duplicate strings (3+) — use `TEXT_DE` from `@flashcards/shared`.
 - `Math.random()` is fine for non-security game randomness (card shuffle/selection). Sonar flags it (`typescript:S2245`) — append `// NOSONAR typescript:S2245` on the same line with a one-line rationale comment above it.
+- CSS (Sonar `css:S9423`/`S9440`): no `!important` — Quasar utility classes (`q-pa-*`, `text-caption`) are `!important`, so don't override them; use `q-px-*`/`q-pt-*` or a custom class instead. Every `animation`/`transition` needs a `@media (prefers-reduced-motion: reduce)` block disabling it.
 - No commented-out code (Sonar `Web:AvoidCommentedOutCodeCheck`). Delete dead code; if an option/feature is intentionally disabled, note it in a comment instead of keeping the block commented out.
 - Unit tests: `.spec.ts` suffix. E2E: `data-cy` locators only.
 
@@ -123,7 +124,7 @@ Export paths: `.`, `./components`, `./pages`, `./utils`, `./test-utils`
 
 ## Game Modes
 
-`SessionMode`: `'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'`
+`SessionMode`: `'standard' | 'endless-level1' | 'endless-level5' | '3-rounds' | 'all-correct'`
 
 Key helpers in `gameModeUtils.ts`: `isEndlessMode()`, `handleNextCard()`, `filterLevel1Cards()`, `filterBelowMaxLevel()`, `avoidConsecutiveRepeat()`, `repeatCards()`
 

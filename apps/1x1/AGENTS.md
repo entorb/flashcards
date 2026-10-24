@@ -9,7 +9,9 @@ PWA for multiplication table practice with adaptive difficulty.
 
 ## Game Mechanics
 
-- `GameSettings = { select: number[] | 'all' | 'x²', focus, levels }` (extends `BaseGameSettings`)
+- `GameSettings = { select: number[] | 'all' | 'x²', squares?: boolean, focus, levels }` (extends `BaseGameSettings`)
+  - `squares` (x²) can be combined with any series selection, e.g. `select: [4, 7], squares: true` → 4, 7, x²
+  - `'x²'` in `select` only appears in history entries saved before the separate `squares` toggle
 - Cards: `{ question: "3x4", answer: 12 }`
 - Extended ranges: `1x2` (adds 2×2..2×9), `1x12` (adds 11/12), `1x20` (adds 13..20, auto-enables 1x12)
 - Scoring difficulty: `min(x, y)`, level factor: `6 - level`, time bonus: +5 if beating record
@@ -20,6 +22,6 @@ PWA for multiplication table practice with adaptive difficulty.
 ## Key Files
 
 - `src/services/storage.ts` — `initializeCards()`, `getVirtualCardsForRange()`, `toggleFeature()`, `parseCardQuestion()`
-- `src/services/cardSelector.ts` — filtering (`all`/`x²`/selection) + weighted selection
+- `src/services/cardSelector.ts` — filtering (`all`/`x²`/selection + x²) via `filterCardsBySettings` + weighted selection
 - `src/utils/questionFormatter.ts` — `"3x4"` → `"3×4"` display formatting (reorders operands for single-number selection)
 - `src/components/GroundhogMascot.vue` — "Murmeltier" mascot

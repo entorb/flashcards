@@ -71,7 +71,7 @@ interface DailyStats {
 }
 type FocusType = 'weak' | 'slow' // 'medium'/'strong' commented out in types.ts
 type AnswerStatus = 'correct' | 'incorrect' | 'close'
-type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds'
+type SessionMode = 'standard' | 'endless-level1' | 'endless-level5' | '3-rounds' | 'all-correct'
 ```
 
 ## Composables
