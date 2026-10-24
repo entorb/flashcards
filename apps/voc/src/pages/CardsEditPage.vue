@@ -197,7 +197,7 @@ function onCardChange() {
 
 <template>
   <q-page
-    class="q-pa-md card-edit-page"
+    class="q-px-md q-pt-md card-edit-page"
     style="max-width: 1000px; margin: 0 auto"
   >
     <!-- Header with back button -->
@@ -347,6 +347,6 @@ function onCardChange() {
 <style scoped>
 .card-edit-page {
   min-height: 100vh;
-  padding-bottom: 100px !important;
+  padding-bottom: 100px;
 }
 </style>

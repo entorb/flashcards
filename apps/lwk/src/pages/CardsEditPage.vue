@@ -182,7 +182,7 @@ function getLevelOptions() {
 
 <template>
   <q-page
-    class="q-pa-md cards-edit-page"
+    class="q-px-md q-pt-md cards-edit-page"
     style="max-width: 900px; margin: 0 auto"
   >
     <!-- Header with back button -->
@@ -292,6 +292,6 @@ function getLevelOptions() {
 <style scoped>
 .cards-edit-page {
   min-height: 100vh;
-  padding-bottom: 100px !important;
+  padding-bottom: 100px;
 }
 </style>
