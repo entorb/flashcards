@@ -7,11 +7,11 @@ import { TEXT_DE } from "../text-de"
 import type { BaseCard } from "../types"
 
 import {
-  avoidConsecutiveRepeat,
   filterBelowMaxLevel,
   filterByLevels,
   filterLevel1Cards,
   handleNextCard,
+  pickIndexAvoiding,
   repeatCards,
 } from "./gameModeUtils"
 
@@ -190,39 +190,30 @@ describe("TEXT_DE.shared.gameModes strings", () => {
   })
 })
 
-describe("avoidConsecutiveRepeat", () => {
+describe("pickIndexAvoiding", () => {
   const getKey = (c: { id: string }) => c.id
+  const cards = [{ id: "a" }, { id: "b" }, { id: "c" }, { id: "d" }]
 
-  it("returns nextIndex unchanged when cards.length <= 1", () => {
-    const cards = [{ id: "a" }]
-    expect(avoidConsecutiveRepeat(cards, 0, "a", getKey)).toBe(0)
+  it("keeps the start index when it is not recent", () => {
+    expect(pickIndexAvoiding(cards, 0, 2, ["a", "b"], getKey)).toBe(2)
   })
 
-  it("returns nextIndex when next card differs from previousKey", () => {
-    const cards = [{ id: "a" }, { id: "b" }]
-    expect(avoidConsecutiveRepeat(cards, 1, "a", getKey)).toBe(1)
+  it("skips both recent cards when possible", () => {
+    expect(pickIndexAvoiding(cards, 0, 0, ["a", "b"], getKey)).toBe(2)
+    expect(pickIndexAvoiding(cards, 0, 1, ["a", "b"], getKey)).toBe(2)
   })
 
-  it("swaps when next card matches previousKey and a different card exists", () => {
-    const cards = [{ id: "a" }, { id: "a" }, { id: "b" }]
-    const result = avoidConsecutiveRepeat(cards, 1, "a", getKey)
-    expect(result).toBe(1)
-    expect(cards[1]?.id).toBe("b")
+  it("wraps around within [from, length)", () => {
+    expect(pickIndexAvoiding(cards, 1, 3, ["d", "b"], getKey)).toBe(2)
   })
 
-  it("does not swap when all cards have the same key", () => {
-    const cards = [{ id: "a" }, { id: "a" }, { id: "a" }]
-    const result = avoidConsecutiveRepeat(cards, 1, "a", getKey)
-    expect(result).toBe(1)
-    expect(cards[1]?.id).toBe("a")
+  it("falls back to avoiding only the most recent card", () => {
+    const two = [{ id: "a" }, { id: "b" }]
+    expect(pickIndexAvoiding(two, 0, 0, ["a", "b"], getKey)).toBe(1)
   })
 
-  it("preserves total card count after swap", () => {
-    const cards = [{ id: "x" }, { id: "x" }, { id: "y" }, { id: "z" }]
-    const before = cards.map((c) => c.id).sort((a, b) => a.localeCompare(b))
-    avoidConsecutiveRepeat(cards, 1, "x", getKey)
-    const after = cards.map((c) => c.id).sort((a, b) => a.localeCompare(b))
-    expect(after).toEqual(before)
+  it("returns start index when only recent card exists", () => {
+    expect(pickIndexAvoiding([{ id: "a" }, { id: "a" }], 0, 1, ["a"], getKey)).toBe(1)
   })
 })
 
@@ -279,6 +270,35 @@ describe("handleNextCard", () => {
       expect(gameCards.value).toHaveLength(3)
       expect(currentCardIndex.value).toBe(1)
       expect(gameCards.value[1]?.id).toBe("b")
+    })
+  })
+
+  describe("all-correct mode", () => {
+    const mk = (level: number) => ({
+      value: [
+        { id: "a", level, time: 10 },
+        { id: "b", level, time: 10 },
+      ],
+    })
+
+    it("removes the card after a correct answer, even at level 1 or MAX_LEVEL", () => {
+      for (const level of [1, 5]) {
+        const gameCards = mk(level)
+        const isOver = handleNextCard(gameCards, { value: 0 }, "all-correct", getKey, true)
+        expect(isOver).toBe(false)
+        expect(gameCards.value.map((c) => c.id)).toEqual(["b"])
+      }
+    })
+
+    it("keeps the card after a wrong answer, even at MAX_LEVEL", () => {
+      const gameCards = mk(5)
+      handleNextCard(gameCards, { value: 0 }, "all-correct", getKey, false)
+      expect(gameCards.value).toHaveLength(2)
+    })
+
+    it("ends when the last card was answered correctly", () => {
+      const gameCards = { value: [{ id: "a", level: 1, time: 10 }] }
+      expect(handleNextCard(gameCards, { value: 0 }, "all-correct", getKey, true)).toBe(true)
     })
   })
 

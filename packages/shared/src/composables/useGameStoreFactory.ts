@@ -91,6 +91,9 @@ function selectCardsByMode<TCard extends BaseCard, TSettings extends { focus: st
   if (mode === "endless-level5") {
     return shuffleArray(filterBelowMaxLevel(filteredCards))
   }
+  if (mode === "all-correct") {
+    return shuffleArray(filteredCards)
+  }
   if (mode === "3-rounds") {
     const focusSelected = selectForRound(filteredCards, settings.focus, maxCards)
     return shuffleArray(repeatCards(focusSelected, LOOP_COUNT))
@@ -158,6 +161,8 @@ export function createGameStoreFactory<
 
     // Track initial card count for endless mode (where gameCards shrinks)
     const initialCardCount = ref(0)
+    let lastCorrect = false
+    const recentKeys: string[] = []
 
     // Restore game state if page was reloaded during a game
     const savedGameState = storage.loadGameState()
@@ -225,7 +230,8 @@ export function createGameStoreFactory<
       const card = currentCard.value
       if (!(card && baseStore.gameSettings.value)) return
 
-      if (result === "correct" || result === "close") {
+      lastCorrect = result === "correct" || result === "close"
+      if (lastCorrect) {
         const rawDifficulty = factoryConfig.getDifficultyPoints(card)
         const difficultyPoints = result === "correct" ? rawDifficulty : 0
 
@@ -251,6 +257,8 @@ export function createGameStoreFactory<
         baseStore.currentCardIndex,
         baseStore.sessionMode.value,
         (c: TCard) => c.question,
+        lastCorrect,
+        recentKeys,
       )
 
       if (!isGameOver) {
