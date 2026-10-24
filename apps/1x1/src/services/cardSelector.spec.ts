@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import {
   filterCardsAll,
   filterCardsBySelection,
+  filterCardsBySettings,
   filterCardsSquares,
   selectCardsForRound,
 } from "@/services/cardSelector"
@@ -142,6 +143,48 @@ describe("Card Filtering - All Cards", () => {
       "3x3",
       "4x3",
       "4x4",
+    ])
+  })
+})
+
+describe("Card Filtering - Selection plus Squares", () => {
+  let allCards: Card[]
+  let range: Set<number>
+
+  beforeEach(() => {
+    localStorage.clear()
+    initializeCards()
+    allCards = loadCards()
+    range = new Set([3, 4, 5, 6, 7, 8, 9])
+  })
+
+  it("adds all squares to the selected tables", () => {
+    const filtered = filterCardsBySettings(allCards, [6], true, range)
+    const questions = filtered.map((c) => c.question)
+
+    // 6-row cards plus every square in range
+    expect(questions).toContain("6x4")
+    expect(questions).toContain("3x3")
+    expect(questions).toContain("9x9")
+  })
+
+  it("returns only the selected tables when squares are off", () => {
+    const filtered = filterCardsBySettings(allCards, [6], false, range)
+
+    expect(filtered).toHaveLength(7)
+  })
+
+  it("supports x² only", () => {
+    const filtered = filterCardsBySettings(allCards, [], true, range)
+
+    expect(filtered.map((c) => c.question).sort((a, b) => a.localeCompare(b))).toEqual([
+      "3x3",
+      "4x4",
+      "5x5",
+      "6x6",
+      "7x7",
+      "8x8",
+      "9x9",
     ])
   })
 })
