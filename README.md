@@ -1,5 +1,8 @@
 # Flashcards Apps
 
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=entorb_flashcards&metric=ncloc)](https://sonarcloud.io/summary/overall?id=entorb_flashcards)
+[![Security issues](https://sonarcloud.io/api/project_badges/measure?project=entorb_flashcards&metric=software_quality_security_issues)](https://sonarcloud.io/summary/overall?id=entorb_flashcards)
+
 This repository hosts the code of six educational apps, implementing flashcard-based learning for school kids. Hosted at <https://entorb.net/flashcards/>:
 <!-- rumdl-disable no-inline-html -->
 
@@ -82,8 +85,10 @@ This repository hosts the code of six educational apps, implementing flashcard-b
 - ESLint (linting)
 - Vitest unit tests
 - Cypress E2E test
-- [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_flashcards&branch=main) for
+- [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_flashcards) for
   code quality analysis
+
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/overall?id=entorb_flashcards)
 
 ## Scripts
 
