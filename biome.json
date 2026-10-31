@@ -22,7 +22,10 @@
       "!**/pnpm-lock.yaml",
       "!**/public",
       "!**/scripts",
-      "!**/sonar-report.xml"
+      "!**/sonar-report.xml",
+      "!**/*.md",
+      "!**/*.yaml",
+      "!**/*.yml"
     ]
   },
   "formatter": {
