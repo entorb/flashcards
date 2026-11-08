@@ -32,6 +32,8 @@ done
 echo "### Node packages"
 pnpm up --latest
 pnpm exec biome migrate --write
+# ensure biome.json is formatted after migration
+pnpm biome format --write biome.json
 # npm i baseline-browser-mapping@latest -D
 # npx update-browserslist-db@latest
 (cd packages/shared && pnpm up --latest)
