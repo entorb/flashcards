@@ -30,7 +30,7 @@ vi.mock("@/composables/useEtaStore", () => ({
   useEtaStore: () => mockStore,
 }))
 
-// biome-ignore lint/nursery/useImportsFirst: vi.mock() must precede component import for proper mocking
+// biome-ignore lint/style/useImportsFirst: vi.mock() must precede component import for proper mocking
 import ConfigView from "./ConfigView.vue"
 
 const mountOptions = {

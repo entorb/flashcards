@@ -42,7 +42,7 @@ vi.mock("@/utils/timeFormatters", () => ({
   formatClockTime: vi.fn((d: Date) => d.toISOString()),
 }))
 
-// biome-ignore lint/nursery/useImportsFirst: vi.mock() must precede component import for proper mocking
+// biome-ignore lint/style/useImportsFirst: vi.mock() must precede component import for proper mocking
 import TrackingView from "./TrackingView.vue"
 
 const mountOptions = {
