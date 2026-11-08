@@ -56,18 +56,17 @@ export function useCardsEdit<TCard extends BaseCard>(
     $q.notify({ type: "warning", message })
   }
 
-  function focusField(field: string, scroll = false) {
-    void nextTick(() => {
-      const items = document.querySelectorAll<HTMLElement>('[data-cy="card-edit-item"]')
-      const lastItem = items[items.length - 1]
-      if (!lastItem) return
-      if (scroll) {
-        lastItem.scrollIntoView({ behavior: "smooth", block: "center" })
-      }
-      const inputs = lastItem.querySelectorAll<HTMLInputElement>("input")
-      const target = inputs[fieldOrder.indexOf(field)]
-      if (target) target.focus()
-    })
+  async function focusField(field: string, scroll = false) {
+    await nextTick()
+    const items = document.querySelectorAll<HTMLElement>('[data-cy="card-edit-item"]')
+    const lastItem = items[items.length - 1]
+    if (!lastItem) return
+    if (scroll) {
+      lastItem.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+    const inputs = lastItem.querySelectorAll<HTMLInputElement>("input")
+    const target = inputs[fieldOrder.indexOf(field)]
+    if (target) target.focus()
   }
 
   function commitNewCard(moveFocus = true): boolean {
@@ -88,7 +87,7 @@ export function useCardsEdit<TCard extends BaseCard>(
     newCard.value = createEmptyCard()
     if (moveFocus) {
       const firstField = fieldOrder[0]
-      if (firstField !== undefined) focusField(firstField, true)
+      if (firstField !== undefined) void focusField(firstField, true)
     }
     return true
   }
@@ -101,13 +100,12 @@ export function useCardsEdit<TCard extends BaseCard>(
     if (nextField === undefined) {
       commitNewCard()
     } else {
-      focusField(nextField)
+      void focusField(nextField)
     }
   }
 
   function checkDuplicate(index: number) {
     const card = editingCards.value[index]
-    // biome-ignore lint/complexity/useOptionalChain: optional chain prevents TS narrowing
     if (!(card && getKey(card).trim())) return
     const normalized = normalizeWhitespace(getKey(card))
     for (let i = 0; i < editingCards.value.length; i++) {

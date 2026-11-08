@@ -181,14 +181,14 @@ describe("CardsManPage (shared)", () => {
       expect(props.removeDeck).toHaveBeenCalledWith("LWK_1")
     })
 
-    it("remove button is disabled for the last deck", async () => {
+    it("remove button is disabled for the last deck", () => {
       const props = makeProps(makeMockStore())
       props.getDecks.mockReturnValue([{ name: "LWK_1", cards: mockCards }])
       const wrapper = mount(CardsManPage, { props, global: globalOpts })
       expect(wrapper.find('[data-cy="remove-deck-button"]').attributes("disable")).toBe("true")
     })
 
-    it("empty deck shows hint instead of stats", async () => {
+    it("empty deck shows hint instead of stats", () => {
       const store = makeMockStore()
       store.allCards.value = []
       const wrapper = mount(CardsManPage, { props: makeProps(store), global: globalOpts })
