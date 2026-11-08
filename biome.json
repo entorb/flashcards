@@ -138,8 +138,7 @@
       },
       "nursery": {
         "noFloatingPromises": "warn",
-        "noMisusedPromises": "warn",
-        "useImportsFirst": "error"
+        "noMisusedPromises": "warn"
       },
       "performance": {
         "noAccumulatingSpread": "error",
@@ -181,7 +180,8 @@
         "useTemplate": "warn",
         "useThrowNewError": "error",
         "useTrimStartEnd": "error",
-        "useGlobalThis": "error"
+        "useGlobalThis": "error",
+        "useImportsFirst": "error"
       },
       "suspicious": {
         "noAssignInExpressions": "error",

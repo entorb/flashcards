@@ -16,7 +16,7 @@
     "test:cov": "vitest --watch=false --silent=passed-only --coverage"
   },
   "dependencies": {
-    "quasar": "^2.35.1",
+    "quasar": "^2.35.2",
     "vue": "^3.5.44",
     "vue-router": "^5.4.0"
   },

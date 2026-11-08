@@ -11,9 +11,17 @@ allowBuilds:
   esbuild: true
 
 overrides:
+  glob@>=9.0.0 <=14.0.1: ^14.0.2
   glob@^11.1.0: ^13.0.6
+  minimatch@>=7.0.0 <11.0.1: ^11.0.1
   source-map-js@>=1.0.0 <1.2.2: ^1.2.2
 
 minimumReleaseAgeExclude:
   - serialize-javascript@7.1.3
   - fast-uri@3.1.9
+
+auditConfig:
+  ignoreGhsas:
+    # deepmerge (build-time only via workbox-build), low, no patched version
+    # TODO: remove once deepmerge > 4.3.1 released
+    - GHSA-gcqx-w48m-w2h4
