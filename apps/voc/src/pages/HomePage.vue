@@ -187,7 +187,7 @@ function goToInfo() {
             :color="settings.mode === option.value ? 'primary' : 'grey-7'"
             no-caps
             class="col"
-            @click="!option.disable && (settings.mode = option.value)"
+            @click="() => { if (!option.disable) settings.mode = option.value }"
           >
             <q-tooltip v-if="option.tooltip">
               {{ option.tooltip }}

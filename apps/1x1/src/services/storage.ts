@@ -156,8 +156,8 @@ export function toggleFeature(
       const base = current.filter((n) => n < 11)
       return [...base, 11, 12]
     }
-    case "feature1x20": {
-      // Toggle 13-20 in range (and auto-enable 1x12)
+    default: {
+      // feature1x20: toggle 13-20 in range (and auto-enable 1x12)
       if (currentSet.has(13)) {
         // Deactivate: remove 13-20
         return current.filter((n) => n < 13)

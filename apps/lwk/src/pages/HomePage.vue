@@ -185,7 +185,7 @@ function goToInfo() {
             no-caps
             class="col"
             :data-cy="`mode-option-${option.value}`"
-            @click="!option.disable && (settings.mode = option.value)"
+            @click="() => { if (!option.disable) settings.mode = option.value }"
           >
             <q-tooltip v-if="option.tooltip">
               {{ option.tooltip }}

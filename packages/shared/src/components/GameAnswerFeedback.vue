@@ -25,74 +25,40 @@ function handleContinue() {
   emit("continue")
 }
 
-function getIcon(status: AnswerStatus): string {
-  switch (status) {
-    case "correct":
-      return "check_circle"
-    case "close":
-      return "warning"
-    case "incorrect":
-      return "cancel"
-  }
-}
-
-function getBackgroundClass(status: AnswerStatus): string {
-  switch (status) {
-    case "correct":
-      return "bg-positive"
-    case "close":
-      return "bg-warning"
-    case "incorrect":
-      return "bg-negative"
-  }
-}
-
-function getButtonBackgroundClass(status: AnswerStatus): string {
-  switch (status) {
-    case "correct":
-      return "bg-positive-1"
-    case "close":
-      return "bg-warning-1"
-    case "incorrect":
-      return "bg-negative-1"
-  }
-}
-
-function getDataCy(status: AnswerStatus): string {
-  switch (status) {
-    case "correct":
-      return "correct-answer-feedback"
-    case "close":
-      return ""
-    case "incorrect":
-      return "wrong-answer-feedback"
-  }
-}
-
-function getColor(status: AnswerStatus): string {
-  switch (status) {
-    case "correct":
-      return "positive"
-    case "close":
-      return "warning"
-    case "incorrect":
-      return "negative"
-  }
+const STYLE: Record<
+  AnswerStatus,
+  { icon: string; bg: string; buttonBg: string; dataCy: string; color: string }
+> = {
+  correct: {
+    icon: "check_circle",
+    bg: "bg-positive",
+    buttonBg: "bg-positive-1",
+    dataCy: "correct-answer-feedback",
+    color: "positive",
+  },
+  close: { icon: "warning", bg: "bg-warning", buttonBg: "bg-warning-1", dataCy: "", color: "warning" },
+  incorrect: {
+    icon: "cancel",
+    bg: "bg-negative",
+    buttonBg: "bg-negative-1",
+    dataCy: "wrong-answer-feedback",
+    color: "negative",
+  },
 }
 </script>
 
 <template>
   <q-card
     class="q-mb-md"
-    :data-cy="getDataCy(status)"
+    :data-cy="STYLE[status].dataCy"
   >
     <!-- Icon Section -->
     <q-card-section
-      :class="[getBackgroundClass(status)]"
+      :class="[STYLE[status].bg]"
       class="text-white text-center q-pa-lg"
     >
       <q-icon
-        :name="getIcon(status)"
+        :name="STYLE[status].icon"
         color="white"
         :size="iconSize"
         class="q-mb-md"
@@ -117,10 +83,10 @@ function getColor(status: AnswerStatus): string {
       v-if="showContinueButton"
       align="center"
       class="q-pa-md"
-      :class="getButtonBackgroundClass(status)"
+      :class="STYLE[status].buttonBg"
     >
       <q-btn
-        :color="getColor(status)"
+        :color="STYLE[status].color"
         :label="isButtonDisabled ? TEXT_DE.shared.common.wait : TEXT_DE.shared.common.continue"
         size="lg"
         unelevated

@@ -68,8 +68,8 @@ const {
 const listTitle = computed(() => (selectedTimeBucket.value === null ? undefined : getTimeFilterListTitle(selectedTimeBucket.value)))
 
 const sortedFilteredCards = computed(() => {
-  const cards = [...filteredCards.value]
-  cards.sort((a, b) => {
+  const sorted = [...filteredCards.value]
+  sorted.sort((a, b) => {
     const aQ = parseCardQuestion(a.question)
     const bQ = parseCardQuestion(b.question)
 
@@ -77,7 +77,7 @@ const sortedFilteredCards = computed(() => {
     if (aQ.x !== bQ.x) return aQ.x - bQ.x
     return aQ.y - bQ.y
   })
-  return cards
+  return sorted
 })
 
 function getCardLabel(card: BaseCard): string {
@@ -113,7 +113,7 @@ onUnmounted(() => {
 })
 
 function getCard(y: number, x: number): Card {
-  const card = cardsInRange.value.find((card) => card.question === `${y}x${x}`)
+  const card = cardsInRange.value.find((c) => c.question === `${y}x${x}`)
   if (card) return card
 
   // Fallback to default card (should not be needed as cardsInRange includes all)

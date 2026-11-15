@@ -127,6 +127,7 @@
         "**/*.config.js",
         "**/*.config.mts",
         "**/*.config.mjs",
+        "**/*.config.*.ts",
         "**/e2e/**",
         "**/playwright/**",
         "scripts/**",

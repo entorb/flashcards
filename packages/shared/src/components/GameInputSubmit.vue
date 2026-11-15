@@ -45,7 +45,7 @@ const canSubmit = computed(
       input-class="text-h3 text-center"
       :rules="inputRules"
       data-cy="answer-input"
-      @keyup.enter="canSubmit && props.onSubmit()"
+      @keyup.enter="() => { if (canSubmit) props.onSubmit() }"
     >
       <template #prepend>
         <q-icon
