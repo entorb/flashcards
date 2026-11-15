@@ -115,49 +115,7 @@ export default [
     },
   },
 
-  // TypeScript files with type-aware linting (requires tsconfig project)
-  // Note: Each app has its own tsconfig.app.json — ESLint resolves the nearest one via tsconfigRootDir
-  {
-    files: ["apps/*/src/**/*.{ts,mts,tsx}", "packages/shared/src/**/*.{ts,mts,tsx}"],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-    },
-    rules: {
-      // Type-aware rules (require parserOptions.project)
-      // '@typescript-eslint/consistent-type-exports' — covered by Biome useExportType
-      "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/no-misused-promises": "error",
-      "@typescript-eslint/await-thenable": "error",
-      "@typescript-eslint/no-unnecessary-condition": "warn",
-      "@typescript-eslint/no-redundant-type-constituents": "warn",
-      "@typescript-eslint/prefer-nullish-coalescing": "warn",
-      // '@typescript-eslint/prefer-optional-chain' — covered by Biome useOptionalChain
-      "@typescript-eslint/prefer-reduce-type-parameter": "error",
-      "@typescript-eslint/prefer-return-this-type": "error",
-      "@typescript-eslint/promise-function-async": "warn",
-      "@typescript-eslint/require-array-sort-compare": ["error", { ignoreStringArrays: true }],
-      "@typescript-eslint/strict-boolean-expressions": [
-        "warn",
-        {
-          allowString: true,
-          allowNumber: true,
-          allowNullableObject: true,
-        },
-      ],
-      "@typescript-eslint/no-confusing-void-expression": "error",
-      "@typescript-eslint/no-unnecessary-type-assertion": "error",
-      "@typescript-eslint/switch-exhaustiveness-check": "error",
-    },
-  },
+  // Type-aware rules (projectService) dropped: ~3 GB heap, OOM; Biome noFloatingPromises/noMisusedPromises + vue-tsc cover the core
 
   // Vue files - use spread syntax to properly apply Vue configs
   ...pluginVue.configs["flat/essential"],
