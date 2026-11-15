@@ -2,64 +2,40 @@
 set -e
 cd "$(dirname "$0")/.."
 
-echo "## Node and PNPM Versions"
-# use the versions provided by the system, never install them here (brew upgrade is done in korrekturleser only)
-NODE_VER=$(node --version | sed 's/v//')
-# query outside of the repo, inside pnpm reports the version pinned in package.json
-PNPM_VER=$(cd / && pnpm --version)
-PNPM_MANAGER="pnpm@$PNPM_VER"
-printf '%s\n' "${NODE_VER%%.*}" >.nvmrc
-node -e "
-  const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
-  pkg.packageManager = '$PNPM_MANAGER';
-  pkg.engines ??= {};
-  pkg.engines.node = '>=$NODE_VER';
-  pkg.engines.pnpm = '>=$PNPM_VER';
-  require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-"
-
-APPS="1x1 div eta lwk pum voc"
-
 echo "## Node"
 echo "### delete old node_modules and lock"
-rm -rf node_modules packages/shared/node_modules
-rm -f pnpm-lock.yaml packages/shared/pnpm-lock.yaml
-for app in $APPS; do
-  rm -rf "apps/$app/node_modules"
-  rm -f "apps/$app/pnpm-lock.yaml"
-done
+rm -rf node_modules apps/*/node_modules packages/*/node_modules
+rm -f pnpm-lock.yaml
 
 echo "### Node packages"
-pnpm up --latest
+pnpm up --recursive --latest
 pnpm exec biome migrate --write
 # ensure biome.json is formatted after migration
 pnpm biome format --write biome.json
-# npm i baseline-browser-mapping@latest -D
-# npx update-browserslist-db@latest
-(cd packages/shared && pnpm up --latest)
-for app in $APPS; do
-  (cd "apps/$app" && pnpm up --latest)
-done
 
 echo "### Node package audit"
 ./scripts/chk_js_package_audit.sh
 
 echo "## Code checks"
-echo "### Prek autoupdate"
-prek autoupdate --cooldown-days 7
+echo "### Prek update"
+prek update --cooldown-days 7
 
 echo "### run_checks.sh"
 ./scripts/run_checks.sh
 
 echo "### run_e2e.sh"
+# playwright may have been bumped above, fetch its matching headless shell
+pnpm exec playwright install --only-shell chromium
 ./scripts/run_e2e.sh
 
 echo "## Git"
-
 if [ -n "$(git status --porcelain)" ]; then
-  echo "## git push"
-  git add pnpm-lock.yaml package.json 'apps/*/package.json' 'packages/*/package.json' pnpm-workspace.yaml biome.json .pre-commit-config.yaml .nvmrc
-  git commit -m "chore(deps): Package update" || true
+  echo "### git push"
+  FILES="pnpm-lock.yaml package.json pnpm-workspace.yaml biome.json .pre-commit-config.yaml apps/*/package.json packages/*/package.json"
+  # shellcheck disable=SC2086
+  git add $FILES
+  # shellcheck disable=SC2086
+  git diff --staged --quiet || git commit -m "chore(deps): Package update" -- $FILES
   git push
 fi
 
