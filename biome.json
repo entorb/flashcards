@@ -149,6 +149,7 @@
       },
       "style": {
         "noDefaultExport": "off",
+        "useReduceTypeParameter": "error",
         "noInferrableTypes": "error",
         "noNamespace": "error",
         "noNegationElse": "error",
@@ -185,6 +186,8 @@
       },
       "suspicious": {
         "noAssignInExpressions": "error",
+        "noUnnecessaryConditions": "warn",
+        "useArraySortCompare": "error",
         "noConfusingVoidType": "error",
         "noConsole": "off",
         "noDebugger": "error",
@@ -227,7 +230,8 @@
             "noExplicitAny": "off",
             "noEmptyBlockStatements": "off",
             "noSkippedTests": "warn",
-            "noNestedPromises": "off"
+            "noNestedPromises": "off",
+            "noUnnecessaryConditions": "off"
           },
           "complexity": {
             "noExcessiveCognitiveComplexity": "off",
