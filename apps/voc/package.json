@@ -1,0 +1,23 @@
+{
+  "name": "voc",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "pw:open": "playwright test --ui",
+    "pw:run": "playwright test",
+    "preview": "vite preview",
+    "run": "vite build && vite preview",
+    "test": "vitest --watch=false --silent=passed-only --reporter=minimal",
+    "test:cov": "vitest --watch=false --silent=passed-only --coverage"
+  },
+  "dependencies": {
+    "@flashcards/shared": "workspace:*",
+    "@quasar/extras": "^2.1.0",
+    "quasar": "^2.35.2",
+    "vue": "^3.5.45",
+    "vue-router": "^5.4.0"
+  }
+}
