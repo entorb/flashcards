@@ -84,7 +84,7 @@ This repository hosts the code of six educational apps, implementing flashcard-b
 - Biome (formatting)
 - ESLint (linting)
 - Vitest unit tests
-- Cypress E2E test
+- Playwright E2E test
 - [SonarQube](https://sonarcloud.io/summary/overall?id=entorb_flashcards) for
   code quality analysis
 
@@ -132,22 +132,6 @@ pnpm --filter 1x1 run test
 
 # Testing Vitest Unit Tests
 pnpm run test
-
-# Testing Cypress E2E Tests
-pnpm run cy:open:1x1
-pnpm run cy:open:div
-pnpm run cy:open:voc
-pnpm run cy:open:lwk
-pnpm run cy:open:pum
-pnpm run cy:open:eta
-# headless
-pnpm run cy:run
-pnpm run cy:run:1x1
-pnpm run cy:run:div
-pnpm run cy:run:voc
-pnpm run cy:run:lwk
-pnpm run cy:run:pum
-pnpm run cy:run:eta
 
 # Testing Playwright E2E Tests
 pnpm run pw:open:1x1

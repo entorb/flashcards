@@ -68,12 +68,10 @@
       "matchManagers": ["npm"],
       "matchPackageNames": [
         "@biomejs/biome",
-        "@cypress/**",
         "@eslint/**",
         "@playwright/**",
         "@typescript-eslint/**",
         "@vitest/**",
-        "cypress",
         "eslint-plugin-*",
         "eslint",
         "knip",

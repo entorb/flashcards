@@ -13,9 +13,6 @@
       "!**/*.svg",
       "!**/*.tsbuildinfo",
       "!**/coverage",
-      "!**/cypress/downloads",
-      "!**/cypress/screenshots",
-      "!**/cypress/videos",
       "!**/dist",
       "!**/node_modules",
       "!**/package.json",
@@ -244,34 +241,6 @@
           "style": {
             "noNonNullAssertion": "off",
             "useTemplate": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["**/cypress/**"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off",
-            "noEmptyBlockStatements": "off",
-            "noNestedPromises": "off"
-          },
-          "complexity": {
-            "noExcessiveCognitiveComplexity": "off",
-            "noForEach": "off"
-          },
-          "nursery": {
-            "noFloatingPromises": "off",
-            "noMisusedPromises": "off"
-          },
-          "style": {
-            "noNonNullAssertion": "off",
-            "useTemplate": "off",
-            "useNumericSeparators": "off"
-          },
-          "correctness": {
-            "noUnusedVariables": "off"
           }
         }
       }

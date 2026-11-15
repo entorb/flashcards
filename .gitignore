@@ -14,7 +14,6 @@
 .rumdl_cache/
 .vite/
 /tmp
-apps/*/cypress/screenshots/
 apps/*/src/**/*.d.ts
 apps/*/src/**/*.js
 coverage/

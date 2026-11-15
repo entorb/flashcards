@@ -22,23 +22,9 @@ run before committing
 
 If a check fails → fix → rerun that check only → repeat → final `scripts/run_checks.sh`.
 
-## Cypress E2E Tests
-
-```bash
-# E2E
-pnpm run cy:run              # all apps
-pnpm run cy:run:{app}        # one app (1x1, div, eta, lwk, pum, voc)
-pnpm run cy:run:{app} -- --spec "cypress/e2e/{spec}.cy.ts" 2>&1
-```
-
-### Debugging a single failing spec
-
-- Run exactly one spec — the `-- --spec` above does NOT filter (the `--` swallows the flag) — load the `e2e-test-debugging` skill for the exact command and debugging flow.
-- Seed test state via `cy.visit('/', { onBeforeLoad(win) { win.localStorage.setItem('fc-<app>-cards', ...) } })` in `beforeEach`, NOT app UI clicks — faster and deterministic.
-
 ## Playwright E2E Tests
 
-Runs in parallel to Cypress (same coverage, own job in `check.yml`). Config mirrors Cypress: `playwright.config.base.ts` at root + `playwright.config.ts` per app (each starts its own dev server via `webServer`). Tests live in `apps/*/playwright/tests/` (specs in `*.spec.ts`, helpers in `support/`).
+Own job in `check.yml`. Config: `playwright.config.base.ts` at root + `playwright.config.ts` per app (each starts its own dev server via `webServer`). Tests live in `apps/*/playwright/tests/` (specs in `*.spec.ts`, helpers in `support/`).
 
 ```bash
 # E2E
@@ -52,10 +38,10 @@ pnpm --filter {app} exec playwright test --spec "playwright/tests/{spec}.spec.ts
 
 - Load the `e2e-test-debugging` skill for the exact single-spec command and debugging flow.
 - `data-cy` locators via `page.getByTestId(...)` (configured in `use.testIdAttribute`). Text buttons use `page.getByRole('button', { name: ... })`.
-- Seed state via `page.addInitScript(...)` in `beforeEach` BEFORE `page.goto('/')` (re-applies on every navigation incl. reloads, like Cypress `onBeforeLoad`).
+- Seed state via `page.addInitScript(...)` in `beforeEach` BEFORE `page.goto('/')` (re-applies on every navigation incl. reloads).
 - Gotchas:
   - SPA routes load lazily — after a navigation click always `await expect(page).toHaveURL(...)` before touching the next page's elements (a too-early click hits the previous page).
-  - LWK hidden mode: the GO button swallows a click right after mount — wait ~200ms before clicking it (same as the Cypress helper).
+  - LWK hidden mode: the GO button swallows a click right after mount — wait ~200ms before clicking it.
   - Vitest excludes `playwright/**` (`vitest.config.base.ts`) so Playwright `.spec.ts` files don't run as unit tests.
   - Playwright output dirs (`test-results/`, `playwright-report/`) are gitignored.
 
@@ -94,7 +80,6 @@ flashcards/
 ├── vite.config.base.ts    # baseViteConfig + plugin factories
 ├── vite.config.factory.ts # createAppViteConfig(AppConfig)
 ├── vitest.config.base.ts  # getVitestConfig(rootDir)
-├── cypress.config.base.ts
 └── playwright.config.base.ts
 ```
 
@@ -104,7 +89,7 @@ flashcards/
 
 All apps (except eta) share the game store pattern (see Game State Flow). Common facts, documented once here:
 
-- Stack: Vue 3, Quasar, TypeScript, Vite, Vitest, Cypress, Playwright (all apps incl. eta)
+- Stack: Vue 3, Quasar, TypeScript, Vite, Vitest, Playwright (all apps incl. eta)
 - `MAX_CARDS_PER_GAME = 10` in each app's `src/constants.ts`
 - Storage keys: source of truth `STORAGE_KEYS` in `src/constants.ts`, actual keys prefixed `fc-<app>-`
 - Mascots: 1x1 Groundhog (`GroundhogMascot.vue`) • div Chicken (`ChickenMascot.vue`) • voc Fox (`FoxMascot.vue`) • lwk Eisi (`EisiMascot.vue`) • pum Raccoon (`RaccoonMascot.vue`)

@@ -161,7 +161,7 @@ async function flushPendingStats(): Promise<void> {
  * @param basePath - The app identifier (1x1, voc, lwk, eta)
  */
 export const helperStatsDataWrite = async (basePath: string): Promise<void> => {
-  // Skip stats writes outside production to prevent dev/Cypress from spoiling stats
+  // Skip stats writes outside production to prevent dev/E2E tests from spoiling stats
   try {
     if (globalThis.location.hostname !== PROD_HOSTNAME) return
   } catch {
