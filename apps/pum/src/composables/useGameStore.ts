@@ -1,8 +1,8 @@
 import type { FocusType } from "@flashcards/shared"
 import { createGameStoreFactory } from "@flashcards/shared"
 
-import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from "@/constants"
-import { filterCards, selectCardsForRound } from "@/services/cardSelector"
+import { GAME_STATE_FLOW_CONFIG, MAX_CARDS_PER_GAME } from "@/constants.ts"
+import { filterCards, selectCardsForRound } from "@/services/cardSelector.ts"
 import {
   getDifficultyForCard,
   initializeCards,
@@ -20,8 +20,8 @@ import {
   setGameConfig as storageSetGameConfig,
   setGameResult as storageSetGameResult,
   updateCard as storageUpdateCard,
-} from "@/services/storage"
-import type { Card, GameHistory, GameSettings } from "@/types"
+} from "@/services/storage.ts"
+import type { Card, GameHistory, GameSettings } from "@/types.ts"
 
 export const useGameStore = createGameStoreFactory<Card, GameHistory, GameSettings>({
   storage: {

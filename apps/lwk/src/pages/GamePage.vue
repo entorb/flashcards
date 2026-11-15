@@ -17,9 +17,9 @@ import {
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 
-import { useGameStore } from "../composables/useGameStore"
-import { WORD_DISPLAY_DURATION } from "../constants"
-import { validateTypingAnswer } from "../utils/helpers"
+import { useGameStore } from "../composables/useGameStore.ts"
+import { WORD_DISPLAY_DURATION } from "../constants.ts"
+import { validateTypingAnswer } from "../utils/helpers.ts"
 
 const router = useRouter()
 const {

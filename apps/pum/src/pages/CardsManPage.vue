@@ -11,12 +11,12 @@ import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 import PumToggleButtons from "@/components/PumToggleButtons.vue"
-import { useGameStore } from "@/composables/useGameStore"
-import { DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from "@/constants"
-import { filterCards } from "@/services/cardSelector"
-import { loadCards, parseCardQuestion } from "@/services/storage"
-import type { Card, Difficulty, Operation } from "@/types"
-import { formatDisplayQuestion } from "@/utils/questionFormatter"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from "@/constants.ts"
+import { filterCards } from "@/services/cardSelector.ts"
+import { loadCards, parseCardQuestion } from "@/services/storage.ts"
+import type { Card, Difficulty, Operation } from "@/types.ts"
+import { formatDisplayQuestion } from "@/utils/questionFormatter.ts"
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
@@ -66,12 +66,7 @@ const {
   filteredCards,
 } = useCardFiltering(() => filteredBySettings.value)
 
-const listTitle = computed(() => {
-  if (selectedTimeBucket.value !== null) {
-    return getTimeFilterListTitle(selectedTimeBucket.value)
-  }
-  return undefined
-})
+const listTitle = computed(() => (selectedTimeBucket.value === null ? undefined : getTimeFilterListTitle(selectedTimeBucket.value)))
 
 // Sort cards: plus before minus, then by X, then by Y
 const sortedFilteredCards = computed(() => {

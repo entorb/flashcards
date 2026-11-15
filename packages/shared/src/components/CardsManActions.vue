@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { MAX_LEVEL, MIN_LEVEL } from "../constants"
-import { TEXT_DE } from "../text-de"
+import { MAX_LEVEL, MIN_LEVEL } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
 
 interface Props {
   appPrefix: "voc" | "lwk"

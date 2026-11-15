@@ -6,8 +6,8 @@ import {
   parseLevel,
 } from "@flashcards/shared"
 
-import { LEVENSHTEIN_THRESHOLD } from "../constants"
-import type { Card } from "../types"
+import { LEVENSHTEIN_THRESHOLD } from "../constants.ts"
+import type { Card } from "../types.ts"
 
 /**
  * Normalize a string for comparison (lowercase, trim, commas treated as spaces
@@ -16,7 +16,7 @@ import type { Card } from "../types"
  */
 export function normalizeString(str: string, ignoreAccents = false): string {
   const base = ignoreAccents ? str.normalize("NFD").replace(/\p{M}/gu, "") : str
-  return normalizeWhitespace(base.replace(/,/g, " ")).toLowerCase()
+  return normalizeWhitespace(base.replace(/,/gu, " ")).toLowerCase()
 }
 
 /**

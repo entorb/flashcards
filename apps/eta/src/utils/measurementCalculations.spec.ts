@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import type { MeasurementPoint, SessionData } from "@/types"
-import { calculateTimePerTask, calculateTotalRuntime } from "./measurementCalculations"
+import type { MeasurementPoint, SessionData } from "@/types.ts"
+import { calculateTimePerTask, calculateTotalRuntime } from "./measurementCalculations.ts"
 
 describe("calculateTimePerTask", () => {
   it("should return null for invalid index", () => {

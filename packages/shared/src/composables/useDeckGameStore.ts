@@ -6,8 +6,8 @@
 
 import { computed, ref } from "vue"
 
-import { LOOP_COUNT, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants"
-import { calculatePointsBreakdown } from "../services/scoring"
+import { LOOP_COUNT, MAX_LEVEL, MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants.ts"
+import { calculatePointsBreakdown } from "../services/scoring.ts"
 import type {
   AnswerStatus,
   BaseCard,
@@ -15,8 +15,8 @@ import type {
   GameResult,
   GameStats,
   SessionMode,
-} from "../types"
-import { shuffleArray } from "../utils/cardSelection"
+} from "../types.ts"
+import { shuffleArray } from "../utils/cardSelection.ts"
 import {
   filterBelowMaxLevel,
   filterByLevels,
@@ -24,13 +24,13 @@ import {
   handleNextCard,
   isEndlessMode,
   repeatCards,
-} from "../utils/gameModeUtils"
-import { roundTime } from "../utils/helper"
+} from "../utils/gameModeUtils.ts"
+import { roundTime } from "../utils/helper.ts"
 
-import { createBaseGameStore } from "./useBaseGameStore"
-import { useDeckManagement } from "./useDeckManagement"
-import type { GameStateFlowConfig } from "./useGameStateFlow"
-import { initializeGameFlow } from "./useGameStateFlow"
+import { createBaseGameStore } from "./useBaseGameStore.ts"
+import { useDeckManagement } from "./useDeckManagement.ts"
+import type { GameStateFlowConfig } from "./useGameStateFlow.ts"
+import { initializeGameFlow } from "./useGameStateFlow.ts"
 
 export interface SavedGameState<TCard, TSettings> {
   gameCards: TCard[]
@@ -412,9 +412,9 @@ export function createDeckGameStore<
     }
 
     // Computed
-    const currentCard = computed(() => {
-      return baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null
-    })
+    const currentCard = computed(
+      () => baseStore.gameCards.value[baseStore.currentCardIndex.value] ?? null,
+    )
 
     return {
       // State (from base store)

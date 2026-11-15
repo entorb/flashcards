@@ -20,8 +20,8 @@ import {
   isValidHistoryEntry,
 } from "@flashcards/shared/utils"
 
-import { DEFAULT_DECKS, STORAGE_KEYS } from "../constants"
-import type { Card, CardDeck, GameHistory, GameSettings } from "../types"
+import { DEFAULT_DECKS, STORAGE_KEYS } from "../constants.ts"
+import type { Card, CardDeck, GameHistory, GameSettings } from "../types.ts"
 
 /** Card shape check: word string + valid BaseCard level/time */
 function isValidCard(value: unknown): boolean {

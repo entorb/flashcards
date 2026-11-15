@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCopyCardCorrectly,
@@ -6,15 +6,15 @@ import {
   seedTestCards,
   startCopyGameMode,
   TEST_CARD_COUNT,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("LWK 3 Rounds mode", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("LWK 3 Rounds mode", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
 
-  test("should complete game in copy mode", async ({ page }) => {
+  it("should complete game in copy mode", async ({ page }) => {
     await startCopyGameMode(page, "start-three-rounds")
 
     const totalQuestions = TEST_CARD_COUNT * 3

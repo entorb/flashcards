@@ -2,7 +2,7 @@ import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { BaseGameHistory } from "../types"
+import type { BaseGameHistory } from "../types.ts"
 import HistoryPage from "./HistoryPage.vue"
 
 interface TestHistory extends BaseGameHistory {
@@ -88,7 +88,7 @@ describe("HistoryPage (shared)", () => {
     // not sub-elements like "history-game-0-points"
     const items = wrapper
       .findAll("[data-cy]")
-      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
+      .filter((el) => /^history-game-\d+$/u.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(3)
   })
 

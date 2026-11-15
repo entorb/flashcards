@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
@@ -6,17 +6,17 @@ import {
   seedTestCards,
   startTypingGameMode,
   TEST_CARDS,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("VOC Endless Level 5 mode", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC Endless Level 5 mode", () => {
+  it.beforeEach(async ({ page }) => {
     // 4 cards at levels 1..4 (all below level 5)
     const leveledCards = TEST_CARDS.map((card, index) => ({ ...card, level: index + 1 }))
     await seedTestCards(page, leveledCards)
     await page.goto("/")
   })
 
-  test("should complete game in typing mode", async ({ page }) => {
+  it("should complete game in typing mode", async ({ page }) => {
     await startTypingGameMode(page, "start-endless-level5")
 
     // 4 cards below level 5

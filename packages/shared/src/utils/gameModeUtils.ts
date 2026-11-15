@@ -1,7 +1,7 @@
-import { MAX_LEVEL, MIN_LEVEL } from "../constants.js"
-import type { BaseCard, SessionMode } from "../types.js"
+import { MAX_LEVEL, MIN_LEVEL } from "../constants.ts"
+import type { BaseCard, SessionMode } from "../types.ts"
 
-import { shuffleArray } from "./cardSelection.js"
+import { shuffleArray } from "./cardSelection.ts"
 
 /**
  * Check if a session mode is an endless mode (cards are removed as they're mastered)

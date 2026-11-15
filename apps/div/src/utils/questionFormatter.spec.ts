@@ -1,7 +1,7 @@
 import fc from "fast-check"
 import { describe, expect, it } from "vitest"
 
-import { formatDisplayQuestion } from "./questionFormatter"
+import { formatDisplayQuestion } from "./questionFormatter.ts"
 
 describe("formatDisplayQuestion", () => {
   // Feature: div-app, Property 4: Question formatting preserves operands with spacing

@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { GameStateFlowConfig } from "./useGameStateFlow"
+import type { GameStateFlowConfig } from "./useGameStateFlow.ts"
 import {
   getGameCards,
   initializeGameFlow,
   removeCardFromGame,
   transferGameResultsWithBonuses,
-} from "./useGameStateFlow"
+} from "./useGameStateFlow.ts"
 
 interface TestCard {
   id: number

@@ -4,7 +4,7 @@
 
 import type { GameStateFlowConfig } from "@flashcards/shared"
 
-import type { Card } from "./types"
+import type { Card } from "./types.ts"
 
 /**
  * Base path for the voc app — used in routing, PWA config, and database

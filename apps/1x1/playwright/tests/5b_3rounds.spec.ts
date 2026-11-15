@@ -1,13 +1,13 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
   playThroughAndVerifyGameOver,
   startGameModeWithTable6,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("1x1 3 Rounds mode", () => {
-  test("should play a complete 3 Rounds game with table [6]", async ({ page }) => {
+it.describe("1x1 3 Rounds mode", () => {
+  it("should play a complete 3 Rounds game with table [6]", async ({ page }) => {
     await page.goto("/")
 
     // Select only table [6] → 7 cards × 3 rounds = 21 total questions

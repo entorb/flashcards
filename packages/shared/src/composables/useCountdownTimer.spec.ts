@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { defineComponent, h } from "vue"
 
-import { useCountdownTimer } from "./useCountdownTimer"
+import { useCountdownTimer } from "./useCountdownTimer.ts"
 
 /**
  * Mount a minimal component that calls the composable so that lifecycle hooks

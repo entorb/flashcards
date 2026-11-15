@@ -3,8 +3,8 @@ import { helperStatsDataWrite, TEXT_DE } from "@flashcards/shared"
 import { AppFooter, HomePwaInstallInfo } from "@flashcards/shared/components"
 import { ref } from "vue"
 
-import { useEtaStore } from "@/composables/useEtaStore"
-import { BASE_PATH } from "@/constants"
+import { useEtaStore } from "@/composables/useEtaStore.ts"
+import { BASE_PATH } from "@/constants.ts"
 
 import HourglassIcon from "./HourglassIcon.vue"
 

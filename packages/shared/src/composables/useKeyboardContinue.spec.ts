@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { defineComponent, ref } from "vue"
-import { useKeyboardContinue } from "./useKeyboardContinue"
+import { useKeyboardContinue } from "./useKeyboardContinue.ts"
 
 function makeWrapper(canProceedInitial: boolean, onContinue: () => void) {
   return defineComponent({

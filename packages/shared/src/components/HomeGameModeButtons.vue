@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue"
 
-import { TEXT_DE } from "../text-de"
-import type { BaseCard, SessionMode } from "../types"
-import { filterBelowMaxLevel, filterLevel1Cards } from "../utils/gameModeUtils"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseCard, SessionMode } from "../types.ts"
+import { filterBelowMaxLevel, filterLevel1Cards } from "../utils/gameModeUtils.ts"
 
 const props = defineProps<{
   cards: BaseCard[]

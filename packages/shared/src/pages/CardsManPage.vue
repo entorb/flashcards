@@ -10,14 +10,14 @@ import {
   CardsTimeHistogram,
   EmptyDeckHint,
   HomeDeckSelector,
-} from "../components/index"
-import { useCardFiltering } from "../composables/useCardFiltering"
-import { useDeckDialogs } from "../composables/useDeckDialogs"
-import { useResetCards } from "../composables/useResetCards"
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { BaseCard } from "../types"
-import { getTimeFilterListTitle } from "../utils/helper"
+} from "../components/index.ts"
+import { useCardFiltering } from "../composables/useCardFiltering.ts"
+import { useDeckDialogs } from "../composables/useDeckDialogs.ts"
+import { useResetCards } from "../composables/useResetCards.ts"
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseCard } from "../types.ts"
+import { getTimeFilterListTitle } from "../utils/helper.ts"
 
 interface Props {
   appPrefix: "voc" | "lwk"
@@ -86,12 +86,7 @@ const cardsToShow = computed(() => {
   return filteredCards.value
 })
 
-const listTitle = computed(() => {
-  if (selectedTimeBucket.value !== null) {
-    return getTimeFilterListTitle(selectedTimeBucket.value)
-  }
-  return undefined
-})
+const listTitle = computed(() => (selectedTimeBucket.value === null ? undefined : getTimeFilterListTitle(selectedTimeBucket.value)))
 
 const duplicateKeys = computed(() => {
   const keyCount = new Map<string, number>()

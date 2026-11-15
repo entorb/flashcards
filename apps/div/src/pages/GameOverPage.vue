@@ -3,8 +3,8 @@ import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from "@flas
 import { GameOverPage } from "@flashcards/shared/pages"
 
 import ChickenMascot from "@/components/ChickenMascot.vue"
-import { useGameStore } from "@/composables/useGameStore"
-import { BASE_PATH } from "@/constants"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { BASE_PATH } from "@/constants.ts"
 import {
   clearGameResult,
   clearGameState,
@@ -13,7 +13,7 @@ import {
   saveGameStats,
   saveHistory,
   setGameResult,
-} from "@/services/storage"
+} from "@/services/storage.ts"
 
 const { history: gameStoreHistory, gameStats: gameStoreStats } = useGameStore()
 </script>

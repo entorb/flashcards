@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { LEVEL_COLORS, MAX_TIME } from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { BaseCard } from "../types"
+import { LEVEL_COLORS, MAX_TIME } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseCard } from "../types.ts"
 
 interface Props {
   allCards: BaseCard[]

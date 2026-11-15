@@ -6,8 +6,8 @@ import {
   INITIAL_CARDS,
   POINTS_MODE_BLIND,
   POINTS_MODE_TYPING,
-} from "../constants"
-import { selectCardsForRound } from "../services/cardSelector"
+} from "../constants.ts"
+import { selectCardsForRound } from "../services/cardSelector.ts"
 import {
   clearGameState,
   loadCards,
@@ -23,8 +23,8 @@ import {
   saveHistory,
   saveSettings,
   setGameResult,
-} from "../services/storage"
-import type { Card, GameHistory, GameSettings } from "../types"
+} from "../services/storage.ts"
+import type { Card, GameHistory, GameSettings } from "../types.ts"
 
 function getModePoints(mode: GameSettings["mode"]): number {
   switch (mode) {

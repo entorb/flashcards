@@ -5,7 +5,7 @@ import { MIN_LEVEL } from "@flashcards/shared"
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { Card } from "@/types"
+import type { Card } from "@/types.ts"
 
 /**
  * Helper: create a Level 1 card with a given question string.
@@ -71,7 +71,7 @@ async function setupEndlessMocks(cards: Card[]) {
     selectCardsForRound: vi.fn((c: Card[]) => c),
   }))
 
-  const { useGameStore } = await import("./useGameStore")
+  const { useGameStore } = await import("./useGameStore.ts")
   return useGameStore()
 }
 

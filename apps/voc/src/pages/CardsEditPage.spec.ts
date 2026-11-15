@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { Card } from "../types"
+import type { Card } from "../types.ts"
 import CardsEditPage from "./CardsEditPage.vue"
 
 // Mock useQuasar for notify/dialog

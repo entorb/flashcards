@@ -6,10 +6,10 @@ import {
   STATS_PENDING_STORAGE_KEY,
   TIME_BUCKET_BOUNDS,
   WEB_STATS_URL,
-} from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { DailyBonusConfig } from "../types"
-import { isNumber, isRecord } from "./validators"
+} from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { DailyBonusConfig } from "../types.ts"
+import { isNumber, isRecord } from "./validators.ts"
 
 /**
  * Get focus type text from focus value
@@ -322,7 +322,7 @@ export function parseLevel(levelStr: string | undefined): number {
  * Use on card fields at import/entry and on user input before validation.
  */
 export function normalizeWhitespace(str: string): string {
-  return str.trim().replace(/\s+/g, " ")
+  return str.trim().replace(/\s+/gu, " ")
 }
 
 /**

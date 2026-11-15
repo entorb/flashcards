@@ -1,4 +1,4 @@
-import type { SelectionType } from "@/types"
+import type { SelectionType } from "@/types.ts"
 
 /**
  * Formats the display question based on selection.

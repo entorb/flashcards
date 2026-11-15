@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest"
-import type { MeasurementPoint } from "@/types"
+import type { MeasurementPoint } from "@/types.ts"
 import {
   calculateLinearRegression,
   calculateRegression,
   convertToXY,
   predictRemainingTime,
-} from "./regression"
+} from "./regression.ts"
 
 describe("calculateRegression", () => {
   it("should return null for less than 2 measurements", () => {

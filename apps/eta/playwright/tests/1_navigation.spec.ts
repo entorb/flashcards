@@ -1,11 +1,11 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test.describe("ETA Navigation Smoke Tests", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("ETA Navigation Smoke Tests", () => {
+  it.beforeEach(async ({ page }) => {
     await page.goto("/")
   })
 
-  test("navigate Home to Info and back", async ({ page }) => {
+  it("navigate Home to Info and back", async ({ page }) => {
     // Verify we're on the config (home) view
     await expect(page.getByTestId("input-total-tasks")).toBeVisible()
 

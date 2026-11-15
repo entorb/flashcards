@@ -1,8 +1,8 @@
 import { MAX_TIME, MIN_LEVEL } from "@flashcards/shared"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { STORAGE_KEYS } from "../constants"
-import type { Card } from "../types"
+import { STORAGE_KEYS } from "../constants.ts"
+import type { Card } from "../types.ts"
 import {
   createDefaultCard,
   getDifficultyForCard,
@@ -11,7 +11,7 @@ import {
   initializeCards,
   loadCards,
   parseCardQuestion,
-} from "./storage"
+} from "./storage.ts"
 
 describe("pum storage — unit tests", () => {
   beforeEach(() => {

@@ -2,8 +2,8 @@
 import { getFocusText, TEXT_DE } from "@flashcards/shared"
 import { HistoryPage } from "@flashcards/shared/pages"
 
-import { useGameStore } from "../composables/useGameStore"
-import type { GameHistory } from "../types"
+import { useGameStore } from "../composables/useGameStore.ts"
+import type { GameHistory } from "../types.ts"
 
 const { history } = useGameStore()
 

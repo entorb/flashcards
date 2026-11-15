@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "noEmit": false,
-    "allowImportingTsExtensions": false,
+    "emitDeclarationOnly": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "skipLibCheck": true

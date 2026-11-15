@@ -10,9 +10,9 @@ import { getTimeFilterListTitle } from "@flashcards/shared/utils"
 import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
-import { useGameStore } from "@/composables/useGameStore"
-import { getVirtualCards, loadCards, parseCardQuestion } from "@/services/storage"
-import type { Card } from "@/types"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { getVirtualCards, loadCards, parseCardQuestion } from "@/services/storage.ts"
+import type { Card } from "@/types.ts"
 
 const router = useRouter()
 const { showResetDialog } = useResetCards()
@@ -29,12 +29,7 @@ const {
   filteredCards,
 } = useCardFiltering(() => cardsInRange.value)
 
-const listTitle = computed(() => {
-  if (selectedTimeBucket.value !== null) {
-    return getTimeFilterListTitle(selectedTimeBucket.value)
-  }
-  return undefined
-})
+const listTitle = computed(() => (selectedTimeBucket.value === null ? undefined : getTimeFilterListTitle(selectedTimeBucket.value)))
 
 const sortedFilteredCards = computed(() => {
   const sorted = [...filteredCards.value]

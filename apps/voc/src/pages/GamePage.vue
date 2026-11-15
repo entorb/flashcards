@@ -19,8 +19,8 @@ import {
 import { computed, onMounted, onUnmounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 
-import { useGameStore } from "../composables/useGameStore"
-import { validateTypingAnswer } from "../utils/helpers"
+import { useGameStore } from "../composables/useGameStore.ts"
+import { validateTypingAnswer } from "../utils/helpers.ts"
 
 const router = useRouter()
 const {
@@ -90,9 +90,7 @@ const correctAnswer = computed(() => {
   return gameSettings.value.language === "voc-de" ? currentCard.value.de : currentCard.value.voc
 })
 
-const targetLang = computed(() => {
-  return gameSettings.value?.language === "voc-de" ? "de" : "voc"
-})
+const targetLang = computed(() => gameSettings.value?.language === "voc-de" ? "de" : "voc")
 
 // Determine which time to display based on mode
 const displayTime = computed(() => {

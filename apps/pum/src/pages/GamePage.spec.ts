@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { Card, GameSettings } from "@/types"
+import type { Card, GameSettings } from "@/types.ts"
 import GamePage from "./GamePage.vue"
 
 const mocks = vi.hoisted(() => ({
@@ -41,7 +41,7 @@ vi.mock("@/composables/useGameStore", () => ({
 }))
 
 vi.mock("@/utils/questionFormatter", () => ({
-  formatDisplayQuestion: vi.fn((q: string) => q.replace(/\+/g, " + ").replace(/-/g, " - ")),
+  formatDisplayQuestion: vi.fn((q: string) => q.replace(/\+/gu, " + ").replace(/-/gu, " - ")),
 }))
 
 const NumericGamePageStub = {

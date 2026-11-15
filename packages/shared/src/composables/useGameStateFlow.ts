@@ -15,9 +15,9 @@ import {
   loadSessionJSON,
   saveJSON,
   saveSessionJSON,
-} from "../services/storage"
-import type { DailyBonusConfig, GameResult, GameStats } from "../types"
-import { isValidGameResult, isValidGameStats, isValidHistoryEntry } from "../utils/validators"
+} from "../services/storage.ts"
+import type { DailyBonusConfig, GameResult, GameStats } from "../types.ts"
+import { isValidGameResult, isValidGameStats, isValidHistoryEntry } from "../utils/validators.ts"
 
 export interface GameStateFlowConfig {
   /** localStorage key for game settings */

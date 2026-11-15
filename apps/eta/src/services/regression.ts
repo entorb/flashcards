@@ -1,4 +1,4 @@
-import type { MeasurementPoint, RegressionResult, TimeEstimate } from "@/types"
+import type { MeasurementPoint, RegressionResult, TimeEstimate } from "@/types.ts"
 
 /**
  * Convert measurement points to X (seconds) and Y (tasks) arrays for regression

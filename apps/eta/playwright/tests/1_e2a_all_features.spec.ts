@@ -1,11 +1,11 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test.describe("ETA Tracking Tests", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("ETA Tracking Tests", () => {
+  it.beforeEach(async ({ page }) => {
     await page.goto("/")
   })
 
-  test("complete tracking workflow with 10 tasks", async ({ page }) => {
+  it("complete tracking workflow with 10 tasks", async ({ page }) => {
     // Wait for config view to be visible
     await expect(page.getByTestId("input-total-tasks")).toBeVisible()
 
@@ -34,13 +34,13 @@ test.describe("ETA Tracking Tests", () => {
     // Invalid input in completed mode (try to enter 3, which is less than current 5)
     await page.getByTestId("input-tasks").fill("3")
     await expect(page.locator('.q-field:has([data-cy="input-tasks"])')).toHaveClass(
-      /q-field--error/,
+      /q-field--error/u,
     )
     await page.getByTestId("input-tasks").clear()
 
     // Switch to remaining mode
     await page.getByTestId("btn-toggle-mode").click()
-    await expect(page.getByTestId("input-tasks")).toHaveAttribute("aria-label", /noch/)
+    await expect(page.getByTestId("input-tasks")).toHaveAttribute("aria-label", /noch/u)
 
     // Input in remaining mode (3 remaining = 7 completed)
     await page.getByTestId("input-tasks").fill("3")
@@ -65,7 +65,7 @@ test.describe("ETA Tracking Tests", () => {
     // Invalid input in remaining mode (try to enter 5, which is >= current remaining of 1)
     await page.getByTestId("input-tasks").fill("5")
     await expect(page.locator('.q-field:has([data-cy="input-tasks"])')).toHaveClass(
-      /q-field--error/,
+      /q-field--error/u,
     )
     await page.getByTestId("input-tasks").clear()
 

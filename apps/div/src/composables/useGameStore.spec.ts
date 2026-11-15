@@ -1,7 +1,7 @@
 import { MAX_LEVEL, MIN_LEVEL } from "@flashcards/shared"
 import fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { GameSettings } from "@/types"
+import type { GameSettings } from "@/types.ts"
 
 vi.mock("quasar", () => ({
   Notify: { create: vi.fn() },
@@ -70,7 +70,7 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     selectCardsForRound: vi.fn((cards) => cards),
   }))
 
-  const { useGameStore } = await import("./useGameStore")
+  const { useGameStore } = await import("./useGameStore.ts")
   return useGameStore()
 }
 
@@ -129,7 +129,7 @@ describe("useGameStore - Property Tests", () => {
             selectCardsForRound: vi.fn(() => [card]),
           }))
 
-          const { useGameStore } = await import("./useGameStore")
+          const { useGameStore } = await import("./useGameStore.ts")
           const store = useGameStore()
 
           store.startGame(
@@ -202,7 +202,7 @@ describe("useGameStore - Property Tests", () => {
             selectCardsForRound: vi.fn(() => [card]),
           }))
 
-          const { useGameStore } = await import("./useGameStore")
+          const { useGameStore } = await import("./useGameStore.ts")
           const store = useGameStore()
 
           store.startGame({ select: [3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
@@ -294,7 +294,7 @@ describe("useGameStore - startGame", () => {
 
   it("initializes cards when no cards exist in storage", async () => {
     const store = await setupMocks()
-    const { initializeCards } = await import("@/services/storage")
+    const { initializeCards } = await import("@/services/storage.ts")
 
     store.startGame({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
     expect(initializeCards).toHaveBeenCalled()
@@ -302,7 +302,7 @@ describe("useGameStore - startGame", () => {
 
   it("saves game config via setGameConfig", async () => {
     const store = await setupMocks()
-    const { setGameConfig } = await import("@/services/storage")
+    const { setGameConfig } = await import("@/services/storage.ts")
     const settings: GameSettings = { select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }
 
     store.startGame(settings, "standard", true)
@@ -311,7 +311,7 @@ describe("useGameStore - startGame", () => {
 
   it("saves initial game state to sessionStorage", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
 
     store.startGame({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
     expect(saveGameState).toHaveBeenCalled()
@@ -355,7 +355,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("calls updateCard with incremented level for correct answer", async () => {
     const store = await setupMocks()
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
     store.startGame({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
     const card = store.currentCard.value!
     const originalLevel = card.level
@@ -373,7 +373,7 @@ describe("useGameStore - handleAnswer", () => {
     const store = await setupMocks({
       getVirtualCards: vi.fn(() => [lvl2Card]),
     })
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
     store.startGame({ select: [3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
     const card = store.currentCard.value!
     const originalLevel = card.level
@@ -401,7 +401,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("does not call updateCard when no current card", async () => {
     const store = await setupMocks()
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
 
     store.handleAnswer("correct", 5)
     expect(updateCard).not.toHaveBeenCalled()
@@ -409,7 +409,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("saves game state after answer", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
     store.startGame({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
     vi.mocked(saveGameState).mockClear()
 
@@ -430,7 +430,7 @@ describe("useGameStore - handleAnswer", () => {
 describe("useGameStore - finishGame", () => {
   it("saves game result to sessionStorage", async () => {
     const store = await setupMocks()
-    const { setGameResult } = await import("@/services/storage")
+    const { setGameResult } = await import("@/services/storage.ts")
     store.startGame({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
     store.handleAnswer("correct", 5)
 
@@ -446,7 +446,7 @@ describe("useGameStore - finishGame", () => {
 
   it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import("@/services/storage")
+    const { clearGameState } = await import("@/services/storage.ts")
     store.startGame({ select: [2, 3], focus: "weak", levels: [1, 2, 3, 4, 5] }, "standard", true)
 
     store.finishGame()

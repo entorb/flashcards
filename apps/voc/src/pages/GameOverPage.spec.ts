@@ -2,7 +2,7 @@ import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import { STORAGE_KEYS } from "@/constants"
+import { STORAGE_KEYS } from "@/constants.ts"
 import GameOverPage from "./GameOverPage.vue"
 
 // Stub the shared GameOverPage so we can inspect props/slots without running its logic

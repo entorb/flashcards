@@ -7,7 +7,7 @@ import {
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { GameHistory } from "@/types"
+import type { GameHistory } from "@/types.ts"
 import HistoryPage from "./HistoryPage.vue"
 
 const storageMocks = vi.hoisted(() => ({
@@ -69,7 +69,7 @@ describe("pum HistoryPage", () => {
     expect(wrapper.exists()).toBe(true)
     const items = wrapper
       .findAll('[data-cy^="history-game-"]')
-      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
+      .filter((el) => /^history-game-\d+$/u.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(0)
   })
 
@@ -106,7 +106,7 @@ describe("pum HistoryPage", () => {
 
     const items = wrapper
       .findAll('[data-cy^="history-game-"]')
-      .filter((el) => /^history-game-\d+$/.test(el.attributes("data-cy") ?? ""))
+      .filter((el) => /^history-game-\d+$/u.test(el.attributes("data-cy") ?? ""))
     expect(items).toHaveLength(2)
   })
 

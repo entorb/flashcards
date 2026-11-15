@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { initializeCards } from "@/services/storage"
-import type { Card, GameSettings } from "@/types"
-import { filterCards, selectCardsForRound } from "./cardSelector"
+import { initializeCards } from "@/services/storage.ts"
+import type { Card, GameSettings } from "@/types.ts"
+import { filterCards, selectCardsForRound } from "./cardSelector.ts"
 
 describe("pum cardSelector — unit tests", () => {
   let allCards: Card[]

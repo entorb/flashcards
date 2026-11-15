@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from "quasar"
-import { LEVEL_COLORS, MAX_TIME } from "../constants"
+import { LEVEL_COLORS, MAX_TIME } from "../constants.ts"
 
 interface Props {
   currentCard: {

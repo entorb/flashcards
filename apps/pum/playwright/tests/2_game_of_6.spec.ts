@@ -1,26 +1,26 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
   answerCurrentCardWrong,
   verifyPostGameStats,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("pum Full Game Flow", () => {
-  test("should play a complete game with 1 wrong and 9 correct answers", async ({ page }) => {
+it.describe("pum Full Game Flow", () => {
+  it("should play a complete game with 1 wrong and 9 correct answers", async ({ page }) => {
     await page.goto("/")
 
     // Select plus only (tap plus when all are selected → selects only plus)
     await page.getByTestId("operation-button-plus").click()
-    await expect(page.getByTestId("operation-button-plus")).toHaveClass(/q-btn--unelevated/)
+    await expect(page.getByTestId("operation-button-plus")).toHaveClass(/q-btn--unelevated/u)
 
     // Select simple difficulty only (tap simple when all are selected → selects only simple)
     await page.getByTestId("difficulty-button-simple").click()
-    await expect(page.getByTestId("difficulty-button-simple")).toHaveClass(/q-btn--unelevated/)
+    await expect(page.getByTestId("difficulty-button-simple")).toHaveClass(/q-btn--unelevated/u)
 
     await page.getByTestId("start-button").click()
 
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible()
 
     // Answer first question wrong, then 9 correct (10 cards total)
@@ -32,9 +32,7 @@ test.describe("pum Full Game Flow", () => {
     await verifyPostGameStats(page, 9, 10)
   })
 
-  test("should correctly increment stats and reset state across multiple games", async ({
-    page,
-  }) => {
+  it("should correctly increment stats and reset state across multiple games", async ({ page }) => {
     await page.goto("/")
 
     // Verify initial stats are zero
@@ -46,13 +44,13 @@ test.describe("pum Full Game Flow", () => {
     await page.getByTestId("operation-button-plus").click()
     await page.getByTestId("difficulty-button-simple").click()
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
 
     for (let i = 0; i < 10; i++) {
       await answerCurrentCardCorrectly(page)
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 10000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 10000 })
 
     const game1Points = Number.parseInt(
       (await page.getByTestId("final-points").textContent())?.trim() ?? "0",
@@ -82,10 +80,10 @@ test.describe("pum Full Game Flow", () => {
       await page.getByTestId("operation-button-plus").click()
     }
     await page.getByTestId("operation-button-minus").click()
-    await expect(page.getByTestId("operation-button-minus")).toHaveClass(/q-btn--unelevated/)
+    await expect(page.getByTestId("operation-button-minus")).toHaveClass(/q-btn--unelevated/u)
 
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible()
 
     // Verify game starts fresh
@@ -95,7 +93,7 @@ test.describe("pum Full Game Flow", () => {
       await answerCurrentCardCorrectly(page)
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 10000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 10000 })
 
     const game2Points = Number.parseInt(
       (await page.getByTestId("final-points").textContent())?.trim() ?? "0",

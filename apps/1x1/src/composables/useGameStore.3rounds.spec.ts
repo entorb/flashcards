@@ -5,7 +5,7 @@ import { calculatePointsBreakdown, LOOP_COUNT, MAX_TIME } from "@flashcards/shar
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { Card } from "@/types"
+import type { Card } from "@/types.ts"
 
 /**
  * Helper: create a card with a given question string and level.
@@ -69,7 +69,7 @@ async function setup3RoundsMocks(cards: Card[]) {
     selectCardsForRound: vi.fn((c: Card[]) => [...c]),
   }))
 
-  const { useGameStore } = await import("./useGameStore")
+  const { useGameStore } = await import("./useGameStore.ts")
   return useGameStore()
 }
 

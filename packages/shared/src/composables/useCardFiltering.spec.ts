@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { ref } from "vue"
 
-import type { BaseCard } from "../types"
-import { useCardFiltering } from "./useCardFiltering"
+import type { BaseCard } from "../types.ts"
+import { useCardFiltering } from "./useCardFiltering.ts"
 
 function makeCards(levels: number[]): BaseCard[] {
   return levels.map((level) => ({ level, time: 60 }))

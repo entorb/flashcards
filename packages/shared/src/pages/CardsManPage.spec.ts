@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { BaseCard } from "../types"
+import type { BaseCard } from "../types.ts"
 import CardsManPage from "./CardsManPage.vue"
 
 // Controllable dialog/notify mocks

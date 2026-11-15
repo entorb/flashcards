@@ -1,8 +1,8 @@
 import { useQuasar } from "quasar"
 import { type ComputedRef, computed, nextTick, type Ref, ref } from "vue"
 
-import type { BaseCard } from "../types"
-import { normalizeWhitespace } from "../utils/helper"
+import type { BaseCard } from "../types.ts"
+import { normalizeWhitespace } from "../utils/helper.ts"
 
 export interface PendingCardResult<TCard extends BaseCard> {
   card: TCard

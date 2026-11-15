@@ -3,9 +3,9 @@ import { mount } from "@vue/test-utils"
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from "../constants"
-import type { BaseGameHistory, DailyBonusConfig, GameResult } from "../types"
-import { calculateDailyBonuses } from "../utils/helper"
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS } from "../constants.ts"
+import type { BaseGameHistory, DailyBonusConfig, GameResult } from "../types.ts"
+import { calculateDailyBonuses } from "../utils/helper.ts"
 import GameOverPage from "./GameOverPage.vue"
 
 // Mock helperStatsDataWrite so it doesn't make real network calls

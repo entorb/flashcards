@@ -1,4 +1,4 @@
-import type { BaseCard } from "../types"
+import type { BaseCard } from "../types.ts"
 
 export interface CardDeck<TCard extends BaseCard = BaseCard> {
   name: string

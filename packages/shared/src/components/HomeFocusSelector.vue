@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { TEXT_DE } from "../text-de"
-import type { FocusType } from "../types"
+import { TEXT_DE } from "../text-de.ts"
+import type { FocusType } from "../types.ts"
 
 interface Props {
   hideLabel?: boolean

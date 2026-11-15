@@ -3,7 +3,7 @@
 import { levenshteinDistance, MAX_TIME } from "@flashcards/shared"
 import { describe, expect, it } from "vitest"
 
-import { normalizeString, parseCardsFromText, validateTypingAnswer } from "./helpers"
+import { normalizeString, parseCardsFromText, validateTypingAnswer } from "./helpers.ts"
 
 /**
  * Unit tests for helpers utility functions

@@ -2,8 +2,8 @@ import type { FocusType } from "@flashcards/shared"
 import { selectCardsByFocus } from "@flashcards/shared"
 import { shuffleArray } from "@flashcards/shared/utils"
 
-import { MAX_CARDS_PER_GAME } from "../constants"
-import type { Card } from "../types"
+import { MAX_CARDS_PER_GAME } from "../constants.ts"
+import type { Card } from "../types.ts"
 
 /**
  * Select cards for a game round based on focus strategy
@@ -19,9 +19,7 @@ export function selectCardsForRound(allCards: Card[], focus: FocusType): Card[] 
     cards: allCards,
     focus,
     maxCards: MAX_CARDS_PER_GAME,
-    timeExtractor: (card: Card) => {
-      return card.time
-    },
+    timeExtractor: (card: Card) => card.time,
   })
 
   // Shuffle the selected cards

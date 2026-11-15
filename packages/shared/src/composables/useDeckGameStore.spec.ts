@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { BaseCard, BaseGameHistory } from "../types"
+import type { BaseCard, BaseGameHistory } from "../types.ts"
 
-import { createDeckGameStore, type SavedGameState } from "./useDeckGameStore"
+import { createDeckGameStore, type SavedGameState } from "./useDeckGameStore.ts"
 
 interface TestCard extends BaseCard {
   word: string

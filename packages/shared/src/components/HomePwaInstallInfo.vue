@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
 
-import { TEXT_DE } from "../text-de"
+import { TEXT_DE } from "../text-de.ts"
 
 const isPwaInstalled = ref(false)
 

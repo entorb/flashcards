@@ -2,8 +2,8 @@
 import { computed, onMounted, onUnmounted } from "vue"
 import { useRouter } from "vue-router"
 
-import { TEXT_DE } from "../text-de"
-import type { BaseGameHistory } from "../types"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseGameHistory } from "../types.ts"
 
 /** @lintignore */
 export interface Props<T extends BaseGameHistory> {
@@ -17,11 +17,7 @@ const props = defineProps<Props<T>>()
 
 const router = useRouter()
 
-const sortedHistory = computed(() => {
-  return [...props.history].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
-  })
-})
+const sortedHistory = computed(() => [...props.history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)

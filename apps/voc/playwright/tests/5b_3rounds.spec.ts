@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
@@ -6,15 +6,15 @@ import {
   seedTestCards,
   startTypingGameMode,
   TEST_CARD_COUNT,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("VOC 3 Rounds mode", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC 3 Rounds mode", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
 
-  test("should complete game in typing mode", async ({ page }) => {
+  it("should complete game in typing mode", async ({ page }) => {
     await startTypingGameMode(page, "start-three-rounds")
 
     const totalQuestions = TEST_CARD_COUNT * 3

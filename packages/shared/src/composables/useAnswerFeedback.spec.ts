@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { useAnswerFeedback } from "./useAnswerFeedback"
+import { useAnswerFeedback } from "./useAnswerFeedback.ts"
 
 describe("useAnswerFeedback", () => {
   beforeEach(() => {

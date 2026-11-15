@@ -5,8 +5,8 @@
  * entries can never crash or poison the app.
  */
 
-import { MAX_LEVEL, MIN_LEVEL } from "../constants"
-import type { CardLevel } from "../types"
+import { MAX_LEVEL, MIN_LEVEL } from "../constants.ts"
+import type { CardLevel } from "../types.ts"
 
 /** Non-null, non-array object */
 export function isRecord(value: unknown): value is Record<string, unknown> {

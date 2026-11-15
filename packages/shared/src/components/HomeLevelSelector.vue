@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue"
 
-import { ALL_LEVELS } from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { BaseCard, CardLevel } from "../types"
+import { ALL_LEVELS } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseCard, CardLevel } from "../types.ts"
 
 interface Props {
   cards: BaseCard[]

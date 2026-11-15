@@ -2,8 +2,8 @@ import { MAX_TIME, MIN_LEVEL } from "@flashcards/shared"
 import fc from "fast-check"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { STORAGE_KEYS } from "../constants"
-import type { Card } from "../types"
+import { STORAGE_KEYS } from "../constants.ts"
+import type { Card } from "../types.ts"
 import {
   createDefaultCard,
   getVirtualCards,
@@ -11,7 +11,7 @@ import {
   loadCards,
   parseCardQuestion,
   saveCards,
-} from "./storage"
+} from "./storage.ts"
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -3,7 +3,7 @@ import { TEXT_DE } from "@flashcards/shared"
 import { AboutSection } from "@flashcards/shared/components"
 import { QIcon } from "quasar"
 
-import { BASE_PATH } from "@/constants"
+import { BASE_PATH } from "@/constants.ts"
 
 defineEmits<{
   back: []

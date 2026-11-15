@@ -1,8 +1,7 @@
+import process from "node:process"
 import { defineConfig } from "@playwright/test"
-
-import basePlaywrightConfig from "../../playwright.config.base"
-
-import { BASE_PATH } from "./src/constants"
+import basePlaywrightConfig from "../../playwright.config.base.ts"
+import { BASE_PATH } from "./src/constants.ts"
 
 export default defineConfig({
   ...basePlaywrightConfig,

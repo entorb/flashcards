@@ -3,16 +3,16 @@
  * Common patterns used by both 1x1 and voc apps
  */
 
-import { MAX_LEVEL } from "../constants"
-import type { CardLevel, DailyStats } from "../types"
-import { weightedRandomSelection } from "../utils"
+import { MAX_LEVEL } from "../constants.ts"
+import type { CardLevel, DailyStats } from "../types.ts"
+import { weightedRandomSelection } from "../utils/index.ts"
 import {
   isRecord,
   isValidBaseSettings,
   isValidDailyStats,
   isValidGameResult,
   isValidGameStats,
-} from "../utils/validators"
+} from "../utils/validators.ts"
 
 /**
  * Get today's date in ISO format (YYYY-MM-DD)
@@ -286,13 +286,12 @@ export function createGameResultOperations(resultKey: string) {
     save: (result: { points: number; correctAnswers: number; totalCards: number }) => {
       saveSessionJSON(resultKey, result)
     },
-    load: () => {
-      return loadSessionJSON<{ points: number; correctAnswers: number; totalCards: number } | null>(
+    load: () =>
+      loadSessionJSON<{ points: number; correctAnswers: number; totalCards: number } | null>(
         resultKey,
         null,
         isValidGameResult,
-      )
-    },
+      ),
     clear: () => {
       removeSessionJSON(resultKey)
     },

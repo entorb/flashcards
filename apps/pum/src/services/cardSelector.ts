@@ -1,8 +1,8 @@
 import type { FocusType } from "@flashcards/shared"
 import { filterByLevels, selectCardsByFocus } from "@flashcards/shared"
 
-import { getDifficultyFromQuestion, getOperationFromQuestion } from "@/services/storage"
-import type { Card, GameSettings } from "@/types"
+import { getDifficultyFromQuestion, getOperationFromQuestion } from "@/services/storage.ts"
+import type { Card, GameSettings } from "@/types.ts"
 
 /**
  * Filter cards by selected operations AND difficulties (intersection),

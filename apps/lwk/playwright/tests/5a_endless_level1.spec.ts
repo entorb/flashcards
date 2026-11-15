@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCopyCardCorrectly,
@@ -6,15 +6,15 @@ import {
   seedTestCards,
   startCopyGameMode,
   TEST_CARD_COUNT,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("LWK Endless Level 1 mode", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("LWK Endless Level 1 mode", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
 
-  test("should complete game in copy mode", async ({ page }) => {
+  it("should complete game in copy mode", async ({ page }) => {
     await startCopyGameMode(page, "start-endless-level1")
 
     // All 4 test cards are at level 1

@@ -7,8 +7,8 @@ import {
   SPEED_BONUS_POINTS,
   STREAK_GAME_BONUS,
   STREAK_GAME_INTERVAL,
-} from "../constants"
-import { TEXT_DE } from "../text-de"
+} from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
 
 defineProps<{
   appName: "1x1" | "div" | "lwk" | "pum" | "voc"

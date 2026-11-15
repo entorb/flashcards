@@ -1,7 +1,7 @@
 import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { BaseCard } from "../types"
+import type { BaseCard } from "../types.ts"
 import CardsManLevelDistribution from "./CardsManLevelDistribution.vue"
 
 const mountOptions = {

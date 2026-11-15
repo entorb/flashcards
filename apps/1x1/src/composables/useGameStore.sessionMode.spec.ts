@@ -5,7 +5,7 @@ import type { SessionMode } from "@flashcards/shared"
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { Card } from "@/types"
+import type { Card } from "@/types.ts"
 
 const defaultCards: Card[] = [
   { question: "3x3", answer: 9, level: 1, time: 60 },
@@ -77,7 +77,7 @@ describe("useGameStore - SessionMode round-trip through sessionStorage (Property
         }))
 
         // Phase 1: Start a game — this persists sessionMode via saveGameState
-        const { useGameStore: useStore1 } = await import("./useGameStore")
+        const { useGameStore: useStore1 } = await import("./useGameStore.ts")
         const store1 = useStore1()
         store1.startGame({ select: "all", focus: "slow", levels: [1, 2, 3, 4, 5] }, mode, true)
 
@@ -124,7 +124,7 @@ describe("useGameStore - SessionMode round-trip through sessionStorage (Property
         }))
 
         // Create new store — it should restore sessionMode from loadGameState
-        const { useGameStore: useStore2 } = await import("./useGameStore")
+        const { useGameStore: useStore2 } = await import("./useGameStore.ts")
         const store2 = useStore2()
 
         // The restored sessionMode should match the original

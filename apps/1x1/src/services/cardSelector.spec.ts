@@ -6,9 +6,9 @@ import {
   filterCardsBySettings,
   filterCardsSquares,
   selectCardsForRound,
-} from "@/services/cardSelector"
-import { initializeCards, loadCards, parseCardQuestion } from "@/services/storage"
-import type { Card } from "@/types"
+} from "@/services/cardSelector.ts"
+import { initializeCards, loadCards, parseCardQuestion } from "@/services/storage.ts"
+import type { Card } from "@/types.ts"
 
 describe("Card Filtering by Selection", () => {
   let allCards: Card[]

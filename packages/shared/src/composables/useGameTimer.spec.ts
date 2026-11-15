@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { defineComponent, ref } from "vue"
-import { useGameTimer } from "./useGameTimer"
+import { useGameTimer } from "./useGameTimer.ts"
 
 // Helper: mount useGameTimer inside a minimal component so Vue lifecycle hooks work
 function mountTimer(initialTrigger: unknown = "card-1", maxTime?: number) {

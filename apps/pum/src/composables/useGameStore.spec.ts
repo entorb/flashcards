@@ -41,7 +41,7 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     selectCardsForRound: vi.fn((cards) => cards),
   }))
 
-  const { useGameStore } = await import("./useGameStore")
+  const { useGameStore } = await import("./useGameStore.ts")
   return useGameStore()
 }
 
@@ -85,7 +85,7 @@ describe("useGameStore - initialization", () => {
 describe("useGameStore - startGame", () => {
   it("starts a game and populates gameCards", async () => {
     const store = await setupMocks()
-    const { filterCards } = await import("@/services/cardSelector")
+    const { filterCards } = await import("@/services/cardSelector.ts")
 
     store.startGame({
       operations: ["plus"],

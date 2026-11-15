@@ -11,9 +11,9 @@ import {
   parseLevel,
 } from "@flashcards/shared"
 
-import { LEVENSHTEIN_THRESHOLD } from "@/constants"
+import { LEVENSHTEIN_THRESHOLD } from "@/constants.ts"
 
-import type { Card } from "../types"
+import type { Card } from "../types.ts"
 
 /**
  * Check if user's spelling is correct or close match

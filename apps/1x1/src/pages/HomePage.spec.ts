@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils"
 import fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { Card, GameSettings } from "@/types"
+import type { Card, GameSettings } from "@/types.ts"
 import HomePage from "./HomePage.vue"
 
 const mocks = vi.hoisted(() => ({

@@ -12,10 +12,10 @@ import { computed, onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 
 import FoxMascot from "../components/FoxMascot.vue"
-import { useGameStore } from "../composables/useGameStore"
-import { BASE_PATH } from "../constants"
-import { loadSettings, saveSettings } from "../services/storage"
-import type { GameSettings } from "../types"
+import { useGameStore } from "../composables/useGameStore.ts"
+import { BASE_PATH } from "../constants.ts"
+import { loadSettings, saveSettings } from "../services/storage.ts"
+import type { GameSettings } from "../types.ts"
 
 const router = useRouter()
 const { gameStats, startGame: startGameStore, getDecks, switchDeck, allCards } = useGameStore()

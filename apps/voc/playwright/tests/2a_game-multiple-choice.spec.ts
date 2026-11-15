@@ -1,24 +1,24 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerMultipleChoiceCard,
   seedTestCards,
   TEST_CARD_COUNT,
   verifyPostGameStats,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("VOC Multiple Choice Game - Voc to DE", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC Multiple Choice Game - Voc to DE", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
 
-  test("should complete a game with 1 wrong and remaining correct answers", async ({ page }) => {
+  it("should complete a game with 1 wrong and remaining correct answers", async ({ page }) => {
     await page.getByRole("button", { name: "Multiple Choice" }).click()
     await page.getByRole("button", { name: "Voc → DE" }).click()
     await page.getByTestId("start-button").click()
 
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("multiple-choice-option")).toHaveCount(4)
 
@@ -30,9 +30,7 @@ test.describe("VOC Multiple Choice Game - Voc to DE", () => {
     await verifyPostGameStats(page, TEST_CARD_COUNT - 1, TEST_CARD_COUNT)
   })
 
-  test("should correctly increment stats and reset state across multiple games", async ({
-    page,
-  }) => {
+  it("should correctly increment stats and reset state across multiple games", async ({ page }) => {
     await expect(page.getByTestId("stats-games-played")).toContainText("0")
     await expect(page.getByTestId("stats-total-points")).toContainText("0")
     await expect(page.getByTestId("stats-correct-answers")).toContainText("0")
@@ -41,7 +39,7 @@ test.describe("VOC Multiple Choice Game - Voc to DE", () => {
     await page.getByRole("button", { name: "Multiple Choice" }).click()
     await page.getByRole("button", { name: "Voc → DE" }).click()
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("multiple-choice-option")).toHaveCount(4)
 
@@ -49,7 +47,7 @@ test.describe("VOC Multiple Choice Game - Voc to DE", () => {
       await answerMultipleChoiceCard(page, true)
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 15000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 15000 })
     await expect(page.getByTestId("correct-answers-count")).toContainText(String(TEST_CARD_COUNT))
 
     const game1Points = Number.parseInt(
@@ -81,7 +79,7 @@ test.describe("VOC Multiple Choice Game - Voc to DE", () => {
     await page.getByRole("button", { name: "Multiple Choice" }).click()
     await page.getByRole("button", { name: "Voc → DE" }).click()
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("card-counter")).toContainText(`1 / ${TEST_CARD_COUNT}`)
     await expect(page.getByTestId("multiple-choice-option")).toHaveCount(4)
@@ -90,7 +88,7 @@ test.describe("VOC Multiple Choice Game - Voc to DE", () => {
       await answerMultipleChoiceCard(page, true)
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 15000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 15000 })
     await expect(page.getByTestId("correct-answers-count")).toContainText(String(TEST_CARD_COUNT))
 
     const game2Points = Number.parseInt(

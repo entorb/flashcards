@@ -2,9 +2,9 @@
 import fc from "fast-check"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { LOOP_COUNT, MAX_LEVEL, MIN_LEVEL } from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { BaseCard } from "../types"
+import { LOOP_COUNT, MAX_LEVEL, MIN_LEVEL } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseCard } from "../types.ts"
 
 import {
   filterBelowMaxLevel,
@@ -13,7 +13,7 @@ import {
   handleNextCard,
   pickIndexAvoiding,
   repeatCards,
-} from "./gameModeUtils"
+} from "./gameModeUtils.ts"
 
 afterEach(() => {
   vi.restoreAllMocks()

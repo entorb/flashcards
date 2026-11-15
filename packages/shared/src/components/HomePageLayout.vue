@@ -2,8 +2,8 @@
 import { useQuasar } from "quasar"
 import type { VNode } from "vue"
 
-import { TEXT_DE } from "../text-de"
-import type { GameStats } from "../types"
+import { TEXT_DE } from "../text-de.ts"
+import type { GameStats } from "../types.ts"
 
 import AppFooter from "./AppFooter.vue"
 import HomePwaInstallInfo from "./HomePwaInstallInfo.vue"

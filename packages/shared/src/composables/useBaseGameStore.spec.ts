@@ -1,10 +1,10 @@
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { MAX_TIME, MIN_LEVEL } from "../constants"
-import type { PointsBreakdown } from "../services/scoring"
-import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from "../types"
-import { createBaseGameStore } from "./useBaseGameStore"
+import { MAX_TIME, MIN_LEVEL } from "../constants.ts"
+import type { PointsBreakdown } from "../services/scoring.ts"
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from "../types.ts"
+import { createBaseGameStore } from "./useBaseGameStore.ts"
 
 // ─── Mock helpers ────────────────────────────────────────────────────────────
 

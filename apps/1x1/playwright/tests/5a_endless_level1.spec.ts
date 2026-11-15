@@ -1,13 +1,13 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
   playThroughAndVerifyGameOver,
   startGameModeWithTable6,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("1x1 Endless Level 1 mode", () => {
-  test("should play a complete Endless Level 1 game with table [6]", async ({ page }) => {
+it.describe("1x1 Endless Level 1 mode", () => {
+  it("should play a complete Endless Level 1 game with table [6]", async ({ page }) => {
     await page.goto("/")
 
     // Select only table [6] → 7 cards (3×6 through 9×6), all Level 1 in fresh state

@@ -13,8 +13,8 @@ import {
   saveJSON,
 } from "@flashcards/shared"
 
-import { DEFAULT_RANGE, STORAGE_KEYS } from "@/constants"
-import type { Card, GameHistory, GameSettings } from "@/types"
+import { DEFAULT_RANGE, STORAGE_KEYS } from "@/constants.ts"
+import type { Card, GameHistory, GameSettings } from "@/types.ts"
 
 /** GameSettings shape check: base fields + valid select */
 function isValidSettings(value: unknown): boolean {

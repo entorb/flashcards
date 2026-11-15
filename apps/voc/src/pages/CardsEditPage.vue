@@ -11,9 +11,9 @@ import { useQuasar } from "quasar"
 import { onMounted, onUnmounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
-import { useGameStore } from "../composables/useGameStore"
-import type { Card } from "../types"
-import { parseCardsFromText } from "../utils/helpers"
+import { useGameStore } from "../composables/useGameStore.ts"
+import type { Card } from "../types.ts"
+import { parseCardsFromText } from "../utils/helpers.ts"
 
 const router = useRouter()
 const $q = useQuasar()
@@ -120,7 +120,7 @@ function handleExport() {
     .writeText(header + tsvContent)
     .then(() => {
       exportButtonText.value = TEXT_DE.voc.cards.copied
-      setTimeout(() => (exportButtonText.value = TEXT_DE.voc.cards.export), 2000)
+      setTimeout(() => { exportButtonText.value = TEXT_DE.voc.cards.export }, 2000)
     })
     .catch(() => {
       $q.notify({

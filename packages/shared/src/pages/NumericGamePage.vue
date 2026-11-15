@@ -8,12 +8,12 @@ import GameInputSubmit from "../components/GameInputSubmit.vue"
 import GameNextCardButton from "../components/GameNextCardButton.vue"
 import GamePointsBreakdown from "../components/GamePointsBreakdown.vue"
 import GameShowCardQuestion from "../components/GameShowCardQuestion.vue"
-import { useGameNavigation } from "../composables/useGameNavigation"
-import { useGameTimer } from "../composables/useGameTimer"
-import { useKeyboardContinue } from "../composables/useKeyboardContinue"
-import type { PointsBreakdown } from "../services/scoring"
-import type { AnswerStatus, BaseCard, SessionMode } from "../types"
-import { isEndlessMode } from "../utils/gameModeUtils"
+import { useGameNavigation } from "../composables/useGameNavigation.ts"
+import { useGameTimer } from "../composables/useGameTimer.ts"
+import { useKeyboardContinue } from "../composables/useKeyboardContinue.ts"
+import type { PointsBreakdown } from "../services/scoring.ts"
+import type { AnswerStatus, BaseCard, SessionMode } from "../types.ts"
+import { isEndlessMode } from "../utils/gameModeUtils.ts"
 
 export interface NumericGameCard extends BaseCard {
   question: string

@@ -103,7 +103,7 @@ export function getVitePwaPlugin(config: AppConfig) {
       globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
       runtimeCaching: [
         {
-          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/iu,
           handler: "CacheFirst",
           options: {
             cacheName: "google-fonts-cache",

@@ -1,7 +1,7 @@
-import { expect, type Page, test } from "@playwright/test"
+import { expect, test as it, type Page } from "@playwright/test"
 
-test.describe("LWK Card Edit Functionality", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("LWK Card Edit Functionality", () => {
+  it.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.setItem("fc-lwk-decks", JSON.stringify([{ name: "Lernwörter_1", cards: [] }]))
     })
@@ -10,9 +10,9 @@ test.describe("LWK Card Edit Functionality", () => {
 
   const gotoCardEdit = async (page: Page) => {
     await page.getByTestId("cards-button").click()
-    await expect(page).toHaveURL(/\/cards/)
+    await expect(page).toHaveURL(/\/cards/u)
     await page.getByTestId("edit-cards-button").click()
-    await expect(page).toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards-edit/u)
   }
 
   const typeWord = async (page: Page, word: string, key: "Enter" | "Tab") => {
@@ -21,7 +21,7 @@ test.describe("LWK Card Edit Functionality", () => {
     await input.press(key)
   }
 
-  test("navigate to card edit page and verify UI elements", async ({ page }) => {
+  it("navigate to card edit page and verify UI elements", async ({ page }) => {
     await gotoCardEdit(page)
 
     await expect(page.getByTestId("export-button")).toBeVisible()
@@ -30,7 +30,7 @@ test.describe("LWK Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(1)
   })
 
-  test("add a new card by typing and pressing enter", async ({ page }) => {
+  it("add a new card by typing and pressing enter", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "Testwort", "Enter")
@@ -40,7 +40,7 @@ test.describe("LWK Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(3)
   })
 
-  test("add a new card by pressing tab", async ({ page }) => {
+  it("add a new card by pressing tab", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "Tabwort", "Tab")
@@ -51,7 +51,7 @@ test.describe("LWK Card Edit Functionality", () => {
     )
   })
 
-  test("edit card word", async ({ page }) => {
+  it("edit card word", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "Testwort", "Enter")
@@ -61,7 +61,7 @@ test.describe("LWK Card Edit Functionality", () => {
     await expect(input).toHaveValue("Geändert")
   })
 
-  test("strip and collapse whitespace on commit", async ({ page }) => {
+  it("strip and collapse whitespace on commit", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "  Mehr   Worte  ", "Enter")
@@ -72,7 +72,7 @@ test.describe("LWK Card Edit Functionality", () => {
     )
   })
 
-  test("reject duplicate words", async ({ page }) => {
+  it("reject duplicate words", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "Testwort", "Enter")
@@ -82,7 +82,7 @@ test.describe("LWK Card Edit Functionality", () => {
     await expect(page.locator(".q-notification")).toBeVisible()
   })
 
-  test("commit a new word when leaving the blank row", async ({ page }) => {
+  it("commit a new word when leaving the blank row", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("card-edit-item").last().getByTestId("word-input").fill("Blurwort")
@@ -93,7 +93,7 @@ test.describe("LWK Card Edit Functionality", () => {
     )
   })
 
-  test("delete a card", async ({ page }) => {
+  it("delete a card", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "Erstes", "Enter")
@@ -104,23 +104,23 @@ test.describe("LWK Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(2)
   })
 
-  test("navigate back from card edit page using back button", async ({ page }) => {
+  it("navigate back from card edit page using back button", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("back-button").click()
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards/u)
+    await expect(page).not.toHaveURL(/\/cards-edit/u)
   })
 
-  test("navigate back from card edit page using escape key", async ({ page }) => {
+  it("navigate back from card edit page using escape key", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.keyboard.press("Escape")
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards/u)
+    await expect(page).not.toHaveURL(/\/cards-edit/u)
   })
 
-  test("validate empty word before saving", async ({ page }) => {
+  it("validate empty word before saving", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "Testwort", "Enter")
@@ -130,12 +130,12 @@ test.describe("LWK Card Edit Functionality", () => {
     await expect(page.locator(".q-notification")).toBeVisible()
   })
 
-  test("commit pending word on back", async ({ page }) => {
+  it("commit pending word on back", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("card-edit-item").last().getByTestId("word-input").fill("Unbestätigt")
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/cards-edit/, { timeout: 10000 })
+    await expect(page).not.toHaveURL(/\/cards-edit/u, { timeout: 10000 })
 
     await page.getByTestId("edit-cards-button").click()
     await expect(page.getByTestId("card-edit-item")).toHaveCount(2)
@@ -144,15 +144,15 @@ test.describe("LWK Card Edit Functionality", () => {
     )
   })
 
-  test("persist card changes after page reload", async ({ page }) => {
+  it("persist card changes after page reload", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeWord(page, "PersistTest", "Enter")
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/cards-edit/, { timeout: 10000 })
+    await expect(page).not.toHaveURL(/\/cards-edit/u, { timeout: 10000 })
 
     await page.getByTestId("edit-cards-button").click()
-    await expect(page).toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards-edit/u)
     await expect(page.getByTestId("card-edit-item")).toHaveCount(2)
     await expect(page.getByTestId("card-edit-item").first().getByTestId("word-input")).toHaveValue(
       "PersistTest",

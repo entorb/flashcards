@@ -8,7 +8,7 @@ import {
   MAX_LEVEL,
   MIN_LEVEL,
   SPEED_BONUS_POINTS,
-} from "../constants"
+} from "../constants.ts"
 
 /**
  * Calculate base points from card level

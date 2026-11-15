@@ -1,7 +1,7 @@
 import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { SessionData, TimeEstimate } from "@/types"
+import type { SessionData, TimeEstimate } from "@/types.ts"
 
 // Mock shared package text
 vi.mock("@flashcards/shared", async (importOriginal) => {
@@ -378,7 +378,7 @@ describe("handleSubmit — null input guard", () => {
 
 describe("totalRuntimeFormatted computed", () => {
   it("returns null when no measurements (calculateTotalRuntime returns null)", async () => {
-    const { calculateTotalRuntime } = await import("@/utils/measurementCalculations")
+    const { calculateTotalRuntime } = await import("@/utils/measurementCalculations.ts")
     vi.mocked(calculateTotalRuntime).mockReturnValue(null)
     mockStore.sessionData.value = { ...mockSessionData, measurements: [] }
 

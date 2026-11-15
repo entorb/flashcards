@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue"
 
-import { BUTTON_DISABLE_DURATION } from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { AnswerStatus } from "../types"
+import { BUTTON_DISABLE_DURATION } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { AnswerStatus } from "../types.ts"
 
 interface Props {
   answerStatus: AnswerStatus

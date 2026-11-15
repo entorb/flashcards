@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { parseCardsFromText, validateTypingAnswer } from "./helpers"
+import { parseCardsFromText, validateTypingAnswer } from "./helpers.ts"
 
 describe("validateTypingAnswer", () => {
   it('returns "correct" for exact match', () => {

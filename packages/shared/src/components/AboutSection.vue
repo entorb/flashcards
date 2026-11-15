@@ -2,8 +2,8 @@
 import { QIcon } from "quasar"
 import { onBeforeUnmount, ref } from "vue"
 
-import { SHARE_URL } from "../constants"
-import { TEXT_DE } from "../text-de"
+import { SHARE_URL } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
 
 defineProps<{
   contactOrigin: string

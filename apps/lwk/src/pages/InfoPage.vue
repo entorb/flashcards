@@ -3,7 +3,7 @@ import { InfoPage } from "@flashcards/shared/pages"
 import { onMounted, onUnmounted } from "vue"
 import { useRouter } from "vue-router"
 
-import { POINTS_MODE_HIDDEN } from "../constants"
+import { POINTS_MODE_HIDDEN } from "../constants.ts"
 
 const router = useRouter()
 

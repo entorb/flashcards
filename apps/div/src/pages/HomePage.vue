@@ -11,10 +11,10 @@ import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 import ChickenMascot from "@/components/ChickenMascot.vue"
-import { useGameStore } from "@/composables/useGameStore"
-import { BASE_PATH, DEFAULT_RANGE } from "@/constants"
-import { filterCardsByDivisor } from "@/services/cardSelector"
-import { getVirtualCards, loadGameStats, loadSettings, saveSettings } from "@/services/storage"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { BASE_PATH, DEFAULT_RANGE } from "@/constants.ts"
+import { filterCardsByDivisor } from "@/services/cardSelector.ts"
+import { getVirtualCards, loadGameStats, loadSettings, saveSettings } from "@/services/storage.ts"
 
 const router = useRouter()
 

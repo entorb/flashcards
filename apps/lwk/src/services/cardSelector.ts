@@ -7,8 +7,8 @@ import type { FocusType } from "@flashcards/shared"
 import { selectCardsByFocus } from "@flashcards/shared"
 import { shuffleArray } from "@flashcards/shared/utils"
 
-import { MAX_CARDS_PER_GAME } from "../constants"
-import type { Card, GameMode } from "../types"
+import { MAX_CARDS_PER_GAME } from "../constants.ts"
+import type { Card, GameMode } from "../types.ts"
 
 /**
  * Select cards for a game session based on mode and focus

@@ -1,8 +1,8 @@
 import { MAX_TIME } from "@flashcards/shared"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { STORAGE_KEYS } from "../constants"
-import type { Card, CardDeck, GameSettings } from "../types"
+import { STORAGE_KEYS } from "../constants.ts"
+import type { Card, CardDeck, GameSettings } from "../types.ts"
 
 // Reset modules before each test to get a fresh singleton baseStore
 beforeEach(() => {
@@ -56,7 +56,7 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     selectCardsForRound: vi.fn(() => [...MOCK_CARDS]),
   }))
 
-  const { useGameStore } = await import("./useGameStore")
+  const { useGameStore } = await import("./useGameStore.ts")
   return useGameStore()
 }
 
@@ -159,14 +159,14 @@ describe("useGameStore - startGame", () => {
 
   it("saves initial game state to sessionStorage", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
     expect(saveGameState).toHaveBeenCalled()
   })
 
   it("calls selectCardsForRound with allCards and focus", async () => {
     const store = await setupMocks()
-    const { selectCardsForRound } = await import("@/services/cardSelector")
+    const { selectCardsForRound } = await import("@/services/cardSelector.ts")
     store.startGame(DEFAULT_SETTINGS)
     expect(selectCardsForRound).toHaveBeenCalledWith(expect.any(Array), DEFAULT_SETTINGS.focus)
   })
@@ -311,7 +311,7 @@ describe("useGameStore - handleAnswer (multiple-choice mode)", () => {
 
   it("saves cards after answer", async () => {
     const store = await setupMocks()
-    const { saveCards } = await import("@/services/storage")
+    const { saveCards } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
     vi.mocked(saveCards).mockClear()
 
@@ -321,7 +321,7 @@ describe("useGameStore - handleAnswer (multiple-choice mode)", () => {
 
   it("saves game state after answer", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
     vi.mocked(saveGameState).mockClear()
 
@@ -331,7 +331,7 @@ describe("useGameStore - handleAnswer (multiple-choice mode)", () => {
 
   it("does nothing when no current card (no game started)", async () => {
     const store = await setupMocks()
-    const { saveCards } = await import("@/services/storage")
+    const { saveCards } = await import("@/services/storage.ts")
 
     store.handleAnswer("correct", 5)
     expect(saveCards).not.toHaveBeenCalled()
@@ -493,7 +493,7 @@ describe("useGameStore - nextCard", () => {
 
   it("saves game state after advancing (when not game over)", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
     vi.mocked(saveGameState).mockClear()
 
@@ -509,7 +509,7 @@ describe("useGameStore - nextCard", () => {
 describe("useGameStore - finishGame", () => {
   it("saves game result to sessionStorage", async () => {
     const store = await setupMocks()
-    const { setGameResult } = await import("@/services/storage")
+    const { setGameResult } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
     store.handleAnswer("correct", 5)
 
@@ -525,7 +525,7 @@ describe("useGameStore - finishGame", () => {
 
   it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import("@/services/storage")
+    const { clearGameState } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
 
     store.finishGame()
@@ -576,7 +576,7 @@ describe("useGameStore - finishGame", () => {
 describe("useGameStore - discardGame", () => {
   it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import("@/services/storage")
+    const { clearGameState } = await import("@/services/storage.ts")
     store.startGame(DEFAULT_SETTINGS)
 
     store.discardGame()
@@ -611,7 +611,7 @@ describe("useGameStore - deck operations", () => {
 
   it("addDeck creates a new empty deck", async () => {
     const store = await setupMocks()
-    const { saveDecks } = await import("@/services/storage")
+    const { saveDecks } = await import("@/services/storage.ts")
 
     const result = store.addDeck("fr")
     expect(result).toBe(true)
@@ -640,7 +640,7 @@ describe("useGameStore - deck operations", () => {
 
   it("removeDeck removes an existing deck", async () => {
     const store = await setupMocks()
-    const { saveDecks } = await import("@/services/storage")
+    const { saveDecks } = await import("@/services/storage.ts")
 
     const result = store.removeDeck("de")
     expect(result).toBe(true)
@@ -657,7 +657,7 @@ describe("useGameStore - deck operations", () => {
 
   it("renameDeck renames an existing deck", async () => {
     const store = await setupMocks()
-    const { saveDecks } = await import("@/services/storage")
+    const { saveDecks } = await import("@/services/storage.ts")
 
     const result = store.renameDeck("de", "deutsch")
     expect(result).toBe(true)
@@ -695,7 +695,7 @@ describe("useGameStore - importCards", () => {
 
   it("saves imported cards to storage", async () => {
     const store = await setupMocks()
-    const { saveCards } = await import("@/services/storage")
+    const { saveCards } = await import("@/services/storage.ts")
     const newCards: Card[] = [{ voc: "Hello", de: "Hallo", level: 1, time: 60 }]
 
     store.importCards(newCards)

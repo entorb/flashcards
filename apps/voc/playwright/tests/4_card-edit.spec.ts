@@ -1,7 +1,7 @@
-import { expect, type Page, test } from "@playwright/test"
+import { expect, test as it, type Page } from "@playwright/test"
 
-test.describe("VOC Card Edit Functionality", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC Card Edit Functionality", () => {
+  it.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.setItem("fc-voc-cards", JSON.stringify([{ name: "en", cards: [] }]))
     })
@@ -10,9 +10,9 @@ test.describe("VOC Card Edit Functionality", () => {
 
   const gotoCardEdit = async (page: Page) => {
     await page.getByTestId("cards-button").click()
-    await expect(page).toHaveURL(/\/cards/)
+    await expect(page).toHaveURL(/\/cards/u)
     await page.getByTestId("edit-cards-button").click()
-    await expect(page).toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards-edit/u)
   }
 
   const typeCard = async (page: Page, voc: string, de: string) => {
@@ -25,7 +25,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await page.getByTestId("card-de-input").last().press(key)
   }
 
-  test("navigate to card edit page and verify UI elements", async ({ page }) => {
+  it("navigate to card edit page and verify UI elements", async ({ page }) => {
     await gotoCardEdit(page)
 
     await expect(page.getByTestId("export-button")).toBeVisible()
@@ -34,7 +34,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(1)
   })
 
-  test("add a new card by typing and pressing enter", async ({ page }) => {
+  it("add a new card by typing and pressing enter", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "Apfel", "Apple")
@@ -46,7 +46,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(3)
   })
 
-  test("add a new card by pressing tab", async ({ page }) => {
+  it("add a new card by pressing tab", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "Tabwort", "TabwortDE")
@@ -61,7 +61,7 @@ test.describe("VOC Card Edit Functionality", () => {
     ).toHaveValue("TabwortDE")
   })
 
-  test("edit card fields", async ({ page }) => {
+  it("edit card fields", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "Testwort", "TestwortDE")
@@ -72,7 +72,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(vocInput).toHaveValue("Geändert")
   })
 
-  test("strip and collapse whitespace on commit", async ({ page }) => {
+  it("strip and collapse whitespace on commit", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "  Mehr   Worte  ", "  Mehr   Deutsch  ")
@@ -87,7 +87,7 @@ test.describe("VOC Card Edit Functionality", () => {
     ).toHaveValue("Mehr Deutsch")
   })
 
-  test("reject duplicate vocables", async ({ page }) => {
+  it("reject duplicate vocables", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "Testwort", "TestwortDE")
@@ -99,7 +99,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(page.locator(".q-notification")).toBeVisible()
   })
 
-  test("commit a new card when leaving the blank row", async ({ page }) => {
+  it("commit a new card when leaving the blank row", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("card-edit-item").last().getByTestId("card-voc-input").fill("Blurwort")
@@ -114,7 +114,7 @@ test.describe("VOC Card Edit Functionality", () => {
     ).toHaveValue("BlurwortDE")
   })
 
-  test("show a warning when committing a card with empty de field", async ({ page }) => {
+  it("show a warning when committing a card with empty de field", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("card-voc-input").last().fill("Apfel")
@@ -124,7 +124,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(1)
   })
 
-  test("show a warning when committing a card with empty voc field", async ({ page }) => {
+  it("show a warning when committing a card with empty voc field", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("card-de-input").last().fill("Apple")
@@ -134,7 +134,7 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(1)
   })
 
-  test("delete a card", async ({ page }) => {
+  it("delete a card", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "Erstes", "ErstesDE")
@@ -147,23 +147,23 @@ test.describe("VOC Card Edit Functionality", () => {
     await expect(page.getByTestId("card-edit-item")).toHaveCount(2)
   })
 
-  test("navigate back from card edit page using back button", async ({ page }) => {
+  it("navigate back from card edit page using back button", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.getByTestId("back-button").click()
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards/u)
+    await expect(page).not.toHaveURL(/\/cards-edit/u)
   })
 
-  test("navigate back from card edit page using escape key", async ({ page }) => {
+  it("navigate back from card edit page using escape key", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page.keyboard.press("Escape")
-    await expect(page).toHaveURL(/\/cards/)
-    await expect(page).not.toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards/u)
+    await expect(page).not.toHaveURL(/\/cards-edit/u)
   })
 
-  test("commit pending card on back", async ({ page }) => {
+  it("commit pending card on back", async ({ page }) => {
     await gotoCardEdit(page)
 
     await page
@@ -177,7 +177,7 @@ test.describe("VOC Card Edit Functionality", () => {
       .getByTestId("card-de-input")
       .fill("UnbestätigtDE")
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/cards-edit/, { timeout: 10000 })
+    await expect(page).not.toHaveURL(/\/cards-edit/u, { timeout: 10000 })
 
     await page.getByTestId("edit-cards-button").click()
     await expect(page.getByTestId("card-edit-item")).toHaveCount(2)
@@ -189,16 +189,16 @@ test.describe("VOC Card Edit Functionality", () => {
     ).toHaveValue("UnbestätigtDE")
   })
 
-  test("persist card changes after page reload", async ({ page }) => {
+  it("persist card changes after page reload", async ({ page }) => {
     await gotoCardEdit(page)
 
     await typeCard(page, "PersistTest", "PersistTestDE")
     await commitBlankRow(page)
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/cards-edit/, { timeout: 10000 })
+    await expect(page).not.toHaveURL(/\/cards-edit/u, { timeout: 10000 })
 
     await page.getByTestId("edit-cards-button").click()
-    await expect(page).toHaveURL(/\/cards-edit/)
+    await expect(page).toHaveURL(/\/cards-edit/u)
     await expect(page.getByTestId("card-edit-item")).toHaveCount(2)
     await expect(
       page.getByTestId("card-edit-item").first().getByTestId("card-voc-input"),

@@ -1,19 +1,19 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
   playThroughAndVerifyGameOver,
   seedTestCards,
   startTypingGameMode,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("VOC Endless Level 1 mode", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC Endless Level 1 mode", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
 
-  test("should complete game in typing mode", async ({ page }) => {
+  it("should complete game in typing mode", async ({ page }) => {
     await startTypingGameMode(page, "start-endless-level1")
 
     // All 4 test cards are at level 1

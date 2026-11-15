@@ -12,8 +12,8 @@ import {
   saveJSON,
 } from "@flashcards/shared"
 
-import { STORAGE_KEYS } from "@/constants"
-import type { Card, Difficulty, GameHistory, GameSettings, Operation } from "@/types"
+import { STORAGE_KEYS } from "@/constants.ts"
+import type { Card, Difficulty, GameHistory, GameSettings, Operation } from "@/types.ts"
 
 /** GameSettings shape check: base fields + operations/difficulties literals */
 function isValidSettings(value: unknown): boolean {

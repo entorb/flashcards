@@ -1,8 +1,8 @@
 import type { FocusType } from "@flashcards/shared"
 import { selectCardsByFocus } from "@flashcards/shared"
 
-import { parseCardQuestion } from "@/services/storage"
-import type { Card, SelectionType } from "@/types"
+import { parseCardQuestion } from "@/services/storage.ts"
+import type { Card, SelectionType } from "@/types.ts"
 
 /**
  * Filter cards by selection (number array)

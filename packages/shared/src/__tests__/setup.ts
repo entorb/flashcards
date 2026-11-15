@@ -2,7 +2,7 @@
 
 import { vi } from "vitest"
 
-import { LocalStorageMock } from "../test-utils.js"
+import { LocalStorageMock } from "../test-utils.ts"
 
 // Suppress Vue lifecycle warnings from composables called outside component context
 const originalWarn = console.warn

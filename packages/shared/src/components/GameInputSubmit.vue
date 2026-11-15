@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 
-import { TEXT_DE } from "../text-de"
+import { TEXT_DE } from "../text-de.ts"
 
 interface Props {
   buttonDisabled: boolean

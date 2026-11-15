@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { TEXT_DE } from "../text-de"
-import { useResetCards } from "./useResetCards"
+import { TEXT_DE } from "../text-de.ts"
+import { useResetCards } from "./useResetCards.ts"
 
 const mockNotify = vi.fn()
 const mockOnOk = vi.fn()

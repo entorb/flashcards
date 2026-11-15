@@ -1,17 +1,17 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
-test.describe("LWK Navigation Smoke Tests", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("LWK Navigation Smoke Tests", () => {
+  it.beforeEach(async ({ page }) => {
     await page.goto("/")
   })
 
-  test("navigate Home to History and back", async ({ page }) => {
+  it("navigate Home to History and back", async ({ page }) => {
     // Verify we're on the home page
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate to History
     await page.getByTestId("history-button").click()
-    await expect(page).toHaveURL(/\/history/)
+    await expect(page).toHaveURL(/\/history/u)
     await expect(page.getByTestId("history-page-title")).toBeVisible()
 
     // Test page reload persistence
@@ -20,31 +20,31 @@ test.describe("LWK Navigation Smoke Tests", () => {
 
     // Test back via button
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/history/)
+    await expect(page).not.toHaveURL(/\/history/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate again for browser back test
     await page.getByTestId("history-button").click()
-    await expect(page).toHaveURL(/\/history/)
+    await expect(page).toHaveURL(/\/history/u)
     await page.goBack()
-    await expect(page).not.toHaveURL(/\/history/)
+    await expect(page).not.toHaveURL(/\/history/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate again for escape key test
     await page.getByTestId("history-button").click()
-    await expect(page).toHaveURL(/\/history/)
+    await expect(page).toHaveURL(/\/history/u)
     await page.keyboard.press("Escape")
-    await expect(page).not.toHaveURL(/\/history/)
+    await expect(page).not.toHaveURL(/\/history/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
   })
 
-  test("navigate Home to Cards and reload", async ({ page }) => {
+  it("navigate Home to Cards and reload", async ({ page }) => {
     // Verify we're on the home page
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate to Cards
     await page.getByTestId("cards-button").click()
-    await expect(page).toHaveURL(/\/cards/)
+    await expect(page).toHaveURL(/\/cards/u)
     await expect(page.getByTestId("edit-cards-button")).toBeVisible()
 
     // Test page reload persistence
@@ -52,13 +52,13 @@ test.describe("LWK Navigation Smoke Tests", () => {
     await expect(page.getByTestId("edit-cards-button")).toBeVisible()
   })
 
-  test("navigate Home to Game and back", async ({ page }) => {
+  it("navigate Home to Game and back", async ({ page }) => {
     // Verify we're on the home page
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Start the game
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
 
     // Test page reload persistence
@@ -67,24 +67,24 @@ test.describe("LWK Navigation Smoke Tests", () => {
 
     // Quit back to home
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/game/)
+    await expect(page).not.toHaveURL(/\/game/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate again for browser back test
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await page.goBack()
-    await expect(page).not.toHaveURL(/\/game/)
+    await expect(page).not.toHaveURL(/\/game/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
   })
 
-  test("navigate Home to Info and back", async ({ page }) => {
+  it("navigate Home to Info and back", async ({ page }) => {
     // Verify we're on the home page
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate to Info
     await page.getByTestId("info-button").click()
-    await expect(page).toHaveURL(/\/info/)
+    await expect(page).toHaveURL(/\/info/u)
     await expect(page.getByTestId("info-page-title")).toBeVisible()
 
     // Test page reload persistence
@@ -93,14 +93,14 @@ test.describe("LWK Navigation Smoke Tests", () => {
 
     // Test back via button
     await page.getByTestId("back-button").click()
-    await expect(page).not.toHaveURL(/\/info/)
+    await expect(page).not.toHaveURL(/\/info/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
 
     // Navigate again for browser back test
     await page.getByTestId("info-button").click()
-    await expect(page).toHaveURL(/\/info/)
+    await expect(page).toHaveURL(/\/info/u)
     await page.goBack()
-    await expect(page).not.toHaveURL(/\/info/)
+    await expect(page).not.toHaveURL(/\/info/u)
     await expect(page.getByTestId("app-title")).toBeVisible()
   })
 })

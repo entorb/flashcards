@@ -6,8 +6,8 @@ import {
   MAX_LEVEL,
   MIN_LEVEL,
   SPEED_BONUS_POINTS,
-} from "../constants"
-import { calculateLevelPoints, calculatePointsBreakdown } from "./scoring"
+} from "../constants.ts"
+import { calculateLevelPoints, calculatePointsBreakdown } from "./scoring.ts"
 
 describe("calculateLevelPoints", () => {
   it("returns 5 points for level 1", () => {

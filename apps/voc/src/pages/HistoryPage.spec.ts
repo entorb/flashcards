@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { GameHistory } from "../types"
+import type { GameHistory } from "../types.ts"
 import HistoryPage from "./HistoryPage.vue"
 
 // Stub the shared HistoryPage so we can inspect props without running its full logic
@@ -279,7 +279,7 @@ describe("voc HistoryPage", () => {
       }
       const result = formatDetails(entry)
       // deck is empty string → falsy → no deck segment
-      expect(result).not.toMatch(/Deck:/)
+      expect(result).not.toMatch(/Deck:/u)
     })
   })
 

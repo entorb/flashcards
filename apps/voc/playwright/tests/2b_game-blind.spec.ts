@@ -1,24 +1,24 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerBlindCard,
   seedTestCards,
   TEST_CARD_COUNT,
   verifyPostGameStats,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("VOC Blind Mode Game - DE to Voc", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC Blind Mode Game - DE to Voc", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
 
-  test("should complete a game with 1 wrong and remaining correct answers", async ({ page }) => {
+  it("should complete a game with 1 wrong and remaining correct answers", async ({ page }) => {
     await page.getByRole("button", { name: "Blind" }).click()
     await page.getByRole("button", { name: "DE → Voc" }).click()
     await page.getByTestId("start-button").click()
 
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
 
     await answerBlindCard(page, false) // First card wrong

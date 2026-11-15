@@ -1,20 +1,20 @@
-import { expect, test } from "@playwright/test"
+import { expect, test as it } from "@playwright/test"
 
 import {
   answerCurrentCardCorrectly,
   answerCurrentCardWrong,
   verifyPostGameStats,
-} from "./support/helpers"
+} from "./support/helpers.ts"
 
-test.describe("div Full Game Flow", () => {
-  test("should play a complete game with 1 wrong and 7 correct answers", async ({ page }) => {
+it.describe("div Full Game Flow", () => {
+  it("should play a complete game with 1 wrong and 7 correct answers", async ({ page }) => {
     await page.goto("/")
 
     // Select divisor [6] — gives 8 cards (12:6, 18:6, 24:6, 30:6, 36:6, 42:6, 48:6, 54:6)
     await page.getByTestId("table-selection-button-6").click()
     await page.getByTestId("start-button").click()
 
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible()
 
     // Answer first question wrong, then 7 correct
@@ -26,9 +26,7 @@ test.describe("div Full Game Flow", () => {
     await verifyPostGameStats(page, 7, 8)
   })
 
-  test("should correctly increment stats and reset state across multiple games", async ({
-    page,
-  }) => {
+  it("should correctly increment stats and reset state across multiple games", async ({ page }) => {
     await page.goto("/")
 
     // Verify initial stats are zero
@@ -39,13 +37,13 @@ test.describe("div Full Game Flow", () => {
     // Play first game — select divisor [3] (8 cards: 6:3, 9:3, 12:3, 15:3, 18:3, 21:3, 24:3, 27:3)
     await page.getByTestId("table-selection-button-3").click()
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
 
     for (let i = 0; i < 8; i++) {
       await answerCurrentCardCorrectly(page)
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 10000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 10000 })
 
     const game1Points = Number.parseInt(
       (await page.getByTestId("final-points").textContent())?.trim() ?? "0",
@@ -75,10 +73,10 @@ test.describe("div Full Game Flow", () => {
       await page.getByTestId("table-selection-button-3").click()
     }
     await page.getByTestId("table-selection-button-4").click()
-    await expect(page.getByTestId("table-selection-button-4")).toHaveClass(/q-btn--unelevated/)
+    await expect(page.getByTestId("table-selection-button-4")).toHaveClass(/q-btn--unelevated/u)
 
     await page.getByTestId("start-button").click()
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible()
 
     // Verify game starts fresh
@@ -88,7 +86,7 @@ test.describe("div Full Game Flow", () => {
       await answerCurrentCardCorrectly(page)
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 10000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 10000 })
 
     const game2Points = Number.parseInt(
       (await page.getByTestId("final-points").textContent())?.trim() ?? "0",

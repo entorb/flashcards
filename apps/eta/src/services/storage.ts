@@ -1,5 +1,5 @@
-import { STORAGE_KEYS } from "@/constants"
-import type { SessionData } from "@/types"
+import { STORAGE_KEYS } from "@/constants.ts"
+import type { SessionData } from "@/types.ts"
 
 /**
  * Load session data from localStorage

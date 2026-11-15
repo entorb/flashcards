@@ -2,7 +2,7 @@ import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { Card } from "@/types"
+import type { Card } from "@/types.ts"
 import CardsManPage from "./CardsManPage.vue"
 
 const storageMocks = vi.hoisted(() => ({

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { STORAGE_KEYS } from "@/constants"
-import type { GameSettings } from "@/types"
-import { useGameStore } from "./useGameStore"
+import { STORAGE_KEYS } from "@/constants.ts"
+import type { GameSettings } from "@/types.ts"
+import { useGameStore } from "./useGameStore.ts"
 
 // ---------------------------------------------------------------------------
 // Storage mock
@@ -72,7 +72,7 @@ describe("useGameStore", () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     // Reset selectCards to default (1 card) after vi.clearAllMocks clears call history
-    const { selectCards } = await import("../services/cardSelector")
+    const { selectCards } = await import("../services/cardSelector.ts")
     vi.mocked(selectCards).mockReturnValue([{ word: "Jahr", level: 1, time: 60 }])
     // Reset storage mocks to defaults
     storageMocks.loadDecks.mockReturnValue([
@@ -178,7 +178,7 @@ describe("useGameStore", () => {
 
     it("does not exceed MAX_LEVEL (5) on correct answer", async () => {
       // Configure selectCards to return a level-5 card
-      const { selectCards } = await import("../services/cardSelector")
+      const { selectCards } = await import("../services/cardSelector.ts")
       vi.mocked(selectCards).mockReturnValue([{ word: "Jahr", level: 5, time: 60 }])
       storageMocks.loadDecks.mockReturnValue([
         { name: "LWK_1", cards: [{ word: "Jahr", level: 5, time: 60 }] },
@@ -303,7 +303,7 @@ describe("useGameStore", () => {
 
   describe("nextCard", () => {
     it("returns false when more cards remain", async () => {
-      const { selectCards } = await import("../services/cardSelector")
+      const { selectCards } = await import("../services/cardSelector.ts")
       vi.mocked(selectCards).mockReturnValue([
         { word: "Jahr", level: 1, time: 60 },
         { word: "bleiben", level: 1, time: 60 },
@@ -465,7 +465,7 @@ describe("useGameStore", () => {
     })
 
     it("resets time to MAX_TIME on incorrect answer (hidden mode)", async () => {
-      const { selectCards } = await import("../services/cardSelector")
+      const { selectCards } = await import("../services/cardSelector.ts")
       vi.mocked(selectCards).mockReturnValue([{ word: "Jahr", level: 1, time: 30 }])
       store.startGame(HIDDEN_SETTINGS)
       store.handleAnswer("incorrect", 5)
@@ -473,7 +473,7 @@ describe("useGameStore", () => {
     })
 
     it("does not update time on incorrect answer in copy mode", async () => {
-      const { selectCards } = await import("../services/cardSelector")
+      const { selectCards } = await import("../services/cardSelector.ts")
       vi.mocked(selectCards).mockReturnValue([{ word: "Jahr", level: 1, time: 30 }])
       store.startGame(COPY_SETTINGS)
       store.handleAnswer("incorrect", 5)

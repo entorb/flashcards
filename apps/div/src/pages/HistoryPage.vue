@@ -3,8 +3,8 @@ import { getFocusText, TEXT_DE } from "@flashcards/shared"
 import { HistoryPage } from "@flashcards/shared/pages"
 import { onMounted, ref } from "vue"
 
-import { loadHistory } from "@/services/storage"
-import type { GameHistory } from "@/types"
+import { loadHistory } from "@/services/storage.ts"
+import type { GameHistory } from "@/types.ts"
 
 const history = ref<GameHistory[]>([])
 

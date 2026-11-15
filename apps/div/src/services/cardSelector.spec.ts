@@ -1,9 +1,9 @@
 import fc from "fast-check"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { filterCardsByDivisor, selectCardsForRound } from "@/services/cardSelector"
-import { initializeCards, parseCardQuestion } from "@/services/storage"
-import type { Card } from "@/types"
+import { filterCardsByDivisor, selectCardsForRound } from "@/services/cardSelector.ts"
+import { initializeCards, parseCardQuestion } from "@/services/storage.ts"
+import type { Card } from "@/types.ts"
 
 // ============================================================================
 // Property-Based Tests

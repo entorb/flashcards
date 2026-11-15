@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { TEXT_DE } from "../text-de"
-import type { AnswerStatus } from "../types"
+import { TEXT_DE } from "../text-de.ts"
+import type { AnswerStatus } from "../types.ts"
 
 interface Props {
   status: AnswerStatus

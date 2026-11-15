@@ -3,8 +3,8 @@ import type { BaseCard } from "@flashcards/shared"
 import { TEXT_DE } from "@flashcards/shared"
 import { CardsManPage } from "@flashcards/shared/components"
 
-import { useGameStore } from "@/composables/useGameStore"
-import { loadSettings } from "@/services/storage"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { loadSettings } from "@/services/storage.ts"
 
 const store = useGameStore()
 

@@ -12,17 +12,17 @@ import { useRouter } from "vue-router"
 
 import PumToggleButtons from "@/components/PumToggleButtons.vue"
 import RaccoonMascot from "@/components/RaccoonMascot.vue"
-import { useGameStore } from "@/composables/useGameStore"
-import { BASE_PATH, DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from "@/constants"
-import { filterCards } from "@/services/cardSelector"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { BASE_PATH, DEFAULT_DIFFICULTIES, DEFAULT_OPERATIONS } from "@/constants.ts"
+import { filterCards } from "@/services/cardSelector.ts"
 import {
   initializeCards,
   loadCards,
   loadGameStats,
   loadSettings,
   saveSettings,
-} from "@/services/storage"
-import type { Difficulty, Operation } from "@/types"
+} from "@/services/storage.ts"
+import type { Difficulty, Operation } from "@/types.ts"
 
 const router = useRouter()
 

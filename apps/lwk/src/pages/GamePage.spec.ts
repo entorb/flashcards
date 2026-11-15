@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { Card, GameSettings } from "@/types"
+import type { Card, GameSettings } from "@/types.ts"
 import GamePage from "./GamePage.vue"
 
 // ---------------------------------------------------------------------------

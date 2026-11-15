@@ -4,8 +4,8 @@
  * Each app provides app-specific config (storage keys, default range, card creation).
  */
 
-import { MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants"
-import type { BaseCard, CardLevel, GameResult, GameStats, SessionMode } from "../types"
+import { MAX_TIME, MIN_LEVEL, MIN_TIME } from "../constants.ts"
+import type { BaseCard, CardLevel, GameResult, GameStats, SessionMode } from "../types.ts"
 import {
   isNumber,
   isRecord,
@@ -13,7 +13,7 @@ import {
   isValidBaseCard,
   isValidBaseSettings,
   isValidHistoryEntry,
-} from "../utils/validators"
+} from "../utils/validators.ts"
 
 import {
   createAppGameStorage,
@@ -23,7 +23,7 @@ import {
   loadArray,
   loadJSON,
   saveJSON,
-} from "./storage"
+} from "./storage.ts"
 
 export interface AppStorageConfig<TCard extends BaseCard> {
   storageKeys: {

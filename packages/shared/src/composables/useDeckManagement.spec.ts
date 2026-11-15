@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import type { BaseCard } from "../types"
-import type { CardDeck, DeckSettings } from "./useDeckManagement"
-import { useDeckManagement } from "./useDeckManagement"
+import type { BaseCard } from "../types.ts"
+import type { CardDeck, DeckSettings } from "./useDeckManagement.ts"
+import { useDeckManagement } from "./useDeckManagement.ts"
 
 type TestCard = BaseCard
 type TestSettings = DeckSettings

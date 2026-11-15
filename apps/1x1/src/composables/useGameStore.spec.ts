@@ -1,6 +1,6 @@
 import { MAX_TIME } from "@flashcards/shared"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { GameSettings } from "@/types"
+import type { GameSettings } from "@/types.ts"
 
 // Reset modules before each test to get a fresh singleton baseStore
 beforeEach(() => {
@@ -49,7 +49,7 @@ async function setupMocks(overrides: Record<string, unknown> = {}) {
     selectCardsForRound: vi.fn((cards) => cards),
   }))
 
-  const { useGameStore } = await import("./useGameStore")
+  const { useGameStore } = await import("./useGameStore.ts")
   return useGameStore()
 }
 
@@ -122,9 +122,9 @@ describe("useGameStore - startGame", () => {
       getGameResult: vi.fn(() => null),
       clearGameResult: vi.fn(),
     }))
-    const { useGameStore } = await import("./useGameStore")
+    const { useGameStore } = await import("./useGameStore.ts")
     const store = useGameStore()
-    const { filterCardsBySettings } = await import("@/services/cardSelector")
+    const { filterCardsBySettings } = await import("@/services/cardSelector.ts")
 
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
 
@@ -168,9 +168,9 @@ describe("useGameStore - startGame", () => {
       getGameResult: vi.fn(() => null),
       clearGameResult: vi.fn(),
     }))
-    const { useGameStore } = await import("./useGameStore")
+    const { useGameStore } = await import("./useGameStore.ts")
     const store = useGameStore()
-    const { filterCardsBySettings } = await import("@/services/cardSelector")
+    const { filterCardsBySettings } = await import("@/services/cardSelector.ts")
 
     store.startGame({ select: [], squares: true, focus: "weak", levels: [1, 2, 3, 4, 5] })
 
@@ -209,9 +209,9 @@ describe("useGameStore - startGame", () => {
       getGameResult: vi.fn(() => null),
       clearGameResult: vi.fn(),
     }))
-    const { useGameStore } = await import("./useGameStore")
+    const { useGameStore } = await import("./useGameStore.ts")
     const store = useGameStore()
-    const { filterCardsBySettings } = await import("@/services/cardSelector")
+    const { filterCardsBySettings } = await import("@/services/cardSelector.ts")
 
     store.startGame({ select: [3, 4], focus: "weak", levels: [1, 2, 3, 4, 5] })
 
@@ -270,9 +270,9 @@ describe("useGameStore - startGame", () => {
       filterCardsBySettings: vi.fn((cards) => cards),
       selectCardsForRound: vi.fn((cards) => cards),
     }))
-    const { useGameStore } = await import("./useGameStore")
+    const { useGameStore } = await import("./useGameStore.ts")
     const store = useGameStore()
-    const { initializeCards } = await import("@/services/storage")
+    const { initializeCards } = await import("@/services/storage.ts")
 
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
 
@@ -281,7 +281,7 @@ describe("useGameStore - startGame", () => {
 
   it("saves game config via setGameConfig", async () => {
     const store = await setupMocks()
-    const { setGameConfig } = await import("@/services/storage")
+    const { setGameConfig } = await import("@/services/storage.ts")
     const settings: GameSettings = { select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] }
 
     store.startGame(settings)
@@ -291,7 +291,7 @@ describe("useGameStore - startGame", () => {
 
   it("saves initial game state to sessionStorage", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
 
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
 
@@ -360,7 +360,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("calls updateCard with incremented level for correct answer", async () => {
     const store = await setupMocks()
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
     const card = store.currentCard.value!
 
@@ -373,7 +373,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("calls updateCard with decremented level for incorrect answer", async () => {
     const store = await setupMocks()
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
     const card = store.currentCard.value!
 
@@ -386,7 +386,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("calls updateCard with MAX_TIME for incorrect answer", async () => {
     const store = await setupMocks()
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
     const card = store.currentCard.value!
 
@@ -399,7 +399,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("does not call updateCard when no current card", async () => {
     const store = await setupMocks()
-    const { updateCard } = await import("@/services/storage")
+    const { updateCard } = await import("@/services/storage.ts")
     // No game started - gameCards is empty, currentCard is null
 
     store.handleAnswer("correct", 5)
@@ -408,7 +408,7 @@ describe("useGameStore - handleAnswer", () => {
 
   it("saves game state after answer", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
     vi.mocked(saveGameState).mockClear()
 
@@ -456,7 +456,7 @@ describe("useGameStore - nextCard", () => {
 
   it("saves game state after advancing (when not game over)", async () => {
     const store = await setupMocks()
-    const { saveGameState } = await import("@/services/storage")
+    const { saveGameState } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
     vi.mocked(saveGameState).mockClear()
 
@@ -468,7 +468,7 @@ describe("useGameStore - nextCard", () => {
 describe("useGameStore - finishGame", () => {
   it("saves game result to sessionStorage", async () => {
     const store = await setupMocks()
-    const { setGameResult } = await import("@/services/storage")
+    const { setGameResult } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
     store.handleAnswer("correct", 5)
 
@@ -484,7 +484,7 @@ describe("useGameStore - finishGame", () => {
 
   it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import("@/services/storage")
+    const { clearGameState } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
 
     store.finishGame()
@@ -513,7 +513,7 @@ describe("useGameStore - finishGame", () => {
 
   it("normalizes select to all when all range values are selected", async () => {
     const store = await setupMocks()
-    const { setGameResult } = await import("@/services/storage")
+    const { setGameResult } = await import("@/services/storage.ts")
     store.startGame({ select: [3, 4, 5, 6, 7, 8, 9], focus: "weak", levels: [1, 2, 3, 4, 5] })
 
     store.finishGame()
@@ -524,7 +524,7 @@ describe("useGameStore - finishGame", () => {
 describe("useGameStore - discardGame", () => {
   it("clears game state from sessionStorage", async () => {
     const store = await setupMocks()
-    const { clearGameState } = await import("@/services/storage")
+    const { clearGameState } = await import("@/services/storage.ts")
     store.startGame({ select: "all", focus: "weak", levels: [1, 2, 3, 4, 5] })
 
     store.discardGame()

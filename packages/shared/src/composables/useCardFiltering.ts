@@ -1,9 +1,9 @@
 import type { ComputedRef, Ref } from "vue"
 import { computed, ref } from "vue"
 
-import { MAX_TIME } from "../constants"
-import type { BaseCard } from "../types"
-import { getTimeBucketIndex } from "../utils/helper"
+import { MAX_TIME } from "../constants.ts"
+import type { BaseCard } from "../types.ts"
+import { getTimeBucketIndex } from "../utils/helper.ts"
 
 interface UseCardFilteringReturn<T extends BaseCard> {
   selectedLevel: Ref<number | null>

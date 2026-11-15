@@ -2,7 +2,7 @@ import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { Card, Difficulty, GameSettings, Operation } from "@/types"
+import type { Card, Difficulty, GameSettings, Operation } from "@/types.ts"
 import HomePage from "./HomePage.vue"
 
 const mocks = vi.hoisted(() => ({

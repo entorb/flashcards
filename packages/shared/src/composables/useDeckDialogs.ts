@@ -1,6 +1,6 @@
 import { useQuasar } from "quasar"
 
-import { TEXT_DE } from "../text-de"
+import { TEXT_DE } from "../text-de.ts"
 
 interface DeckDialogDeps {
   appPrefix: () => "voc" | "lwk"

@@ -1,7 +1,7 @@
 import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from "../constants"
+import { FIRST_GAME_BONUS, STREAK_GAME_BONUS, STREAK_GAME_INTERVAL } from "../constants.ts"
 import InfoPage from "./InfoPage.vue"
 
 const mountOptions = {

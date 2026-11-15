@@ -1,6 +1,6 @@
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { PROD_HOSTNAME, STATS_PENDING_STORAGE_KEY } from "../constants"
+import { PROD_HOSTNAME, STATS_PENDING_STORAGE_KEY } from "../constants.ts"
 import {
   calculateDailyBonuses,
   formatDate,
@@ -10,7 +10,7 @@ import {
   levenshteinDistance,
   polyfillScreenOrientation,
   roundTime,
-} from "../utils/helper"
+} from "../utils/helper.ts"
 
 describe("getFocusText", () => {
   it('returns weak text for "weak"', () => {
@@ -134,20 +134,20 @@ describe("formatDate", () => {
   it("formats a valid ISO date string to German locale", () => {
     const result = formatDate("2024-01-15T10:30:00")
     // German locale: dd.mm.yyyy, hh:mm
-    expect(result).toMatch(/15\.01\.2024/)
-    expect(result).toMatch(/10:30/)
+    expect(result).toMatch(/15\.01\.2024/u)
+    expect(result).toMatch(/10:30/u)
   })
 
   it("formats midnight correctly", () => {
     const result = formatDate("2024-06-01T00:00:00")
-    expect(result).toMatch(/01\.06\.2024/)
-    expect(result).toMatch(/00:00/)
+    expect(result).toMatch(/01\.06\.2024/u)
+    expect(result).toMatch(/00:00/u)
   })
 
   it("returns a non-empty string for any valid date", () => {
     const result = formatDate("2000-12-31T23:59:00")
     expect(result.length).toBeGreaterThan(0)
-    expect(result).toMatch(/31\.12\.2000/)
+    expect(result).toMatch(/31\.12\.2000/u)
   })
 })
 
@@ -320,9 +320,11 @@ describe("helperStatsDataWrite", () => {
 describe("levenshteinDistance — property tests", () => {
   it("is symmetric: d(a,b) = d(b,a)", () => {
     fc.assert(
-      fc.property(fc.string(), fc.string(), (a, b) => {
-        return levenshteinDistance(a, b) === levenshteinDistance(b, a)
-      }),
+      fc.property(
+        fc.string(),
+        fc.string(),
+        (a, b) => levenshteinDistance(a, b) === levenshteinDistance(b, a),
+      ),
     )
   })
 
@@ -338,26 +340,19 @@ describe("levenshteinDistance — property tests", () => {
   })
 
   it("identity: d(a,a) = 0", () => {
-    fc.assert(
-      fc.property(fc.string(), (a) => {
-        return levenshteinDistance(a, a) === 0
-      }),
-    )
+    fc.assert(fc.property(fc.string(), (a) => levenshteinDistance(a, a) === 0))
   })
 
   it("is always non-negative", () => {
-    fc.assert(
-      fc.property(fc.string(), fc.string(), (a, b) => {
-        return levenshteinDistance(a, b) >= 0
-      }),
-    )
+    fc.assert(fc.property(fc.string(), fc.string(), (a, b) => levenshteinDistance(a, b) >= 0))
   })
 
   it("distance to empty string equals string length", () => {
     fc.assert(
-      fc.property(fc.string(), (a) => {
-        return levenshteinDistance(a, "") === a.length && levenshteinDistance("", a) === a.length
-      }),
+      fc.property(
+        fc.string(),
+        (a) => levenshteinDistance(a, "") === a.length && levenshteinDistance("", a) === a.length,
+      ),
     )
   })
 })
@@ -367,7 +362,7 @@ describe("polyfillScreenOrientation", () => {
     const scr = {} as Screen
     polyfillScreenOrientation(scr)
     const { type, angle } = scr.orientation
-    expect(type).toMatch(/^(portrait|landscape)-primary$/)
+    expect(type).toMatch(/^(portrait|landscape)-primary$/u)
     expect(angle).toBe(0)
     expect(() => {
       scr.orientation.addEventListener("change", () => undefined)

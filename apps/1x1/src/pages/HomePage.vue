@@ -11,17 +11,17 @@ import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 import GroundhogMascot from "@/components/GroundhogMascot.vue"
-import { useGameStore } from "@/composables/useGameStore"
-import { BASE_PATH, DEFAULT_RANGE } from "@/constants"
-import { filterCardsBySettings } from "@/services/cardSelector"
+import { useGameStore } from "@/composables/useGameStore.ts"
+import { BASE_PATH, DEFAULT_RANGE } from "@/constants.ts"
+import { filterCardsBySettings } from "@/services/cardSelector.ts"
 import {
   getVirtualCardsForRange,
   loadGameStats,
   loadRange,
   loadSettings,
   saveSettings,
-} from "@/services/storage"
-import type { SelectionType } from "@/types"
+} from "@/services/storage.ts"
+import type { SelectionType } from "@/types.ts"
 
 const router = useRouter()
 

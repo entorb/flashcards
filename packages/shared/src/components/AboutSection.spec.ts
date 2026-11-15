@@ -1,7 +1,7 @@
 import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { TEXT_DE } from "../text-de"
+import { TEXT_DE } from "../text-de.ts"
 import AboutSection from "./AboutSection.vue"
 
 const mountOptions = {

@@ -6,7 +6,7 @@
 
 import { ref } from "vue"
 
-import type { AnswerStatus } from "../types"
+import type { AnswerStatus } from "../types.ts"
 
 export interface UseAnswerFeedbackOptions {
   /** Duration in milliseconds to auto-close after correct answer */

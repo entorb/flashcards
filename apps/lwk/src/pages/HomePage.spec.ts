@@ -186,7 +186,7 @@ describe("HomePage", () => {
 
   describe("settings loading", () => {
     it("uses default settings when none saved", async () => {
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue(null)
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -197,7 +197,7 @@ describe("HomePage", () => {
     })
 
     it("loads saved settings on mount when deck is valid", async () => {
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue({
         mode: "hidden",
         focus: "slow",
@@ -213,7 +213,7 @@ describe("HomePage", () => {
     })
 
     it("ignores saved settings when saved deck no longer exists", async () => {
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue({
         mode: "hidden",
         focus: "slow",
@@ -314,7 +314,7 @@ describe("HomePage", () => {
 
   describe("startGame action", () => {
     it("calls clearGameState and clearGameConfig before starting", async () => {
-      const { clearGameState, clearGameConfig } = await import("@/services/storage")
+      const { clearGameState, clearGameConfig } = await import("@/services/storage.ts")
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()
@@ -324,7 +324,7 @@ describe("HomePage", () => {
     })
 
     it("calls saveSettings with current settings on start", async () => {
-      const { saveSettings } = await import("@/services/storage")
+      const { saveSettings } = await import("@/services/storage.ts")
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
       await wrapper.vm.$nextTick()

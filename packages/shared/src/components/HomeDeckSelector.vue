@@ -5,7 +5,7 @@
 >
 import { onMounted, ref } from "vue"
 
-import type { BaseCard } from "../types"
+import type { BaseCard } from "../types.ts"
 
 /** @lintignore */
 export interface DeckSelectorProps<

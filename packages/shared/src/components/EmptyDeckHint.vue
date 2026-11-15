@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TEXT_DE } from "../text-de"
+import { TEXT_DE } from "../text-de.ts"
 
 defineProps<{ appPrefix: "voc" | "lwk" }>()
 const emit = defineEmits<{ add: [] }>()

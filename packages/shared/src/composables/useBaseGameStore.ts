@@ -5,9 +5,9 @@
 
 import { type Ref, ref } from "vue"
 
-import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants"
-import type { PointsBreakdown } from "../services/scoring"
-import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from "../types"
+import { MAX_LEVEL, MAX_TIME, MIN_LEVEL } from "../constants.ts"
+import type { PointsBreakdown } from "../services/scoring.ts"
+import type { AnswerStatus, BaseCard, BaseGameHistory, GameStats, SessionMode } from "../types.ts"
 
 /**
  * Configuration for creating a base game store

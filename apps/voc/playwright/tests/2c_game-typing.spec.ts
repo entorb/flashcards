@@ -1,9 +1,9 @@
-import { expect, type Page, test } from "@playwright/test"
+import { expect, test as it, type Page } from "@playwright/test"
 
-import { getCardsFromStorage, seedTestCards, TEST_CARD_COUNT } from "./support/helpers"
+import { getCardsFromStorage, seedTestCards, TEST_CARD_COUNT } from "./support/helpers.ts"
 
-test.describe("VOC Typing Mode Game - DE to Voc", () => {
-  test.beforeEach(async ({ page }) => {
+it.describe("VOC Typing Mode Game - DE to Voc", () => {
+  it.beforeEach(async ({ page }) => {
     await seedTestCards(page)
     await page.goto("/")
   })
@@ -35,14 +35,14 @@ test.describe("VOC Typing Mode Game - DE to Voc", () => {
     await page.getByTestId("continue-button").click()
   }
 
-  test("should complete a game with 1 wrong, 1 close, and remaining correct answers", async ({
+  it("should complete a game with 1 wrong, 1 close, and remaining correct answers", async ({
     page,
   }) => {
     await page.getByRole("button", { name: "Schreiben" }).click()
     await page.getByRole("button", { name: "DE → Voc" }).click()
     await page.getByTestId("start-button").click()
 
-    await expect(page).toHaveURL(/\/game/)
+    await expect(page).toHaveURL(/\/game/u)
     await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
     await expect(page.getByTestId("answer-input")).toBeVisible()
 
@@ -52,7 +52,7 @@ test.describe("VOC Typing Mode Game - DE to Voc", () => {
       await answerTypingCard(page, "correct")
     }
 
-    await expect(page).toHaveURL(/\/game-over/, { timeout: 15000 })
+    await expect(page).toHaveURL(/\/game-over/u, { timeout: 15000 })
 
     const correctAnswersCount = Number.parseInt(
       (await page.getByTestId("correct-answers-count").textContent())?.trim() ?? "0",
@@ -93,7 +93,7 @@ test.describe("VOC Typing Mode Game - DE to Voc", () => {
 
     // Verify history page stats match
     await page.getByTestId("history-button").click()
-    await expect(page).toHaveURL(/\/history/)
+    await expect(page).toHaveURL(/\/history/u)
     await expect(page.getByTestId("history-game-0")).toBeVisible()
 
     const historyCorrect = Number.parseInt(

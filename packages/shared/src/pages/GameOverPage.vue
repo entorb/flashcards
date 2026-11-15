@@ -8,8 +8,8 @@ import {
   type DailyBonusConfig,
   type GameResult,
   helperStatsDataWrite,
-} from "../index"
-import { TEXT_DE } from "../text-de"
+} from "../index.ts"
+import { TEXT_DE } from "../text-de.ts"
 
 /** @lintignore */
 export interface StorageFunctions<T extends BaseGameHistory> {
@@ -44,9 +44,7 @@ try {
 const result = ref<GameResult | null>(null)
 const bonusReasons = ref<Array<{ label: string; points: number }>>([])
 
-const bonusPoints = computed(() => {
-  return bonusReasons.value.reduce((sum, r) => sum + r.points, 0)
-})
+const bonusPoints = computed(() => bonusReasons.value.reduce((sum, r) => sum + r.points, 0))
 
 const totalPoints = computed(() => {
   if (!result.value) return 0
@@ -58,13 +56,9 @@ const successRate = computed(() => {
   return result.value.correctAnswers / result.value.totalCards
 })
 
-const isMascotHappy = computed(() => {
-  return successRate.value >= 0.7
-})
+const isMascotHappy = computed(() => successRate.value >= 0.7)
 
-const isMascotGrinning = computed(() => {
-  return successRate.value === 1
-})
+const isMascotGrinning = computed(() => successRate.value === 1)
 
 function handleKeyDown(event: KeyboardEvent) {
   if (event.key === "Escape" || event.key === "Enter") {

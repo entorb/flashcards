@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 import { createMemoryHistory, createRouter } from "vue-router"
-import type { GameHistory } from "@/types"
+import type { GameHistory } from "@/types.ts"
 import HistoryPage from "./HistoryPage.vue"
 
 // ---------------------------------------------------------------------------
@@ -218,7 +218,7 @@ describe("lwk HistoryPage", () => {
       }
       const result = formatDetails(entry)
       // No deck → no deck segment
-      expect(result).not.toMatch(/LWK/)
+      expect(result).not.toMatch(/LWK/u)
     })
   })
 

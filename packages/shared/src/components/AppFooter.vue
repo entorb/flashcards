@@ -2,9 +2,9 @@
 import { QIcon } from "quasar"
 import { onBeforeUnmount, onMounted, ref } from "vue"
 
-import { SHARE_URL } from "../constants"
-import { TEXT_DE } from "../text-de"
-import { helperStatsDataRead } from "../utils/helper"
+import { SHARE_URL } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import { helperStatsDataRead } from "../utils/helper.ts"
 
 interface Props {
   basePath: string

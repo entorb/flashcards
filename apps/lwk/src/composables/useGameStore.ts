@@ -1,7 +1,7 @@
 import { ALL_LEVELS, createDeckGameStore, MAX_TIME } from "@flashcards/shared"
 
-import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from "../constants"
-import { selectCards } from "../services/cardSelector"
+import { DEFAULT_DECKS, GAME_STATE_FLOW_CONFIG, POINTS_MODE_HIDDEN } from "../constants.ts"
+import { selectCards } from "../services/cardSelector.ts"
 import {
   clearGameState,
   loadCards,
@@ -17,8 +17,8 @@ import {
   saveHistory,
   saveSettings,
   setGameResult,
-} from "../services/storage"
-import type { Card, GameHistory, GameSettings } from "../types"
+} from "../services/storage.ts"
+import type { Card, GameHistory, GameSettings } from "../types.ts"
 
 export const useGameStore = createDeckGameStore<Card, GameHistory, GameSettings>({
   storage: {

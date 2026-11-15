@@ -1,8 +1,8 @@
 import { quasarMocks, quasarProvide, quasarStubs } from "@flashcards/shared/test-utils"
 import { mount } from "@vue/test-utils"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { BaseCard } from "../types"
-import { getTimeBucketIndex } from "../utils/helper"
+import type { BaseCard } from "../types.ts"
+import { getTimeBucketIndex } from "../utils/helper.ts"
 import CardsTimeHistogram from "./CardsTimeHistogram.vue"
 
 const mountOptions = {

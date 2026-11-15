@@ -2,12 +2,12 @@
 import { TEXT_DE } from "@flashcards/shared"
 import { computed, ref } from "vue"
 
-import { useEtaStore } from "@/composables/useEtaStore"
+import { useEtaStore } from "@/composables/useEtaStore.ts"
 import {
   calculateTimePerTask as calcTimePerTask,
   calculateTotalRuntime,
-} from "@/utils/measurementCalculations"
-import { formatClockTime, formatDuration } from "@/utils/timeFormatters"
+} from "@/utils/measurementCalculations.ts"
+import { formatClockTime, formatDuration } from "@/utils/timeFormatters.ts"
 
 import HourglassIcon from "./HourglassIcon.vue"
 
@@ -20,9 +20,7 @@ const sessionData = computed(() => store.sessionData.value)
 const currentCompleted = computed(() => store.currentCompleted.value)
 const progressPercentage = computed(() => store.progressPercentage.value)
 
-const inputIcon = computed(() => {
-  return inputMode.value === "completed" ? "check_circle" : "pending"
-})
+const inputIcon = computed(() => inputMode.value === "completed" ? "check_circle" : "pending")
 
 // Validation for input
 const isInputValid = computed(() => {

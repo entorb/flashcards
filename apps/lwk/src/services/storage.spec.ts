@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { DEFAULT_DECKS, STORAGE_KEYS } from "../constants"
-import type { Card, CardDeck, GameSettings } from "../types"
+import { DEFAULT_DECKS, STORAGE_KEYS } from "../constants.ts"
+import type { Card, CardDeck, GameSettings } from "../types.ts"
 import {
   clearGameResult,
   getGameResult,
@@ -13,7 +13,7 @@ import {
   saveDecks,
   saveSettings,
   setGameResult,
-} from "./storage"
+} from "./storage.ts"
 
 // ---------------------------------------------------------------------------
 // Helpers

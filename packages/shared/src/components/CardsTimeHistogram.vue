@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { LEVEL_COLORS, MAX_TIME, TIME_BUCKET_BOUNDS } from "../constants"
-import { TEXT_DE } from "../text-de"
-import type { BaseCard } from "../types"
-import { getTimeBucketIndex, getTimeBucketLabel } from "../utils/helper"
+import { LEVEL_COLORS, MAX_TIME, TIME_BUCKET_BOUNDS } from "../constants.ts"
+import { TEXT_DE } from "../text-de.ts"
+import type { BaseCard } from "../types.ts"
+import { getTimeBucketIndex, getTimeBucketLabel } from "../utils/helper.ts"
 
 interface Props {
   cards: BaseCard[]

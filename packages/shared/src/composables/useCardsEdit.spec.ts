@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ref } from "vue"
 
-import type { BaseCard } from "../types"
-import { normalizeWhitespace } from "../utils/helper"
-import type { CardsEditOptions, PendingCardResult } from "./useCardsEdit"
-import { useCardsEdit } from "./useCardsEdit"
+import type { BaseCard } from "../types.ts"
+import { normalizeWhitespace } from "../utils/helper.ts"
+import type { CardsEditOptions, PendingCardResult } from "./useCardsEdit.ts"
+import { useCardsEdit } from "./useCardsEdit.ts"
 
 const mockNotify = vi.fn()
 

@@ -6,7 +6,7 @@ import { expect, type Page } from "@playwright/test"
 export const parseQuestion = (
   questionText: string,
 ): { dividend: number; divisor: number; answer: number } => {
-  const regex = /(\d+)\s*:\s*(\d+)/
+  const regex = /(\d+)\s*:\s*(\d+)/u
   const match = regex.exec(questionText)
   if (!match) throw new Error(`Could not parse question: ${questionText}`)
   const dividend = Number.parseInt(match[1], 10)
@@ -48,7 +48,7 @@ export const verifyPostGameStats = async (
   expectedCorrect: number,
   expectedTotal: number,
 ): Promise<void> => {
-  await expect(page).toHaveURL(/\/game-over/, { timeout: 15000 })
+  await expect(page).toHaveURL(/\/game-over/u, { timeout: 15000 })
 
   await expect(page.getByTestId("correct-answers-count")).toContainText(String(expectedCorrect))
   await expect(page.getByTestId("total-questions-count")).toContainText(String(expectedTotal))
@@ -85,7 +85,7 @@ export const verifyPostGameStats = async (
 
   // Verify history page stats match
   await page.getByTestId("history-button").click()
-  await expect(page).toHaveURL(/\/history/)
+  await expect(page).toHaveURL(/\/history/u)
   await expect(page.getByTestId("history-game-0")).toBeVisible()
 
   const historyCorrect = Number.parseInt(

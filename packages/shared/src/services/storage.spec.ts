@@ -1,7 +1,7 @@
 import * as fc from "fast-check"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { CardLevel } from "../types"
-import { isRecord, isValidHistoryEntry } from "../utils/validators"
+import type { CardLevel } from "../types.ts"
+import { isRecord, isValidHistoryEntry } from "../utils/validators.ts"
 
 import {
   createAppGameStorage,
@@ -17,7 +17,7 @@ import {
   saveJSON,
   saveSessionJSON,
   selectCardsByFocus,
-} from "./storage"
+} from "./storage.ts"
 
 beforeEach(() => {
   localStorage.clear()

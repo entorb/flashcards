@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { calculateRegression, predictRemainingTime } from "@/services/regression"
-import { clearSession, loadSession, saveSession } from "@/services/storage"
-import type { SessionData } from "@/types"
-import { useEtaStore } from "./useEtaStore"
+import { calculateRegression, predictRemainingTime } from "@/services/regression.ts"
+import { clearSession, loadSession, saveSession } from "@/services/storage.ts"
+import type { SessionData } from "@/types.ts"
+import { useEtaStore } from "./useEtaStore.ts"
 
 // Mock the services
 vi.mock("@/services/regression", () => ({

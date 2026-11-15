@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { formatDisplayQuestion } from "./questionFormatter"
+import { formatDisplayQuestion } from "./questionFormatter.ts"
 
 describe("formatDisplayQuestion", () => {
   it("replaces x with multiplication sign by default", () => {

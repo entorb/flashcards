@@ -2,7 +2,7 @@
  * Shared constants used across all flashcards apps
  */
 
-import type { CardLevel } from "./types"
+import type { CardLevel } from "./types.ts"
 
 /**
  * localStorage key for caching pending stats writes when offline

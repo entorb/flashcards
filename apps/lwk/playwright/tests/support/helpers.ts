@@ -111,7 +111,7 @@ export const startHiddenGameMode = async (page: Page, buttonCy: string): Promise
   await page.getByTestId("mode-option-hidden").click()
   await expect(page.getByTestId(buttonCy)).toBeEnabled()
   await page.getByTestId(buttonCy).click()
-  await expect(page).toHaveURL(/\/game/)
+  await expect(page).toHaveURL(/\/game/u)
   await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
 }
 
@@ -122,7 +122,7 @@ export const startCopyGameMode = async (page: Page, buttonCy: string): Promise<v
   await page.getByTestId("mode-option-copy").click()
   await expect(page.getByTestId(buttonCy)).toBeEnabled()
   await page.getByTestId(buttonCy).click()
-  await expect(page).toHaveURL(/\/game/)
+  await expect(page).toHaveURL(/\/game/u)
   await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
 }
 
@@ -137,7 +137,7 @@ export const playThroughAndVerifyGameOver = async (
   for (let i = 0; i < totalCards; i++) {
     await answerFn(page)
   }
-  await expect(page).toHaveURL(/\/game-over/, { timeout: 60000 })
+  await expect(page).toHaveURL(/\/game-over/u, { timeout: 60000 })
   await page.getByTestId("back-to-home-button").click()
   await expect(page.getByTestId("app-title")).toBeVisible()
 }
@@ -146,7 +146,7 @@ export const playThroughAndVerifyGameOver = async (
  * Verify game-over stats, then check home page and history page match.
  */
 export const verifyPostGameStats = async (page: Page, expectedCorrect: number): Promise<void> => {
-  await expect(page).toHaveURL(/\/game-over/, { timeout: 10000 })
+  await expect(page).toHaveURL(/\/game-over/u, { timeout: 10000 })
   await expect(page.getByTestId("back-to-home-button")).toBeVisible()
 
   const gameOverCorrectAnswers = Number.parseInt(
@@ -181,7 +181,7 @@ export const verifyPostGameStats = async (page: Page, expectedCorrect: number): 
 
   // Verify history page stats match
   await page.getByTestId("history-button").click()
-  await expect(page).toHaveURL(/\/history/)
+  await expect(page).toHaveURL(/\/history/u)
   await expect(page.getByTestId("history-game-0")).toBeVisible()
 
   const historyCorrect = Number.parseInt(

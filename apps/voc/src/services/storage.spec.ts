@@ -1,8 +1,8 @@
 // cspell:ignore guten
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { INITIAL_CARDS, STORAGE_KEYS } from "../constants"
-import type { Card, CardDeck } from "../types"
+import { INITIAL_CARDS, STORAGE_KEYS } from "../constants.ts"
+import type { Card, CardDeck } from "../types.ts"
 import {
   getCurrentDeckName,
   loadCards,
@@ -11,7 +11,7 @@ import {
   saveCards,
   saveDecks,
   saveSettings,
-} from "./storage"
+} from "./storage.ts"
 
 describe("Deck Storage", () => {
   beforeEach(() => {

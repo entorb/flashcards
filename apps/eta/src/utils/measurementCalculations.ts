@@ -2,7 +2,7 @@
  * Measurement calculation utilities
  */
 
-import type { MeasurementPoint, SessionData } from "@/types"
+import type { MeasurementPoint, SessionData } from "@/types.ts"
 
 /**
  * Calculate time per task for a specific measurement

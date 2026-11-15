@@ -140,7 +140,7 @@ export const startTypingGameMode = async (page: Page, buttonCy: string): Promise
   await page.getByRole("button", { name: "Schreiben" }).click()
   await expect(page.getByTestId(buttonCy)).toBeEnabled()
   await page.getByTestId(buttonCy).click()
-  await expect(page).toHaveURL(/\/game/)
+  await expect(page).toHaveURL(/\/game/u)
   await expect(page.getByTestId("question-display")).toBeVisible({ timeout: 10000 })
 }
 
@@ -155,7 +155,7 @@ export const playThroughAndVerifyGameOver = async (
   for (let i = 0; i < totalCards; i++) {
     await answerFn(page)
   }
-  await expect(page).toHaveURL(/\/game-over/, { timeout: 15000 })
+  await expect(page).toHaveURL(/\/game-over/u, { timeout: 15000 })
   await expect(page.getByTestId("correct-answers-count")).toContainText(String(totalCards))
   await page.getByTestId("back-to-home-button").click()
   await expect(page.getByTestId("app-title")).toBeVisible()
@@ -169,7 +169,7 @@ export const verifyPostGameStats = async (
   expectedCorrect: number,
   expectedTotal: number,
 ): Promise<void> => {
-  await expect(page).toHaveURL(/\/game-over/, { timeout: 15000 })
+  await expect(page).toHaveURL(/\/game-over/u, { timeout: 15000 })
 
   await expect(page.getByTestId("correct-answers-count")).toContainText(String(expectedCorrect))
   await expect(page.getByTestId("total-questions-count")).toContainText(String(expectedTotal))
@@ -206,7 +206,7 @@ export const verifyPostGameStats = async (
 
   // Verify history page stats match
   await page.getByTestId("history-button").click()
-  await expect(page).toHaveURL(/\/history/)
+  await expect(page).toHaveURL(/\/history/u)
   await expect(page.getByTestId("history-game-0")).toBeVisible()
 
   const historyCorrect = Number.parseInt(

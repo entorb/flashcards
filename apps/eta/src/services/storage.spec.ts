@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { STORAGE_KEYS } from "@/constants"
-import type { SessionData } from "@/types"
+import { STORAGE_KEYS } from "@/constants.ts"
+import type { SessionData } from "@/types.ts"
 
-import { clearSession, loadSession, saveSession } from "./storage"
+import { clearSession, loadSession, saveSession } from "./storage.ts"
 
 describe("storage service", () => {
   beforeEach(() => {

@@ -3,7 +3,7 @@
  */
 
 import type { GameStateFlowConfig } from "@flashcards/shared"
-import type { Difficulty, Operation } from "./types"
+import type { Difficulty, Operation } from "./types.ts"
 
 /**
  * Base path for the pum app — used in routing, PWA config, and database

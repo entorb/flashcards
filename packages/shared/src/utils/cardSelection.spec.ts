@@ -1,8 +1,8 @@
 import * as fc from "fast-check"
 import { describe, expect, it } from "vitest"
 
-import { selectCardsByFocus } from "../services/storage"
-import { shuffleArray, weightedRandomSelection } from "./cardSelection"
+import { selectCardsByFocus } from "../services/storage.ts"
+import { shuffleArray, weightedRandomSelection } from "./cardSelection.ts"
 
 // Validates: Requirements 7.1, 7.2
 

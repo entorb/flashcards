@@ -4,7 +4,7 @@ import { Dialog, Notify, Quasar } from "quasar"
 import { createApp } from "vue"
 
 import App from "./App.vue"
-import { router } from "./router"
+import { router } from "./router.ts"
 
 // Import Quasar css
 import "quasar/src/css/index.sass"

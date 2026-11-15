@@ -173,7 +173,7 @@ describe("HomePage", () => {
 
   describe("deck selector", () => {
     it("populates deck options from getDecks()", async () => {
-      const { useGameStore } = await import("@/composables/useGameStore")
+      const { useGameStore } = await import("@/composables/useGameStore.ts")
       vi.mocked(useGameStore).mockReturnValue({
         gameStats: mockGameStats,
         allCards: mockCards,
@@ -229,7 +229,7 @@ describe("HomePage", () => {
 
   describe("settings loading", () => {
     it("loads saved settings on mount", async () => {
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue({
         mode: "typing",
         focus: "weak",
@@ -249,7 +249,7 @@ describe("HomePage", () => {
     })
 
     it("uses default settings when none saved", async () => {
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue(null)
       const router = createMockRouter()
       const wrapper = mount(HomePage, createMountOptions(router))
@@ -328,7 +328,7 @@ describe("HomePage", () => {
 
     it("keeps typing mode when already on typing regardless of card levels", async () => {
       mockCards.value = [{ voc: "hello", de: "hallo", level: 3, time: 60 }]
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue({
         mode: "typing",
         focus: "weak",
@@ -354,7 +354,7 @@ describe("HomePage", () => {
     })
 
     it("loads saved language direction from settings", async () => {
-      const { loadSettings } = await import("@/services/storage")
+      const { loadSettings } = await import("@/services/storage.ts")
       vi.mocked(loadSettings).mockReturnValue({
         mode: "typing",
         focus: "weak",

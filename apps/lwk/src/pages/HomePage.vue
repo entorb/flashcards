@@ -12,10 +12,10 @@ import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 import EisiMascot from "../components/EisiMascot.vue"
-import { useGameStore } from "../composables/useGameStore"
-import { BASE_PATH } from "../constants"
-import { clearGameConfig, clearGameState, loadSettings, saveSettings } from "../services/storage"
-import type { GameSettings } from "../types"
+import { useGameStore } from "../composables/useGameStore.ts"
+import { BASE_PATH } from "../constants.ts"
+import { clearGameConfig, clearGameState, loadSettings, saveSettings } from "../services/storage.ts"
+import type { GameSettings } from "../types.ts"
 
 const router = useRouter()
 const { gameStats, startGame: startGameStore, getDecks, switchDeck, allCards } = useGameStore()
