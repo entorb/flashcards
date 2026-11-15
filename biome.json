@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "ignoreUnknown": true,
     "includes": [
@@ -36,20 +40,14 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "jsxQuoteStyle": "double",
       "semicolons": "asNeeded"
     }
   },
-
   "html": {
     "formatter": {
-      "indentScriptAndStyle": false,
       "selfCloseVoidElements": "always"
-    }
-  },
-  "css": {
-    "linter": { "enabled": true },
-    "formatter": { "enabled": true }
+    },
+    "experimentalFullSupportEnabled": true
   },
   "linter": {
     "enabled": true,
@@ -96,7 +94,9 @@
         "noBannedTypes": "error",
         "noExcessiveCognitiveComplexity": {
           "level": "error",
-          "options": { "maxAllowedComplexity": 15 }
+          "options": {
+            "maxAllowedComplexity": 15
+          }
         },
         "noForEach": "warn",
         "noImplicitCoercions": "error",
@@ -179,7 +179,9 @@
         "useThrowNewError": "error",
         "useTrimStartEnd": "error",
         "useGlobalThis": "error",
-        "useImportsFirst": "error"
+        "useImportsFirst": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useConsistentObjectDefinitions": "error"
       },
       "suspicious": {
         "noAssignInExpressions": "error",
@@ -215,7 +217,9 @@
   "assist": {
     "enabled": true,
     "actions": {
-      "source": { "organizeImports": "on" }
+      "source": {
+        "organizeImports": "on"
+      }
     }
   },
   "overrides": [
@@ -277,8 +281,12 @@
       "includes": ["*.config.ts", "*.config.js", "*.config.mts", "*.config.mjs"],
       "linter": {
         "rules": {
-          "suspicious": { "noExplicitAny": "off" },
-          "style": { "noDefaultExport": "off" }
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "style": {
+            "noDefaultExport": "off"
+          }
         }
       }
     },
@@ -289,6 +297,9 @@
           "correctness": {
             "noUnusedImports": "off",
             "noUnusedVariables": "off"
+          },
+          "a11y": {
+            "noAutofocus": "off"
           }
         }
       }
@@ -297,7 +308,9 @@
       "includes": ["**/*.html"],
       "linter": {
         "rules": {
-          "suspicious": { "noAssignInExpressions": "off" },
+          "suspicious": {
+            "noAssignInExpressions": "off"
+          },
           "style": {
             "useSingleVarDeclarator": "off",
             "useTemplate": "off",
@@ -305,6 +318,16 @@
             "useGlobalThis": "off"
           },
           "nursery": {}
+        }
+      }
+    },
+    {
+      "includes": ["apps/*/src/App.vue"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "useScopedStyles": "off"
+          }
         }
       }
     }

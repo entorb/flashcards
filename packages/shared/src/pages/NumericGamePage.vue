@@ -152,7 +152,7 @@ onUnmounted(() => {
       <GameHeader
         :current-index="props.store.currentCardIndex.value"
         :total-cards="props.store.gameCards.value.length"
-        v-bind="totalCardsOverride !== undefined ? { totalCardsOverride } : {}"
+        v-bind="totalCardsOverride === undefined ? {} : { totalCardsOverride }"
         :points="props.store.points.value"
         @back="handleGoHome"
       />
@@ -165,7 +165,7 @@ onUnmounted(() => {
             answer: String(currentCard.answer)
           }"
           :display-question="displayQuestion"
-          :show-correct-answer="showFeedback && !!answerStatus"
+          :show-correct-answer="showFeedback && Boolean(answerStatus)"
         />
 
         <!-- Answer Input Section -->

@@ -58,6 +58,17 @@ function getButtonBackgroundClass(status: AnswerStatus): string {
   }
 }
 
+function getDataCy(status: AnswerStatus): string {
+  switch (status) {
+    case "correct":
+      return "correct-answer-feedback"
+    case "close":
+      return ""
+    case "incorrect":
+      return "wrong-answer-feedback"
+  }
+}
+
 function getColor(status: AnswerStatus): string {
   switch (status) {
     case "correct":
@@ -73,13 +84,7 @@ function getColor(status: AnswerStatus): string {
 <template>
   <q-card
     class="q-mb-md"
-    :data-cy="
-      status === 'correct'
-        ? 'correct-answer-feedback'
-        : status === 'incorrect'
-          ? 'wrong-answer-feedback'
-          : ''
-    "
+    :data-cy="getDataCy(status)"
   >
     <!-- Icon Section -->
     <q-card-section

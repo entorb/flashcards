@@ -227,7 +227,7 @@ onUnmounted(() => {
       <GameHeader
         :current-index="currentCardIndex"
         :total-cards="gameCards.length"
-        v-bind="totalCardsOverride !== undefined ? { totalCardsOverride } : {}"
+        v-bind="totalCardsOverride === undefined ? {} : { totalCardsOverride }"
         :points="points"
         @back="handleGoHome"
       />
@@ -302,7 +302,7 @@ onUnmounted(() => {
             <q-btn
               v-for="option in options"
               :key="option"
-              :disable="!!answerStatus"
+              :disable="Boolean(answerStatus)"
               outline
               color="grey-8"
               :label="option"
@@ -334,7 +334,7 @@ onUnmounted(() => {
               <div class="row q-col-gutter-sm">
                 <div class="col-6">
                   <q-btn
-                    :disable="!!answerStatus"
+                    :disable="Boolean(answerStatus)"
                     color="negative"
                     :label="TEXT_DE.shared.common.no"
                     no-caps
@@ -345,7 +345,7 @@ onUnmounted(() => {
                 </div>
                 <div class="col-6">
                   <q-btn
-                    :disable="!!answerStatus"
+                    :disable="Boolean(answerStatus)"
                     color="positive"
                     :label="TEXT_DE.shared.common.yes"
                     no-caps

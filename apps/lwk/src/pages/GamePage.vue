@@ -221,7 +221,7 @@ function submitAnswer() {
       <GameHeader
         :current-index="currentCardIndex"
         :total-cards="gameCards.length"
-        v-bind="totalCardsOverride !== undefined ? { totalCardsOverride } : {}"
+        v-bind="totalCardsOverride === undefined ? {} : { totalCardsOverride }"
         :points="points"
         @back="handleGoHome"
       />
@@ -252,7 +252,7 @@ function submitAnswer() {
         </div>
 
         <!-- Input field - shown when ready to type (both modes) -->
-        <div v-if="!showFeedback && !readyToStart && countdown === 0">
+        <div v-if="!(showFeedback || readyToStart) && countdown === 0">
           <GameInputSubmit
             v-model="userInput"
             :button-disabled="isSubmitting"
